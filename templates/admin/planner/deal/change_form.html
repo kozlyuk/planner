@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }} 
+
+{% if object_id %}
+    <div class="submit-row">
+        <a href={% url 'calculation' object_id %}>Калькуляція по договору</a>
+    </div>
+{% endif %}
+
+{% endblock %}
