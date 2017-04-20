@@ -141,6 +141,7 @@ class DealForm(forms.ModelForm):
         act_date = cleaned_data.get("act_date")
         act_value = cleaned_data.get("act_value")
         self.instance.__customer__ = cleaned_data.get("customer")
+        self.instance.__expire_date__ = cleaned_data.get("expire_date")
 
         if pay_status == Deal.PaidUp:
             if not value or value == 0:
@@ -163,14 +164,17 @@ class DealForm(forms.ModelForm):
 class TasksInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
-        cleaned_data = super(TasksInlineFormSet, self).clean()
+        super(TasksInlineFormSet, self).clean()
         for form in self.forms:
             if not form.is_valid():
                 return
             project_type = form.cleaned_data.get("project_type")
+            planned_finish = form.cleaned_data.get("planned_finish")
             if project_type and self.instance.__customer__:
                 if self.instance.__customer__ != project_type.customer:
                     raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
+            if planned_finish and planned_finish > self.instance.__expire_date__:
+                raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 class TasksInline(admin.TabularInline):
 
@@ -246,6 +250,7 @@ class TaskForm(forms.ModelForm):
         deal = cleaned_data.get("deal")
         exec_status = cleaned_data.get("exec_status")
         actual_finish = cleaned_data.get("actual_finish")
+        planned_finish = cleaned_data.get("planned_finish")
         self.instance.__exec_status__ = exec_status
         self.instance.__project_type__ = project_type
 
@@ -258,6 +263,8 @@ class TaskForm(forms.ModelForm):
         if actual_finish:
             if exec_status != Task.Done:
                 raise forms.ValidationError("Відмітьте Статус виконання або видаліть Дату виконання")
+        if planned_finish and planned_finish > deal.expire_date:
+            raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 class ExecutersInlineFormSet(BaseInlineFormSet):
 

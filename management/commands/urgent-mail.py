@@ -11,9 +11,11 @@ class Command(BaseCommand):
 
         employees = Employee.objects.exclude(user__username__startswith='outsourcing')
         tasks = Task.objects.exclude(exec_status=Task.HaveDone).\
-                             exclude(deal__expire_date__lt=date.today()).\
-                             exclude(deal__expire_date__gt=date.today()+timedelta(days=7),
-                                     planned_finish__isnull=True).\
+                             exclude(planned_finish__isnull=True,
+                                     deal__expire_date__lt=date.today()).\
+                             exclude(planned_finish__isnull=True,
+                                     deal__expire_date__gt=date.today()+timedelta(days=7)). \
+                             exclude(planned_finish__lt=date.today()). \
                              exclude(planned_finish__gt=date.today()+timedelta(days=7))
 
         emails = []
