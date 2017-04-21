@@ -220,13 +220,14 @@ class DealAdmin(admin.ModelAdmin):
     ordering = ['-creation_date', 'customer', '-number']
     list_filter = ['customer', 'pay_status', 'act_status']
     date_hierarchy = 'expire_date'
-    readonly_fields = ['bonuses_calc', 'value_calc']
+    readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc']
     fieldsets = [
         ('Інформація про договір', {'fields': [('number', 'customer', 'company'),
                            ('value', 'advance', 'pay_status'),
                            ('pay_date', 'expire_date'),
                            ('act_status', 'act_date', 'act_value')]}),
-        ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc', 'comment'], 'classes': ['collapse']})
+        ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
+                                             'costs_calc', 'comment'], 'classes': ['collapse']})
         ]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -311,9 +312,6 @@ class OrdersInlineFormSet(BaseInlineFormSet):
                 if pay_status == Order.NotPaid:
                     raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
 
-        if self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
-            raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
-
         if self.instance.__exec_status__ == Task.Done:
             if self.instance.__project_type__.net_price() > 0:
                 costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
@@ -321,6 +319,8 @@ class OrdersInlineFormSet(BaseInlineFormSet):
                     raise ValidationError('Добавте витрати по аутсорсингу')
                 if self.instance.__outsourcing_part__ < costs_part:
                     raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
+            elif outsourcing > 0:
+                raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
 
 
 class ExecutersInline(admin.TabularInline):
@@ -334,6 +334,8 @@ class ExecutersInline(admin.TabularInline):
         if obj == None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
+            return self.readonly_fields
+        if request.user.groups.filter(name='Бухгалтери').exists() and obj.is_active():
             return self.readonly_fields
         fields = []
         for field in self.model._meta.fields:
@@ -351,11 +353,11 @@ class SendingsInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if request.user.groups.filter(name='Секретарі').exists():
-            return self.readonly_fields
         if obj == None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
+            return self.readonly_fields
+        if request.user.groups.filter(name='Секретарі').exists():
             return self.readonly_fields
         fields = []
         for field in self.model._meta.fields:
@@ -374,11 +376,11 @@ class OrdersInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if request.user.groups.filter(name='Бухгалтери').exists():
-            return self.readonly_fields
         if obj == None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
+            return self.readonly_fields
+        if request.user.groups.filter(name='Бухгалтери').exists() and obj.is_active():
             return self.readonly_fields
         fields = []
         for field in self.model._meta.fields:
@@ -452,15 +454,16 @@ class TaskAdmin(admin.ModelAdmin):
             return self.readonly_fields
         if obj == None:
             return self.readonly_fields
-        if obj.owner.user == request.user:
-            if obj.is_active():
-                return self.readonly_fields
+        if obj.owner.user == request.user and obj.is_active():
+            return self.readonly_fields
+        if request.user.groups.filter(name='Бухгалтери').exists() and obj.is_active():
+            return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
 
     def get_inline_instances(self, request, obj=None):
         if obj is None:
             self.inlines = [ExecutersInline]
-        elif request.user.groups.filter(Q(name='ГІПи') | Q(name='Бухгалтери') | Q(name='Секретарі')).exists():
+        elif request.user.groups.filter(Q(name='ГІПи') | Q(name='Бухгалтери')).exists():
             self.inlines = [ExecutersInline, OrdersInline, SendingsInline]
         else:
             self.inlines = [ExecutersInline, SendingsInline]
