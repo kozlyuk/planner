@@ -291,9 +291,6 @@ class OrdersInlineFormSet(BaseInlineFormSet):
     def clean(self):
         super(OrdersInlineFormSet, self).clean()
 
-        if self.instance.__project_type__.net_price() == 0:
-            raise ValidationError('У проекту вартість якого рівна нулю не може бути витрат')
-
         outsourcing = 0
         for form in self.forms:
             if form.is_valid():
@@ -314,12 +311,17 @@ class OrdersInlineFormSet(BaseInlineFormSet):
                 if pay_status == Order.NotPaid:
                     raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
 
+        if self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
+            raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
+
         if self.instance.__exec_status__ == Task.Done:
-            costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
-            if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
-                raise ValidationError('Добавте витрати по аутсорсингу')
-            if self.instance.__outsourcing_part__ < costs_part:
-                raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
+            if self.instance.__project_type__.net_price() > 0:
+                costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
+                if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
+                    raise ValidationError('Добавте витрати по аутсорсингу')
+                if self.instance.__outsourcing_part__ < costs_part:
+                    raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
+
 
 class ExecutersInline(admin.TabularInline):
     model = Execution
@@ -458,8 +460,10 @@ class TaskAdmin(admin.ModelAdmin):
     def get_inline_instances(self, request, obj=None):
         if obj is None:
             self.inlines = [ExecutersInline]
+        elif request.user.groups.filter(Q(name='ГІПи') | Q(name='Бухгалтери') | Q(name='Секретарі')).exists():
+            self.inlines = [ExecutersInline, OrdersInline, SendingsInline]
         else:
-                self.inlines = [ExecutersInline, OrdersInline, SendingsInline]
+            self.inlines = [ExecutersInline, SendingsInline]
         return super(TaskAdmin, self).get_inline_instances(request, obj)
 
 #    def has_delete_permission(self, request, obj=None):

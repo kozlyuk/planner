@@ -1,5 +1,5 @@
 __pycache__
-migrations
+migrations/
 settings.py
 wsgi.py
 
