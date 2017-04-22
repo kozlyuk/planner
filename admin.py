@@ -274,6 +274,7 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
         super(ExecutersInlineFormSet, self).clean()
         percent = 0
         outsourcing_part = 0
+        bonuses_max = 0
         for form in self.forms:
             if not form.is_valid():
                 return
@@ -284,9 +285,13 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
                 outsourcing_part += part
         self.instance.__outsourcing_part__ = outsourcing_part
         if self.instance.__exec_status__ == Task.Done and percent < 100:
-            raise ValidationError(_('Вкажіть 100%% часток виконавців. Зараз : %(percent).2f%%') % {'percent': percent})
-        if percent > 150:
-            raise ValidationError(_('Сума часток виконавців не має перевищувати 150%%. Зараз : %(percent).2f%%') % {'percent': percent})
+            raise ValidationError(_('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+        if self.instance.__project_type__:
+            bonuses_max = 100 + 100 *\
+                          self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
+        if percent > bonuses_max:
+            raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+                                    'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 class OrdersInlineFormSet(BaseInlineFormSet):
 
