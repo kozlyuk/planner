@@ -274,7 +274,7 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
         super(ExecutersInlineFormSet, self).clean()
         percent = 0
         outsourcing_part = 0
-        bonuses_max = 0
+        self.instance.__outsourcing_part__ = outsourcing_part
         for form in self.forms:
             if not form.is_valid():
                 return
@@ -289,9 +289,9 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
         if self.instance.__project_type__:
             bonuses_max = 100 + 100 *\
                           self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
-        if percent > bonuses_max:
-            raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
-                                    'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
+            if percent > bonuses_max:
+                raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 class OrdersInlineFormSet(BaseInlineFormSet):
 
