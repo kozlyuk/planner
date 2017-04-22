@@ -40,7 +40,7 @@ class Employee(models.Model):
             if task.overdue_status().startswith('Протерміновано'):
                 overdue += 1
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
-    owner_count.short_description = 'Відповідальний за проекти'
+    owner_count.short_description = 'Керівник проектів'
 
     def task_count(self):
         active = 0
@@ -168,7 +168,12 @@ class Project(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник')
     price_code = models.CharField('Пункт кошторису', max_length=8)
     price = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
-    net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %', validators=[MaxValueValidator(100)])
+    net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
+                                                      validators=[MaxValueValidator(100)], default=75)
+    owner_bonus = models.PositiveSmallIntegerField('Бонус керівника проекту, %',
+                                                      validators=[MaxValueValidator(100)], default=5)
+    executors_bonus = models.PositiveSmallIntegerField('Бонус виконавців, %',
+                                                      validators=[MaxValueValidator(100)], default=10)
     copies_count = models.PositiveSmallIntegerField('Кількість примірників',default=0,
                                                     validators=[MaxValueValidator(10)])
     description = models.TextField('Опис', blank=True)
@@ -422,7 +427,7 @@ class Task(models.Model):
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір')
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    owner = models.ForeignKey(Employee, verbose_name='Відповідальна особа')
+    owner = models.ForeignKey(Employee, verbose_name='Керівник проекту')
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
     costs =  models.ManyToManyField(Contractor, through='Order', related_name='tasks',
@@ -479,24 +484,29 @@ class Task(models.Model):
     # total task's costs
 
     def exec_part(self):
-        part =  self.executors.all().aggregate(Sum('execution__part')).get('execution__part__sum')
+        part = self.executors.all().aggregate(Sum('execution__part')).get('execution__part__sum')
         return part if part is not None else 0
     # executors part
 
+    def outsourcing_part(self):
+        part = self.executors.filter(user__username__startswith='outsourcing').aggregate(Sum('execution__part')).get('execution__part__sum')
+        return part if part is not None else 0
+    # outsourcing part
+
     def owner_part(self):
-        return 150 - self.exec_part()
-        # executors part
+        return int(100 + (100 - self.exec_part()) * self.project_type.executors_bonus / self.project_type.owner_bonus)
+    # owner part
 
     def owner_bonus(self):
-        return (self.project_type.net_price() - self.costs_total()) * self.owner_part() / 1000
+        return (self.project_type.net_price() - self.costs_total()) * self.owner_part() * self.project_type.owner_bonus / 10000
     # owner's bonus
 
     def exec_bonus(self, part):
-        return self.project_type.net_price() * part / 1000
+        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000
     # executor's bonus
 
     def total_bonus(self):
-        return self.owner_bonus() + self.exec_bonus(self.exec_part())
+        return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
 
 

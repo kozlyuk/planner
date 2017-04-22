@@ -19,6 +19,7 @@ class ProjectAdmin(admin.ModelAdmin):
         (None, {'fields': [('project_type', 'price_code'),
                            ('customer'),
                            ('price', 'net_price_rate'),
+                           ('owner_bonus', 'executors_bonus'),
                            ('copies_count'),
                            ('description'),
                            ('active')
