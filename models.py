@@ -95,13 +95,15 @@ class Employee(models.Model):
 
     def bonuses_pm(self):
         return self.bonuses_calc_new(-1)
-    bonuses_pm.short_description = 'Бонуси {}.{}'.format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
-                                                         datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
+    bonuses_pm.short_description = 'Бонуси {}.{}'\
+        .format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
+                datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
 
     def bonuses_ppm(self):
         return self.bonuses_calc_new(-2)
-    bonuses_ppm.short_description = 'Бонуси {}.{}'.format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
-                                                          datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
+    bonuses_ppm.short_description = 'Бонуси {}.{}'\
+        .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
+                datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
 
 
 class Customer(models.Model):
@@ -489,7 +491,8 @@ class Task(models.Model):
     # executors part
 
     def outsourcing_part(self):
-        part = self.executors.filter(user__username__startswith='outsourcing').aggregate(Sum('execution__part')).get('execution__part__sum')
+        part = self.executors.filter(user__username__startswith='outsourcing').aggregate(Sum('execution__part'))\
+            .get('execution__part__sum')
         return part if part is not None else 0
     # outsourcing part
 
@@ -498,7 +501,8 @@ class Task(models.Model):
     # owner part
 
     def owner_bonus(self):
-        return (self.project_type.net_price() - self.costs_total()) * self.owner_part() * self.project_type.owner_bonus / 10000
+        return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
+               * self.project_type.owner_bonus / 10000
     # owner's bonus
 
     def exec_bonus(self, part):
