@@ -460,7 +460,7 @@ class TaskAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(Q(owner__user=request.user) |
                          Q(executors__user=request.user) |
-                         Q(executors__user__head=request.user)).distinct()
+                         Q(executors__head__user=request.user)).distinct()
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
