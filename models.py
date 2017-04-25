@@ -497,7 +497,11 @@ class Task(models.Model):
     # outsourcing part
 
     def owner_part(self):
-        return int(100 + (100 - self.exec_part()) * self.project_type.executors_bonus / self.project_type.owner_bonus)
+        if self.project_type.owner_bonus > 0:
+            part = int(100 + (100 - self.exec_part())*self.project_type.executors_bonus/self.project_type.owner_bonus)
+        else:
+            part = 0
+        return part
     # owner part
 
     def owner_bonus(self):
