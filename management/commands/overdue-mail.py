@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         employees = Employee.objects.exclude(user__username__startswith='outsourcing')
-        tasks = Task.objects.exclude(exec_status=Task.HaveDone).\
+        tasks = Task.objects.exclude(exec_status=Task.Done).\
                              exclude(deal__expire_date__gte=date.today(),
                                      planned_finish__isnull=True).\
                              exclude(deal__expire_date__gte=date.today(),

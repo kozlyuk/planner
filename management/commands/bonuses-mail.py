@@ -14,13 +14,13 @@ class Command(BaseCommand):
         year = datetime.now().year
 
         employees = Employee.objects.exclude(user__username__startswith='outsourcing')
-        tasks = Task.objects.filter(exec_status=Task.HaveDone,
+        tasks = Task.objects.filter(exec_status=Task.Done,
                                     actual_finish__month=month,
                                     actual_finish__year=year)
-        executions = Execution.objects.filter(task__exec_status=Task.HaveDone,
+        executions = Execution.objects.filter(task__exec_status=Task.Done,
                                               task__actual_finish__month=month,
                                               task__actual_finish__year=year)
-        inttasks = IntTask.objects.filter(exec_status=IntTask.HaveDone,
+        inttasks = IntTask.objects.filter(exec_status=IntTask.Done,
                                           actual_finish__month=month,
                                           actual_finish__year=year)
 

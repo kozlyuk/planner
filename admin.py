@@ -41,8 +41,8 @@ class EmployeeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(EmployeeAdmin, self).get_queryset(request)
         if request.user.is_superuser:
-            return qs
-        return qs.filter(Q(user=request.user) | Q(head__user=request.user))
+            return qs.filter(user__is_active=True)
+        return qs.filter(Q(user=request.user) | Q(head__user=request.user) | Q(user__is_active=True))
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -287,8 +287,11 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
         if self.instance.__exec_status__ == Task.Done and percent < 100:
             raise ValidationError(_('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
         if self.instance.__project_type__:
-            bonuses_max = 100 + 100 *\
+            if self.instance.__project_type__.executors_bonus > 0:
+                bonuses_max = 100 + 100 *\
                           self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
+            else:
+                bonuses_max = 100
             if percent > bonuses_max:
                 raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
                                         'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
@@ -430,7 +433,7 @@ class TaskAdmin(admin.ModelAdmin):
     list_per_page = 50
     date_hierarchy = 'actual_finish'
     list_filter = ['exec_status', ('owner', admin.RelatedOnlyFieldListFilter), 'deal__customer'] # ('project_type', ActiveListFilter)]
-    search_fields = ['object_code', 'object_address', 'deal__number']
+    search_fields = ['object_code', 'object_address', 'project_type__price_code', 'project_type__project_type', 'deal__number']
     ordering = ['-creation_date', '-deal', '-object_code']
 
     def get_form(self, request, obj=None, **kwargs):
