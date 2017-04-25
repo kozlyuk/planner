@@ -42,7 +42,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         qs = super(EmployeeAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs.filter(user__is_active=True)
-        return qs.filter(Q(user=request.user) | Q(head__user=request.user) | Q(user__is_active=True))
+        return qs.filter(Q(user=request.user) | Q(head__user=request.user), user__is_active=True)
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -454,9 +454,13 @@ class TaskAdmin(admin.ModelAdmin):
         qs = super(TaskAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        if request.user.groups.filter(Q(name='ГІПи') | Q(name='Бухгалтери') | Q(name='Секретарі')).exists():
+        if request.user.groups.filter(Q(name='ГІПи') |
+                                      Q(name='Бухгалтери') |
+                                      Q(name='Секретарі')).exists():
             return qs
-        return qs.filter(Q(owner__user=request.user) | Q(executors__user=request.user)).distinct()
+        return qs.filter(Q(owner__user=request.user) |
+                         Q(executors__user=request.user) |
+                         Q(executors__user__head=request.user)).distinct()
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
