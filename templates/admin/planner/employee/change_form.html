@@ -8,6 +8,12 @@
     {% now "Y" as current_year %}
     {% now "m" as current_month %}
     <div class="submit-row">
+        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-4" %}>
+        Бонуси {{ current_month|add:"-4" }}.{{current_year}}</a>
+        &nbsp
+        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-3" %}>
+        Бонуси {{ current_month|add:"-3" }}.{{current_year}}</a>
+        &nbsp
         <a href={% url 'bonus_calc' object_id current_year current_month|add:"-2" %}>
         Бонуси {{ current_month|add:"-2" }}.{{current_year}}</a>
         &nbsp
