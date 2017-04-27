@@ -312,23 +312,22 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             pay_status = form.cleaned_data.get("pay_status")
             pay_date = form.cleaned_data.get("pay_date")
             value = form.cleaned_data.get("value")
-            if pay_status != Order.NotPaid:
+            if pay_status and pay_status != Order.NotPaid:
                 if not pay_date:
                     raise forms.ValidationError("Вкажіть Дату оплати")
                 if not value or value == 0:
                     raise forms.ValidationError("Вкажіть Вартість робіт")
-            if pay_date:
-                if pay_status == Order.NotPaid:
+            if pay_date and pay_status == Order.NotPaid:
                     raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
 
         if self.instance.__exec_status__ == Task.Done:
-            if self.instance.__project_type__.net_price() > 0:
+            if self.instance.__project_type__.net_price() > 0 and self.instance.__outsourcing_part__:
                 costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
                 if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
                     raise ValidationError('Добавте витрати по аутсорсингу')
                 if self.instance.__outsourcing_part__ < costs_part:
                     raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
-            elif outsourcing > 0:
+            elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
                 raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
 
 

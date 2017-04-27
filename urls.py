@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from django.conf.urls import include
 from planner import views
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    url(r'^admin/planner/deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name = 'calculation'),
+    url(r'^admin/planner/deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
+    url(r'^admin/planner/employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
+        views.bonus_calc, name='bonus_calc'),
     url(r'^admin/', admin.site.urls),
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
 ]
