@@ -1,0 +1,22 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }} 
+
+{% if object_id %}
+    {% now "Y" as current_year %}
+    {% now "m" as current_month %}
+    <div class="submit-row">
+        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-2" %}>
+        Бонуси {{ current_month|add:"-2" }}.{{current_year}}</a>
+        &nbsp
+        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-1" %}>
+        Бонуси {{ current_month|add:"-1" }}.{{current_year}}</a>
+        &nbsp
+        <a href={% url 'bonus_calc' object_id current_year current_month %}>
+        Бонуси {{ current_month }}.{{current_year}}</a>
+    </div>
+{% endif %}
+
+{% endblock %}
