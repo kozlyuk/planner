@@ -8,17 +8,93 @@
     {% now "Y" as current_year %}
     {% now "m" as current_month %}
     <div class="submit-row">
-        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-4" %}>
-        Бонуси {{ current_month|add:"-4" }}.{{current_year}}</a>
+        {% if current_month|add:"-11" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-11" %}>
+            Бонуси {{ current_month|add:"-11" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"1" %}>
+            Бонуси {{ current_month|add:"1" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
         &nbsp
-        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-3" %}>
-        Бонуси {{ current_month|add:"-3" }}.{{current_year}}</a>
+        {% if current_month|add:"-10" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-10" %}>
+            Бонуси {{ current_month|add:"-10" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"2" %}>
+            Бонуси {{ current_month|add:"2" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
         &nbsp
-        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-2" %}>
-        Бонуси {{ current_month|add:"-2" }}.{{current_year}}</a>
+        {% if current_month|add:"-9" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-9" %}>
+            Бонуси {{ current_month|add:"-9" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"3" %}>
+            Бонуси {{ current_month|add:"3" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
         &nbsp
-        <a href={% url 'bonus_calc' object_id current_year current_month|add:"-1" %}>
-        Бонуси {{ current_month|add:"-1" }}.{{current_year}}</a>
+        {% if current_month|add:"-8" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-8" %}>
+            Бонуси {{ current_month|add:"-8" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"4" %}>
+            Бонуси {{ current_month|add:"4" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-7" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-7" %}>
+            Бонуси {{ current_month|add:"-7" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"5" %}>
+            Бонуси {{ current_month|add:"5" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-6" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-6" %}>
+            Бонуси {{ current_month|add:"-6" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"6" %}>
+            Бонуси {{ current_month|add:"6" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-5" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-5" %}>
+            Бонуси {{ current_month|add:"-5" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"7" %}>
+            Бонуси {{ current_month|add:"7" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-4" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-4" %}>
+            Бонуси {{ current_month|add:"-4" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"8" %}>
+            Бонуси {{ current_month|add:"8" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-3" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-3" %}>
+            Бонуси {{ current_month|add:"-3" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"9" %}>
+            Бонуси {{ current_month|add:"9" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-2" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-2" %}>
+            Бонуси {{ current_month|add:"-2" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"10" %}>
+            Бонуси {{ current_month|add:"10" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
+        &nbsp
+        {% if current_month|add:"-1" > 0 %}
+            <a href={% url 'bonus_calc' object_id current_year current_month|add:"-1" %}>
+            Бонуси {{ current_month|add:"-1" }}.{{current_year}}</a>
+        {% else %}
+            <a href={% url 'bonus_calc' object_id current_year|add:"-1" current_month|add:"11" %}>
+            Бонуси {{ current_month|add:"11" }}.{{current_year|add:"-1"}}</a>
+        {% endif %}
         &nbsp
         <a href={% url 'bonus_calc' object_id current_year current_month %}>
         Бонуси {{ current_month }}.{{current_year}}</a>
