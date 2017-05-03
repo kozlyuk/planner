@@ -55,10 +55,12 @@ def calculation(request, deal_id):
         woVAT = round(svalue/6*5, 2)
         VAT = round(svalue/6, 2)
         message += '<tr align="center"><td colspan="2" rowspan="3">Загальна вартість</td>\
-                   <td colspan="3">без ПДВ: {} грн. 00 коп.</td></tr>\
-                   <tr align="center"><td colspan="3">ПДВ: {} грн. 00 коп.</td></tr>\
-                   <tr align="center"><td colspan="3">з ПДВ: {} грн. 00 коп.</td></tr>'\
-                   .format(woVAT, VAT, svalue)
+                   <td colspan="3">без ПДВ: {} грн. {} коп.</td></tr>\
+                   <tr align="center"><td colspan="3">ПДВ: {} грн. {} коп.</td></tr>\
+                   <tr align="center"><td colspan="3">з ПДВ: {} грн. {} коп.</td></tr>'\
+                   .format(int(woVAT), int((woVAT - int(woVAT))*100),
+                           int(VAT), int((VAT - int(VAT))*100),
+                           int(svalue), int((svalue - int(svalue))*100))
 
         message += '</table>'
 

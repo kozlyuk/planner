@@ -26,6 +26,11 @@ class ProjectAdmin(admin.ModelAdmin):
                           ]})
         ]
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return self.readonly_fields
+        return [f.name for f in self.model._meta.fields]
+
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'bonuses_ppm', 'bonuses_pm', 'bonuses_cm']
@@ -60,6 +65,11 @@ class CustomerAdmin(admin.ModelAdmin):
                           ]})
         ]
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return self.readonly_fields
+        return [f.name for f in self.model._meta.fields]
+
 
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ['name', 'turnover_calc', 'costs_calc', 'bonuses_calc']
@@ -69,6 +79,11 @@ class CompanyAdmin(admin.ModelAdmin):
                            ('requisites')
                           ]})
         ]
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return self.readonly_fields
+        return [f.name for f in self.model._meta.fields]
 
 
 class ContractorAdmin(admin.ModelAdmin):
@@ -193,7 +208,6 @@ class TasksInline(admin.TabularInline):
         if request._obj_ is not None and db_field.name == "project_type":
             kwargs["queryset"] = Project.objects.filter(customer=request._obj_.customer, active=True)
         return super(TasksInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 class DealAdmin(admin.ModelAdmin):
 
@@ -330,7 +344,6 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
                 raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
 
-
 class ExecutersInline(admin.TabularInline):
     model = Execution
     formset = ExecutersInlineFormSet
@@ -353,7 +366,6 @@ class ExecutersInline(admin.TabularInline):
         self.max_num = 0
         return fields
 
-
 class SendingsInline(admin.TabularInline):
     model = Sending
     extra = 0
@@ -374,7 +386,6 @@ class SendingsInline(admin.TabularInline):
         self.can_delete = False
         self.max_num = 0
         return fields
-
 
 class OrdersInline(admin.TabularInline):
     model = Order
@@ -433,7 +444,7 @@ class TaskAdmin(admin.ModelAdmin):
     date_hierarchy = 'actual_finish'
     list_filter = ['exec_status', ('owner', admin.RelatedOnlyFieldListFilter), 'deal__customer'] # ('project_type', ActiveListFilter)]
     search_fields = ['object_code', 'object_address', 'project_type__price_code', 'project_type__project_type', 'deal__number']
-    ordering = ['-creation_date', '-deal', '-object_code']
+    ordering = ['-creation_date', '-deal', 'object_code']
 
     def get_form(self, request, obj=None, **kwargs):
         request._obj_ = obj
@@ -481,14 +492,14 @@ class TaskAdmin(admin.ModelAdmin):
             self.inlines = [ExecutersInline, SendingsInline]
         return super(TaskAdmin, self).get_inline_instances(request, obj)
 
-#    def has_delete_permission(self, request, obj=None):
-#        if request.user.is_superuser:
-#            return True
-#        if obj == None:
-#            return self.readonly_fields
-#        if obj.owner.user == request.user:
-#            return True
-#        return False
+    #def has_delete_permission(self, request, obj=None):
+    #    if request.user.is_superuser:
+    #        return True
+    #    if obj == None:
+    #        return self.readonly_fields
+    #    if obj.owner.user == request.user:
+    #        return True
+    #    return False
 
 
 class IntTaskForm(forms.ModelForm):
