@@ -335,7 +335,7 @@ class OrdersInlineFormSet(BaseInlineFormSet):
                     raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
 
         if self.instance.__exec_status__ == Task.Done:
-            if self.instance.__project_type__.net_price() > 0 and self.instance.__outsourcing_part__:
+            if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                 costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
                 if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
                     raise ValidationError('Добавте витрати по аутсорсингу')
