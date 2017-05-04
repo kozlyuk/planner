@@ -58,7 +58,38 @@ class Employee(models.Model):
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     inttask_count.short_description = 'Завдання'
 
-    def bonuses_calc_new(self, delta):
+    def bonuses_calc_old(self, delta):
+        bonuses = 0
+        month = datetime.now().month + delta
+        year = datetime.now().year
+        if month < 1:
+            month += 12
+            year += -1
+
+        executions = self.execution_set.filter(part__gt=0, task__exec_status=Task.Done,
+                                               task__actual_finish__month=month,
+                                               task__actual_finish__year=year)
+        for query in executions:
+            bonuses += query.task.exec_bonus_old(query.part)
+        # executor bonus
+
+        tasks = self.task_set.filter(exec_status=Task.Done,
+                                     actual_finish__month=month,
+                                     actual_finish__year=year)
+        for query in tasks:
+            bonuses += query.owner_bonus_old()
+        # owner bonus
+
+        inttasks = self.inttask_set.filter(exec_status=IntTask.Done,
+                                           actual_finish__month=month,
+                                           actual_finish__year=year)
+        for query in inttasks:
+            bonuses += query.bonus
+        # inttask bonus
+
+        return round(bonuses, 2)
+
+    def bonuses_calc(self, delta):
         bonuses = 0
         month = datetime.now().month + delta
         year = datetime.now().year
@@ -90,17 +121,17 @@ class Employee(models.Model):
         return round(bonuses, 2)
 
     def bonuses_cm(self):
-        return self.bonuses_calc_new(0)
+        return self.bonuses_calc(0)
     bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
 
     def bonuses_pm(self):
-        return self.bonuses_calc_new(-1)
+        return self.bonuses_calc(-1)
     bonuses_pm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
                 datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
 
     def bonuses_ppm(self):
-        return self.bonuses_calc_new(-2)
+        return self.bonuses_calc_old(-2)
     bonuses_ppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
@@ -508,6 +539,19 @@ class Task(models.Model):
             part = 0
         return part
     # owner part
+
+    def owner_part_old(self):
+        part = 150 - self.exec_part()
+        return part
+    # owner part
+
+    def owner_bonus_old(self):
+        return (self.project_type.net_price() - self.costs_total()) * self.owner_part_old() * 5 / 10000
+    # owner's bonus
+
+    def exec_bonus_old(self, part):
+        return self.project_type.net_price() * part * 10 / 10000
+    # executor's bonus
 
     def owner_bonus(self):
         return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
