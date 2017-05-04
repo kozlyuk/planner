@@ -546,7 +546,7 @@ class Task(models.Model):
     # owner part
 
     def owner_bonus_old(self):
-        return (self.project_type.net_price() - self.costs_total()) * self.owner_part_old() * 5 / 10000
+        return (self.project_type.net_price() - self.costs_total()) * self.owner_part_old() / 1000
     # owner's bonus
 
     def exec_bonus_old(self, part):
