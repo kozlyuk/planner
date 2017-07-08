@@ -4,9 +4,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.core.validators import MaxValueValidator
 from django.db.models import Sum
 from django.conf.locale.uk import formats as uk_formats
+from crum import get_current_user
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -19,6 +21,7 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник', on_delete=models.SET_NULL, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
+    avatar = models.ImageField('Фото', upload_to='users/avatars', default = 'users/avatars/no_image.jpg')
     birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
@@ -58,81 +61,72 @@ class Employee(models.Model):
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     inttask_count.short_description = 'Завдання'
 
-    def bonuses_calc_old(self, delta):
-        bonuses = 0
+    @staticmethod
+    def date_delta(delta):
         month = datetime.now().month + delta
         year = datetime.now().year
         if month < 1:
             month += 12
             year += -1
+        return month, year
 
-        executions = self.execution_set.filter(part__gt=0, task__exec_status=Task.Done,
-                                               task__actual_finish__month=month,
-                                               task__actual_finish__year=year)
-        for query in executions:
-            bonuses += query.task.exec_bonus_old(query.part)
-        # executor bonus
-
-        tasks = self.task_set.filter(exec_status=Task.Done,
-                                     actual_finish__month=month,
-                                     actual_finish__year=year)
-        for query in tasks:
-            bonuses += query.owner_bonus_old()
-        # owner bonus
-
-        inttasks = self.inttask_set.filter(exec_status=IntTask.Done,
-                                           actual_finish__month=month,
-                                           actual_finish__year=year)
-        for query in inttasks:
-            bonuses += query.bonus
-        # inttask bonus
-
-        return round(bonuses, 2)
-
-    def bonuses_calc(self, delta):
+    def exec_bonuses(self, delta):
         bonuses = 0
-        month = datetime.now().month + delta
-        year = datetime.now().year
-        if month < 1:
-            month += 12
-            year += -1
+        month, year = self.date_delta(delta)
 
         executions = self.execution_set.filter(part__gt=0, task__exec_status=Task.Done,
                                                task__actual_finish__month=month,
                                                task__actual_finish__year=year)
         for query in executions:
             bonuses += query.task.exec_bonus(query.part)
-        # executor bonus
+
+        return round(bonuses, 2)
+        # executor bonuses
+
+    def owner_bonuses(self, delta):
+        bonuses = 0
+        month, year = self.date_delta(delta)
 
         tasks = self.task_set.filter(exec_status=Task.Done,
                                      actual_finish__month=month,
                                      actual_finish__year=year)
         for query in tasks:
             bonuses += query.owner_bonus()
-        # owner bonus
+
+        return round(bonuses, 2)
+        # owner bonuses
+
+    def inttask_bonuses(self, delta):
+        bonuses = 0
+        month, year = self.date_delta(delta)
 
         inttasks = self.inttask_set.filter(exec_status=IntTask.Done,
                                            actual_finish__month=month,
                                            actual_finish__year=year)
         for query in inttasks:
             bonuses += query.bonus
-        # inttask bonus
 
         return round(bonuses, 2)
+        # inttask bonuses
 
-    def bonuses_cm(self):
-        return self.bonuses_calc(0)
-    bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
+    def total_bonuses(self, delta):
+        return self.exec_bonuses(delta) + self.owner_bonuses(delta) + self.inttask_bonuses(delta)
+        # total bonuses
 
-    def bonuses_pm(self):
-        return self.bonuses_calc(-1)
-    bonuses_pm.short_description = 'Бонуси {}.{}'\
+
+    def total_bonuses_cm(self):
+        return self.total_bonuses(0)
+    total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
+
+    def total_bonuses_pm(self):
+        return self.total_bonuses(-1)
+    total_bonuses_pm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
                 datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
 
-    def bonuses_ppm(self):
-        return self.bonuses_calc_old(-2)
-    bonuses_ppm.short_description = 'Бонуси {}.{}'\
+    def total_bonuses_ppm(self):
+        return self.total_bonuses(-2)
+    total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
 
@@ -199,7 +193,7 @@ class Customer(models.Model):
 class Project(models.Model):
     project_type = models.CharField('Вид робіт', max_length=100)
     customer = models.ForeignKey(Customer, verbose_name='Замовник')
-    price_code = models.CharField('Пункт кошторису', max_length=8)
+    price_code = models.CharField('Пункт кошторису', max_length=8, unique=True)
     price = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
                                                       validators=[MaxValueValidator(100)], default=75)
@@ -213,7 +207,6 @@ class Project(models.Model):
     active = models.BooleanField('Активний', default=True)
 
     class Meta:
-        unique_together = ('project_type', 'price_code')
         verbose_name = 'Вид робіт'
         verbose_name_plural = 'Види робіт'
         ordering = ['price_code']
@@ -469,7 +462,8 @@ class Task(models.Model):
     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
     actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
-    letter_send = models.DateField('Відправлено лист-запит', blank=True, null=True)
+    tc_received = models.DateField('Отримано технічне завдання', blank=True, null=True)
+#    letter_send = models.DateField('Відправлено лист-запит', blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
     creation_date = models.DateField(auto_now_add=True)
@@ -539,19 +533,6 @@ class Task(models.Model):
             part = 0
         return part
     # owner part
-
-    def owner_part_old(self):
-        part = 150 - self.exec_part()
-        return part
-    # owner part
-
-    def owner_bonus_old(self):
-        return (self.project_type.net_price() - self.costs_total()) * self.owner_part_old() / 1000
-    # owner's bonus
-
-    def exec_bonus_old(self, part):
-        return self.project_type.net_price() * part * 10 / 10000
-    # executor's bonus
 
     def owner_bonus(self):
         return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
@@ -655,21 +636,22 @@ class IntTask(models.Model):
 
 
 class Calendar(models.Model):
+
     OneTime = 'OT'
     RepeatWeekly = 'RW'
     RepeatMonthly = 'RM'
-    RepeatQuaterly = 'RQ'
     RepeatYearly = 'RY'
-    EXEC_STATUS_CHOICES = (
+    REPEAT_CHOICES = (
         (OneTime, 'Одноразова подія'),
         (RepeatWeekly, 'Щотижнева подія'),
         (RepeatMonthly, 'Щомісячна подія'),
-        (RepeatQuaterly, 'Щоквартальна подія'),
         (RepeatYearly, 'Щорічна подія')
     )
-    creator = models.ForeignKey(Employee, verbose_name='Створив')
+    creator = models.ForeignKey(User, verbose_name='Створив')
     created = models.DateField(auto_now_add=True)
-    repeat = models.CharField('Періодичність', max_length=2, choices=EXEC_STATUS_CHOICES, default=OneTime)
+    date = models.DateField('Дата')
+    next_date = models.DateField('Дата наступної події', blank=True, null=True)
+    repeat = models.CharField('Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
     title = models.CharField('Назва події', max_length=100)
     description =  models.TextField('Опис', blank=True)
 
@@ -677,19 +659,70 @@ class Calendar(models.Model):
         verbose_name = 'Подія'
         verbose_name_plural = 'Події'
 
+    def save(self, *args, **kwargs):
+        user = get_current_user()
+        if not self.pk:
+            self.creator = user
+        super(Calendar, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
+    def next_repeat(self):
+        today = date.today()
+        if self.repeat == self.OneTime:
+            if self.date >= today:  # Target date already happened
+                return self.date
+            else:
+                return None
+        elif self.repeat == self.RepeatWeekly:
+            return today + relativedelta(weekday=self.date.weekday())
+        elif self.repeat == self.RepeatMonthly:
+            delta = self.date.day - today.day
+            if delta >= 0:
+                return today + relativedelta(days=delta)
+            else:
+                return today + relativedelta(months=+1, days=delta)
+        elif self.repeat == self.RepeatYearly:
+            daydelta = self.date.day - today.day
+            monthdelta = self.date.month - today.month
+            yeardelta = today.year - self.date.year
+            if monthdelta > 0 or (monthdelta == 0 and daydelta >= 0):
+                return self.date + relativedelta(years=yeardelta)
+            else:
+                return self.date + relativedelta(years=yeardelta+1)
+
+    @property
+    def is_today(self):
+        return date.today() == self.next_repeat()
+
 
 class News(models.Model):
-    creator = models.ForeignKey(Employee, verbose_name='Створив')
+    Organizational = 'OG'
+    Leisure = 'LS'
+    Production = 'PR'
+    TYPE_CHOICES = (
+        (Organizational, 'Організаційні'),
+        (Leisure, 'Дозвілля'),
+        (Production, 'Робочі'),
+    )
+    creator = models.ForeignKey(User, verbose_name='Створив')
     created = models.DateField(auto_now_add=True)
     title = models.CharField('Назва новини', max_length=100)
-    text =  models.TextField('Новина')
+    text = models.TextField('Новина')
+    news_type = models.CharField('Тип новини', max_length=2, choices=TYPE_CHOICES, default=Production)
+    actual_from = models.DateField('Актуальна з', blank=True, null=True)
+    actual_to = models.DateField('Актуальна до', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Новина'
         verbose_name_plural = 'Новини'
+
+    def save(self, *args, **kwargs):
+        user = get_current_user()
+        if not self.pk:
+            self.creator = user
+        super(News, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title

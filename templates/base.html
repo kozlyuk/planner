@@ -1,0 +1,195 @@
+{% load staticfiles %}
+{% load i18n %}
+{% load mptt_tags %}
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+
+<head>
+    <meta charset="utf-8"/>
+    <title>ITEL Service | Dashboard</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta content="IT Agro production" name="description"/>
+    <meta content="Victor Borovyk" name="author"/>
+    {% block global_meta %}
+    {% endblock %}
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/global/plugins/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/global/plugins/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/global/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/global/plugins/uniform/css/uniform.default.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    <link href="{% static 'assets/global/plugins/morris/morris.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/global/plugins/mapplic/mapplic/mapplic.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN THEME GLOBAL STYLES -->
+    <link href="{% static 'assets/global/css/components.min.css' %}" rel="stylesheet" id="style_components"
+          type="text/css"/>
+    <link href="{% static 'assets/global/css/plugins.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- END THEME GLOBAL STYLES -->
+    <!-- BEGIN THEME LAYOUT STYLES -->
+    <link href="{% static 'assets/layouts/layout7/css/layout.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/layouts/layout7/css/custom.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- END THEME LAYOUT STYLES -->
+    <link rel="shortcut icon" href="favicon.ico"/>
+</head>
+<!-- END HEAD -->
+
+<body class="page-container-bg-solid">
+<!-- BEGIN HEADER -->
+<div class="page-header navbar-fixed-top">
+    <!-- BEGIN HEADER INNER -->
+    <div class="clearfix">
+        <!-- BEGIN BURGER TRIGGER -->
+        <div class="burger-trigger">
+            <button class="menu-trigger">
+                <img src="{% static 'assets/layouts/layout7/img/m_toggler.png' %}" alt=""></button>
+            <div class="menu-overlay menu-overlay-bg-transparent">
+                <div class="menu-overlay-content">
+                    <ul class="menu-overlay-nav text-uppercase">
+                        <li>
+                            <a href="{% url 'home_page' %}">ГОЛОВНА</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'projects_list' %}">ПРОЕКТИ</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'deals_list' %}">ДОГОВОРА</a>
+                        </li>
+                        <li>
+                            <a href="#">АНАЛІТИКА ТА ЗВІТИ</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="menu-bg-overlay">
+                <button class="menu-close">&times;</button>
+            </div>
+            <!-- the overlay element -->
+        </div>
+        <!-- END NAV TRIGGER -->
+        <!-- BEGIN LOGO -->
+        <div class="page-logo">
+            {#                    <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>#}
+        </div>
+        <!-- END LOGO -->
+        <!-- BEGIN TOP NAVIGATION MENU -->
+        <div class="top-menu">
+            <ul class="nav navbar-nav pull-right">
+                <!-- BEGIN USER LOGIN DROPDOWN -->
+                <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
+                <li class="dropdown dropdown-user">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                       data-close-others="true">
+                        <div class="dropdown-user-inner">
+                            <span class="username username-hide-on-mobile">{{ user.username }}</span>
+                            <img alt="" src="media/{{ employee.avatar }}"/></div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-default">
+                        <li>
+                            <a href="#">
+                                <i class="icon-user"></i>Мій профіль</a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="icon-calendar"></i>Календар</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="{% url 'logout_page' %}">
+                                <i class="icon-key"></i>Вийти</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- END USER LOGIN DROPDOWN -->
+            </ul>
+        </div>
+        <!-- END TOP NAVIGATION MENU -->
+    </div>
+    <!-- END HEADER INNER -->
+</div>
+<!-- END HEADER -->
+<!-- BEGIN HEADER & CONTENT DIVIDER -->
+<div class="clearfix"></div>
+<!-- END HEADER & CONTENT DIVIDER -->
+<!-- BEGIN CONTAINER -->
+{% block context %}
+
+{% endblock %}
+<!-- BEGIN FOOTER -->
+<div class="page-footer">
+    <div class="page-footer-inner container-fluid container-lf-space">
+        <p class="page-footer-copyright">2017 &copy; Itel-Service</p>
+    </div>
+    <div class="go2top">
+        <i class="icon-arrow-up"></i>
+    </div>
+</div>
+<!-- END FOOTER -->
+<!--[if lt IE 9]>
+<script src="../assets/global/plugins/respond.min.js"></script>
+<script src="../assets/global/plugins/excanvas.min.js"></script> 
+<![endif]-->
+<!-- BEGIN CORE PLUGINS -->
+<script src="{% static 'assets/global/plugins/jquery.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/js.cookie.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/jquery.blockui.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/uniform/jquery.uniform.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"
+        type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"
+        type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="{% static 'assets/global/plugins/morris/morris.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/morris/raphael-min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/mapplic/js/hammer.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/mapplic/js/jquery.easing.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/mapplic/js/jquery.mousewheel.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/mapplic/mapplic/mapplic.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/counterup/jquery.waypoints.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/counterup/jquery.counterup.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/jquery.sparkline.min.js' %}" type="text/javascript"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN THEME GLOBAL SCRIPTS -->
+<script src="{% static 'assets/global/scripts/app.min.js' %}" type="text/javascript"></script>
+<!-- END THEME GLOBAL SCRIPTS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="{% static 'assets/pages/scripts/dashboard.min.js' %}" type="text/javascript"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<!-- BEGIN THEME LAYOUT SCRIPTS -->
+<script src="{% static 'assets/layouts/layout7/scripts/layout.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/layouts/global/scripts/quick-sidebar.min.js' %}" type="text/javascript"></script>
+<!-- END THEME LAYOUT SCRIPTS -->
+
+
+<script>
+
+    $('.date-picker').datepicker({
+        rtl: App.isRTL(),
+        orientation: "left",
+        autoclose: true
+    });
+
+</script>
+</body>
+
+
+</html>

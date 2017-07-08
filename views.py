@@ -1,6 +1,12 @@
-from planner.models import Deal, Task, Execution, IntTask, Employee
+from .models import Deal, Task, Execution, IntTask, Employee, News, Calendar
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import UserLoginForm, TaskFilterForm
+from .utils import get_pagination
+from django.shortcuts import render_to_response, redirect, render
+from django.template import RequestContext
+from django.contrib.auth import authenticate, login, logout
+from datetime import datetime, date
 
 
 @login_required()
@@ -72,7 +78,8 @@ def bonus_calc(request, employee_id, year, month):
 
     employee = Employee.objects.get(id=employee_id)
     message = '<html><body>Шановний(а) {}.<br><br>'.format(request.user.first_name)
-    if not request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
+    if not request.user.is_superuser and request.user != employee.user and\
+            (not employee.head.user or request.user != employee.head.user):
         message += 'Ви не маєте доступу до даних цього користувача.</body></html>'
         return HttpResponse(message)
 
@@ -159,3 +166,242 @@ def bonus_calc(request, employee_id, year, month):
     else:
         message += 'Відсутні виконані проекти чи завдання.</body></html>'
         return HttpResponse(message)
+
+
+def login_page(request):
+    if request.user.is_authenticated():
+        return redirect('home_page')
+    if request.method == 'POST':
+        login_form = UserLoginForm(request.POST)
+        if login_form.is_valid():
+            user = authenticate(username=login_form.cleaned_data['username'],
+                                password=login_form.cleaned_data['password'])
+            if user is not None:
+                login(request, user)
+                # if 'next' in request.REQUEST:
+                #     return redirect(request.REQUEST)
+                return redirect('home_page')
+            else:
+                return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
+        else:
+            return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
+    else:
+        login_form = UserLoginForm()
+    return render(request, 'auth.html', {'form': login_form})
+
+
+@login_required()
+def logout_page(request):
+    if request.user.is_authenticated():
+        logout(request)
+    return redirect('login_page')
+
+
+@login_required()
+def home_page(request):
+
+    if request.user.groups.filter(name='ГІПи').exists():
+        td_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
+        ip_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
+        hd_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Done).order_by('-actual_finish')[:50]
+
+        hd_tasks_count = Task.objects.filter(owner__user=request.user, exec_status=Task.Done,
+                                             actual_finish__month=datetime.now().month,
+                                             actual_finish__year=datetime.now().year).count()
+        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
+        tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Done)\
+                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
+                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
+                                      .count()
+        overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+    else:
+        td_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
+        ip_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
+        hd_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.Done).order_by('-actual_finish')[:50]
+        hd_tasks_count = Task.objects.filter(executors__user=request.user, exec_status=Task.Done,
+                                             actual_finish__month=datetime.now().month,
+                                             actual_finish__year=datetime.now().year).count()
+        active_tasks_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
+        tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        overdue_tasks_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done)\
+                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
+                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
+                                      .count()
+        overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+
+    td_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.ToDo).order_by
+    ip_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.InProgress)
+    hd_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done).order_by('-actual_finish')[:50]
+
+    hd_inttasks_count = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done,
+                                               actual_finish__month=datetime.now().month,
+                                               actual_finish__year=datetime.now().year).count()
+    active_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
+                                           .exclude(exec_status=IntTask.Done).count() + hd_inttasks_count
+    inttasks_div = int(hd_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
+    overdue_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
+                                            .exclude(exec_status=IntTask.Done)\
+                                            .exclude(planned_finish__gte=date.today()).count()
+    overdue_inttasks_div = int(overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
+
+    def date_delta(delta):
+        month = datetime.now().month + delta
+        year = datetime.now().year
+        if month < 1:
+            month += 12
+            year += -1
+        return month, year
+
+    def exec_bonuses(delta):
+        bonuses = 0
+        month, year = date_delta(delta)
+        executions = Execution.objects.filter(executor__user=request.user,
+                                              task__exec_status=Task.Done,
+                                              task__actual_finish__month=month,
+                                              task__actual_finish__year=year, part__gt=0)
+        for query in executions:
+            bonuses += query.task.exec_bonus(query.part)
+        return round(bonuses, 2)
+        # executor bonuses
+
+    def owner_bonuses(delta):
+        bonuses = 0
+        month, year = date_delta(delta)
+        tasks = Task.objects.filter(owner__user=request.user,
+                                    exec_status=Task.Done,
+                                    actual_finish__month=month,
+                                    actual_finish__year=year)
+        for query in tasks:
+            bonuses += query.owner_bonus()
+
+        return round(bonuses, 2)
+        # owner bonuses
+
+    def inttask_bonuses(delta):
+        bonuses = 0
+        month, year = date_delta(delta)
+        inttasks = IntTask.objects.filter(exec_status=IntTask.Done,
+                                          actual_finish__month=month,
+                                          actual_finish__year=year)
+        for query in inttasks:
+            bonuses += query.bonus
+        return round(bonuses, 2)
+        # inttask bonuses
+
+    exec_bonuses_cm = exec_bonuses(0)
+    exec_bonuses_pm = exec_bonuses(-1)
+    exec_bonuses_ppm = exec_bonuses(-2)
+    owner_bonuses_cm = owner_bonuses(0)
+    owner_bonuses_pm = owner_bonuses(-1)
+    owner_bonuses_ppm = owner_bonuses(-2)
+    inttask_bonuses_cm = inttask_bonuses(0)
+    inttask_bonuses_pm = inttask_bonuses(-1)
+    inttask_bonuses_ppm = inttask_bonuses(-2)
+    total_bonuses_cm = exec_bonuses_cm + owner_bonuses_cm + inttask_bonuses_cm
+    total_bonuses_pm = exec_bonuses_pm + owner_bonuses_pm + inttask_bonuses_pm
+    total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
+
+    news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today())
+
+    for event in Calendar.objects.all():
+        event.next_date = event.next_repeat()
+        event.save(update_fields=['next_date'])
+    events = Calendar.objects.filter(next_date__isnull=False).order_by('next_date')
+
+    return render_to_response('main.html',
+                              {
+                                  'employee': request.user.employee,
+                                  'td_tasks': td_tasks,
+                                  'ip_tasks': ip_tasks,
+                                  'hd_tasks': hd_tasks,
+                                  'td_inttasks': td_inttasks,
+                                  'ip_inttasks': ip_inttasks,
+                                  'hd_inttasks': hd_inttasks,
+                                  'hd_tasks_count': hd_tasks_count,
+                                  'active_tasks_count': active_tasks_count,
+                                  'tasks_div': tasks_div,
+                                  'overdue_tasks_count': overdue_tasks_count,
+                                  'overdue_tasks_div': overdue_tasks_div,
+                                  'hd_inttasks_count': hd_inttasks_count,
+                                  'active_inttasks_count': active_inttasks_count,
+                                  'inttasks_div': inttasks_div,
+                                  'overdue_inttasks_count': overdue_inttasks_count,
+                                  'overdue_inttasks_div': overdue_inttasks_div,
+                                  'exec_bonuses_cm': exec_bonuses_cm,
+                                  'exec_bonuses_pm': exec_bonuses_pm,
+                                  'exec_bonuses_ppm': exec_bonuses_ppm,
+                                  'owner_bonuses_cm': owner_bonuses_cm,
+                                  'owner_bonuses_pm': owner_bonuses_pm,
+                                  'owner_bonuses_ppm': owner_bonuses_ppm,
+                                  'inttask_bonuses_cm': inttask_bonuses_cm,
+                                  'inttask_bonuses_pm': inttask_bonuses_pm,
+                                  'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                  'total_bonuses_cm': total_bonuses_cm,
+                                  'total_bonuses_pm': total_bonuses_pm,
+                                  'total_bonuses_ppm': total_bonuses_ppm,
+                                  'employee_id': Employee.objects.get(user=request.user).id,
+                                  'cm': date_delta(0),
+                                  'pm': date_delta(-1),
+                                  'ppm': date_delta(-2),
+                                  'news': news,
+                                  'events': events
+                              }, context_instance=RequestContext(request))
+
+
+@login_required()
+def projects_list(request):
+    filter_form = TaskFilterForm(request.user, request.GET)
+    filter_form.is_valid()
+
+    if request.user.is_superuser:
+        tasks = Task.objects.all().order_by('-planned_finish')
+    else:
+        tasks = Task.get_accessable(request.user).order_by('-planned_finish')
+
+    # if 'field_type' in request.GET:
+    #     if request.GET['field_type'] == 'D1':
+    #         name = _('Demo first category')
+    #     if request.GET['field_type'] == 'D2':
+    #         name = _('Demo second category')
+    #     if request.GET['field_type'] == 'FC':
+    #         name = _('Field checkup report')
+    #     if request.GET['field_type'] != u'' and request.GET['field_type'] != u'0':
+    #         fields = fields.filter(field_type=request.GET['field_type'])
+    # else:
+    #     name = ''
+    # fields = fields \
+    #     .annotate(last_edit=Max('fieldreport__report_date')) \
+    #     .order_by('-last_edit', '-last_edit_date')
+
+    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 10)
+
+    return render_to_response('project_list.html',
+                              {
+                                  'filter_form': filter_form,
+                                  'page_objects': page_objects,
+                                  'indexes': indexes,
+                              },
+                              context_instance=RequestContext(request))
+
+
+@login_required()
+def project_details(request, project_id):
+    task = Task.objects.get(pk=project_id)
+    executors = Execution.objects.filter(task=task)
+    return render_to_response('project_view.html',
+                              {
+                                  'task': task,
+                                  'executors': executors,
+                              },
+                              context_instance=RequestContext(request))
+
+
+@login_required()
+def project_form(request, project_id=0):
+    pass
+
+
+@login_required()
+def deals_list(request):
+    pass

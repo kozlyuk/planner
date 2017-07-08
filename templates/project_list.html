@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2 class="breadcrumbs-title">Проекти</h2>
+
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <div class="row widget-row">
+                <div class="portlet light ">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-anchor font-green-sharp"></i>
+                            <span class="caption-subject font-green-sharp bold uppercase">Проекти</span>
+                        </div>
+                        <div class="actions">
+                            <div class="btn-group">
+                                <a class="btn green-haze btn-outline btn-circle btn-sm" href="javascript:;"
+                                   data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
+                                   aria-expanded="false">
+                                    Сортування
+                                    <i class="fa fa-angle-down"></i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="javascript:;"> За ID - від більшого до меншого</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="javascript:;">За плановою датою завершення</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">За фактичною датою завершення</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">За плановою датою початку</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">За фактичною датою початку</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="javascript:;">За фактичною датою початку</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="panel-group accordion" id="accordion1">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                                       href="#collapse_1" aria-expanded="false"> Фільтрування </a>
+                                </h4>
+                            </div>
+                            <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
+                                <div class="panel-body">
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#            <div class="container-fluid container-lf-space">#}
+                    {#                <!-- BEGIN PAGE BASE CONTENT -->#}
+                    {#                <div class="row widget-row">#}
+                    {#                    <div class="col-md-12 margin-bottom-20">#}
+
+                    {% if page_objects|length > 0 %}
+                        <div class="table-scrollable">
+                            <table class="table table-striped table-bordered table-advance table-hover">
+                                <thead>
+                                <tr>
+                                    <th> ШИФР ОБ’ЄКТУ</th>
+                                    <th class="hidden-xs"><i class="fa fa-map"></i> АДРЕСА</th>
+                                    <th> ТИП</th>
+                                    <th><i class="fa fa-briefcase"></i> ДОГОВІР</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in page_objects %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'project_details' item.id %}"> {{ item.object_code }} </a><br>
+                                            <span class="label label-sm label-{% color_status item.exec_status %} label-mini"> {{ item.get_status }} </span>
+                                        </td>
+                                        <td class="hidden-xs"> {{ item.object_address }}</td>
+                                        <td class="hidden-xs"> {{ item.project_type }}</td>
+                                        <td class="hidden-xs"> {{ item.deal }}</td>
+                                        <td>
+                                            {{ item.overdue_status }}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'project_details' item.id %}"
+                                               class="btn dark btn-sm btn-outline sbold uppercase">
+                                                <i class="fa fa-eye"></i> Деталі </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% with object_list=page_objects %}
+                                    {% if object_list.paginator.num_pages > 1 %}
+                                        <div class="text-center">
+                                            <div class="btn-group">
+                                                <a href="?{% url_replace request 'page' 1 %}"
+                                                   class="btn btn-default{% if object_list.number == 1 %} disabled{% endif %}"><i
+                                                        class="fa fa-angle-double-left"></i></a>
+                                                {% if object_list.number > 1 %}
+                                                    <a href="?{% url_replace request 'page' object_list.previous_page_number %}"
+                                                       class="btn btn-default"><i class="fa fa-angle-left"></i></a>
+                                                {% else %}
+                                                    <a href="?{% url_replace request 'page' 1 %}"
+                                                       class="btn btn-default disabled"><i
+                                                            class="fa fa-angle-left"></i></a>
+                                                {% endif %}
+
+                                                {% for index in indexes %}
+                                                    <a href="?{% url_replace request 'page' index %}"
+                                                       class="btn {% if index == object_list.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
+                                                {% endfor %}
+
+                                                {% if object_list.number < object_list.paginator.num_pages %}
+                                                    <a href="?{% url_replace request 'page' object_list.next_page_number %}"
+                                                       class="btn btn-default"><i class="fa fa-angle-right"></i></a>
+                                                {% else %}
+                                                    <a href="?{% url_replace request 'page' object_list.paginator.num_pages %}"
+                                                       class="btn btn-default disabled"><i
+                                                            class="fa fa-angle-right"></i></a>
+                                                {% endif %}
+                                                <a href="?{% url_replace request 'page' object_list.paginator.num_pages %}"
+                                                   class="btn btn-default{% if object_list.number == object_list.paginator.num_pages %} disabled{% endif %}"><i
+                                                        class="fa fa-angle-double-right"></i></a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {#                    </div>#}
+                    {#                </div>#}
+                    {#                <!-- END PAGE BASE CONTENT -->#}
+                    {#            </div>#}
+                </div>
+            </div>
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

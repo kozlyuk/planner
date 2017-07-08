@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from .models import Project, Employee, Customer, Receiver, Sending, Deal
-from .models import Task, Execution, IntTask, Contractor, Order, Company
+from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
+from .models import IntTask, Contractor, Order, Company, News, Calendar
 from django.db.models import Q
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django.core.files.images import get_image_dimensions
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -32,14 +33,57 @@ class ProjectAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ('avatar', )
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data['avatar']
+
+        try:
+            w, h = get_image_dimensions(avatar)
+
+            #validate dimensions
+            max_width = max_height = 100
+            if w > max_width or h > max_height:
+                raise forms.ValidationError(
+                    u'Будь ласка використовуйте фото розміром '
+                     '%s x %s пікселів або менше.' % (max_width, max_height))
+
+            #validate content type
+            main, sub = avatar.content_type.split('/')
+            if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'gif', 'png']):
+                raise forms.ValidationError(u'Будьласка використовуйте JPEG, '
+                    'GIF або PNG зображення.')
+
+            #validate file size
+            if len(avatar) > (20 * 1024):
+                raise forms.ValidationError(
+                    u'Розмір фото не має перевищукати 20к.')
+
+        except AttributeError:
+            """
+            Handles case when we are updating the user profile
+            and do not supply a new avatar
+            """
+            pass
+
+        return avatar
+
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'bonuses_ppm', 'bonuses_pm', 'bonuses_cm']
+
+    form = EmployeeForm
+
+    list_display = ['name', 'owner_count', 'task_count', 'inttask_count',
+                    'total_bonuses_ppm', 'total_bonuses_pm', 'total_bonuses_cm']
     fieldsets = [
         (None, {'fields': [('user', 'name'),
                            ('position', 'head'),
                            ('phone', 'mobile_phone'),
                            ('vacation_count', 'vacation_date'),
-                           ('birthday')
+                           ('birthday'),
+                           ('avatar')
                           ]})
         ]
 
@@ -116,6 +160,8 @@ class SendingAdmin(admin.ModelAdmin):
     list_display = ['receiver', 'task', 'receipt_date', 'copies_count']
     ordering = ['-receipt_date']
     list_filter = ['receiver']
+    date_hierarchy = 'receipt_date'
+    readonly_fields = ['task']
     fieldsets = [
         (None, {'fields': [('receiver'),
                            ('task'),
@@ -437,7 +483,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('ts_date'),
                                                  ('planned_start', 'planned_finish'),
                                                  ('actual_start', 'actual_finish')]}),
-        ('Додаткова інформіція', {'fields': ['project_code', 'letter_send', 'comment'], 'classes': ['collapse']})
+        ('Додаткова інформіція', {'fields': ['project_code', 'tc_received', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'overdue_mark']
     list_per_page = 50
@@ -548,6 +594,30 @@ class IntTaskAdmin(admin.ModelAdmin):
             return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
 
+class NewsAdmin(admin.ModelAdmin):
+
+    list_display = ['creator', 'created', 'title', 'news_type', 'actual_from', 'actual_to']
+    ordering = ['created']
+    list_filter = ['creator']
+    fieldsets = [
+        (None, {'fields': [('title', 'news_type'),
+                           ('text',),
+                           ('actual_from', 'actual_to')
+                          ]})
+        ]
+
+class CalendarAdmin(admin.ModelAdmin):
+
+    list_display = ['creator', 'date', 'title', 'repeat']
+    ordering = ['created']
+    list_filter = ['creator']
+    fieldsets = [
+        (None, {'fields': [('title',),
+                           ('date', 'repeat'),
+                           ('description',),
+                          ]})
+        ]
+
 
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
@@ -563,3 +633,5 @@ admin.site.register(Sending, SendingAdmin)
 admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
+admin.site.register(News, NewsAdmin)
+admin.site.register(Calendar, CalendarAdmin)
