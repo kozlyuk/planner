@@ -463,7 +463,6 @@ class Task(models.Model):
     actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
     actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
     tc_received = models.DateField('Отримано технічне завдання', blank=True, null=True)
-#    letter_send = models.DateField('Відправлено лист-запит', blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
     creation_date = models.DateField(auto_now_add=True)
@@ -660,9 +659,8 @@ class Calendar(models.Model):
         verbose_name_plural = 'Події'
 
     def save(self, *args, **kwargs):
-        user = get_current_user()
         if not self.pk:
-            self.creator = user
+            self.creator = get_current_user()
         super(Calendar, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -719,9 +717,8 @@ class News(models.Model):
         verbose_name_plural = 'Новини'
 
     def save(self, *args, **kwargs):
-        user = get_current_user()
         if not self.pk:
-            self.creator = user
+            self.creator = get_current_user()
         super(News, self).save(*args, **kwargs)
 
     def __str__(self):

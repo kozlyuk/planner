@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from planner.models import Task, Employee
+from planner.models import Task, Employee, IntTask
 from django.conf import settings
 from django.core import mail
 from datetime import date, timedelta
@@ -9,25 +9,28 @@ class Command(BaseCommand):
     help = 'Sending notifications to tasks owners and executors'
     def handle(self, *args, **options):
 
-        employees = Employee.objects.exclude(user__username__startswith='outsourcing')
-        tasks = Task.objects.exclude(exec_status=Task.Done).\
-                             exclude(planned_finish__isnull=True,
-                                     deal__expire_date__lt=date.today()).\
-                             exclude(planned_finish__isnull=True,
-                                     deal__expire_date__gt=date.today()+timedelta(days=7)). \
-                             exclude(planned_finish__lt=date.today()). \
-                             exclude(planned_finish__gt=date.today()+timedelta(days=7))
+        employees = Employee.objects.filter(user__is_active=True)
+        tasks = Task.objects.exclude(exec_status=Task.Done)\
+                            .exclude(planned_finish__isnull=True,
+                                     deal__expire_date__lt=date.today())\
+                            .exclude(planned_finish__isnull=True,
+                                     deal__expire_date__gt=date.today()+timedelta(days=7))\
+                            .exclude(planned_finish__lt=date.today())\
+                            .exclude(planned_finish__gt=date.today()+timedelta(days=7))
+        inttasks = IntTask.objects.exclude(exec_status=IntTask.Done)\
+                                  .exclude(planned_finish__lt=date.today())\
+                                  .exclude(planned_finish__gt=date.today() + timedelta(days=7))
 
         emails = []
 
         for employee in employees:
             otasks = tasks.filter(owner=employee)
-            etasks = tasks.filter(executors__in=[employee])
+            etasks = tasks.filter(executors=employee)
 
             message = '<html><body>Шановний(а) {}.<br><br>'\
                        .format(employee.user.first_name)
 
-            if otasks.exists() and employee.user.email:
+            if otasks.exists():
                 index = 0
                 message += 'Завершується термін виконання наступних проектів, в яких Ви відповідальна особа:<br>\
                            <table border="1">\
@@ -45,7 +48,7 @@ class Command(BaseCommand):
                                        task.overdue_status())
                 message += '</table><br>'
 
-            if etasks.exists() and employee.user.email:
+            if etasks.exists():
                 index = 0
                 message += 'Завершується термін виконання наступних проектів, в яких Ви виконуєте роботи:<br>\
                            <table border="1">\
@@ -63,12 +66,27 @@ class Command(BaseCommand):
                                         task.overdue_status())
                 message += '</table></body></html><br>'
 
-            if employee.user.email and (otasks.exists() or etasks.exists()):
+            if inttasks.exists():
+                index = 0
+                message += 'Завершується термін виконання наступних завдань:<br>\
+                           <table border="1">\
+                           <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Попередження</th>'
+
+                for task in inttasks:
+                    index += 1
+                    message += '<tr>\
+                                <td>{}</td><td>{}</td><td>{!s}</td><td>{}</td>\
+                                </tr>'\
+                                .format(index, task.task_name, task.get_exec_status_display(),
+                                        task.planned_finish)
+                message += '</table></body></html><br>'
+
+            if otasks.exists() or etasks.exists() or inttasks.exists():
                 emails.append(mail.EmailMessage(
                               'Завершується термін виконання проектів',
                               message,
                               settings.DEFAULT_FROM_EMAIL,
-                              [employee.user.email],
+                              ['s.kozlyuk@itel.rv.ua'],
                               ['s.kozlyuk@itel.rv.ua'],
                 ))
 
