@@ -50,12 +50,16 @@ class Command(BaseCommand):
                                    <th>Тип проекту</th><th>Відсоток</th><th>Бонус</th>'
 
                         for task in otasks:
-                            index +=1
+                            index += 1
                             message += '<tr>\
-                                       <td>{}</td><td>{}</td><td>{:.80}</td>\
-                                       <td>{}</td><td>{!s}</td><td>{!s}</td>\
+                                       <td>{}</td>\
+                                       <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                                       <td>{:.80}</td>\
+                                       <td>{}</td>\
+                                       <td>{!s}</td>\
+                                       <td>{!s}</td>\
                                        </tr>'.\
-                                       format(index, task.object_code, task.object_address,
+                                       format(index, task.pk, task.object_code, task.object_address,
                                               task.project_type, task.owner_part(),
                                               round(task.owner_bonus(), 2))
                             bonuses += task.owner_bonus()
@@ -70,12 +74,17 @@ class Command(BaseCommand):
                                    <th>Тип проекту</th><th>Назва робіт</th><th>Відсоток</th><th>Бонус</th>'
 
                         for ex in eexecutions:
-                            index +=1
+                            index += 1
                             message += '<tr>\
-                                       <td>{}</td><td>{}</td><td>{:.80}</td>\
-                                       <td>{}</td><td>{}</td><td>{}</td><td>{!s}</td>\
+                                       <td>{}</td>\
+                                       <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                                       <td>{:.80}</td>\
+                                       <td>{}</td>\
+                                       <td>{}</td>\
+                                       <td>{}</td>\
+                                       <td>{!s}</td>\
                                        </tr>'.\
-                                       format(index, ex.task.object_code, ex.task.object_address,
+                                       format(index, ex.task.pk, ex.task.object_code, ex.task.object_address,
                                               ex.task.project_type, ex.part_name, ex.part,
                                               round(ex.task.exec_bonus(ex.part), 2))
                             bonuses += ex.task.exec_bonus(ex.part)
@@ -91,9 +100,11 @@ class Command(BaseCommand):
                         for task in einttasks:
                             index +=1
                             message += '<tr>\
-                                       <td>{}</td><td>{}</td><td>{}</td>\
+                                       <td>{}</td>\
+                                       <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
+                                       <td>{}</td>\
                                        </tr>'.\
-                                       format(index, task.task_name, task.bonus)
+                                       format(index, task.pk, task.task_name, task.bonus)
                             bonuses += task.bonus
 
                         message += '</table><br>'

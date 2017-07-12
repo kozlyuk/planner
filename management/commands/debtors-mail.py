@@ -39,11 +39,15 @@ class Command(BaseCommand):
                 for deal in completed:
                     index +=1
                     message += '<tr>\
-                               <td>{}</td><td>{}</td><td>{}</td>\
-                               <td>{}</td><td>{!s}</td>\
-                               <td>{!s}</td><td>{!s}</td>\
+                               <td>{}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/deal/{}/change/">{}</a></td>\
+                               <td>{}</td>\
+                               <td>{}</td>\
+                               <td>{!s}</td>\
+                               <td>{!s}</td>\
+                               <td>{!s}</td>\
                                </tr>'\
-                               .format(index, deal.number, deal.customer,
+                               .format(index, deal.pk, deal.number, deal.customer,
                                        deal.value, deal.get_pay_status_display(),
                                        deal.get_act_status_display(), deal.exec_status())
 

@@ -39,10 +39,14 @@ class Command(BaseCommand):
                 for task in otasks:
                     index += 1
                     message += '<tr>\
-                               <td>{}</td><td>{}</td><td>{:.80}</td>\
-                               <td>{}</td><td>{!s}</td><td>{!s}</td>\
+                               <td>{}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                               <td>{:.80}</td>\
+                               <td>{}</td>\
+                               <td>{!s}</td>\
+                               <td>{!s}</td>\
                                </tr>'.\
-                               format(index, task.object_code, task.object_address,
+                               format(index, task.pk, task.object_code, task.object_address,
                                       task.project_type, task.get_exec_status_display(),
                                       task.overdue_status())
 
@@ -58,10 +62,14 @@ class Command(BaseCommand):
                 for task in etasks:
                     index +=1
                     message += '<tr>\
-                               <td>{}</td><td>{}</td><td>{:.80}</td>\
-                               <td>{}</td><td>{!s}</td><td>{!s}</td>\
+                               <td>{}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                               <td>{:.80}</td>\
+                               <td>{}</td>\
+                               <td>{!s}</td>\
+                               <td>{!s}</td>\
                                </tr>'\
-                               .format(index, task.object_code, task.object_address,
+                               .format(index, task.pk, task.object_code, task.object_address,
                                        task.project_type, task.get_exec_status_display(),
                                        task.overdue_status())
 
@@ -76,10 +84,13 @@ class Command(BaseCommand):
                 for task in einttasks:
                     index += 1
                     message += '<tr>\
-                                <td>{}</td><td>{}</td><td>{!s}</td><td>{}</td>\
-                                </tr>'\
-                                .format(index, task.task_name, task.get_exec_status_display(),
-                                        task.planned_finish)
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
+                               <td>{}</td>\
+                               <td>{!s}</td>\
+                               <td>{}</td>\
+                               </tr>'\
+                               .format(index, task.pk, task.task_name, task.get_exec_status_display(),
+                                       task.planned_finish)
                 message += '</table></body></html><br>'
 
             if otasks.exists() or etasks.exists() or einttasks.exists():
