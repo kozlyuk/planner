@@ -82,7 +82,7 @@ class Command(BaseCommand):
                                         task.planned_finish)
                 message += '</table></body></html><br>'
 
-            if otasks.exists() or etasks.exists() or inttasks.exists():
+            if otasks.exists() or etasks.exists() or einttasks.exists():
                 emails.append(mail.EmailMessage(
                               'Протерміновані проекти',
                               message,

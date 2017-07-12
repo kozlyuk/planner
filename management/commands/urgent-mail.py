@@ -26,9 +26,10 @@ class Command(BaseCommand):
         for employee in employees:
             otasks = tasks.filter(owner=employee)
             etasks = tasks.filter(executors=employee)
+            einttasks = inttasks.filter(executor=employee)
 
             message = '<html><body>Шановний(а) {}.<br><br>'\
-                       .format(employee.user.first_name)
+                      .format(employee.user.first_name)
 
             if otasks.exists():
                 index = 0
@@ -66,13 +67,13 @@ class Command(BaseCommand):
                                         task.overdue_status())
                 message += '</table></body></html><br>'
 
-            if inttasks.exists():
+            if einttasks.exists():
                 index = 0
                 message += 'Завершується термін виконання наступних завдань:<br>\
                            <table border="1">\
                            <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Попередження</th>'
 
-                for task in inttasks:
+                for task in einttasks:
                     index += 1
                     message += '<tr>\
                                 <td>{}</td><td>{}</td><td>{!s}</td><td>{}</td>\
@@ -81,7 +82,7 @@ class Command(BaseCommand):
                                         task.planned_finish)
                 message += '</table></body></html><br>'
 
-            if otasks.exists() or etasks.exists() or inttasks.exists():
+            if otasks.exists() or etasks.exists() or einttasks.exists():
                 emails.append(mail.EmailMessage(
                               'Завершується термін виконання проектів',
                               message,
