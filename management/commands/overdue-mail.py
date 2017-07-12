@@ -24,6 +24,7 @@ class Command(BaseCommand):
         for employee in employees:
             otasks = tasks.filter(owner=employee)
             etasks = tasks.filter(executors=employee)
+            einttasks = inttasks.filter(executor=employee)
 
             message = '<html><body>Шановний(а) {}.<br><br>'\
                       .format(employee.user.first_name)
@@ -66,13 +67,13 @@ class Command(BaseCommand):
 
                 message += '</table></body></html><br>'
 
-            if inttasks.exists():
+            if einttasks.exists():
                 index = 0
-                message += 'Завершується термін виконання наступних завдань:<br>\
+                message += 'Ви протермінували наступні завдання:<br>\
                            <table border="1">\
                            <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Попередження</th>'
 
-                for task in inttasks:
+                for task in einttasks:
                     index += 1
                     message += '<tr>\
                                 <td>{}</td><td>{}</td><td>{!s}</td><td>{}</td>\
@@ -86,7 +87,7 @@ class Command(BaseCommand):
                               'Протерміновані проекти',
                               message,
                               settings.DEFAULT_FROM_EMAIL,
-                              ['s.kozlyuk@itel.rv.ua'],
+                              [employee.user.email],
                               ['s.kozlyuk@itel.rv.ua'],
                 ))
 
