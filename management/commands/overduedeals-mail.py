@@ -47,7 +47,7 @@ class Command(BaseCommand):
                                <td>{!s}</td>\
                                <td>{}</td>\
                                </tr>'\
-                               .format(index, deal.number, deal.pk, deal.customer,
+                               .format(index, deal.pk, deal.number, deal.customer,
                                        deal.value, deal.get_pay_status_display(),
                                        deal.get_act_status_display(), deal.expire_date,
                                        deal.exec_status())
