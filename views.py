@@ -281,7 +281,8 @@ def home_page(request):
     def inttask_bonuses(delta):
         bonuses = 0
         month, year = date_delta(delta)
-        inttasks = IntTask.objects.filter(exec_status=IntTask.Done,
+        inttasks = IntTask.objects.filter(executor__user=request.user,
+                                          exec_status=IntTask.Done,
                                           actual_finish__month=month,
                                           actual_finish__year=year)
         for query in inttasks:

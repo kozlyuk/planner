@@ -84,8 +84,8 @@ class Command(BaseCommand):
                 for task in einttasks:
                     index += 1
                     message += '<tr>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
                                <td>{}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
                                <td>{!s}</td>\
                                <td>{}</td>\
                                </tr>'\
