@@ -303,7 +303,7 @@ def home_page(request):
     total_bonuses_pm = exec_bonuses_pm + owner_bonuses_pm + inttask_bonuses_pm
     total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
 
-    news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today())
+    news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today()).order_by('-created')
 
     for event in Calendar.objects.all():
         event.next_date = event.next_repeat()
