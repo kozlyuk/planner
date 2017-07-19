@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response, redirect, render
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
+from django.core.urlresolvers import reverse
 
 
 @login_required()
@@ -310,7 +311,7 @@ def home_page(request):
         event.save(update_fields=['next_date'])
     events = Calendar.objects.filter(next_date__isnull=False).order_by('next_date')
 
-    return render_to_response('main.html',
+    return render_to_response('content_exec.html',
                               {
                                   'employee': request.user.employee,
                                   'td_tasks': td_tasks,
@@ -397,12 +398,11 @@ def project_details(request, project_id):
                               },
                               context_instance=RequestContext(request))
 
+#@login_required()
+#def project_form(request, project_id=0):
+#    pass
 
-@login_required()
-def project_form(request, project_id=0):
-    pass
 
-
-@login_required()
-def deals_list(request):
-    pass
+#@login_required()
+#def deals_list(request):
+#    pass
