@@ -388,7 +388,7 @@ class Deal(models.Model):
             value_calc = self.value_calc() + self.value_correction
             if self.value > 0 and self.value != value_calc:
                 return 'Вартість по роботам %s' % value_calc
-            if self.act_status == self.NotIssued:
+            if self.act_status == self.NotIssued or self.act_status == self.PartlyIssued:
                 return 'Очікує закриття акту'
             if self.pay_status != self.PaidUp and self.pay_date:
                 return 'Оплата %s' % self.pay_date.strftime(date_format)

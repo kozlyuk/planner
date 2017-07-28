@@ -11,15 +11,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         accountants = Employee.objects.filter(user__username='y.gorecka')
-        deals = Deal.objects.exclude(pay_status=Deal.PaidUp).\
-                             exclude(pay_date__isnull=True).\
-                             exclude(pay_date__gte=date.today())
+        deals = Deal.objects.exclude(pay_status=Deal.PaidUp) \
+                            .exclude(pay_date__isnull=True) \
+                            .exclude(pay_date__gte=date.today()) \
+                            .exclude(number__icontains='загальний')
 
         emails = []
         completed = []
 
         for deal in deals:
-            if deal.exec_status() == 'Виконано' and 'загальний' not in deal.number:
+            if deal.exec_status() == 'Виконано':
                 completed.append(deal)
 
 

@@ -201,6 +201,37 @@ def logout_page(request):
 @login_required()
 def home_page(request):
 
+    if request.user.groups.filter(name='Бухгалтери').exists():
+        actneed_deals = []
+        active_deals = Deal.objects.exclude(act_status=Deal.Issued) \
+                            .exclude(number__icontains='загальний')
+        for deal in active_deals:
+            if deal.exec_status() == 'Виконано':
+                actneed_deals.append(deal)
+        debtor_deals = []
+        unpaid_deals = Deal.objects.exclude(act_status=Deal.NotIssued) \
+                                   .exclude(pay_status=Deal.PaidUp) \
+                                   .exclude(number__icontains='загальний')
+        deb_deals = unpaid_deals.exclude(pay_date__isnull=True) \
+                                .exclude(pay_date__gte=date.today())
+        for deal in deb_deals:
+            if deal.exec_status() == 'Виконано':
+                debtor_deals.append(deal)
+        overdue_deals = []
+        deals = Deal.objects.exclude(expire_date__gte=date.today()) \
+                            .exclude(number__icontains='загальний')
+        for deal in deals:
+            if deal.exec_status() != 'Виконано':
+                overdue_deals.append(deal)
+
+        actneed_deals_count = len(actneed_deals)
+        active_deals_count = active_deals.count()
+        deals_div = int(actneed_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
+        debtor_deals_count = len(debtor_deals)
+        unpaid_deals_count = unpaid_deals.count()
+        debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
+        overdue_deals_count = len(overdue_deals)
+        overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
     if request.user.groups.filter(name='ГІПи').exists():
         td_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
         ip_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
@@ -311,44 +342,87 @@ def home_page(request):
         event.save(update_fields=['next_date'])
     events = Calendar.objects.filter(next_date__isnull=False).order_by('next_date')
 
-    return render_to_response('content_exec.html',
-                              {
-                                  'employee': request.user.employee,
-                                  'td_tasks': td_tasks,
-                                  'ip_tasks': ip_tasks,
-                                  'hd_tasks': hd_tasks,
-                                  'td_inttasks': td_inttasks,
-                                  'ip_inttasks': ip_inttasks,
-                                  'hd_inttasks': hd_inttasks,
-                                  'hd_tasks_count': hd_tasks_count,
-                                  'active_tasks_count': active_tasks_count,
-                                  'tasks_div': tasks_div,
-                                  'overdue_tasks_count': overdue_tasks_count,
-                                  'overdue_tasks_div': overdue_tasks_div,
-                                  'hd_inttasks_count': hd_inttasks_count,
-                                  'active_inttasks_count': active_inttasks_count,
-                                  'inttasks_div': inttasks_div,
-                                  'overdue_inttasks_count': overdue_inttasks_count,
-                                  'overdue_inttasks_div': overdue_inttasks_div,
-                                  'exec_bonuses_cm': exec_bonuses_cm,
-                                  'exec_bonuses_pm': exec_bonuses_pm,
-                                  'exec_bonuses_ppm': exec_bonuses_ppm,
-                                  'owner_bonuses_cm': owner_bonuses_cm,
-                                  'owner_bonuses_pm': owner_bonuses_pm,
-                                  'owner_bonuses_ppm': owner_bonuses_ppm,
-                                  'inttask_bonuses_cm': inttask_bonuses_cm,
-                                  'inttask_bonuses_pm': inttask_bonuses_pm,
-                                  'inttask_bonuses_ppm': inttask_bonuses_ppm,
-                                  'total_bonuses_cm': total_bonuses_cm,
-                                  'total_bonuses_pm': total_bonuses_pm,
-                                  'total_bonuses_ppm': total_bonuses_ppm,
-                                  'employee_id': Employee.objects.get(user=request.user).id,
-                                  'cm': date_delta(0),
-                                  'pm': date_delta(-1),
-                                  'ppm': date_delta(-2),
-                                  'news': news,
-                                  'events': events
-                              }, context_instance=RequestContext(request))
+    if request.user.groups.filter(name='Бухгалтери').exists():
+        return render_to_response('content_admin.html',
+                                  {
+                                      'employee': request.user.employee,
+                                      'actneed_deals': actneed_deals,
+                                      'debtor_deals': debtor_deals,
+                                      'overdue_deals': overdue_deals,
+                                      'td_inttasks': td_inttasks,
+                                      'ip_inttasks': ip_inttasks,
+                                      'hd_inttasks': hd_inttasks,
+                                      'actneed_deals_count': actneed_deals_count,
+                                      'active_deals_count': active_deals_count,
+                                      'deals_div': deals_div,
+                                      'debtor_deals_count': debtor_deals_count,
+                                      'unpaid_deals_count': unpaid_deals_count,
+                                      'debtor_deals_div': debtor_deals_div,
+                                      'overdue_deals_count': overdue_deals_count,
+                                      'overdue_deals_div': overdue_deals_div,
+                                      'hd_inttasks_count': hd_inttasks_count,
+                                      'active_inttasks_count': active_inttasks_count,
+                                      'inttasks_div': inttasks_div,
+                                      'overdue_inttasks_count': overdue_inttasks_count,
+                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      'exec_bonuses_cm': exec_bonuses_cm,
+                                      'exec_bonuses_pm': exec_bonuses_pm,
+                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      'owner_bonuses_cm': owner_bonuses_cm,
+                                      'owner_bonuses_pm': owner_bonuses_pm,
+                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      'inttask_bonuses_cm': inttask_bonuses_cm,
+                                      'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      'total_bonuses_cm': total_bonuses_cm,
+                                      'total_bonuses_pm': total_bonuses_pm,
+                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      'employee_id': Employee.objects.get(user=request.user).id,
+                                      'cm': date_delta(0),
+                                      'pm': date_delta(-1),
+                                      'ppm': date_delta(-2),
+                                      'news': news,
+                                      'events': events
+                                  }, context_instance=RequestContext(request))
+    else:
+        return render_to_response('content_exec.html',
+                                  {
+                                      'employee': request.user.employee,
+                                      'td_tasks': td_tasks,
+                                      'ip_tasks': ip_tasks,
+                                      'hd_tasks': hd_tasks,
+                                      'td_inttasks': td_inttasks,
+                                      'ip_inttasks': ip_inttasks,
+                                      'hd_inttasks': hd_inttasks,
+                                      'hd_tasks_count': hd_tasks_count,
+                                      'active_tasks_count': active_tasks_count,
+                                      'tasks_div': tasks_div,
+                                      'overdue_tasks_count': overdue_tasks_count,
+                                      'overdue_tasks_div': overdue_tasks_div,
+                                      'hd_inttasks_count': hd_inttasks_count,
+                                      'active_inttasks_count': active_inttasks_count,
+                                      'inttasks_div': inttasks_div,
+                                      'overdue_inttasks_count': overdue_inttasks_count,
+                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      'exec_bonuses_cm': exec_bonuses_cm,
+                                      'exec_bonuses_pm': exec_bonuses_pm,
+                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      'owner_bonuses_cm': owner_bonuses_cm,
+                                      'owner_bonuses_pm': owner_bonuses_pm,
+                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      'inttask_bonuses_cm': inttask_bonuses_cm,
+                                      'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      'total_bonuses_cm': total_bonuses_cm,
+                                      'total_bonuses_pm': total_bonuses_pm,
+                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      'employee_id': Employee.objects.get(user=request.user).id,
+                                      'cm': date_delta(0),
+                                      'pm': date_delta(-1),
+                                      'ppm': date_delta(-2),
+                                      'news': news,
+                                      'events': events
+                                  }, context_instance=RequestContext(request))
 
 
 @login_required()

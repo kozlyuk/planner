@@ -1,65 +1,61 @@
 {% extends 'main.html' %}
-{% block 'row1_admin' %}
+{% block 'row1' %}
         <!-- BEGIN CONTAINER -->
                 <div class="row widget-row">
                     <div class="col-md-6 margin-bottom-20">
                         <!-- BEGIN WIDGET TAB -->
                         <div class="widget-bg-color-white widget-tab">
-                            <span class="caption-subject theme-font bold uppercase">Проекти</span>
+                            <span class="caption-subject theme-font bold uppercase">Угоди</span>
                             <ul class="nav nav-tabs">
                                 <li class="active">
-                                    <a href="#tab_1_1" data-toggle="tab"> В черзі </a>
+                                    <a href="#tab_1_1" data-toggle="tab"> Чекають закриття </a>
                                 </li>
                                 <li>
-                                    <a href="#tab_1_2" data-toggle="tab"> Виконуються </a>
+                                    <a href="#tab_1_2" data-toggle="tab"> Протермінована оплата </a>
                                 </li>
                                 <li>
-                                    <a href="#tab_1_3" data-toggle="tab"> Виконано </a>
+                                    <a href="#tab_1_3" data-toggle="tab"> Протерміноване виконання </a>
                                 </li>
                             </ul>
                             <div class="tab-content scroller" style="height: 350px;" data-always-visible="1" data-handle-color="#D7DCE2">
                                 <div class="tab-pane fade active in" id="tab_1_1">
-                                    {% for task in td_tasks %}
+                                    {% for deal in actneed_deals %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'project_details' task.id %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-{#                                                {% if task.overdue_status %}#}
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
-{#                                                {% else %}#}
-{#                                                <span class="label label-default"> {{ task.exec_status }} </span>#}
-{#                                                {% endif %}#}
+                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
-                                            {{ task.project_type }}
+                                            Акт виконаних робіт: {{ deal.get_act_status_display }}
                                         </div>
                                     </div>
                                     {% endfor %}
                                 </div>
                                 <div class="tab-pane fade" id="tab_1_2">
-                                    {% for task in ip_tasks %}
+                                    {% for deal in debtor_deals %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'project_details' task.id %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
-                                            {{ task.project_type }}
+                                            {{ deal.get_pay_status_display }}
                                         </div>
                                     </div>
                                     {% endfor %}
                                 </div>
                                 <div class="tab-pane fade" id="tab_1_3">
-                                    {% for task in hd_tasks %}
+                                    {% for deal in overdue_deals %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'project_details' task.id %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
-                                            {{ task.project_type }}
+                                            {{ deal.overdue_status }}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -131,27 +127,27 @@
                         <!-- BEGIN WIDGET PROGRESS -->
                         <div class="widget-progress">
                             <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
-                                <span class="widget-progress-title">Виконано проектів
-                                    <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
+                                <span class="widget-progress-title">Чекають закриття актів
+                                    <span class="pull-right">{{ actneed_deals_count }}/{{ active_deals_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ tasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ deals_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
-                                <span class="widget-progress-title">Протерміновано проектів
-                                    <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
+                                <span class="widget-progress-title">Протермінована оплата
+                                    <span class="pull-right">{{ debtor_deals_count }}/{{ unpaid_deals_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_tasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ debtor_deals_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                                <span class="widget-progress-title">Виконано завдань
-                                    <span class="pull-right">{{ hd_inttasks_count }}/{{ active_inttasks_count }}</span>
+                                <span class="widget-progress-title">Протерміноване виконання
+                                    <span class="pull-right">{{ overdue_deals_count }}/{{ active_deals_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ inttasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_deals_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-purple">

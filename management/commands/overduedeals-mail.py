@@ -11,13 +11,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         pms = Employee.objects.filter(user__username='s.kozlyuk')
-        deals = Deal.objects.exclude(expire_date__gte=date.today())
+        deals = Deal.objects.exclude(expire_date__gte=date.today()) \
+                            .exclude(number__icontains='загальний')
 
         emails = []
         overdue = []
 
         for deal in deals:
-            if deal.exec_status() != 'Виконано' and 'загальний' not in deal.number:
+            if deal.exec_status() != 'Виконано':
                 overdue.append(deal)
 
 
