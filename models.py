@@ -9,9 +9,17 @@ from django.core.validators import MaxValueValidator
 from django.db.models import Sum
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
+from .formatChecker import ContentTypeRestrictedFileField
+from stdimage.models import StdImageField
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
+
+
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/projects/user_<id>/Year/Month/<filename>
+    return 'projects/user_{0}/{1}/{2}/{3}'\
+        .format(get_current_user().id, datetime.now().year, datetime.now().month, filename)
 
 
 class Employee(models.Model):
@@ -21,7 +29,10 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник', on_delete=models.SET_NULL, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
-    avatar = models.ImageField('Фото', upload_to='users/avatars', default = 'users/avatars/no_image.jpg')
+    avatar = StdImageField('Фото', upload_to='users/avatars', default='users/avatars/no_image.jpg', variations={
+                           'large': (400, 400, True),
+                           'thumbnail': (100, 100, True),
+                           })
     birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
@@ -456,8 +467,8 @@ class Task(models.Model):
     owner = models.ForeignKey(Employee, verbose_name='Керівник проекту')
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
-    costs =  models.ManyToManyField(Contractor, through='Order', related_name='tasks',
-                                    verbose_name='Підрядники', blank=True)
+    costs = models.ManyToManyField(Contractor, through='Order', related_name='tasks',
+                                   verbose_name='Підрядники', blank=True)
     planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
@@ -466,6 +477,9 @@ class Task(models.Model):
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
     creation_date = models.DateField(auto_now_add=True)
+    pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
+                                              content_types=['application/pdf', ], max_upload_size=20971520,
+                                              blank=True, null=True)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')

@@ -33,47 +33,7 @@ class ProjectAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
-class EmployeeForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = ('avatar', )
-
-    def clean_avatar(self):
-        avatar = self.cleaned_data['avatar']
-
-        try:
-            w, h = get_image_dimensions(avatar)
-
-            #validate dimensions
-            max_width = max_height = 100
-            if w > max_width or h > max_height:
-                raise forms.ValidationError(
-                    u'Будь ласка використовуйте фото розміром '
-                     '%s x %s пікселів або менше.' % (max_width, max_height))
-
-            #validate content type
-            main, sub = avatar.content_type.split('/')
-            if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'gif', 'png']):
-                raise forms.ValidationError(u'Будьласка використовуйте JPEG, '
-                    'GIF або PNG зображення.')
-
-            #validate file size
-            if len(avatar) > (20 * 1024):
-                raise forms.ValidationError(
-                    u'Розмір фото не має перевищукати 20к.')
-
-        except AttributeError:
-            """
-            Handles case when we are updating the user profile
-            and do not supply a new avatar
-            """
-            pass
-
-        return avatar
-
 class EmployeeAdmin(admin.ModelAdmin):
-
-    form = EmployeeForm
 
     list_display = ['name', 'owner_count', 'task_count', 'inttask_count',
                     'total_bonuses_ppm', 'total_bonuses_pm', 'total_bonuses_cm']
@@ -313,6 +273,7 @@ class TaskForm(forms.ModelForm):
         exec_status = cleaned_data.get("exec_status")
         actual_finish = cleaned_data.get("actual_finish")
         planned_finish = cleaned_data.get("planned_finish")
+        pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__exec_status__ = exec_status
         self.instance.__project_type__ = project_type
 
@@ -321,10 +282,11 @@ class TaskForm(forms.ModelForm):
                 raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
         if exec_status == Task.Done:
             if not actual_finish:
-                raise forms.ValidationError("Вкажіть Фактичне закінчення робіт")
-        if actual_finish:
-            if exec_status != Task.Done:
-                raise forms.ValidationError("Відмітьте Статус виконання або видаліть Дату виконання")
+                raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
+            elif not pdf_copy:
+                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
+        if actual_finish and exec_status != Task.Done:
+                raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
             raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
 
@@ -480,9 +442,10 @@ class TaskAdmin(admin.ModelAdmin):
         ('Опис', {'fields': [('object_code', 'object_address'),
                              ('project_type', 'deal')]}),
         ('Інформація про виконання', {'fields': [('exec_status', 'owner'),
-                                                 ('ts_date'),
+                                                 ('ts_date', ),
                                                  ('planned_start', 'planned_finish'),
-                                                 ('actual_start', 'actual_finish')]}),
+                                                 ('actual_start', 'actual_finish'),
+                                                 ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': ['project_code', 'tc_received', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'overdue_mark']

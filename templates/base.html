@@ -82,7 +82,7 @@
         <!-- END NAV TRIGGER -->
         <!-- BEGIN LOGO -->
         <div class="page-logo">
-            {#                    <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>#}
+                                <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>
         </div>
         <!-- END LOGO -->
         <!-- BEGIN TOP NAVIGATION MENU -->
@@ -95,7 +95,7 @@
                        data-close-others="true">
                         <div class="dropdown-user-inner">
                             <span class="username username-hide-on-mobile">{{ user.username }}</span>
-                            <img alt="" src="media/{{ employee.avatar }}"/></div>
+                            <img alt="" src="{{ employee.avatar.thumbnail.url }}"/></div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
