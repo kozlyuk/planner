@@ -442,11 +442,11 @@ class TaskAdmin(admin.ModelAdmin):
         ('Опис', {'fields': [('object_code', 'object_address'),
                              ('project_type', 'deal')]}),
         ('Інформація про виконання', {'fields': [('exec_status', 'owner'),
-                                                 ('ts_date', ),
+                                                 ('tc_received', 'tc_upload'),
                                                  ('planned_start', 'planned_finish'),
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
-        ('Додаткова інформіція', {'fields': ['project_code', 'tc_received', 'comment'], 'classes': ['collapse']})
+        ('Додаткова інформіція', {'fields': ['project_code', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'overdue_mark']
     list_per_page = 50

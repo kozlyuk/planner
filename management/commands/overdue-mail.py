@@ -17,7 +17,7 @@ class Command(BaseCommand):
                              exclude(deal__expire_date__gte=date.today(),
                                      planned_finish__gte=date.today())
         inttasks = IntTask.objects.exclude(exec_status=IntTask.Done)\
-                                  .exclude(planned_finish__gt=date.today())
+                                  .exclude(planned_finish__gte=date.today())
 
         emails = []
 

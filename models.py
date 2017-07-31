@@ -460,7 +460,6 @@ class Task(models.Model):
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
     project_type = models.ForeignKey(Project, verbose_name='Тип проекту')
-    ts_date = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір')
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
@@ -473,7 +472,10 @@ class Task(models.Model):
     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
     actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
-    tc_received = models.DateField('Отримано технічне завдання', blank=True, null=True)
+    tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
+    tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
+                                               content_types=['application/pdf', ], max_upload_size=10485760,
+                                               blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
     creation_date = models.DateField(auto_now_add=True)
