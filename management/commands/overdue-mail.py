@@ -98,7 +98,7 @@ class Command(BaseCommand):
                               'Протерміновані проекти',
                               message,
                               settings.DEFAULT_FROM_EMAIL,
-                              ['s.kozlyuk@itel.rv.ua'],
+                              [employee.user.email],
                               ['s.kozlyuk@itel.rv.ua'],
                 ))
 
