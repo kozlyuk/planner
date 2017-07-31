@@ -79,15 +79,15 @@ class Command(BaseCommand):
                 index = 0
                 message += 'Ви протермінували наступні завдання:<br>\
                            <table border="1">\
-                           <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Попередження</th>'
+                           <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Планове закінчення</th>'
 
                 for task in einttasks:
                     index += 1
                     message += '<tr>\
-                               <td>{}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
-                               <td>{!s}</td>\
-                               <td>{}</td>\
+                               <td>{1}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{2}/change/">{3}</a></td>\
+                               <td>{4!s}</td>\
+                               <td>{5}</td>\
                                </tr>'\
                                .format(index, task.pk, task.task_name, task.get_exec_status_display(),
                                        task.planned_finish)
@@ -98,7 +98,7 @@ class Command(BaseCommand):
                               'Протерміновані проекти',
                               message,
                               settings.DEFAULT_FROM_EMAIL,
-                              [employee.user.email],
+                              ['s.kozlyuk@itel.rv.ua'],
                               ['s.kozlyuk@itel.rv.ua'],
                 ))
 

@@ -79,7 +79,7 @@ class Command(BaseCommand):
                 index = 0
                 message += 'Завершується термін виконання наступних завдань:<br>\
                            <table border="1">\
-                           <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Попередження</th>'
+                           <th>&#8470;</th><th>Завдання</th><th>Статус</th><th>Планове закінчення</th>'
 
                 for task in einttasks:
                     index += 1
