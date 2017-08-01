@@ -84,10 +84,10 @@ class Command(BaseCommand):
                 for task in einttasks:
                     index += 1
                     message += '<tr>\
-                               <td>{1}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{2}/change/">{3}</a></td>\
-                               <td>{4!s}</td>\
-                               <td>{5}</td>\
+                               <td>{}</td>\
+                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
+                               <td>{!s}</td>\
+                               <td>{}</td>\
                                </tr>'\
                                .format(index, task.pk, task.task_name, task.get_exec_status_display(),
                                        task.planned_finish)
