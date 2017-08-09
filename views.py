@@ -491,7 +491,7 @@ class NewsCreate(CreateView):
     fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
     success_url = reverse_lazy('news_list')
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         form = super(NewsCreate, self).get_form(form_class)
         form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
         form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
@@ -504,7 +504,7 @@ class NewsUpdate(UpdateView):
     template_name_suffix = '_update'
     success_url = reverse_lazy('news_list')
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         form = super(NewsUpdate, self).get_form(form_class)
         form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
         form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
@@ -531,7 +531,7 @@ class EventCreate(CreateView):
     fields = ['title', 'date', 'repeat', 'description']
     success_url = reverse_lazy('event_list')
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         form = super(EventCreate, self).get_form(form_class)
         form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
         return form
@@ -543,7 +543,7 @@ class EventUpdate(UpdateView):
     template_name_suffix = '_update'
     success_url = reverse_lazy('event_list')
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         form = super(EventUpdate, self).get_form(form_class)
         form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
         return form
