@@ -650,7 +650,7 @@ class IntTask(models.Model):
         return self.task_name
 
 
-class Calendar(models.Model):
+class Event(models.Model):
 
     OneTime = 'OT'
     RepeatWeekly = 'RW'
@@ -668,7 +668,7 @@ class Calendar(models.Model):
     next_date = models.DateField('Дата наступної події', blank=True, null=True)
     repeat = models.CharField('Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
     title = models.CharField('Назва події', max_length=100)
-    description =  models.TextField('Опис', blank=True)
+    description = models.TextField('Опис', blank=True)
 
     class Meta:
         verbose_name = 'Подія'
@@ -677,7 +677,7 @@ class Calendar(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.creator = get_current_user()
-        super(Calendar, self).save(*args, **kwargs)
+        super(Event, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title

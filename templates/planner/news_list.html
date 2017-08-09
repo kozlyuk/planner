@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2 class="breadcrumbs-title">Новини та повідомлення</h2>
+                <div align="right">
+                    <a href="{% url 'news_add' %}" class="btn dark btn-sm btn-outline sbold uppercase">Додати новину</a>
+                </div>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <div class="row widget-row">
+                <div class="portlet-body">
+                    <div class="table-scrollable">
+                        <table class="table table-striped table-bordered table-advance table-hover">
+                            <thead>
+                            <tr>
+                                <th> НАЗВА НОВИНИ</th>
+                                <th> ТИП НОВИНИ </th>
+                                <th class="hidden-xs"> АКТУАЛЬНА З</th>
+                                <th class="hidden-xs"> АКТУАЛЬНА ДО </th>
+                                <th class="hidden-xs"> СТВОРИВ </th>
+                                <th class="hidden-xs"> ДАТА СТВОРЕННЯ </th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            {% for news in object_list %}
+                                <tbody>
+                                <tr>
+                                    <td><a href="{% url 'news_detail' news.pk %}"> {{ news.title }} </a></td>
+                                    <td>{{ news.get_news_type_display }}</td>
+                                    <td class="hidden-xs">{% if news.actual_from %}{{ news.actual_from }}{% endif %}</td>
+                                    <td class="hidden-xs">{% if news.actual_to %}{{ news.actual_to }}{% endif %}</td>
+                                    <td class="hidden-xs">{{ news.creator }}</td>
+                                    <td class="hidden-xs">{{ news.created }}</td>
+                                    <td>
+                                    {% if user.is_superuser or user == event.creator %}
+                                        <a href="{% url 'news_update' news.pk %}"
+                                           class="btn dark btn-sm btn-outline sbold uppercase">
+                                            <i class="fa fa-eye"></i> Редагувати</a>
+                                        <a href="{% url 'news_delete' news.pk %}"
+                                           class="btn dark btn-sm btn-outline sbold uppercase">
+                                           Видалити</a>
+                                    {% endif %}
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <a href="{% url 'projects_list' %}">
+                    <h2 class="breadcrumbs-title">Найближчі події та свята</h2>
+                </a>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            <div class="row widget-row">
+                <div class="col-md-9 margin-bottom-20">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1_1" data-toggle="tab"> {{ event.title }} </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" style="height: 350px;" data-always-visible="1"
+                             data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_1_1">
+                                <div class="widget-news margin-bottom-20">
+                                    {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                                    <div class="widget-news-right-body">
+                                        {% if event.description %}<p>{{ event.description }}</p>{% endif %}
+                                        <p><strong>Дата: {{ event.next_repeat }}</strong></p>
+                                        <p><strong>Періодичність: {{ event.get_repeat_display }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END WIDGET TAB -->
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

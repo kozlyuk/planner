@@ -3,13 +3,12 @@
 
 from django.contrib import admin
 from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company, News, Calendar
+from .models import IntTask, Contractor, Order, Company, News, Event
 from django.db.models import Q
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from django.core.files.images import get_image_dimensions
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -569,7 +568,7 @@ class NewsAdmin(admin.ModelAdmin):
                           ]})
         ]
 
-class CalendarAdmin(admin.ModelAdmin):
+class EventAdmin(admin.ModelAdmin):
 
     list_display = ['creator', 'date', 'title', 'repeat']
     ordering = ['created']
@@ -597,4 +596,4 @@ admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(News, NewsAdmin)
-admin.site.register(Calendar, CalendarAdmin)
+admin.site.register(Event, EventAdmin)

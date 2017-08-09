@@ -19,6 +19,8 @@ from planner import views
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
+from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
+from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -38,6 +40,17 @@ urlpatterns = [
     url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.bonus_calc, name='bonus_calc'),
+    url(r'^news/$', NewsList.as_view(), name='news_list'),
+    url(r'^news/(?P<pk>[0-9]+)/detail/$', NewsDetail.as_view(), name='news_detail'),
+    url(r'^news/(?P<pk>[0-9]+)/change/$', NewsUpdate.as_view(), name='news_update'),
+    url(r'^news/add/$', NewsCreate.as_view(), name='news_add'),
+    url(r'^news/(?P<pk>[0-9]+)/delete/$', NewsDelete.as_view(), name='news_delete'),
+
+    url(r'^event/$', EventList.as_view(), name='event_list'),
+    url(r'^event/(?P<pk>[0-9]+)/detail/$', EventDetail.as_view(), name='event_detail'),
+    url(r'^event/(?P<pk>[0-9]+)/change/$', EventUpdate.as_view(), name='event_update'),
+    url(r'^event/add/$', EventCreate.as_view(), name='event_add'),
+    url(r'^event/(?P<pk>[0-9]+)/delete/$', EventDelete.as_view(), name='event_delete'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

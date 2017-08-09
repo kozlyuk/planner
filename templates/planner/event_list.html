@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2 class="breadcrumbs-title">Найближчі події та свята</h2>
+                <div align="right">
+                    <a href="{% url 'event_add' %}" class="btn dark btn-sm btn-outline sbold uppercase">Додати подію</a>
+                </div>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <div class="row widget-row">
+                <div class="portlet-body">
+                    <div class="table-scrollable">
+                        <table class="table table-striped table-bordered table-advance table-hover">
+                            <thead>
+                            <tr>
+                                <th> НАЗВА ПОДІЇ</th>
+                                <th> ПЕРІОДИЧНІСТЬ </th>
+                                <th> ДАТА</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            {% for event in object_list %}
+                                <tbody>
+                                <tr>
+                                    <td><a href="{% url 'event_detail' event.pk %}"> {{ event.title }} </a></td>
+                                    <td>{{ event.get_repeat_display }}</td>
+                                    <td>{% if event.next_repeat %}{{ event.next_repeat }}
+                                        {% else %}{{ event.date }}{% endif %}</td>
+                                    <td>
+                                    {% if user.is_superuser or user == event.creator %}
+                                        <a href="{% url 'event_update' event.pk %}"
+                                           class="btn dark btn-sm btn-outline sbold uppercase">
+                                            <i class="fa fa-eye"></i> Редагувати</a>
+                                        <a href="{% url 'event_delete' event.pk %}"
+                                           class="btn dark btn-sm btn-outline sbold uppercase">
+                                           Видалити</a>
+                                    {% endif %}
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

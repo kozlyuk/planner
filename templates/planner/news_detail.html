@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <a href="{% url 'news_list' %}">
+                    <h2 class="breadcrumbs-title">Новини та повідомлення</h2>
+                </a>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            <div class="row widget-row">
+                <div class="col-md-9 margin-bottom-20">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1_1" data-toggle="tab"> {{ news.title }} </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" style="height: 350px;" data-always-visible="1"
+                             data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_1_1">
+                                <div class="widget-news margin-bottom-20">
+                                    <div class="widget-news-right-body">
+                                        <p>{{ news.text }}</p>
+                                        <p><strong>Тип новини: {{ news.get_news_type_display }}</strong></p>
+                                        <p><strong>{% if news.actual_from %}Актуальна з {{ news.actual_from }}{% endif %}
+                                        <p><strong>{% if news.actual_to %}Актуальна до {{ news.actual_to }}{% endif %}
+                                        <p><strong>Створив: {{ news.creator.employee.name }}</strong></p>
+                                        <p><strong>Дата створення: {{ news.created }}</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END WIDGET TAB -->
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

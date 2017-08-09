@@ -28,7 +28,7 @@
             <!-- BEGIN CONTENT -->
             <div class="container-fluid container-lf-space">
                 <!-- BEGIN PAGE BASE CONTENT -->
-                <div id="row1_gip">
+                <div id="row1">
                     {% block 'row1' %}
                     {% endblock %}
                 </div>
@@ -126,7 +126,7 @@
                                         </div>
                                         <div class="widget-media-body">
                                             <h4 class="widget-media-body-title">
-                                                <a href="#">{{ new.title }}</a>
+                                                <a href="{% url 'news_detail' new.pk %}">{{ new.title }}</a>
                                             </h4>
                                             <p class="widget-media-body-subtitle">{{ new.text|slice:":400" }}</p>
 {#                                            <a class="widget-btn-red circle" href="#">+7</a>#}
@@ -137,6 +137,12 @@
                                         </div>
                                     </div>
                                     {% endfor %}
+                                </div>
+                                <div class="scroller-footer">
+                                    <div class="btn-arrow-link pull-right">
+                                        <a href="{% url 'news_list' %}">Дивитись всі новини</a>
+                                        <i class="icon-arrow-right"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +177,7 @@
 {#                                </div>#}
                             </div>
                             <div class="portlet-body">
-                                <div class="scroller" style="height: 322px;" data-always-visible="1" data-rail-visible="0">
+                                <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible="0">
                                     <ul class="feeds">
                                     {% for event in events %}
                                         <li>
@@ -184,10 +190,8 @@
                                                             </div>
                                                         </div>
                                                         <div class="cont-col2">
-                                                            <div class="desc"> {{ event.title }}
-{#                                                                <span class="label label-sm label-warning "> Запланувати подію#}
-{#                                                                    <i class="fa fa-share"></i>#}
-{#                                                                </span>#}
+                                                            <div class="desc">
+                                                                <a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -206,7 +210,7 @@
                                 </div>
                                 <div class="scroller-footer">
                                     <div class="btn-arrow-link pull-right">
-                                        <a href="#">Дивитись всі події</a>
+                                        <a href="{% url 'event_list' %}">Дивитись всі події</a>
                                         <i class="icon-arrow-right"></i>
                                     </div>
                                 </div>

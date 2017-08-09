@@ -1,4 +1,4 @@
-from .models import Deal, Task, Execution, IntTask, Employee, News, Calendar
+from .models import Deal, Task, Execution, IntTask, Employee, News, Event
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserLoginForm, TaskFilterForm
@@ -7,7 +7,10 @@ from django.shortcuts import render_to_response, redirect, render
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 
 @login_required()
@@ -232,7 +235,7 @@ def home_page(request):
         debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
         overdue_deals_count = len(overdue_deals)
         overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
-    if request.user.groups.filter(name='ГІПи').exists():
+    elif request.user.groups.filter(name='ГІПи').exists():
         td_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
         ip_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
         hd_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Done).order_by('-actual_finish')[:50]
@@ -337,10 +340,10 @@ def home_page(request):
 
     news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today()).order_by('-created')
 
-    for event in Calendar.objects.all():
+    for event in Event.objects.all():
         event.next_date = event.next_repeat()
         event.save(update_fields=['next_date'])
-    events = Calendar.objects.filter(next_date__isnull=False).order_by('next_date')
+    events = Event.objects.filter(next_date__isnull=False).order_by('next_date')
 
     if request.user.groups.filter(name='Бухгалтери').exists():
         return render_to_response('content_admin.html',
@@ -471,6 +474,84 @@ def project_details(request, project_id):
                                   'executors': executors,
                               },
                               context_instance=RequestContext(request))
+
+
+class NewsList(ListView):
+    model = News
+    success_url = reverse_lazy('home_page')
+
+
+class NewsDetail(DetailView):
+    model = News
+    success_url = reverse_lazy('news_list')
+
+
+class NewsCreate(CreateView):
+    model = News
+    fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
+    success_url = reverse_lazy('news_list')
+
+    def get_form(self, form_class):
+        form = super(NewsCreate, self).get_form(form_class)
+        form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        return form
+
+
+class NewsUpdate(UpdateView):
+    model = News
+    fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
+    template_name_suffix = '_update'
+    success_url = reverse_lazy('news_list')
+
+    def get_form(self, form_class):
+        form = super(NewsUpdate, self).get_form(form_class)
+        form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        return form
+
+
+class NewsDelete(DeleteView):
+    model = News
+    success_url = reverse_lazy('news_list')
+
+
+class EventList(ListView):
+    model = Event
+    success_url = reverse_lazy('home_page')
+
+
+class EventDetail(DetailView):
+    model = Event
+    success_url = reverse_lazy('event_list')
+
+
+class EventCreate(CreateView):
+    model = Event
+    fields = ['title', 'date', 'repeat', 'description']
+    success_url = reverse_lazy('event_list')
+
+    def get_form(self, form_class):
+        form = super(EventCreate, self).get_form(form_class)
+        form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        return form
+
+
+class EventUpdate(UpdateView):
+    model = Event
+    fields = ['title', 'date', 'repeat', 'description']
+    template_name_suffix = '_update'
+    success_url = reverse_lazy('event_list')
+
+    def get_form(self, form_class):
+        form = super(EventUpdate, self).get_form(form_class)
+        form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        return form
+
+
+class EventDelete(DeleteView):
+    model = Event
+    success_url = reverse_lazy('event_list')
 
 #@login_required()
 #def project_form(request, project_id=0):
