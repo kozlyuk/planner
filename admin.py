@@ -64,6 +64,7 @@ class CustomerAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
+                           ('debtor_term'),
                            ('requisites')
                           ]})
         ]
@@ -240,14 +241,14 @@ class DealAdmin(admin.ModelAdmin):
     ordering = ['-creation_date', 'customer', '-number']
     list_filter = ['customer', 'pay_status', 'act_status']
     date_hierarchy = 'expire_date'
-    readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc']
+    readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc', 'pay_date_calc']
     fieldsets = [
         ('Інформація про договір', {'fields': [('number', 'customer', 'company'),
                            ('value', 'advance', 'pay_status'),
                            ('pay_date', 'expire_date'),
                            ('act_status', 'act_date', 'act_value')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
-                                             'costs_calc', 'comment'], 'classes': ['collapse']})
+                                             'costs_calc', 'pay_date_calc', 'comment'], 'classes': ['collapse']})
         ]
 
     def get_form(self, request, obj=None, **kwargs):

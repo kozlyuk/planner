@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
 from django.db.models import Sum
 from django.conf.locale.uk import formats as uk_formats
@@ -148,6 +149,7 @@ class Customer(models.Model):
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
     requisites = models.TextField('Реквізити', blank=True)
+    debtor_term = models.PositiveSmallIntegerField('Термін післяоплати', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Замовник'
@@ -430,6 +432,17 @@ class Deal(models.Model):
             total += task.costs_total()
         return round(total, 2)
     costs_calc.short_description = 'Витрати по договору, грн.'
+
+    def pay_date_calc(self):                                            # total deal's costs
+        if self.customer.debtor_term:
+            if self.act_date:
+                pay_date = self.act_date + BDay(self.customer.debtor_term)
+                return pay_date.strftime(date_format)
+            elif self.expire_date:
+                pay_date = self.expire_date + BDay(self.customer.debtor_term)
+                return pay_date.strftime(date_format)
+        return
+    pay_date_calc.short_description = 'Дата оплати, грн.'
 
 
 class Receiver(models.Model):
