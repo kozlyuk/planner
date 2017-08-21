@@ -21,17 +21,16 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
-                <div class="col-md-9 margin-bottom-20">
-                    <!-- BEGIN WIDGET TAB -->
-                    <div class="widget-bg-color-white widget-tab">
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_1_1" data-toggle="tab"> {{ news.title }} </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content scroller" style="height: 350px;" data-always-visible="1"
-                             data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade active in" id="tab_1_1">
+                <div class="col-md-8 col-md-offset-2 margin-bottom-20">
+                    <!-- BEGIN WIDGET -->
+                    <div class="portlet light tasks-widget">
+                        <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                                <span class="caption-subject theme-font bold uppercase">{{ news.title }}</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
                                         <p>{{ news.text }}</p>
@@ -45,7 +44,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- END WIDGET TAB -->
+                    <!-- END WIDGET -->
                 </div>
             </div>
             <!-- END PAGE BASE CONTENT -->

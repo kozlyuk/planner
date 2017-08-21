@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^project/$', views.projects_list, name='projects_list'),
     #url(r'^project/$', RedirectView.as_view(url='/admin/planner/task/'), name='projects_list'),
     #url(r'^project/add/$', views.project_details, name='project_add'),
-    url(r'^project/(?P<project_id>\d+)/$', views.project_details, name='project_details'),
+    url(r'^project/(?P<project_id>\d+)/$', views.project_detail, name='project_detail'),
     #url(r'^project/(?P<project_id>\d+)/edit/$', views.project_form, name='project_form'),
     url(r'^inttask/(?P<task_id>\d+)/$', views.inttask_detail, name='inttask_detail'),
     # url(r'^deal/$', views.deals_list, name='deals_list'),

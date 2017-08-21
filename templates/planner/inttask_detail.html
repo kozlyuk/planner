@@ -22,18 +22,17 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
                 <div class="col-md-8 col-md-offset-2 margin-bottom-20">
-                    <!-- BEGIN WIDGET TAB -->
+                    <!-- BEGIN WIDGET -->
                     <div class="portlet light tasks-widget">
                         <div class="portlet-title">
                             <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase">Завдання</span>
+                                <span class="caption-subject theme-font bold uppercase">{{ task.task_name }}</span>
                             </div>
                         </div>
                         <div class="portlet-body">
                             <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
-                                        <p><h3 class="widget-news-right-body-title">{{ task.task_name }}</h3></p>
                                         <p>Виконавець: <strong>{{ task.executor }}</strong></p>
                                         <p>Статус виконання: <strong>{{ task.get_exec_status_display }}</strong></p>
                                         <table class="table table-hover">
@@ -65,7 +64,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- END WIDGET TAB -->
+                    <!-- END WIDGET -->
                 </div>
             </div>
             <!-- END PAGE BASE CONTENT -->

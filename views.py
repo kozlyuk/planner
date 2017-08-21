@@ -465,7 +465,7 @@ def projects_list(request):
 
 
 @login_required()
-def project_details(request, project_id):
+def project_detail(request, project_id):
     task = Task.objects.get(pk=project_id)
     executors = Execution.objects.filter(task=task)
     costs = Order.objects.filter(task=task)
