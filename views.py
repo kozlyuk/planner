@@ -1,4 +1,4 @@
-from .models import Deal, Task, Execution, IntTask, Employee, News, Event
+from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order, Sending
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserLoginForm, TaskFilterForm
@@ -468,10 +468,24 @@ def projects_list(request):
 def project_details(request, project_id):
     task = Task.objects.get(pk=project_id)
     executors = Execution.objects.filter(task=task)
-    return render_to_response('project_view.html',
+    costs = Order.objects.filter(task=task)
+    sendings = Sending.objects.filter(task=task)
+    return render_to_response('planner/project_detail.html',
                               {
                                   'task': task,
                                   'executors': executors,
+                                  'costs': costs,
+                                  'sendings': sendings
+                              },
+                              context_instance=RequestContext(request))
+
+
+@login_required()
+def inttask_detail(request, task_id):
+    task = IntTask.objects.get(pk=task_id)
+    return render_to_response('planner/inttask_detail.html',
+                              {
+                                  'task': task,
                               },
                               context_instance=RequestContext(request))
 

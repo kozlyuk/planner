@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
 from django.db.models import Sum
+from django.db.models import Q
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
@@ -571,9 +572,17 @@ class Task(models.Model):
         return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000
     # executor's bonus
 
+    def executors_bonus(self):
+        return self.project_type.net_price() * self.project_type.executors_bonus / 100
+    # executors bonuses
+
     def total_bonus(self):
         return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
+
+    @staticmethod
+    def get_accessable(user):
+        return Task.objects.filter(Q(owner__user=user) | Q(executors__user=user))
 
 
 class Order(models.Model):

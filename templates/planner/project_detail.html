@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <a href="{% url 'projects_list' %}">
+                    <h2 class="breadcrumbs-title">Проекти</h2>
+                </a>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            <div class="row widget-row">
+                <div class="col-md-8 margin-bottom-20">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1_1" data-toggle="tab"> Опис </a>
+                            </li>
+                            <li>
+                                <a href="#tab_1_2" data-toggle="tab"> Додатково </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" style="height: 500px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_1_1">
+                                <div class="widget-news margin-bottom-20">
+                                    {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                                    <div class="widget-news-right-body">
+                                        <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
+                                            {% if task.overdue_status %}
+                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                            {% else %}
+                                                <span class="label label-{% color_status item.exec_status %}"> {{ task.get_status }} </span>
+                                            {% endif %}
+                                        </h3>
+                                        <p>Тип проекту: <strong>{{ task.project_type }}</strong></p>
+                                        <p>Договір: <strong>{{ task.deal }}</strong></p>
+                                        <p>Керівник проекту: <strong>{{ task.owner.name }}</strong></p>
+                                        <p>Статус виконання: <strong>{{ task.get_exec_status_display }}</strong></p>
+
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th> Початок робіт</th>
+                                                <th> Закінчення робіт</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td> Планові дати виконання</td>
+                                                <td> {% if task.planned_start %}{{ task.planned_start }}{% endif %} </td>
+                                                <td> {% if task.planned_finish %}{{ task.planned_finish }}{% endif %} </td>
+                                            </tr>
+                                            <tr>
+                                                <td> Фактичні дати виконання</td>
+                                                <td> {% if task.actual_start %}{{ task.actual_start }}{% endif %} </td>
+                                                <td> {% if task.actual_finish %}{{ task.actual_finish }}{% endif %}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                        {% if task.tc_received %}<p>Дата отримання ТЗ або заявки: <strong>{{ task.tc_received }}
+                                            {% if task.tc_upload %}<a href="/media/{{ task.tc_upload }}"> Переглянути </a>{% endif %}
+                                        </strong></p>{% endif %}
+                                        {% if task.pdf_copy %}<a href="/media/{{ task.pdf_copy }}"> Переглянути електронний примірник </a>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tab_1_2">
+                                <div class="widget-news margin-bottom-20">
+                                    {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                                    <div class="widget-news-right-body">
+                                        <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
+                                            {% if task.overdue_status %}
+                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                            {% else %}
+                                                <span class="label label-{% color_status item.exec_status %}"> {{ task.get_status }} </span>
+                                            {% endif %}
+                                        </h3>
+                                        <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
+                                        <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
+                                        <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
+                                        {% if cost.project_code %}<p>Шифр проекту: <strong>{{ cost.project_code }}</strong></p>>{% endif %}
+                                        {% if cost.comment %}<p>Шифр проекту: <strong>{{ cost.comment }}</strong></p>>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END WIDGET TAB -->
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_2_1" data-toggle="tab"> Виконавці </a>
+                            </li>
+                            <li>
+                                <a href="#tab_2_2" data-toggle="tab"> Витрати </a>
+                            </li>
+                            <li>
+                                <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" style="height: 500px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_2_1">
+                                {% if executors|length > 0 %}
+                                    {% for executor in executors %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-elements text-center">
+                                                <img class="widget-media-avatar circle margin-bottom-15"
+                                                     src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
+                                            </div>
+                                            <div class="widget-media-body">
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ executor.executor.name }}</a>
+                                                </h4>
+                                                Назва робіт: <strong>{{ executor.part_name }}</strong><br>
+                                                Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Виконавці відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="tab_2_2">
+                                {% if costs|length > 0 %}
+                                    {% for cost in costs %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-body">
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ cost.contractor.name }}</a>
+                                                </h4>
+                                                Назва робіт: <strong>{{ cost.order_name }}</strong><br>
+                                                Договір: <strong>{{ cost.deal_number }}</strong><br>
+                                                Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div><br>
+                                                Аванс: <strong>{{ cost.advance }}</strong><br>
+                                                Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
+                                                {% if cost.pay_date %}Дата оплати: <strong>{{ cost.pay_date }}</strong>{% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Витрати відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="tab_2_3">
+                                {% if sendings|length > 0 %}
+                                    {% for sending in sendings %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-body">
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ sending.receiver.name }}</a>
+                                                </h4>
+                                                Дата відправки: <strong>{{ sending.receipt_date }}</strong><br>
+                                                Кількість: <div class="widget-btn-blue circle" href="#">{{ sending.copies_count }} примірник</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Відправки відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- END PORTLET-->
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}
