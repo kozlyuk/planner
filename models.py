@@ -13,6 +13,7 @@ from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
 from stdimage.models import StdImageField
+from eventlog.models import log
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -696,10 +697,20 @@ class Event(models.Model):
         verbose_name = 'Подія'
         verbose_name_plural = 'Події'
 
-    def save(self, *args, **kwargs):
+    def save(self, logging=True, *args, **kwargs):
         if not self.pk:
             self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Додана подія', extra={"title": self.title})
+            else:
+                log(user=get_current_user(), action='Оновлена подія', extra={"title": self.title})
         super(Event, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(), action='Видалена подія',
+            extra={"title": self.title})
+        super(Event, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -757,7 +768,18 @@ class News(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.creator = get_current_user()
+        if not self.id:
+            log(user=get_current_user(), action='ADD_NEWS',
+                extra={"title": self.title})
+        else:
+            log(user=get_current_user(), action='UPDATED_NEWS',
+                extra={"title": self.title})
         super(News, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(), action='DELETE_NEWS',
+            extra={"title": self.title})
+        super(News, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.title

@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from eventlog.models import Log
 
 
 @login_required()
@@ -207,7 +208,7 @@ def home_page(request):
     if request.user.groups.filter(name='Бухгалтери').exists():
         actneed_deals = []
         active_deals = Deal.objects.exclude(act_status=Deal.Issued) \
-                            .exclude(number__icontains='загальний')
+                           .exclude(number__icontains='загальний')
         for deal in active_deals:
             if deal.exec_status() == 'Виконано':
                 actneed_deals.append(deal)
@@ -342,8 +343,10 @@ def home_page(request):
 
     for event in Event.objects.all():
         event.next_date = event.next_repeat()
-        event.save(update_fields=['next_date'])
+        event.save(update_fields=['next_date'], logging=False)
     events = Event.objects.filter(next_date__isnull=False).order_by('next_date')
+
+    activities = Log.objects.filter(user=request.user)[:50]
 
     if request.user.groups.filter(name='Бухгалтери').exists():
         return render_to_response('content_admin.html',
@@ -385,7 +388,8 @@ def home_page(request):
                                       'pm': date_delta(-1),
                                       'ppm': date_delta(-2),
                                       'news': news,
-                                      'events': events
+                                      'events': events,
+                                      'activities': activities
                                   }, context_instance=RequestContext(request))
     else:
         return render_to_response('content_exec.html',
@@ -424,7 +428,8 @@ def home_page(request):
                                       'pm': date_delta(-1),
                                       'ppm': date_delta(-2),
                                       'news': news,
-                                      'events': events
+                                      'events': events,
+                                      'activities': activities
                                   }, context_instance=RequestContext(request))
 
 

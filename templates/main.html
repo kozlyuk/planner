@@ -217,21 +217,25 @@
                             </div>
                         </div>
                     </div>
-{% comment %}
                     <div class="col-md-4">
-                        <!-- BEGIN WIDGET BLOG -->
-                        <div class="widget-blog text-center margin-bottom-20 clearfix">
-{#                             style="height: 442px; padding-top: 120px; background-image: url({% static 'assets/layouts/layout7/img/07.jpg' %});"#}
-                            <div class="widget-blog-heading text-uppercase">
-                                <h3 class="widget-blog-title">Найближчі події та свята</h3>
-                                <span class="widget-blog-subtitle">25.05.2016</span>
-                                <p>КОРПОРАТИВ: Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat commodo consequat. </p>
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption caption-md font-blue">
+                                    <span class="caption-subject theme-font bold uppercase">Недавні дії</span>
+                                </div>
                             </div>
-{#                            <a class="btn btn-danger text-uppercase" href="#">Свято наближається!!!</a>#}
+                            <div class="portlet-body">
+                                <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible="0">
+                                    <ul class="feeds">
+                                        {% for activity in activities %}
+                                        <li>({{ activity.timestamp }}) - {{ activity.action }} [{{ activity.extra.title }}]</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <!-- END WIDGET BLOG -->
                     </div>
-{% endcomment %}
+
 
                 </div>
                 <!-- END PAGE BASE CONTENT -->
