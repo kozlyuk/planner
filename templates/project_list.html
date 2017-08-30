@@ -98,7 +98,7 @@
                                 {% for item in page_objects %}
                                     <tr>
                                         <td>
-                                            <a href="{% url 'project_details' item.id %}"> {{ item.object_code }} </a><br>
+                                            <a href="{% url 'project_detail' item.id %}"> {{ item.object_code }} </a><br>
                                             <span class="label label-sm label-{% color_status item.exec_status %} label-mini"> {{ item.get_status }} </span>
                                         </td>
                                         <td class="hidden-xs"> {{ item.object_address }}</td>
@@ -108,7 +108,7 @@
                                             {{ item.overdue_status }}
                                         </td>
                                         <td>
-                                            <a href="{% url 'project_details' item.id %}"
+                                            <a href="{% url 'project_detail' item.id %}"
                                                class="btn dark btn-sm btn-outline sbold uppercase">
                                                 <i class="fa fa-eye"></i> Деталі </a>
                                         </td>
