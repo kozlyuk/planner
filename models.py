@@ -574,7 +574,7 @@ class Task(models.Model):
     # executor's bonus
 
     def executors_bonus(self):
-        return self.project_type.net_price() * self.project_type.executors_bonus / 100
+        return self.exec_bonus(self.exec_part())
     # executors bonuses
 
     def total_bonus(self):

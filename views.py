@@ -458,7 +458,7 @@ def projects_list(request):
     #     .annotate(last_edit=Max('fieldreport__report_date')) \
     #     .order_by('-last_edit', '-last_edit_date')
 
-    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 10)
+    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 20)
 
     return render_to_response('project_list.html',
                               {
