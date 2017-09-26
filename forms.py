@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from planner.models import User, Project, Task, Deal
+from planner.models import User, Project, Task, Deal, Customer
 
 
 class UserLoginForm(forms.ModelForm):
@@ -33,27 +33,22 @@ class TaskForm(forms.ModelForm):
 class TaskFilterForm(forms.Form):
     def __init__(self, user, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
-        project_types = [(p.id, "%s %s" % (p.price_code, p.project_type)) for p in Project.objects.all()]
-        project_types.insert(0, (0, "Всі"))
-        deals = [(r.id, "%s %s" % (r.number, r.customer.name)) for r in Deal.objects.all()]
-        deals.insert(0, (0, "Всі"))
-
         exec_status = []
         exec_status.insert(0, (0, "Всі"))
-        exec_status.insert(1, ('IW', "В очікуванні"))
-        exec_status.insert(2, ('IL', "В черзі"))
-        exec_status.insert(3, ('IP', "Виконується"))
-        exec_status.insert(4, ('HD', "Виконано"))
+        exec_status.insert(1, ('IL', "В черзі"))
+        exec_status.insert(2, ('IP', "Виконується"))
+        exec_status.insert(3, ('HD', "Виконано"))
 
-        self.fields['project_type'].choices = project_types
-        self.fields['deal'].choices = deals
+        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').distinct()]
+        owners.insert(0, (0, "Всі"))
+        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customers.insert(0, (0, "Всі"))
+
         self.fields['exec_status'].choices = exec_status
+        self.fields['owner'].choices = owners
+        self.fields['customer'].choices = customers
 
-    project_type = forms.ChoiceField()
-    deal = forms.ChoiceField()
-    exec_status = forms.ChoiceField()
-
-    object_code = forms.CharField(max_length=255)
-    object_address = forms.CharField(max_length=255)
-    project_code = forms.CharField(max_length=255)
-
+    exec_status = forms.ChoiceField(label='Статус виконання', required=False, widget=forms.Select(attrs={"onChange":'submit()'}))
+    owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange":'submit()'}))
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange":'submit()'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)

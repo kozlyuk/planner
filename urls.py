@@ -21,6 +21,7 @@ from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
+from .views import ProjectUpdate
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -29,7 +30,7 @@ urlpatterns = [
     url(r'^$', views.home_page, name='home_page'),
     url(r'^project/$', views.projects_list, name='projects_list'),
     #url(r'^project/$', RedirectView.as_view(url='/admin/planner/task/'), name='projects_list'),
-    #url(r'^project/add/$', views.project_details, name='project_add'),
+    url(r'^project/(?P<pk>[0-9]+)/change/$', ProjectUpdate.as_view(), name='project_update'),
     url(r'^project/(?P<project_id>\d+)/$', views.project_detail, name='project_detail'),
     #url(r'^project/(?P<project_id>\d+)/edit/$', views.project_form, name='project_form'),
     url(r'^inttask/(?P<task_id>\d+)/$', views.inttask_detail, name='inttask_detail'),

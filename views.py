@@ -12,6 +12,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
+from django.db.models import Q
 
 
 @login_required()
@@ -442,29 +443,39 @@ def projects_list(request):
         tasks = Task.objects.all().order_by('-planned_finish')
     else:
         tasks = Task.get_accessable(request.user).order_by('-planned_finish')
+    tasks_count = tasks.count()
 
-    # if 'field_type' in request.GET:
-    #     if request.GET['field_type'] == 'D1':
-    #         name = _('Demo first category')
-    #     if request.GET['field_type'] == 'D2':
-    #         name = _('Demo second category')
-    #     if request.GET['field_type'] == 'FC':
-    #         name = _('Field checkup report')
-    #     if request.GET['field_type'] != u'' and request.GET['field_type'] != u'0':
-    #         fields = fields.filter(field_type=request.GET['field_type'])
-    # else:
-    #     name = ''
-    # fields = fields \
-    #     .annotate(last_edit=Max('fieldreport__report_date')) \
-    #     .order_by('-last_edit', '-last_edit_date')
+    search_string = request.GET.get('filter', '')
+    exec_status = request.GET.get('exec_status', '0')
+    owner = request.GET.get('owner', '0')
+    customer = request.GET.get('customer', '0')
+    order = request.GET.get('o', '0')
+    tasks = tasks.filter(Q(object_code__icontains=search_string) |
+                         Q(object_address__icontains=search_string) |
+                         Q(deal__number__icontains=search_string) |
+                         Q(project_type__price_code__icontains=search_string) |
+                         Q(project_type__project_type__icontains=search_string))
+    if exec_status != '0':
+        tasks = tasks.filter(exec_status=exec_status)
+    if owner != '0':
+        tasks = tasks.filter(owner=owner)
+    if customer != '0':
+        tasks = tasks.filter(deal__customer=customer)
+    if order != '0':
+        tasks = tasks.order_by(order)
+    else:
+        tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+    tasks_filtered = tasks.count()
 
-    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 20)
+    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 50)
 
     return render_to_response('project_list.html',
                               {
                                   'filter_form': filter_form,
                                   'page_objects': page_objects,
                                   'indexes': indexes,
+                                  'tasks_count': tasks_count,
+                                  'tasks_filtered': tasks_filtered
                               },
                               context_instance=RequestContext(request))
 
@@ -483,6 +494,31 @@ def project_detail(request, project_id):
                                   'sendings': sendings
                               },
                               context_instance=RequestContext(request))
+
+
+class ProjectUpdate(UpdateView):
+    model = Task
+    fields = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner',
+              'planned_start', 'planned_finish', 'actual_start', 'actual_finish',
+              'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment']
+    success_url = reverse_lazy('project_list')
+
+    def get_form(self, form_class=None):
+        form = super(ProjectUpdate, self).get_form(form_class)
+        form.fields['planned_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['planned_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['actual_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['actual_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['object_address'].widget.attrs.update({'size': 70})
+        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectUpdate, self).get_context_data(**kwargs)
+        context['executors'] = Execution.objects.filter(task=self.object)
+        context['costs'] = Order.objects.filter(task=self.object)
+        context['sendings'] = Sending.objects.filter(task=self.object)
+        return context
 
 
 @login_required()
@@ -520,7 +556,6 @@ class NewsCreate(CreateView):
 class NewsUpdate(UpdateView):
     model = News
     fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
-    template_name_suffix = '_update'
     success_url = reverse_lazy('news_list')
 
     def get_form(self, form_class=None):
@@ -559,7 +594,6 @@ class EventCreate(CreateView):
 class EventUpdate(UpdateView):
     model = Event
     fields = ['title', 'date', 'repeat', 'description']
-    template_name_suffix = '_update'
     success_url = reverse_lazy('event_list')
 
     def get_form(self, form_class=None):

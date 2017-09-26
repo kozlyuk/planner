@@ -9,7 +9,9 @@
         <!-- BEGIN BREADCRUMBS -->
         <div class="breadcrumbs">
             <div class="container-fluid">
-                <h2 class="breadcrumbs-title">Новини та повідомлення</h2>
+                <a href="{% url 'news_list' %}">
+                    <h2 class="breadcrumbs-title">Новини та повідомлення</h2>
+                </a>
                 <div align="right">
                     <a href="{% url 'news_add' %}" class="btn dark btn-sm btn-outline sbold uppercase">Додати новину</a>
                 </div>
@@ -45,11 +47,11 @@
                                     <td>
                                     {% if user.is_superuser or user == event.creator %}
                                         <a href="{% url 'news_update' news.pk %}"
-                                           class="btn dark btn-sm btn-outline sbold uppercase">
-                                            <i class="fa fa-eye"></i> Редагувати</a>
+                                            class="btn dark btn-sm btn-outline sbold uppercase">
+                                            Редагувати</a>
                                         <a href="{% url 'news_delete' news.pk %}"
-                                           class="btn dark btn-sm btn-outline sbold uppercase">
-                                           Видалити</a>
+                                            class="btn dark btn-sm btn-outline sbold uppercase">
+                                            Видалити</a>
                                     {% endif %}
                                     </td>
                                     </tr>

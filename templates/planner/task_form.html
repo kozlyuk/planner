@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            <div class="row widget-row margin-top-20">
+                <div class="col-md-8">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="portlet light tasks-widget">
+                        <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                                <span class="caption-subject theme-font bold uppercase">Редагування проекту</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="widget-bg-color-white">
+                                <form class="form-horizontal" action="" method="post">{% csrf_token %}
+                                    {% for field in form %}
+                                    {% if field.errors %}
+                                    <div class="form-group error">
+                                        <label class="col-sm-3 control-label">{{ field.label }}</label>
+                                        <div class="col-sm-9">{{ field }}
+                                            <span class="help-inline">
+                                                {% for error in  field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
+                                            {% else %}{{ field.label }}{% endif %}
+                                        </label>
+                                        <div class="col-sm-9">{{ field }}
+                                            {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
+                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END WIDGET -->
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_2_1" data-toggle="tab"> Виконавці </a>
+                            </li>
+                            <li>
+                                <a href="#tab_2_2" data-toggle="tab"> Витрати </a>
+                            </li>
+                            <li>
+                                <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" data-always-visible="1" data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_2_1">
+                                {% if executors|length > 0 %}
+                                    {% for executor in executors %}
+                                        <div class="widget-media">
+                                <form class="form-horizontal" action="" method="post">{% csrf_token %}
+                                    {% for field in executor %}
+                                    {% if field.errors %}
+                                    <div class="form-group error">
+                                        <label class="col-sm-3 control-label">{{ field.label }}</label>
+                                        <div class="col-sm-9">{{ field }}
+                                            <span class="help-inline">
+                                                {% for error in  field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">
+                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
+                                            {% else %}{{ field.label }}{% endif %}
+                                        </label>
+                                        <div class="col-sm-9">{{ field }}
+                                            {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
+                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
+                                    </div>
+                                </form>
+
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Виконавці відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="tab_2_2">
+                                {% if costs|length > 0 %}
+                                    {% for cost in costs %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-body">
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ cost.contractor.name }}</a>
+                                                </h4>
+                                                Назва робіт: <strong>{{ cost.order_name }}</strong><br>
+                                                Договір: <strong>{{ cost.deal_number }}</strong><br>
+                                                Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div><br>
+                                                Аванс: <strong>{{ cost.advance }}</strong><br>
+                                                Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
+                                                {% if cost.pay_date %}Дата оплати: <strong>{{ cost.pay_date }}</strong>{% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Витрати відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="tab_2_3">
+                                {% if sendings|length > 0 %}
+                                    {% for sending in sendings %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-body">
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ sending.receiver.name }}</a>
+                                                </h4>
+                                                Дата відправки: <strong>{{ sending.receipt_date }}</strong><br>
+                                                Кількість: <div class="widget-btn-blue circle" href="#">{{ sending.copies_count }} примірник</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Відправки відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- END PORTLET-->
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

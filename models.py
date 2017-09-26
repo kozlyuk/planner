@@ -483,10 +483,10 @@ class Task(models.Model):
                                        verbose_name='Виконавці', blank=True)
     costs = models.ManyToManyField(Contractor, through='Order', related_name='tasks',
                                    verbose_name='Підрядники', blank=True)
-    planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
-    planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
-    actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
-    actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
+    planned_start = models.DateField('Плановий початок', blank=True, null=True)
+    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
+    actual_start = models.DateField('Фактичний початок', blank=True, null=True)
+    actual_finish = models.DateField('Фактичне закінчення', blank=True, null=True)
     tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
                                                content_types=['application/pdf', ], max_upload_size=10485760,

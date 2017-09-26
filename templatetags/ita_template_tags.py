@@ -36,4 +36,3 @@ def color_status(status):
         return 'info'
     else:
         return 'danger'
-
