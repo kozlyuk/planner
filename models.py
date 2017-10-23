@@ -495,7 +495,9 @@ class Task(models.Model):
     comment = models.TextField('Коментар', blank=True)
     creation_date = models.DateField(auto_now_add=True)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
-                                              content_types=['application/pdf', ], max_upload_size=20971520,
+                                              content_types=['application/pdf',
+                                                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+                                              max_upload_size=20971520,
                                               blank=True, null=True)
 
     class Meta:
