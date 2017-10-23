@@ -57,7 +57,7 @@ class ContentTypeRestrictedFileField(FileField):
 
             # Check content-type if required
             if self.content_types and file.content_type not in self.content_types:
-                raise forms.ValidationError(_('Файл має бути у PDF форматі.'))
+                raise forms.ValidationError(_('Файл має бути у PDF або XLSX форматі.'))
 
             # Check file size if required
             if self.max_upload_size and file._size > self.max_upload_size:
