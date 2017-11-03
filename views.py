@@ -2,8 +2,9 @@ from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserLoginForm, TaskFilterForm
+from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
-from django.shortcuts import render_to_response, redirect, render
+from django.shortcuts import render_to_response, redirect, render, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
@@ -498,10 +499,11 @@ def project_detail(request, project_id):
 
 class ProjectUpdate(UpdateView):
     model = Task
-    fields = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner',
-              'planned_start', 'planned_finish', 'actual_start', 'actual_finish',
-              'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment']
-    success_url = reverse_lazy('project_list')
+    form_class = TaskForm
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('projects_list')
+        return self.success_url
 
     def get_form(self, form_class=None):
         form = super(ProjectUpdate, self).get_form(form_class)
@@ -515,10 +517,30 @@ class ProjectUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectUpdate, self).get_context_data(**kwargs)
-        context['executors'] = Execution.objects.filter(task=self.object)
-        context['costs'] = Order.objects.filter(task=self.object)
-        context['sendings'] = Sending.objects.filter(task=self.object)
+        if self.request.POST:
+            context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_form'] = SendingFormSet(self.request.POST, instance=self.object)
+        else:
+            context['executors_form'] = ExecutorsFormSet(instance=self.object)
+            context['costs_form'] = CostsFormSet(instance=self.object)
+            context['sending_form'] = SendingFormSet(instance=self.object)
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        executors_form = context['executors_form']
+        costs_form = context['costs_form']
+        sending_form = context['sending_form']
+        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
+            self.object = form.save()
+            executors_form.instance = self.object
+            executors_form.save()
+            costs_form.instance = self.object
+            costs_form.save()
+            sending_form.instance = self.object
+            sending_form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 @login_required()

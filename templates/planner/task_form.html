@@ -12,6 +12,9 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
+                <!-- PERMISSION CHECK -->
+                {% if user.is_superuser or user == object.owner.user and object.is_active %}
+                <form class="form-horizontal" action="" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
@@ -22,7 +25,6 @@
                         </div>
                         <div class="portlet-body">
                             <div class="widget-bg-color-white">
-                                <form class="form-horizontal" action="" method="post">{% csrf_token %}
                                     {% for field in form %}
                                     {% if field.errors %}
                                     <div class="form-group error">
@@ -51,7 +53,6 @@
                                         <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
                                     </div>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -71,103 +72,37 @@
                                 <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" data-always-visible="1" data-handle-color="#D7DCE2">
+                        <div class="tab-content scroller" style="height: 730px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
-                                {% if executors|length > 0 %}
-                                    {% for executor in executors %}
-                                        <div class="widget-media">
-                                <form class="form-horizontal" action="" method="post">{% csrf_token %}
-                                    {% for field in executor %}
-                                    {% if field.errors %}
-                                    <div class="form-group error">
-                                        <label class="col-sm-3 control-label">{{ field.label }}</label>
-                                        <div class="col-sm-9">{{ field }}
-                                            <span class="help-inline">
-                                                {% for error in  field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {% else %}
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">
-                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
-                                            {% else %}{{ field.label }}{% endif %}
-                                        </label>
-                                        <div class="col-sm-9">{{ field }}
-                                            {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endif %}
+                                {{ executors_form.management_form }}
+                                    {% for executor in executors_form %}
+                                        {{ executor.as_ul }}
+                                        <hr>
                                     {% endfor %}
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
-                                    </div>
-                                </form>
-
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="widget-media">
-                                        <div class="widget-media-body">
-                                            <p class="widget-media-body-subtitle">Виконавці відсутні</p>
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
-                                {% if costs|length > 0 %}
-                                    {% for cost in costs %}
-                                        <div class="widget-media">
-                                            <div class="widget-media-body">
-                                                <h4 class="widget-media-body-title">
-                                                    <a href="#">{{ cost.contractor.name }}</a>
-                                                </h4>
-                                                Назва робіт: <strong>{{ cost.order_name }}</strong><br>
-                                                Договір: <strong>{{ cost.deal_number }}</strong><br>
-                                                Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div><br>
-                                                Аванс: <strong>{{ cost.advance }}</strong><br>
-                                                Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
-                                                {% if cost.pay_date %}Дата оплати: <strong>{{ cost.pay_date }}</strong>{% endif %}
-                                            </div>
-                                        </div>
+                                {{ costs_form.management_form }}
+                                    {% for cost in costs_form %}
+                                        {{ cost.as_ul }}
+                                        <hr>
                                     {% endfor %}
-                                {% else %}
-                                    <div class="widget-media">
-                                        <div class="widget-media-body">
-                                            <p class="widget-media-body-subtitle">Витрати відсутні</p>
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
-                                {% if sendings|length > 0 %}
-                                    {% for sending in sendings %}
-                                        <div class="widget-media">
-                                            <div class="widget-media-body">
-                                                <h4 class="widget-media-body-title">
-                                                    <a href="#">{{ sending.receiver.name }}</a>
-                                                </h4>
-                                                Дата відправки: <strong>{{ sending.receipt_date }}</strong><br>
-                                                Кількість: <div class="widget-btn-blue circle" href="#">{{ sending.copies_count }} примірник</div>
-                                            </div>
-                                        </div>
+                                {{sending_form.management_form }}
+                                    {% for sending in sending_form %}
+                                        {{ sending.as_ul }}
+                                        <hr>
                                     {% endfor %}
-                                {% else %}
-                                    <div class="widget-media">
-                                        <div class="widget-media-body">
-                                            <p class="widget-media-body-subtitle">Відправки відсутні</p>
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
 
                         </div>
                     </div>
                     <!-- END PORTLET-->
                 </div>
+                </form>
+                {% else %}
+                    Ви не маєте доступу до редагування даного проекту<br><br>
+                {% endif %}
             </div>
             <!-- END PAGE BASE CONTENT -->
         </div>

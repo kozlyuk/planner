@@ -534,6 +534,8 @@ class Task(models.Model):
     def is_active(self):
         if not self.actual_finish:
             return True
+        if self.deal.act_status == Deal.Issued:
+            return False
         if self.actual_finish.month >= (datetime.now().month + 12*(datetime.now().year-self.actual_finish.year)-1):
             if self.actual_finish.month == datetime.now().month:
                 return True

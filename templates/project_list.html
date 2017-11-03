@@ -76,8 +76,10 @@
                                         <td> {{ item.owner.name }} </td>
                                         <td> {{ item.overdue_status }} </td>
                                         <td>
+                                            {% if user.is_superuser or user == item.owner.user and item.is_active %}
                                             <a href="{% url 'project_update' item.id %}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Редагувати </a>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -126,10 +128,7 @@
                             </div>
                         </div>
                     {% endif %}
-                    {#                    </div>#}
-                    {#                </div>#}
                     {#                <!-- END PAGE BASE CONTENT -->#}
-                    {#            </div>#}
                 </div>
             </div>
         </div>
