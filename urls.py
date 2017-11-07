@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from planner import views
 from django.views.generic.base import RedirectView
@@ -26,6 +26,7 @@ from .views import ProjectUpdate
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
+    #url(r'^select2/', include('django_select2.urls')),
 
     url(r'^$', views.home_page, name='home_page'),
     url(r'^project/$', views.projects_list, name='projects_list'),

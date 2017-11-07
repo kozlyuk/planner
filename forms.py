@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from planner.models import User, Task, Customer, Execution, Order, Sending, Deal
+from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee
 from django.forms import inlineformset_factory
+from django_select2.forms import Select2Widget
 
 
 class UserLoginForm(forms.ModelForm):
@@ -26,10 +27,15 @@ class TaskForm(forms.ModelForm):
         fields = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner',
                   'planned_start', 'planned_finish', 'actual_start', 'actual_finish',
                   'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment']
+        widgets = {
+            'project_type': Select2Widget,
+            'deal': Select2Widget,
+        }
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+        self.fields['deal'].queryset = Deal.objects.all()
+        self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part'), extra=2)
 CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'), extra=2)
