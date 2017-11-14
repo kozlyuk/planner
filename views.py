@@ -493,7 +493,8 @@ def project_detail(request, project_id):
                                   'task': task,
                                   'executors': executors,
                                   'costs': costs,
-                                  'sendings': sendings
+                                  'sendings': sendings,
+                                  'filters': request.META['QUERY_STRING']
                               },
                               context_instance=RequestContext(request))
 
