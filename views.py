@@ -476,7 +476,8 @@ def projects_list(request):
                                   'page_objects': page_objects,
                                   'indexes': indexes,
                                   'tasks_count': tasks_count,
-                                  'tasks_filtered': tasks_filtered
+                                  'tasks_filtered': tasks_filtered,
+                                  'filters': request.META['QUERY_STRING']
                               },
                               context_instance=RequestContext(request))
 
@@ -502,7 +503,7 @@ class ProjectUpdate(UpdateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('projects_list')
+        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
 
     def get_form(self, form_class=None):
@@ -517,6 +518,54 @@ class ProjectUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_form'] = SendingFormSet(self.request.POST, instance=self.object)
+        else:
+            context['executors_form'] = ExecutorsFormSet(instance=self.object)
+            context['costs_form'] = CostsFormSet(instance=self.object)
+            context['sending_form'] = SendingFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        executors_form = context['executors_form']
+        costs_form = context['costs_form']
+        sending_form = context['sending_form']
+        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
+            self.object = form.save()
+            executors_form.instance = self.object
+            executors_form.save()
+            costs_form.instance = self.object
+            costs_form.save()
+            sending_form.instance = self.object
+            sending_form.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data())
+
+
+class ProjectCreate(CreateView):
+    model = Task
+    form_class = TaskForm
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
+
+    def get_form(self, form_class=None):
+        form = super(ProjectCreate, self).get_form(form_class)
+        form.fields['planned_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['planned_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['actual_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['actual_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['object_address'].widget.attrs.update({'size': 70})
+        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCreate, self).get_context_data(**kwargs)
         if self.request.POST:
             context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)

@@ -47,7 +47,7 @@ class TaskFilterForm(forms.Form):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
         exec_status = []
         exec_status.insert(0, (0, "Всі"))
-        exec_status.insert(1, ('IL', "В черзі"))
+        exec_status.insert(1, ('IW', "В черзі"))
         exec_status.insert(2, ('IP', "Виконується"))
         exec_status.insert(3, ('HD', "Виконано"))
 
