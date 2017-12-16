@@ -40,7 +40,7 @@
                                             {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a>
                                         </td>
                                         <td>
-                                            <a href="{% url 'project_add' %}"
+                                            <a href="{% url 'project_add' %}?{{ filters }}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
                                         </td>
                                         </tr></table>

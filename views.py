@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response, redirect, render, HttpResponseR
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -351,7 +351,7 @@ def home_page(request):
     activities = Log.objects.filter(user=request.user)[:50]
 
     if request.user.groups.filter(name='Бухгалтери').exists():
-        return render_to_response('content_admin.html',
+        return render(request, 'content_admin.html',
                                   {
                                       'employee': request.user.employee,
                                       'actneed_deals': actneed_deals,
@@ -392,9 +392,9 @@ def home_page(request):
                                       'news': news,
                                       'events': events,
                                       'activities': activities
-                                  }, context_instance=RequestContext(request))
+                                  })
     else:
-        return render_to_response('content_exec.html',
+        return render(request, 'content_exec.html',
                                   {
                                       'employee': request.user.employee,
                                       'td_tasks': td_tasks,
@@ -432,7 +432,7 @@ def home_page(request):
                                       'news': news,
                                       'events': events,
                                       'activities': activities
-                                  }, context_instance=RequestContext(request))
+                                  })
 
 
 @login_required()
@@ -470,7 +470,7 @@ def projects_list(request):
 
     page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 50)
 
-    return render_to_response('project_list.html',
+    return render(request, 'project_list.html',
                               {
                                   'filter_form': filter_form,
                                   'page_objects': page_objects,
@@ -478,8 +478,7 @@ def projects_list(request):
                                   'tasks_count': tasks_count,
                                   'tasks_filtered': tasks_filtered,
                                   'filters': request.META['QUERY_STRING']
-                              },
-                              context_instance=RequestContext(request))
+                              })
 
 
 @login_required()
@@ -488,15 +487,14 @@ def project_detail(request, project_id):
     executors = Execution.objects.filter(task=task)
     costs = Order.objects.filter(task=task)
     sendings = Sending.objects.filter(task=task)
-    return render_to_response('planner/project_detail.html',
+    return render(request, 'planner/project_detail.html',
                               {
                                   'task': task,
                                   'executors': executors,
                                   'costs': costs,
                                   'sendings': sendings,
                                   'filters': request.META['QUERY_STRING']
-                              },
-                              context_instance=RequestContext(request))
+                              })
 
 
 class ProjectUpdate(UpdateView):

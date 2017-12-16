@@ -13,11 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.contrib import admin
 from planner import views
 from django.views.generic.base import RedirectView
-from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
+from django.contrib.staticfiles.urls import static
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
@@ -56,5 +56,5 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/delete/$', EventDelete.as_view(), name='event_delete'),
 ]
 
-urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

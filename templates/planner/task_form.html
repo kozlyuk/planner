@@ -26,17 +26,10 @@
                         </div>
                         <div class="portlet-body">
                             <div class="widget-bg-color-white">
+                                    <span class="help-inline" style="color:red;">
+                                    {{ form.non_field_errors }}
+                                    </span>
                                     {% for field in form %}
-                                    {% if field.errors %}
-                                    <div class="form-group error">
-                                        <label class="col-sm-3 control-label">{{ field.label }}</label>
-                                        <div class="col-sm-9">{{ field }}
-                                            <span class="help-inline">
-                                                {% for error in  field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {% else %}
                                     <div class="form-group">
                                         <label class="col-sm-3 control-label">
                                             {% if field.field.required %}<strong>{{ field.label }}</strong>
@@ -46,9 +39,13 @@
                                             {% if field.help_text %}
                                             <p class="help-inline"><small>{{ field.help_text }}</small></p>
                                             {% endif %}
+                                            {% if field.errors %}
+                                            <span class="help-inline" style="color:red;">
+                                                {% for error in field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    {% endif %}
                                     {% endfor %}
                                     <div class="form-actions">
                                         <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
@@ -76,24 +73,93 @@
                         <div class="tab-content scroller" style="height: 730px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
                                 {{ executors_form.management_form }}
-                                    {% for executor in executors_form %}
-                                        {{ executor.as_ul }}
-                                        <hr>
+                                {% for form in executors_form %}
+                                    {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
                                     {% endfor %}
+                                    <span class="help-inline" style="color:red;">
+                                        {{ form.non_field_errors }}
+                                    </span>
+                                    {% for field in form.visible_fields %}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">
+                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
+                                            {% else %}{{ field.label }}{% endif %}
+                                        </label>
+                                        <div class="col-sm-8">{{ field }}
+                                            {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                            {% endif %}
+                                            {% if field.errors %}
+                                            <span class="help-inline" style="color:red;">
+                                                {% for error in field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                        <hr>
+                                {% endfor %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
                                 {{ costs_form.management_form }}
-                                    {% for cost in costs_form %}
-                                        {{ cost.as_ul }}
-                                        <hr>
+                                {% for form in costs_form %}
+                                    {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
                                     {% endfor %}
+                                    <span class="help-inline" style="color:red;">
+                                        {{ form.non_field_errors }}
+                                    </span>
+                                    {% for field in form.visible_fields %}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">
+                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
+                                            {% else %}{{ field.label }}{% endif %}
+                                        </label>
+                                        <div class="col-sm-8">{{ field }}
+                                            {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                            {% endif %}
+                                            {% if field.errors %}
+                                            <span class="help-inline" style="color:red;">
+                                                {% for error in field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                        <hr>
+                                {% endfor %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
                                 {{sending_form.management_form }}
-                                    {% for sending in sending_form %}
-                                        {{ sending.as_ul }}
-                                        <hr>
+                                {% for form in sending_form %}
+                                    {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
                                     {% endfor %}
+                                    <span class="help-inline" style="color:red;">
+                                        {{ form.non_field_errors }}
+                                    </span>
+                                    {% for field in form.visible_fields %}
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">
+                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
+                                            {% else %}{{ field.label }}{% endif %}
+                                        </label>
+                                        <div class="col-sm-8">{{ field }}
+                                            {% if field.help_text %}
+                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                            {% endif %}
+                                            {% if field.errors %}
+                                            <span class="help-inline" style="color:red;">
+                                                {% for error in field.errors %}{{ error }}{% endfor %}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                        <hr>
+                                {% endfor %}
                             </div>
 
                         </div>

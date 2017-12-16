@@ -9,6 +9,8 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
+from django.utils.html import format_html
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -222,13 +224,13 @@ class DealAdmin(admin.ModelAdmin):
     def overdue_mark(self, obj):
         status = obj.overdue_status()
         if 'Протерміновано' in status:
-            return '<div style="color:red;">%s</div>' % status
+            return format_html('<div style="color:red;">%s</div>' % status)
         elif 'Закінчується' in status:
-            return '<div style="color:orange;">%s</div>' % status
+            return format_html('<div style="color:orange;">%s</div>' % status)
         elif status == 'Очікує закриття акту' or 'Оплата' in status:
-            return '<div style="color:blue;">%s</div>' % status
+            return format_html('<div style="color:blue;">%s</div>' % status)
         elif 'Вартість' in status:
-            return '<div style="color:purple;">%s</div>' % status
+            return format_html('<div style="color:purple;">%s</div>' % status)
         return status
 
     overdue_mark.allow_tags = True
@@ -239,7 +241,7 @@ class DealAdmin(admin.ModelAdmin):
     list_per_page = 50
     search_fields = ['number', 'value']
     ordering = ['-creation_date', 'customer', '-number']
-    list_filter = ['customer', 'pay_status', 'act_status']
+    list_filter = [('customer', RelatedDropdownFilter), 'pay_status', 'act_status']
     date_hierarchy = 'expire_date'
     readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc', 'pay_date_calc']
     fieldsets = [
@@ -429,11 +431,11 @@ class TaskAdmin(admin.ModelAdmin):
     def overdue_mark(self, obj):
         status = obj.overdue_status()
         if 'Протерміновано' in status:
-            return '<div style="color:red;">%s</div>' % status
+            return format_html('<div style="color:red;">%s</div>' % status)
         elif 'Завершується' in status:
-            return '<div style="color:orange;">%s</div>' % status
+            return format_html('<div style="color:orange;">%s</div>' % status)
         elif 'Завершити' in status:
-            return '<div style="color:blue;">%s</div>' % status
+            return format_html('<div style="color:blue;">%s</div>' % status)
         return status
     overdue_mark.allow_tags = True
     overdue_mark.short_description = 'Попередження'
@@ -451,7 +453,9 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'overdue_mark']
     list_per_page = 50
     date_hierarchy = 'actual_finish'
-    list_filter = ['exec_status', ('owner', admin.RelatedOnlyFieldListFilter), 'deal__customer'] # ('project_type', ActiveListFilter)]
+    list_filter = ['exec_status',
+                   ('owner', admin.RelatedOnlyFieldListFilter),
+                   ('deal__customer', RelatedDropdownFilter)]
     search_fields = ['object_code', 'object_address', 'project_type__price_code', 'project_type__project_type', 'deal__number']
     ordering = ['-creation_date', '-deal', 'object_code']
 

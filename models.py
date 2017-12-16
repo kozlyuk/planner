@@ -26,7 +26,7 @@ def user_directory_path(instance, filename):
 
 
 class Employee(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=50, unique=True)
     position = models.CharField('Посада', max_length=50)
     head = models.ForeignKey('self', verbose_name='Кервіник', on_delete=models.SET_NULL, blank=True, null=True)
@@ -207,7 +207,7 @@ class Customer(models.Model):
 
 class Project(models.Model):
     project_type = models.CharField('Вид робіт', max_length=100)
-    customer = models.ForeignKey(Customer, verbose_name='Замовник')
+    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     price_code = models.CharField('Пункт кошторису', max_length=8, unique=True)
     price = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
@@ -244,7 +244,7 @@ class Project(models.Model):
 
 class Company(models.Model):
     name = models.CharField('Назва', max_length=100, unique=True)
-    chief = models.ForeignKey(Employee, verbose_name='Керівник')
+    chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     requisites = models.TextField('Реквізити', blank=True)
 
     class Meta:
@@ -352,8 +352,8 @@ class Deal(models.Model):
         (Issued, 'Виписаний')
         )
     number = models.CharField('Номер договору', max_length=30)
-    customer = models.ForeignKey(Customer, verbose_name='Замовник')
-    company = models.ForeignKey(Company, verbose_name='Компанія')
+    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
+    company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     value_correction = models.DecimalField('Коригування вартості робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
@@ -448,7 +448,7 @@ class Deal(models.Model):
 
 
 class Receiver(models.Model):
-    customer = models.ForeignKey(Customer, verbose_name='Замовник')
+    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     name = models.CharField('Отримувач', max_length=100, unique=True)
     address = models.CharField('Адреса', max_length=255)
     contact_person = models.CharField('Контактна особа', max_length=50)
@@ -474,11 +474,11 @@ class Task(models.Model):
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
-    project_type = models.ForeignKey(Project, verbose_name='Тип проекту')
+    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
-    deal = models.ForeignKey(Deal, verbose_name='Договір')
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    owner = models.ForeignKey(Employee, verbose_name='Керівник проекту')
+    owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
     costs = models.ManyToManyField(Contractor, through='Order', related_name='tasks',
@@ -599,8 +599,8 @@ class Order(models.Model):
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачений')
         )
-    contractor = models.ForeignKey(Contractor, verbose_name='Підрядник')
-    task = models.ForeignKey(Task, verbose_name='Проект')
+    contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
+    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     order_name = models.CharField('Назва робіт', max_length=30)
     deal_number = models.CharField('Номер договору', max_length=30)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
@@ -618,8 +618,8 @@ class Order(models.Model):
 
 
 class Sending(models.Model):
-    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту')
-    task = models.ForeignKey(Task, verbose_name='Проект')
+    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.PROTECT)
+    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     receipt_date = models.DateField('Дата відправки')
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', validators=[MaxValueValidator(10)])
     register_num = models.CharField('Реєстр', max_length=30, blank=True)
@@ -635,10 +635,10 @@ class Sending(models.Model):
 
 
 class Execution(models.Model):
-    executor = models.ForeignKey(Employee, verbose_name='Виконавець')
-    task = models.ForeignKey(Task, verbose_name='Проект')
-    part_name = models.CharField('Назва робіт', max_length=100)
-    part = models.PositiveSmallIntegerField('Частка робіт', validators=[MaxValueValidator(150)])
+    executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
+    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
+    part_name = models.CharField('Роботи', max_length=100)
+    part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
 
     class Meta:
         unique_together = ('executor', 'task', 'part_name')
@@ -660,7 +660,7 @@ class IntTask(models.Model):
     )
     task_name = models.CharField('Завдання', max_length=100)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    executor = models.ForeignKey(Employee, verbose_name='Виконавець')
+    executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
     planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
@@ -689,7 +689,7 @@ class Event(models.Model):
         (RepeatMonthly, 'Щомісячна подія'),
         (RepeatYearly, 'Щорічна подія')
     )
-    creator = models.ForeignKey(User, verbose_name='Створив')
+    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
     date = models.DateField('Дата')
     next_date = models.DateField('Дата наступної події', blank=True, null=True)
@@ -757,7 +757,7 @@ class News(models.Model):
         (Leisure, 'Дозвілля'),
         (Production, 'Робочі'),
     )
-    creator = models.ForeignKey(User, verbose_name='Створив')
+    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
     title = models.CharField('Назва новини', max_length=100)
     text = models.TextField('Новина')

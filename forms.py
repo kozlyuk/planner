@@ -38,7 +38,8 @@ class TaskForm(forms.ModelForm):
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part'), extra=2)
-CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'), extra=2)
+CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
+                                     extra=2, widgets={'contractor': Select2Widget(attrs={'width': '100%'})})
 SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'), extra=2)
 
 
