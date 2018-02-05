@@ -3,6 +3,7 @@ from django import forms
 from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee
 from django.forms import inlineformset_factory
 from django_select2.forms import Select2Widget
+from django.contrib.admin.widgets import AdminDateWidget
 
 
 class UserLoginForm(forms.ModelForm):
@@ -37,10 +38,12 @@ class TaskForm(forms.ModelForm):
         self.fields['deal'].queryset = Deal.objects.all()
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
 
-ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part'), extra=2)
-CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
-                                     extra=2, widgets={'contractor': Select2Widget(attrs={'width': '100%'})})
-SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'), extra=2)
+ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part'),
+                                         extra=2, widgets={'executor': Select2Widget()})
+CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
+                                     extra=2, widgets={'contractor': Select2Widget(attrs={'data-width': 'auto'}), 'pay_date': AdminDateWidget()})
+SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'),
+                                       extra=2, widgets={'receiver': Select2Widget(attrs={'data-width': '20em'}), 'receipt_date': AdminDateWidget()})
 
 
 class TaskFilterForm(forms.Form):

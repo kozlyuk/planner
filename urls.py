@@ -17,14 +17,16 @@ from django.conf.urls import url
 from django.contrib import admin
 from planner import views
 from django.views.generic.base import RedirectView
-from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
 from .views import ProjectUpdate, ProjectCreate
+from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
     #url(r'^select2/', include('django_select2.urls')),
 
@@ -56,5 +58,5 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/delete/$', EventDelete.as_view(), name='event_delete'),
 ]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

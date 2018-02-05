@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        accountants = Employee.objects.filter(user__username='y.gorecka')
+        accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
         deals = Deal.objects.exclude(pay_status=Deal.PaidUp) \
                             .exclude(pay_date__isnull=True) \
                             .exclude(pay_date__gte=date.today()) \

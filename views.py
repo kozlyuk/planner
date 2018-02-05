@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order, Sending
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -14,6 +15,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
 from django.db.models import Q
+from django.contrib.admin.widgets import AdminDateWidget
 
 
 @login_required()
@@ -176,7 +178,7 @@ def bonus_calc(request, employee_id, year, month):
 
 
 def login_page(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('home_page')
     if request.method == 'POST':
         login_form = UserLoginForm(request.POST)
@@ -199,7 +201,7 @@ def login_page(request):
 
 @login_required()
 def logout_page(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         logout(request)
     return redirect('login_page')
 
@@ -507,10 +509,10 @@ class ProjectUpdate(UpdateView):
 
     def get_form(self, form_class=None):
         form = super(ProjectUpdate, self).get_form(form_class)
-        form.fields['planned_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['planned_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['actual_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['actual_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['planned_start'].widget = AdminDateWidget()
+        form.fields['planned_finish'].widget = AdminDateWidget()
+        form.fields['actual_start'].widget = AdminDateWidget()
+        form.fields['actual_finish'].widget = AdminDateWidget()
         form.fields['object_address'].widget.attrs.update({'size': 70})
         form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
         return form
@@ -542,7 +544,7 @@ class ProjectUpdate(UpdateView):
             sending_form.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
-            return self.render_to_response(self.get_context_data())
+            return self.render(self.get_context_data())
 
 
 class ProjectCreate(CreateView):
@@ -555,10 +557,10 @@ class ProjectCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super(ProjectCreate, self).get_form(form_class)
-        form.fields['planned_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['planned_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['actual_start'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
-        form.fields['actual_finish'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy', 'size': 8})
+        form.fields['planned_start'].widget = AdminDateWidget()
+        form.fields['planned_finish'].widget = AdminDateWidget()
+        form.fields['actual_start'].widget = AdminDateWidget()
+        form.fields['actual_finish'].widget = AdminDateWidget()
         form.fields['object_address'].widget.attrs.update({'size': 70})
         form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
         return form
@@ -618,8 +620,8 @@ class NewsCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super(NewsCreate, self).get_form(form_class)
-        form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
-        form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['actual_from'].widget = AdminDateWidget()
+        form.fields['actual_to'].widget = AdminDateWidget()
         return form
 
 
@@ -630,8 +632,8 @@ class NewsUpdate(UpdateView):
 
     def get_form(self, form_class=None):
         form = super(NewsUpdate, self).get_form(form_class)
-        form.fields['actual_from'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
-        form.fields['actual_to'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['actual_from'].widget = AdminDateWidget()
+        form.fields['actual_to'].widget = AdminDateWidget()
         return form
 
 
@@ -657,7 +659,7 @@ class EventCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super(EventCreate, self).get_form(form_class)
-        form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['date'].widget = AdminDateWidget()
         return form
 
 
@@ -668,7 +670,7 @@ class EventUpdate(UpdateView):
 
     def get_form(self, form_class=None):
         form = super(EventUpdate, self).get_form(form_class)
-        form.fields['date'].widget.attrs.update({'class': 'date-picker', 'data-date-format': 'dd.mm.yyyy'})
+        form.fields['date'].widget = AdminDateWidget()
         return form
 
 

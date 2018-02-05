@@ -14,12 +14,12 @@
     <title>ITEL Service | Dashboard</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <meta content="IT Agro production" name="description"/>
-    <meta content="Victor Borovyk" name="author"/>
+    <meta content="Itel-Service" name="description"/>
+    <meta content="Sergii Kozliuk" name="author"/>
     {% block global_meta %}
     {% endblock %}
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet"
           type="text/css"/>
     <link href="{% static 'assets/global/plugins/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet"
           type="text/css"/>
@@ -154,8 +154,11 @@
 <script src="{% static 'assets/global/plugins/uniform/jquery.uniform.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"
         type="text/javascript"></script>
-<script src="{% static 'assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"
-        type="text/javascript"></script>
+
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+{{ form.media }}
 <!-- END CORE PLUGINS -->
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 <script src="{% static 'assets/global/plugins/morris/morris.min.js' %}" type="text/javascript"></script>
@@ -179,16 +182,6 @@
 <script src="{% static 'assets/layouts/global/scripts/quick-sidebar.min.js' %}" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 
-
-<script>
-
-    $('.date-picker').datepicker({
-        rtl: App.isRTL(),
-        orientation: "left",
-        autoclose: true,
-    });
-
-</script>
 </body>
 
 

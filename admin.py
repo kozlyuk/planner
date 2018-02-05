@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
@@ -287,6 +286,8 @@ class TaskForm(forms.ModelForm):
                 raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
                 raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
+            elif deal.act_status == Deal.Issued:
+                raise forms.ValidationError("Договір закрито, зверніться до керівника")
         if actual_finish and exec_status != Task.Done:
                 raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
