@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, datetime, timedelta
+from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
@@ -351,6 +352,7 @@ class Deal(models.Model):
         (Issued, 'Виписаний')
         )
     number = models.CharField('Номер договору', max_length=30)
+    date = models.DateField('Дата договору', default=now())
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
@@ -634,10 +636,20 @@ class Sending(models.Model):
 
 
 class Execution(models.Model):
+    ToDo = 'IW'
+    InProgress = 'IP'
+    Done = 'HD'
+    EXEC_STATUS_CHOICES = (
+        (ToDo, 'В черзі'),
+        (InProgress, 'Виконується'),
+        (Done, 'Виконано')
+    )
     executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     part_name = models.CharField('Роботи', max_length=100)
     part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
+    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    finish_date = models.DateField('Дата виконання', blank=True, null=True)
 
     class Meta:
         unique_together = ('executor', 'task', 'part_name')
@@ -666,6 +678,7 @@ class IntTask(models.Model):
     actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
     bonus = models.DecimalField('Бонус, грн.', max_digits=8, decimal_places=2, default=0)
     comment = models.TextField('Коментар', blank=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         unique_together = ('task_name', 'executor')

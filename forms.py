@@ -10,6 +10,7 @@ class UserLoginForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'password')
+        widgets = {'password': forms.PasswordInput}
 
     def is_valid(self):
         username_ = self.data["username"]

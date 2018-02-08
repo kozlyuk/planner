@@ -244,10 +244,11 @@ class DealAdmin(admin.ModelAdmin):
     date_hierarchy = 'expire_date'
     readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc', 'pay_date_calc']
     fieldsets = [
-        ('Інформація про договір', {'fields': [('number', 'customer', 'company'),
-                           ('value', 'advance', 'pay_status'),
-                           ('pay_date', 'expire_date'),
-                           ('act_status', 'act_date', 'act_value')]}),
+        ('Інформація про договір', {'fields': [('number', 'date'),
+                                               ('customer', 'company'),
+                                               ('value', 'advance', 'pay_status'),
+                                               ('pay_date', 'expire_date'),
+                                               ('act_status', 'act_date', 'act_value')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
                                              'costs_calc', 'pay_date_calc', 'comment'], 'classes': ['collapse']})
         ]
@@ -535,17 +536,21 @@ class IntTaskAdmin(admin.ModelAdmin):
     form = IntTaskForm
 
     list_display = ['task_name', 'exec_status', 'executor', 'planned_start', 'planned_finish']
-    ordering = ['planned_start']
-    list_filter = ['exec_status']
     fieldsets = [
-        (None, {'fields': [('task_name'),
+        (None, {'fields': ['task_name',
                            ('exec_status', 'executor'),
                            ('planned_start', 'planned_finish'),
                            ('actual_start', 'actual_finish'),
-                           ('bonus'),
-                           ('comment')
+                           'bonus',
+                           'comment'
                           ]})
         ]
+    list_per_page = 50
+    date_hierarchy = 'actual_finish'
+    list_filter = ['exec_status',
+                   ('executor', admin.RelatedOnlyFieldListFilter)]
+    search_fields = ['task_name']
+    ordering = ['-creation_date', 'task_name']
 
     def get_queryset(self, request):
         qs = super(IntTaskAdmin, self).get_queryset(request)
