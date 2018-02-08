@@ -5,8 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserLoginForm, TaskFilterForm
 from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
-from django.shortcuts import render_to_response, redirect, render, HttpResponseRedirect
-from django.template import RequestContext
+from django.shortcuts import redirect, render, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
 from django.urls import reverse_lazy
@@ -596,11 +595,10 @@ class ProjectCreate(CreateView):
 @login_required()
 def inttask_detail(request, task_id):
     task = IntTask.objects.get(pk=task_id)
-    return render_to_response('planner/inttask_detail.html',
+    return render(request, 'planner/inttask_detail.html',
                               {
-                                  'task': task,
-                              },
-                              context_instance=RequestContext(request))
+                                  'task': task
+                              })
 
 
 class NewsList(ListView):
