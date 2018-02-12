@@ -352,7 +352,7 @@ class Deal(models.Model):
         (Issued, 'Виписаний')
         )
     number = models.CharField('Номер договору', max_length=30)
-    date = models.DateField('Дата договору', default=now())
+    date = models.DateField('Дата договору', default=now)
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
