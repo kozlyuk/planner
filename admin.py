@@ -358,6 +358,7 @@ class OrdersInlineFormSet(BaseInlineFormSet):
 
 class ExecutersInline(admin.TabularInline):
     model = Execution
+    exclude = ['exec_status', 'finish_date']
     formset = ExecutersInlineFormSet
     extra = 0
 
