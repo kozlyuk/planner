@@ -1,8 +1,6 @@
 __pycache__
 migrations/
-media/
 settings.py
-wsgi.py
 
 # Windows image file caches
 Thumbs.db
