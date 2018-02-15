@@ -27,7 +27,7 @@ def calculation(request, deal_id):
     if tasks.exists():
 
         message = '<html><body>Калькуляція по договору {} від {}:<br><br>'\
-                  .format(deal, deal.creation_date.strftime('%d.%m.%Y'))
+                  .format(deal, deal.date.strftime('%d.%m.%Y'))
 
         objects = tasks.values('object_code', 'object_address').distinct()
 

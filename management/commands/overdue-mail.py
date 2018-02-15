@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 message += 'Протерміновані наступні проекти, в яких Ви відповідальна особа:<br>\
                            <table border="1">\
                            <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
-                           <th>Тип проекту</th><th>Статус</th><th>Попередження</th>'
+                           <th>Тип проекту</th><th>Статус</th><th>Планове закінчення</th><th>Фактичне закінчення</th>'
 
                 for task in otasks:
                     index += 1
@@ -44,11 +44,12 @@ class Command(BaseCommand):
                                <td>{:.80}</td>\
                                <td>{}</td>\
                                <td>{!s}</td>\
-                               <td>{!s}</td>\
+                               <td>{}</td>\
+                               <td>{}</td>\
                                </tr>'.\
                                format(index, task.pk, task.object_code, task.object_address,
                                       task.project_type, task.get_exec_status_display(),
-                                      task.overdue_status())
+                                      task.planned_finish, task.actual_finish)
 
                 message += '</table><br>'
 
@@ -57,7 +58,7 @@ class Command(BaseCommand):
                 message += 'Протерміновані наступні проекти, в яких Ви виконуєте роботи:<br>\
                            <table border="1">\
                            <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
-                           <th>Тип проекту</th><th>Статус</th><th>Попередження</th>'
+                           <th>Тип проекту</th><th>Статус</th><th>Планове закінчення</th><th>Фактичне закінчення</th>'
 
                 for task in etasks:
                     index +=1
@@ -67,11 +68,12 @@ class Command(BaseCommand):
                                <td>{:.80}</td>\
                                <td>{}</td>\
                                <td>{!s}</td>\
-                               <td>{!s}</td>\
+                               <td>{}</td>\
+                               <td>{}</td>\
                                </tr>'\
                                .format(index, task.pk, task.object_code, task.object_address,
                                        task.project_type, task.get_exec_status_display(),
-                                       task.overdue_status())
+                                       task.planned_finish, task.actual_finish)
 
                 message += '</table></body></html><br>'
 
