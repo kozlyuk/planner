@@ -40,7 +40,7 @@
                                             {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a>
                                         </td>
                                         <td>
-                                            <a href="{% url 'project_add' %}?{{ filters }}"
+                                            <a href="{% url 'task_add' %}?{{ filters }}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
                                         </td>
                                         </tr></table>
@@ -68,7 +68,7 @@
                                 <tbody>
                                 {% for item in page_objects %}
                                     <tr>
-                                        <td><a href="{% url 'project_detail' item.id %}?{{ filters }}"> {{ item.object_code }} </a></td>
+                                        <td><a href="{% url 'task_detail' item.id %}?{{ filters }}"> {{ item.object_code }} </a></td>
                                         <td class="hidden-xs"> {{ item.object_address }}</td>
                                         <td class="hidden-xs"> {{ item.project_type }}</td>
                                         <td class="hidden-xs"> {{ item.deal }}</td>
@@ -77,7 +77,7 @@
                                         <td> {{ item.overdue_status }} </td>
                                         <td>
                                             {% if user.is_superuser or user == item.owner.user and item.is_active %}
-                                            <a href="{% url 'project_update' item.id %}?{{ filters }}"
+                                            <a href="{% url 'task_update' item.id %}?{{ filters }}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Редагувати </a>
                                             {% endif %}
                                         </td>

@@ -650,6 +650,7 @@ class Execution(models.Model):
     part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     finish_date = models.DateField('Дата виконання', blank=True, null=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         unique_together = ('executor', 'task', 'part_name')

@@ -255,19 +255,19 @@ def home_page(request):
                                       .count()
         overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
     else:
-        td_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
-        ip_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
-        hd_tasks = Task.objects.filter(executors__user=request.user, exec_status=Task.Done).order_by('-actual_finish')[:50]
-        hd_tasks_count = Task.objects.filter(executors__user=request.user, exec_status=Task.Done,
+        td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
+        ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
+        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done).order_by('-finish_date')[:50]
+        hd_executions_count = Task.objects.filter(executors__user=request.user, exec_status=Task.Done,
                                              actual_finish__month=datetime.now().month,
                                              actual_finish__year=datetime.now().year).count()
-        active_tasks_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
-        tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
-        overdue_tasks_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done)\
+        active_executions_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
+        executions_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        overdue_executions_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done)\
                                       .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
                                       .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
                                       .count()
-        overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        overdue_executions_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
 
     td_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.ToDo).order_by
     ip_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.InProgress)
@@ -394,8 +394,8 @@ def home_page(request):
                                       'events': events,
                                       'activities': activities
                                   })
-    else:
-        return render(request, 'content_exec.html',
+    elif request.user.groups.filter(name='ГІПи').exists():
+        return render(request, 'content_gip.html',
                                   {
                                       'employee': request.user.employee,
                                       'td_tasks': td_tasks,
@@ -409,6 +409,46 @@ def home_page(request):
                                       'tasks_div': tasks_div,
                                       'overdue_tasks_count': overdue_tasks_count,
                                       'overdue_tasks_div': overdue_tasks_div,
+                                      'hd_inttasks_count': hd_inttasks_count,
+                                      'active_inttasks_count': active_inttasks_count,
+                                      'inttasks_div': inttasks_div,
+                                      'overdue_inttasks_count': overdue_inttasks_count,
+                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      'exec_bonuses_cm': exec_bonuses_cm,
+                                      'exec_bonuses_pm': exec_bonuses_pm,
+                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      'owner_bonuses_cm': owner_bonuses_cm,
+                                      'owner_bonuses_pm': owner_bonuses_pm,
+                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      'inttask_bonuses_cm': inttask_bonuses_cm,
+                                      'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      'total_bonuses_cm': total_bonuses_cm,
+                                      'total_bonuses_pm': total_bonuses_pm,
+                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      'employee_id': Employee.objects.get(user=request.user).id,
+                                      'cm': date_delta(0),
+                                      'pm': date_delta(-1),
+                                      'ppm': date_delta(-2),
+                                      'news': news,
+                                      'events': events,
+                                      'activities': activities
+                                  })
+    else:
+        return render(request, 'content_exec.html',
+                                  {
+                                      'employee': request.user.employee,
+                                      'td_executions': td_executions,
+                                      'ip_executions': ip_executions,
+                                      'hd_executions': hd_executions,
+                                      'td_inttasks': td_inttasks,
+                                      'ip_inttasks': ip_inttasks,
+                                      'hd_inttasks': hd_inttasks,
+                                      'hd_executions_count': hd_executions_count,
+                                      'active_executions_count': active_executions_count,
+                                      'executions_div': executions_div,
+                                      'overdue_executions_count': overdue_executions_count,
+                                      'overdue_executions_div': overdue_executions_div,
                                       'hd_inttasks_count': hd_inttasks_count,
                                       'active_inttasks_count': active_inttasks_count,
                                       'inttasks_div': inttasks_div,
@@ -483,12 +523,12 @@ def projects_list(request):
 
 
 @login_required()
-def project_detail(request, project_id):
+def task_detail(request, project_id):
     task = Task.objects.get(pk=project_id)
     executors = Execution.objects.filter(task=task)
     costs = Order.objects.filter(task=task)
     sendings = Sending.objects.filter(task=task)
-    return render(request, 'planner/project_detail.html',
+    return render(request, 'planner/task_detail.html',
                               {
                                   'task': task,
                                   'executors': executors,
@@ -498,7 +538,7 @@ def project_detail(request, project_id):
                               })
 
 
-class ProjectUpdate(UpdateView):
+class TaskUpdate(UpdateView):
     model = Task
     form_class = TaskForm
 
@@ -507,7 +547,7 @@ class ProjectUpdate(UpdateView):
         return self.success_url
 
     def get_form(self, form_class=None):
-        form = super(ProjectUpdate, self).get_form(form_class)
+        form = super(TaskUpdate, self).get_form(form_class)
         form.fields['planned_start'].widget = AdminDateWidget()
         form.fields['planned_finish'].widget = AdminDateWidget()
         form.fields['actual_start'].widget = AdminDateWidget()
@@ -517,7 +557,7 @@ class ProjectUpdate(UpdateView):
         return form
 
     def get_context_data(self, **kwargs):
-        context = super(ProjectUpdate, self).get_context_data(**kwargs)
+        context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
             context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
@@ -546,7 +586,7 @@ class ProjectUpdate(UpdateView):
             return self.render(self.get_context_data())
 
 
-class ProjectCreate(CreateView):
+class TaskCreate(CreateView):
     model = Task
     form_class = TaskForm
 
@@ -555,7 +595,7 @@ class ProjectCreate(CreateView):
         return self.success_url
 
     def get_form(self, form_class=None):
-        form = super(ProjectCreate, self).get_form(form_class)
+        form = super(TaskCreate, self).get_form(form_class)
         form.fields['planned_start'].widget = AdminDateWidget()
         form.fields['planned_finish'].widget = AdminDateWidget()
         form.fields['actual_start'].widget = AdminDateWidget()
@@ -565,7 +605,7 @@ class ProjectCreate(CreateView):
         return form
 
     def get_context_data(self, **kwargs):
-        context = super(ProjectCreate, self).get_context_data(**kwargs)
+        context = super(TaskCreate, self).get_context_data(**kwargs)
         if self.request.POST:
             context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
@@ -590,6 +630,54 @@ class ProjectCreate(CreateView):
             sending_form.instance = self.object
             sending_form.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+class SubtaskUpdate(UpdateView):
+    model = Task
+    form_class = TaskForm
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
+
+    def get_form(self, form_class=None):
+        form = super(SubtaskUpdate, self).get_form(form_class)
+        form.fields['planned_start'].widget = AdminDateWidget()
+        form.fields['planned_finish'].widget = AdminDateWidget()
+        form.fields['actual_start'].widget = AdminDateWidget()
+        form.fields['actual_finish'].widget = AdminDateWidget()
+        form.fields['object_address'].widget.attrs.update({'size': 70})
+        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(SubtaskUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_form'] = SendingFormSet(self.request.POST, instance=self.object)
+        else:
+            context['executors_form'] = ExecutorsFormSet(instance=self.object)
+            context['costs_form'] = CostsFormSet(instance=self.object)
+            context['sending_form'] = SendingFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        executors_form = context['executors_form']
+        costs_form = context['costs_form']
+        sending_form = context['sending_form']
+        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
+            self.object = form.save()
+            executors_form.instance = self.object
+            executors_form.save()
+            costs_form.instance = self.object
+            costs_form.save()
+            sending_form.instance = self.object
+            sending_form.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render(self.get_context_data())
 
 
 @login_required()

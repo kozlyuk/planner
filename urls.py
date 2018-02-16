@@ -21,7 +21,7 @@ from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
-from .views import ProjectUpdate, ProjectCreate
+from .views import TaskUpdate, TaskCreate, SubtaskUpdate
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -32,10 +32,10 @@ urlpatterns = [
 
     url(r'^$', views.home_page, name='home_page'),
     url(r'^project/$', views.projects_list, name='projects_list'),
-    url(r'^project/(?P<pk>[0-9]+)/change/$', ProjectUpdate.as_view(), name='project_update'),
-    url(r'^project/add/$', ProjectCreate.as_view(), name='project_add'),
-    url(r'^project/(?P<project_id>\d+)/$', views.project_detail, name='project_detail'),
-    #url(r'^project/(?P<project_id>\d+)/edit/$', views.project_form, name='project_form'),
+    url(r'^project/(?P<pk>[0-9]+)/change/$', TaskUpdate.as_view(), name='task_update'),
+    url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
+    url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
+    url(r'^subtask/(?P<subtask_id>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<task_id>\d+)/$', views.inttask_detail, name='inttask_detail'),
     # url(r'^deal/$', views.deals_list, name='deals_list'),
     url(r'^deal/$', RedirectView.as_view(url='/admin/planner/deal/'), name='deals_list'),

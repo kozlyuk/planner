@@ -47,11 +47,11 @@ class Command(BaseCommand):
                                <td>{}</td>\
                                <td>{!s}</td>\
                                <td>{}</td>\
-                               <td>{}</td>\
+                               <td>{!s}</td>\
                                </tr>'\
                                .format(index, task.pk, task.object_code, task.object_address,
                                        task.project_type, task.get_exec_status_display(),
-                                       task.planned_finish, task.actual_finish)
+                                       task.planned_finish, task.overdue_status())
                 message += '</table><br>'
 
             if etasks.exists():
@@ -70,11 +70,11 @@ class Command(BaseCommand):
                                <td>{}</td>\
                                <td>{!s}</td>\
                                <td>{}</td>\
-                               <td>{}</td>\
+                               <td>{!s}</td>\
                                </tr>'\
                                .format(index, task.pk, task.object_code, task.object_address,
                                        task.project_type, task.get_exec_status_display(),
-                                       task.planned_finish, task.actual_finish)
+                                       task.planned_finish, task.overdue_status())
                 message += '</table></body></html><br>'
 
             if einttasks.exists():
