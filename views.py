@@ -258,16 +258,19 @@ def home_page(request):
         td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
         ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
         hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done).order_by('-finish_date')[:50]
-        hd_executions_count = Task.objects.filter(executors__user=request.user, exec_status=Task.Done,
-                                             actual_finish__month=datetime.now().month,
-                                             actual_finish__year=datetime.now().year).count()
-        active_executions_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
-        executions_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
-        overdue_executions_count = Task.objects.filter(executors__user=request.user).exclude(exec_status=Task.Done)\
-                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
-                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
-                                      .count()
-        overdue_executions_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        hd_executions_count = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
+                                                       finish_date__month=datetime.now().month,
+                                                       finish_date__year=datetime.now().year).count()
+        active_executions_count = Execution.objects.filter(executor__user=request.user)\
+                                                   .exclude(exec_status=Execution.Done)\
+                                                   .count() + hd_executions_count
+        executions_div = int(hd_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
+        overdue_executions_count = Execution.objects.filter(executor__user=request.user)\
+                                            .exclude(exec_status=Execution.Done)\
+                                            .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__isnull=True)\
+                                            .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__gte=date.today())\
+                                            .count()
+        overdue_executions_div = int(overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
 
     td_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.ToDo).order_by
     ip_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.InProgress)

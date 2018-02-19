@@ -471,7 +471,7 @@ class TaskAdmin(admin.ModelAdmin):
             form.base_fields['owner'].queryset = Employee.objects.filter(user=request.user)
         if obj is None or request.user.is_superuser or (obj.is_active() and obj.owner.user == request.user):
             if obj is None or obj.deal.act_status != Deal.Issued:
-                form.base_fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+                form.base_fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued).order_by('-creation_date')
             if obj is not None:
                 form.base_fields['project_type'].queryset = Project.objects.filter(customer=obj.deal.customer, active=True)
         return form
