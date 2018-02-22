@@ -309,6 +309,12 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
             percent += part
             if executor and executor.user.username.startswith('outsourcing'):
                 outsourcing_part += part
+            exec_status = form.cleaned_data.get('exec_status')
+            finish_date = form.cleaned_data.get('finish_date')
+            if finish_date and exec_status != Execution.Done:
+                raise ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+            elif exec_status == Execution.Done and not finish_date:
+                raise ValidationError("Вкажіть будь ласка Дату виконання робіт")
         self.instance.__outsourcing_part__ = outsourcing_part
         if self.instance.__exec_status__ == Task.Done and percent < 100:
             raise ValidationError(_('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
@@ -321,6 +327,7 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
             if percent > bonuses_max:
                 raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
                                         'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
+
 
 class OrdersInlineFormSet(BaseInlineFormSet):
 
@@ -358,7 +365,7 @@ class OrdersInlineFormSet(BaseInlineFormSet):
 
 class ExecutersInline(admin.TabularInline):
     model = Execution
-    exclude = ['exec_status', 'finish_date']
+#    exclude = ['exec_status', 'finish_date']
     formset = ExecutersInlineFormSet
     extra = 0
 

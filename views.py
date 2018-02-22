@@ -636,51 +636,32 @@ class TaskCreate(CreateView):
 
 
 class SubtaskUpdate(UpdateView):
-    model = Task
-    form_class = TaskForm
-
-    def get_success_url(self):
-        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
-        return self.success_url
+    model = Execution
+    fields = ['exec_status', 'finish_date']
+    success_url = reverse_lazy('home_page')
 
     def get_form(self, form_class=None):
         form = super(SubtaskUpdate, self).get_form(form_class)
-        form.fields['planned_start'].widget = AdminDateWidget()
-        form.fields['planned_finish'].widget = AdminDateWidget()
-        form.fields['actual_start'].widget = AdminDateWidget()
-        form.fields['actual_finish'].widget = AdminDateWidget()
-        form.fields['object_address'].widget.attrs.update({'size': 70})
-        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        form.fields['finish_date'].widget = AdminDateWidget()
         return form
 
     def get_context_data(self, **kwargs):
         context = super(SubtaskUpdate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_form'] = SendingFormSet(self.request.POST, instance=self.object)
-        else:
-            context['executors_form'] = ExecutorsFormSet(instance=self.object)
-            context['costs_form'] = CostsFormSet(instance=self.object)
-            context['sending_form'] = SendingFormSet(instance=self.object)
+        execution = Execution.objects.get(pk=self.kwargs['pk'])
+        context['executors'] = Execution.objects.filter(task=execution.task)
+        context['sendings'] = Sending.objects.filter(task=execution.task)
         return context
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        executors_form = context['executors_form']
-        costs_form = context['costs_form']
-        sending_form = context['sending_form']
-        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
-            self.object = form.save()
-            executors_form.instance = self.object
-            executors_form.save()
-            costs_form.instance = self.object
-            costs_form.save()
-            sending_form.instance = self.object
-            sending_form.save()
-            return HttpResponseRedirect(self.get_success_url())
+        if form.cleaned_data['finish_date'] and form.cleaned_data['exec_status'] != Execution.Done:
+            form.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+            return self.form_invalid(form)
+        elif form.cleaned_data['exec_status'] == Execution.Done and not form.cleaned_data['finish_date']:
+            form.add_error('finish_date', "Вкажіть будь ласка Дату виконання робіт")
+            return self.form_invalid(form)
         else:
-            return self.render(self.get_context_data())
+            self.object = form.save()
+            return super().form_valid(form)
 
 
 @login_required()

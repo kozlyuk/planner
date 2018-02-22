@@ -133,6 +133,8 @@
                                                 </h4>
                                                 Назва робіт: <strong>{{ executor.part_name }}</strong><br>
                                                 Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                                Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
+                                                {% if executor.finish_date %}Дата виконання: <strong>{{ executor.finish_date }}</strong><br>{% endif %}
                                             </div>
                                         </div>
                                     {% endfor %}

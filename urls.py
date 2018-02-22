@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>[0-9]+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
     url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
-    url(r'^subtask/(?P<subtask_id>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
+    url(r'^subtask/(?P<pk>[0-9]+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<task_id>\d+)/$', views.inttask_detail, name='inttask_detail'),
     # url(r'^deal/$', views.deals_list, name='deals_list'),
     url(r'^deal/$', RedirectView.as_view(url='/admin/planner/deal/'), name='deals_list'),

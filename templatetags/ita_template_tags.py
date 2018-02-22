@@ -30,9 +30,14 @@ def url_replace(request, field, value):
 def color_status(status):
     if status == 'HD':
         return 'success'
-    elif status == 'IL':
+    elif status == 'IP':
         return 'warning'
     elif status == 'IW':
         return 'info'
     else:
         return 'danger'
+
+
+@register.simple_tag
+def exec_bonus(task, part):
+    return round(task.exec_bonus(part), 2)

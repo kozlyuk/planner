@@ -509,6 +509,20 @@ class Task(models.Model):
     def __str__(self):
         return self.object_code + ' ' + self.project_type.__str__()
 
+    def execution_status(self):
+        queryset = self.execution_set.all()
+        for execution in queryset:
+            if execution.exec_status == Execution.ToDo:
+                return 'В черзі'
+        for execution in queryset:
+            if execution.exec_status == Execution.InProgress:
+                return 'Виконується'
+        for execution in queryset:
+            if execution.exec_status == Execution.Done:
+                return 'Виконано'
+        return 'Відсутні виконавці'
+    execution_status.short_description = 'Статус виконання частин проекту'
+
     def overdue_status(self):
         if self.exec_status == self.Done:
             if self.receivers.all():
@@ -518,6 +532,8 @@ class Task(models.Model):
             elif self.project_type.copies_count > 0:
                 return 'Не відправлено'
             return 'Виконано %s' % self.actual_finish.strftime(date_format)
+        if self.execution_status() == 'Виконано':
+            return 'Очікує на перевірку'
         if self.planned_finish:
             if self.planned_finish < date.today():
                 return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
