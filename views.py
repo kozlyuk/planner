@@ -490,16 +490,17 @@ def projects_list(request):
         tasks = Task.get_accessable(request.user).order_by('-planned_finish')
     tasks_count = tasks.count()
 
-    search_string = request.GET.get('filter', '')
+    search_string = request.GET.get('filter', '').split()
     exec_status = request.GET.get('exec_status', '0')
     owner = request.GET.get('owner', '0')
     customer = request.GET.get('customer', '0')
     order = request.GET.get('o', '0')
-    tasks = tasks.filter(Q(object_code__icontains=search_string) |
-                         Q(object_address__icontains=search_string) |
-                         Q(deal__number__icontains=search_string) |
-                         Q(project_type__price_code__icontains=search_string) |
-                         Q(project_type__project_type__icontains=search_string))
+    for word in search_string:
+        tasks = tasks.filter(Q(object_code__icontains=word) |
+                         Q(object_address__icontains=word) |
+                         Q(deal__number__icontains=word) |
+                         Q(project_type__price_code__icontains=word) |
+                         Q(project_type__project_type__icontains=word))
     if exec_status != '0':
         tasks = tasks.filter(exec_status=exec_status)
     if owner != '0':
@@ -660,7 +661,6 @@ class SubtaskUpdate(UpdateView):
             form.add_error('finish_date', "Вкажіть будь ласка Дату виконання робіт")
             return self.form_invalid(form)
         else:
-            self.object = form.save()
             return super().form_valid(form)
 
 

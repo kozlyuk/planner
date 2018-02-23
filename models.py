@@ -676,6 +676,22 @@ class Execution(models.Model):
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
+    def save(self, logging=True, *args, **kwargs):
+        title = self.task.object_code + ' ' + self.part_name
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлена частина проекту', extra={"title": title})
+        super(Execution, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(), action='Видалена частина проекту',
+            extra={"title": self.title})
+        super(Execution, self).delete(*args, **kwargs)
+
 
 class IntTask(models.Model):
     ToDo = 'IW'
@@ -802,15 +818,15 @@ class News(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if not self.id:
-            log(user=get_current_user(), action='ADD_NEWS',
+            log(user=get_current_user(), action='Додана новина',
                 extra={"title": self.title})
         else:
-            log(user=get_current_user(), action='UPDATED_NEWS',
+            log(user=get_current_user(), action='Оновлена новина',
                 extra={"title": self.title})
         super(News, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        log(user=get_current_user(), action='DELETE_NEWS',
+        log(user=get_current_user(), action='Видалена новина',
             extra={"title": self.title})
         super(News, self).delete(*args, **kwargs)
 
