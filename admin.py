@@ -564,7 +564,8 @@ class IntTaskAdmin(admin.ModelAdmin):
         qs = super(IntTaskAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(executor__user=request.user)
+        return qs.filter(Q(executor__user=request.user) |
+                         Q(executor__head__user=request.user)).distinct()
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:

@@ -29,7 +29,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=50, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ForeignKey('self', verbose_name='Кервіник', on_delete=models.SET_NULL, blank=True, null=True)
+    head = models.ForeignKey('self', verbose_name='Кервіник', on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to='users/avatars', default='users/avatars/no_image.jpg', variations={
@@ -365,6 +365,7 @@ class Deal(models.Model):
     act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     comment = models.TextField('Коментар', blank=True)
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -494,11 +495,12 @@ class Task(models.Model):
                                                blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-                                              max_upload_size=20971520,
+                                              max_upload_size=26214400,
                                               blank=True, null=True)
 
     class Meta:
@@ -508,6 +510,22 @@ class Task(models.Model):
 
     def __str__(self):
         return self.object_code + ' ' + self.project_type.__str__()
+
+    def save(self, logging=True, *args, **kwargs):
+        title = self.object_code
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Доданий проект', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлений проект', extra={"title": title})
+        super(Task, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        title = self.object_code
+        log(user=get_current_user(), action='Видалений проект', extra={"title": title})
+        super(Task, self).delete(*args, **kwargs)
 
     def execution_status(self):
         queryset = self.execution_set.all()
@@ -561,6 +579,40 @@ class Task(models.Model):
         return False
     # try if task edit period is not expired
 
+    def is_viewable(self, user):
+        if user.is_superuser:
+            return True
+        elif user == self.owner.user or self.executors.filter(user=user).exists() \
+                or self.executors.filter(head__user=user).exists():
+            return True
+        else:
+            return False
+    # try if user has a permitting to view the task
+
+    def is_editable(self, user):
+        if user.is_superuser:
+            return True
+        elif self.is_active():
+            if user == self.owner.user or user.groups.filter(name='Бухгалтери').exists():
+                return True
+        else:
+            return False
+    # try if user has a permitting to edit the task
+
+    def is_markable(self, user):
+        if user.is_superuser:
+            return True
+        elif self.is_active():
+            if user == self.owner.user or self.executors.filter(user=user).exists():
+                return True
+        else:
+            return False
+    # try if user has a permitting to mark execution of the task
+
+    @staticmethod
+    def get_accessable(user):
+        return Task.objects.all()
+
     def costs_total(self):
         costs = self.costs.all().aggregate(Sum('order__value')).get('order__value__sum')
         return costs if costs is not None else 0
@@ -602,10 +654,6 @@ class Task(models.Model):
         return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
 
-    @staticmethod
-    def get_accessable(user):
-        return Task.objects.filter(Q(owner__user=user) | Q(executors__user=user))
-
 
 class Order(models.Model):
     NotPaid = 'NP'
@@ -627,11 +675,27 @@ class Order(models.Model):
 
     class Meta:
        unique_together = ('contractor', 'task', 'order_name')
-       verbose_name = 'Витрати'
-       verbose_name_plural = 'Витрати'
+       verbose_name = 'Підрядники'
+       verbose_name_plural = 'Підрядник'
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
+
+    def save(self, logging=True, *args, **kwargs):
+        title = self.task.object_code
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлений підрядник по проекту', extra={"title": title})
+        super(Order, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        title = self.task.object_code
+        log(user=get_current_user(), action='Видалений підрядник по проекту', extra={"title": title})
+        super(Order, self).delete(*args, **kwargs)
 
 
 class Sending(models.Model):
@@ -649,6 +713,22 @@ class Sending(models.Model):
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.receiver.__str__()
+
+    def save(self, logging=True, *args, **kwargs):
+        title = self.task.object_code
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
+        super(Sending, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        title = self.task.object_code
+        log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
+        super(Sending, self).delete(*args, **kwargs)
 
 
 class Execution(models.Model):
@@ -688,8 +768,8 @@ class Execution(models.Model):
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        log(user=get_current_user(), action='Видалена частина проекту',
-            extra={"title": self.title})
+        title = self.task.object_code + ' ' + self.part_name
+        log(user=get_current_user(), action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
 
 
@@ -711,6 +791,7 @@ class IntTask(models.Model):
     actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
     bonus = models.DecimalField('Бонус, грн.', max_digits=8, decimal_places=2, default=0)
     comment = models.TextField('Коментар', blank=True)
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='inttask_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -720,6 +801,10 @@ class IntTask(models.Model):
 
     def __str__(self):
         return self.task_name
+
+    @staticmethod
+    def get_accessable(user):
+        return IntTask.objects.filter(Q(creator__user=user) | Q(executor__user=user) | Q(executor__head__user=user))
 
 
 class Event(models.Model):

@@ -15,11 +15,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
+from django.core.exceptions import PermissionDenied
 
 
 @login_required()
-@user_passes_test(lambda u: u.groups.filter(name='Бухгалтери').exists())
 def calculation(request, deal_id):
+    if not request.user.groups.filter(name='Бухгалтери').exists():
+        raise PermissionDenied
 
     deal = Deal.objects.get(id=deal_id)
     tasks = Task.objects.filter(deal=deal)
@@ -86,10 +88,8 @@ def bonus_calc(request, employee_id, year, month):
 
     employee = Employee.objects.get(id=employee_id)
     message = '<html><body>Шановний(а) {}.<br><br>'.format(request.user.first_name)
-    if not request.user.is_superuser and request.user != employee.user and\
-            (not employee.head.user or request.user != employee.head.user):
-        message += 'Ви не маєте доступу до даних цього користувача.</body></html>'
-        return HttpResponse(message)
+    if not request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
+        raise PermissionDenied
 
     tasks = Task.objects.filter(owner=employee,
                                 exec_status=Task.Done,
@@ -484,10 +484,7 @@ def projects_list(request):
     filter_form = TaskFilterForm(request.user, request.GET)
     filter_form.is_valid()
 
-    if request.user.is_superuser:
-        tasks = Task.objects.all().order_by('-planned_finish')
-    else:
-        tasks = Task.get_accessable(request.user).order_by('-planned_finish')
+    tasks = Task.get_accessable(request.user).order_by('-planned_finish')
     tasks_count = tasks.count()
 
     search_string = request.GET.get('filter', '').split()
@@ -578,16 +575,15 @@ class TaskUpdate(UpdateView):
         costs_form = context['costs_form']
         sending_form = context['sending_form']
         if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
-            self.object = form.save()
             executors_form.instance = self.object
             executors_form.save()
             costs_form.instance = self.object
             costs_form.save()
             sending_form.instance = self.object
             sending_form.save()
-            return HttpResponseRedirect(self.get_success_url())
+            return super().form_valid(form)
         else:
-            return self.render(self.get_context_data())
+            return self.form_invalid(form)
 
 
 class TaskCreate(CreateView):
@@ -747,12 +743,3 @@ class EventUpdate(UpdateView):
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('event_list')
-
-#@login_required()
-#def project_form(request, project_id=0):
-#    pass
-
-
-#@login_required()
-#def deals_list(request):
-#    pass

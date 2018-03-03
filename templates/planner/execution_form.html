@@ -22,7 +22,8 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
                 <!-- PERMISSION CHECK -->
-                {% if user.is_superuser or user == object.executor.user %}
+                {% is_viewable execution.task user as viewable %}
+                {% if viewable %}
                 {{ form.media.css }}
                 {{ form.media.js }}
                 <form class="form-horizontal" action="" method="post">{% csrf_token %}
@@ -112,18 +113,21 @@
                                                 <td> {% exec_bonus execution.task execution.part %} грн. </td>
                                             </tr>
                                             <!-- PERMISSION CHECK -->
-                                            {% if object.task.is_active %}
+                                            {% is_markable execution.task user as markable %}
+                                            {% if markable %}
                                                 {{ form.as_table }}
                                             {% else %}
-                                                <tr><td>Даний проект вже не активний</td><td></td></tr>
+                                                <tr><td>Даний проект не доступний для коригуваання</td><td></td></tr>
                                             {% endif %}
                                         </table>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <a href="{% url 'home_page' %}" class="btn dark btn-sm btn-outline sbold uppercase"> Повернутись </a>
-                                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Відмітити виконання</button>
+                                {% if markable %}
+                                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Відмітити виконання</button>
+                                {% endif %}
+                                <a href="{% url 'home_page' %}" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
                             </div>
                         </div>
                     </div>
@@ -202,7 +206,7 @@
                     }
                 </script>
                 {% else %}
-                    Ви не маєте доступу до редагування даного проекту<br><br>
+                    Ви не маєте доступу до перегляду даного проекту<br><br>
                 {% endif %}
             </div>
             <!-- END PAGE BASE CONTENT -->

@@ -13,8 +13,10 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                {% if user.is_superuser or user == object.owner.user and object.is_active %}
+                {% is_editable object user as editable %}
+                {% if editable %}
                 {{ form.media.css }}
+                {{ form.media.js }}
                 <form class="form-horizontal" action="" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
@@ -29,24 +31,10 @@
                                     <span class="help-inline" style="color:red;">
                                     {{ form.non_field_errors }}
                                     </span>
-                                    {% for field in form %}
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">
-                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
-                                            {% else %}{{ field.label }}{% endif %}
-                                        </label>
-                                        <div class="col-sm-9">{{ field }}
-                                            {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                            {% endif %}
-                                            {% if field.errors %}
-                                            <span class="help-inline" style="color:red;">
-                                                {% for error in field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                    <table class="table table-hover">
+                                        <col width="25%">
+                                        {{ form.as_table }}
+                                    </table>
                                     <div class="form-actions">
                                         <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
@@ -70,95 +58,50 @@
                                 <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" style="height: 730px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                        <div class="tab-content scroller" style="height: 790px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
                                 {{ executors_form.management_form }}
                                 {% for form in executors_form %}
                                     {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                        {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {% for field in form.visible_fields %}
-                                    <div class="form-group">
-                                        <label class="col-sm-4 control-label">
-                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
-                                            {% else %}{{ field.label }}{% endif %}
-                                        </label>
-                                        <div class="col-sm-8">{{ field }}
-                                            {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                            {% endif %}
-                                            {% if field.errors %}
-                                            <span class="help-inline" style="color:red;">
-                                                {% for error in field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                        <hr>
+                                    <table class="table table-hover">
+                                        <col width="30%">
+                                        {{ form.as_table }}
+                                    </table>
                                 {% endfor %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
                                 {{ costs_form.management_form }}
                                 {% for form in costs_form %}
                                     {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                        {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {% for field in form.visible_fields %}
-                                    <div class="form-group">
-                                        <label class="col-sm-4 control-label">
-                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
-                                            {% else %}{{ field.label }}{% endif %}
-                                        </label>
-                                        <div class="col-sm-8">{{ field }}
-                                            {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                            {% endif %}
-                                            {% if field.errors %}
-                                            <span class="help-inline" style="color:red;">
-                                                {% for error in field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                        <hr>
+                                    <table class="table table-hover">
+                                        <col width="30%">
+                                        {{ form.as_table }}
+                                    </table>
                                 {% endfor %}
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
                                 {{sending_form.management_form }}
                                 {% for form in sending_form %}
                                     {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                        {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {% for field in form.visible_fields %}
-                                    <div class="form-group">
-                                        <label class="col-sm-4 control-label">
-                                            {% if field.field.required %}<strong>{{ field.label }}</strong>
-                                            {% else %}{{ field.label }}{% endif %}
-                                        </label>
-                                        <div class="col-sm-8">{{ field }}
-                                            {% if field.help_text %}
-                                            <p class="help-inline"><small>{{ field.help_text }}</small></p>
-                                            {% endif %}
-                                            {% if field.errors %}
-                                            <span class="help-inline" style="color:red;">
-                                                {% for error in field.errors %}{{ error }}{% endfor %}
-                                            </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                        <hr>
+                                    <table class="table table-hover">
+                                        <col width="30%">
+                                        {{ form.as_table }}
+                                    </table>
                                 {% endfor %}
                             </div>
 
@@ -173,7 +116,6 @@
                         $("body").attr("JSError", msg);
                     }
                 </script>
-                {{ form.media.js }}
                 {% else %}
                     Ви не маєте доступу до редагування даного проекту<br><br>
                 {% endif %}
