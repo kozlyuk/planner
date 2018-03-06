@@ -579,7 +579,8 @@ class Task(models.Model):
         return False
     # try if task edit period is not expired
 
-    def is_viewable(self, user):
+    def is_viewable(self):
+        user = get_current_user()
         if user.is_superuser:
             return True
         elif user == self.owner.user or self.executors.filter(user=user).exists() \
@@ -589,7 +590,8 @@ class Task(models.Model):
             return False
     # try if user has a permitting to view the task
 
-    def is_editable(self, user):
+    def is_editable(self):
+        user = get_current_user()
         if user.is_superuser:
             return True
         elif self.is_active():
@@ -599,7 +601,8 @@ class Task(models.Model):
             return False
     # try if user has a permitting to edit the task
 
-    def is_markable(self, user):
+    def is_markable(self):
+        user = get_current_user()
         if user.is_superuser:
             return True
         elif self.is_active():
@@ -683,8 +686,6 @@ class Order(models.Model):
 
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code
-        if not self.pk:
-            self.creator = get_current_user()
         if logging:
             if not self.id:
                 log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
@@ -716,8 +717,6 @@ class Sending(models.Model):
 
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code
-        if not self.pk:
-            self.creator = get_current_user()
         if logging:
             if not self.id:
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
@@ -758,8 +757,6 @@ class Execution(models.Model):
 
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code + ' ' + self.part_name
-        if not self.pk:
-            self.creator = get_current_user()
         if logging:
             if not self.id:
                 log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
@@ -799,12 +796,34 @@ class IntTask(models.Model):
         verbose_name = 'Завдання'
         verbose_name_plural = 'Завдання'
 
+    def save(self, logging=True, *args, **kwargs):
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Додане завдання', extra={"title": self.title})
+            else:
+                log(user=get_current_user(), action='Оновлене завдання', extra={"title": self.title})
+        super(IntTask, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(), action='Видалене завдання',
+            extra={"title": self.title})
+        super(IntTask, self).delete(*args, **kwargs)
+
     def __str__(self):
         return self.task_name
 
+    def is_editable(self):
+        user = get_current_user()
+        if user.is_superuser or user == self.creator:
+            return True
+        else:
+            return False
+
     @staticmethod
     def get_accessable(user):
-        return IntTask.objects.filter(Q(creator__user=user) | Q(executor__user=user) | Q(executor__head__user=user))
+        return IntTask.objects.all()
 
 
 class Event(models.Model):
@@ -877,6 +896,13 @@ class Event(models.Model):
     def is_today(self):
         return date.today() == self.next_repeat()
 
+    def is_editable(self):
+        user = get_current_user()
+        if user.is_superuser or user == self.creator:
+            return True
+        else:
+            return False
+
 
 class News(models.Model):
     Organizational = 'OG'
@@ -917,3 +943,11 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+    def is_editable(self):
+        user = get_current_user()
+        if user.is_superuser or user == self.creator:
+            return True
+        else:
+            return False
+    # try if user has a permitting to edit

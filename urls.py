@@ -21,7 +21,7 @@ from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
-from .views import TaskUpdate, TaskCreate, SubtaskUpdate
+from .views import TaskUpdate, TaskCreate, SubtaskUpdate, InttaskDetail
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -32,11 +32,11 @@ urlpatterns = [
 
     url(r'^$', views.home_page, name='home_page'),
     url(r'^project/$', views.projects_list, name='projects_list'),
-    url(r'^project/(?P<pk>[0-9]+)/change/$', TaskUpdate.as_view(), name='task_update'),
+    url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
     url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
-    url(r'^subtask/(?P<pk>[0-9]+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
-    url(r'^inttask/(?P<task_id>\d+)/$', views.inttask_detail, name='inttask_detail'),
+    url(r'^subtask/(?P<pk>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
+    url(r'^inttask/(?P<pk>\d+)/$', InttaskDetail.as_view(), name='inttask_detail'),
     # url(r'^deal/$', views.deals_list, name='deals_list'),
     url(r'^deal/$', RedirectView.as_view(url='/admin/planner/deal/'), name='deals_list'),
     url(r'^login/$', views.login_page, name='login_page'),
@@ -47,7 +47,7 @@ urlpatterns = [
         views.bonus_calc, name='bonus_calc'),
     url(r'^news/$', NewsList.as_view(), name='news_list'),
     url(r'^news/(?P<pk>[0-9]+)/detail/$', NewsDetail.as_view(), name='news_detail'),
-    url(r'^news/(?P<pk>[0-9]+)/change/$', NewsUpdate.as_view(), name='news_update'),
+    url(r'^news/(?P<pk>\d+)/change/$', NewsUpdate.as_view(), name='news_update'),
     url(r'^news/add/$', NewsCreate.as_view(), name='news_add'),
     url(r'^news/(?P<pk>[0-9]+)/delete/$', NewsDelete.as_view(), name='news_delete'),
 

@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django import forms
 from eventlog.models import Log
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
@@ -660,13 +661,9 @@ class SubtaskUpdate(UpdateView):
             return super().form_valid(form)
 
 
-@login_required()
-def inttask_detail(request, task_id):
-    task = IntTask.objects.get(pk=task_id)
-    return render(request, 'planner/inttask_detail.html',
-                              {
-                                  'task': task
-                              })
+class InttaskDetail(DetailView):
+    model = IntTask
+    success_url = reverse_lazy('home_page')
 
 
 class NewsList(ListView):
@@ -691,16 +688,23 @@ class NewsCreate(CreateView):
         return form
 
 
+class NewsForm(forms.ModelForm):
+    class Meta:
+        model = News
+        fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
+
+    def __init__(self, *args, **kwargs):
+        super(NewsForm, self).__init__(*args, **kwargs)
+        if not self.instance.is_editable():
+            self.fields['text'].widget.attrs['readonly'] = True
+        self.fields['actual_from'].widget = AdminDateWidget()
+        self.fields['actual_to'].widget = AdminDateWidget()
+
+
 class NewsUpdate(UpdateView):
     model = News
-    fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
+    form_class = NewsForm
     success_url = reverse_lazy('news_list')
-
-    def get_form(self, form_class=None):
-        form = super(NewsUpdate, self).get_form(form_class)
-        form.fields['actual_from'].widget = AdminDateWidget()
-        form.fields['actual_to'].widget = AdminDateWidget()
-        return form
 
 
 class NewsDelete(DeleteView):

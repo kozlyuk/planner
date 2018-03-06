@@ -68,8 +68,7 @@
                                 <tbody>
                                 {% for task in page_objects %}
                                     <tr>
-                                        {% is_viewable task user as viewable %}
-                                        {% if viewable %}
+                                        {% if task.is_viewable %}
                                             <td><a href="{% url 'task_detail' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
                                         {% else %}
                                             <td> {{ task.object_code }} </td>
@@ -81,8 +80,7 @@
                                         <td> {{ task.owner.name }} </td>
                                         <td> {{ task.overdue_status }} </td>
                                         <td>
-                                            {% is_editable task user as editable %}
-                                            {% if editable %}
+                                            {% if task.is_editable %}
                                             <a href="{% url 'task_update' task.id %}?{{ filters }}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Редагувати </a>
                                             {% endif %}

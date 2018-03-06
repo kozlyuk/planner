@@ -43,16 +43,6 @@ def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)
 
 
-@register.simple_tag
-def is_viewable(task, user):
-    return task.is_viewable(user)
-
-
-@register.simple_tag
-def is_editable(task, user):
-    return task.is_editable(user)
-
-
-@register.simple_tag
-def is_markable(task, user):
-    return task.is_markable(user)
+#@register.simple_tag
+#def is_viewable(task, user):
+#    return task.is_viewable(user)

@@ -26,39 +26,54 @@
                     <div class="portlet light tasks-widget">
                         <div class="portlet-title">
                             <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase">{{ task.task_name }}</span>
+                                <span class="caption-subject theme-font bold uppercase">{{ inttask.task_name }}</span>
                             </div>
                         </div>
                         <div class="portlet-body">
                             <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
-                                        <p>Виконавець: <strong>{{ task.executor }}</strong></p>
-                                        <p>Статус виконання: <strong>{{ task.get_exec_status_display }}</strong></p>
                                         <table class="table table-hover">
-                                            <thead>
+                                            <col width="30%">
                                             <tr>
-                                                <th></th>
+                                                <th> Виконавець: </th>
+                                                <td> {{ inttask.executor }} </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th> Статус виконання: </th>
+                                                <td> {{ inttask.get_exec_status_display }} </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
                                                 <th> Початок робіт</th>
                                                 <th> Закінчення робіт</th>
                                             </tr>
-                                            </thead>
-                                            <tbody>
                                             <tr>
-                                                <td> Планові дати виконання</td>
-                                                <td> {% if task.planned_start %}{{ task.planned_start }}{% endif %} </td>
-                                                <td> {% if task.planned_finish %}{{ task.planned_finish }}{% endif %} </td>
+                                                <th> Планові дати виконання</th>
+                                                <td> {% if inttask.planned_start %}{{ inttask.planned_start }}{% endif %} </td>
+                                                <td> {% if inttask.planned_finish %}{{ inttask.planned_finish }}{% endif %} </td>
                                             </tr>
                                             <tr>
-                                                <td> Фактичні дати виконання</td>
-                                                <td> {% if task.actual_start %}{{ task.actual_start }}{% endif %} </td>
-                                                <td> {% if task.actual_finish %}{{ task.actual_finish }}{% endif %}
+                                                <th> Фактичні дати виконання</th>
+                                                <td> {% if inttask.actual_start %}{{ inttask.actual_start }}{% endif %} </td>
+                                                <td> {% if inttask.actual_finish %}{{ inttask.actual_finish }}{% endif %}
                                                 </td>
                                             </tr>
-                                            </tbody>
+                                            <tr>
+                                                <th> Бонус: </th>
+                                                <td> {{ inttask.bonus }} грн. </td>
+                                                <td></td>
+                                            </tr>
+                                            {% if cost.comment %}
+                                                <tr>
+                                                    <th> Коментар: </th>
+                                                    <td> {{ cost.comment }} </td>
+                                                    <td></td>
+                                                </tr>
+                                            {% endif %}
                                         </table>
-                                        <p>Бонус: <strong>{{ task.bonus }} грн.</strong></p>
-                                        {% if cost.comment %}<p>Коментар: <strong>{{ cost.comment }}</strong></p>>{% endif %}
                                     </div>
                                 </div>
                             </div>
