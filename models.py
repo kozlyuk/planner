@@ -376,9 +376,25 @@ class Deal(models.Model):
     def __str__(self):
         return self.number + ' ' + self.customer.name
 
+    def save(self, logging=True, *args, **kwargs):
+        title = self.number
+        if not self.pk:
+            self.creator = get_current_user()
+        if logging:
+            if not self.id:
+                log(user=get_current_user(), action='Доданий договір', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлений договір', extra={"title": title})
+        super(Deal, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        title = self.number
+        log(user=get_current_user(), action='Видалений договір', extra={"title": title})
+        super(Deal, self).delete(*args, **kwargs)
+
     def __init__(self, *args, **kwargs):
         super(Deal, self).__init__(*args, **kwargs)
-        self.__customer__= None
+        self.__customer__ = None
 
     def svalue(self):
         return u'{0:,}'.format(self.value).replace(u',', u' ')
