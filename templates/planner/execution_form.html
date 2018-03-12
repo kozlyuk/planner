@@ -22,7 +22,7 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
                 <!-- PERMISSION CHECK -->
-                {% if execution.task is_viewable %}
+                {% if execution.task.is_viewable %}
                 {{ form.media.css }}
                 {{ form.media.js }}
                 <form class="form-horizontal" action="" method="post">{% csrf_token %}
@@ -112,7 +112,7 @@
                                                 <td> {% exec_bonus execution.task execution.part %} грн. </td>
                                             </tr>
                                             <!-- PERMISSION CHECK -->
-                                            {% if execution.task is_markable %}
+                                            {% if execution.task.is_markable %}
                                                 {{ form.as_table }}
                                             {% else %}
                                                 <tr><td>Даний проект не доступний для коригуваання</td><td></td></tr>
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
                             <div class="form-actions">
-                                {% if execution.task is_markable %}
+                                {% if execution.task.is_markable %}
                                     <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Відмітити виконання</button>
                                 {% endif %}
                                 <a href="{% url 'home_page' %}" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
