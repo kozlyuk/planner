@@ -39,10 +39,12 @@
                                         <td>
                                             {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a>
                                         </td>
+                                        {% if request.user|has_group:"ГІПи" %}
                                         <td>
                                             <a href="{% url 'task_add' %}?{{ filters }}"
                                                class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
                                         </td>
+                                        {% endif %}
                                         </tr></table>
                                     </form>
                                 </div>

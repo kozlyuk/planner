@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
-from django.utils import timezone
 from django.core.files.storage import default_storage
+from django.contrib.auth.models import Group
 
 register = template.Library()
 
@@ -42,6 +42,11 @@ def color_status(status):
 def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)
 
+
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    group = Group.objects.get(name=group_name)
+    return group in user.groups.all()
 
 #@register.simple_tag
 #def is_viewable(task, user):

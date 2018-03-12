@@ -381,7 +381,7 @@ class Deal(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Доданий договір', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлений договір', extra={"title": title})
@@ -532,7 +532,7 @@ class Task(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Доданий проект', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлений проект', extra={"title": title})
@@ -703,7 +703,7 @@ class Order(models.Model):
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлений підрядник по проекту', extra={"title": title})
@@ -734,7 +734,7 @@ class Sending(models.Model):
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
@@ -774,7 +774,7 @@ class Execution(models.Model):
     def save(self, logging=True, *args, **kwargs):
         title = self.task.object_code + ' ' + self.part_name
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлена частина проекту', extra={"title": title})
@@ -816,7 +816,7 @@ class IntTask(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Додане завдання', extra={"title": self.title})
             else:
                 log(user=get_current_user(), action='Оновлене завдання', extra={"title": self.title})
@@ -870,7 +870,7 @@ class Event(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if logging:
-            if not self.id:
+            if not self.pk:
                 log(user=get_current_user(), action='Додана подія', extra={"title": self.title})
             else:
                 log(user=get_current_user(), action='Оновлена подія', extra={"title": self.title})
@@ -944,7 +944,7 @@ class News(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.creator = get_current_user()
-        if not self.id:
+        if not self.pk:
             log(user=get_current_user(), action='Додана новина',
                 extra={"title": self.title})
         else:

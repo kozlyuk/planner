@@ -13,7 +13,7 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                {% if task.is_editable %}
+                {% if not task or task.is_editable %}
                 {{ form.media.css }}
                 {{ form.media.js }}
                 <form class="form-horizontal" action="" method="post">{% csrf_token %}
