@@ -8,12 +8,13 @@ from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
 from django.db.models import Sum
-from django.db.models import Q
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
 from stdimage.models import StdImageField
 from eventlog.models import log
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -672,6 +673,17 @@ class Task(models.Model):
     def total_bonus(self):
         return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
+
+
+@receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
+def update_subtasks(sender, instance, **kwargs):
+    if instance.exec_status == Task.Done:
+        for execution in instance.execution_set.all():
+            if execution.exec_status != Task.Done:
+                execution.exec_status = Task.Done
+                execution.finish_date = instance.actual_finish
+                execution.save()
+#Change Subtasks status to Done if Task is Done after save Task
 
 
 class Order(models.Model):
