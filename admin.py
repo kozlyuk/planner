@@ -328,7 +328,6 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
                 raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
                                         'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
-
 class OrdersInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
@@ -363,9 +362,16 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
                 raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
 
+class SendingsInlineFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        super(SendingsInlineFormSet, self).clean()
+
+        if not self.forms and self.instance.project_type.copies_count > 0:
+            raise forms.ValidationError("Ви не можете закрити цей проект без відправки")
+
 class ExecutersInline(admin.TabularInline):
     model = Execution
-#    exclude = ['exec_status', 'finish_date']
     formset = ExecutersInlineFormSet
     extra = 0
 
@@ -388,6 +394,7 @@ class ExecutersInline(admin.TabularInline):
 
 class SendingsInline(admin.TabularInline):
     model = Sending
+    formset = SendingsInlineFormSet
     extra = 0
 
     def get_readonly_fields(self, request, obj=None):

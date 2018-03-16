@@ -558,14 +558,20 @@ class Task(models.Model):
         return 'Відсутні виконавці'
     execution_status.short_description = 'Статус виконання частин проекту'
 
+    def sending_status(self):
+        if self.receivers.all():
+            if self.receivers.all().aggregate(Sum('sending__copies_count')).get('sending__copies_count__sum') \
+                    < self.project_type.copies_count:
+                return 'Не всі відправки'
+        elif self.project_type.copies_count > 0:
+            return 'Не відправлено'
+        return 'Відправлено'
+    # displays task sending warnings
+
     def overdue_status(self):
         if self.exec_status == self.Done:
-            if self.receivers.all():
-                if self.receivers.all().aggregate(Sum('sending__copies_count')).get('sending__copies_count__sum') \
-                        < self.project_type.copies_count:
-                    return 'Не всі відправки'
-            elif self.project_type.copies_count > 0:
-                return 'Не відправлено'
+            if self.sending_status() != 'Відправлено':
+                return self.sending_status()
             return 'Виконано %s' % self.actual_finish.strftime(date_format)
         if self.execution_status() == 'Виконано':
             return 'Очікує на перевірку'
@@ -581,7 +587,7 @@ class Task(models.Model):
         if self.deal.expire_date - timedelta(days=7) <= date.today():
             return 'Завершується %s' % self.deal.expire_date.strftime(date_format)
         return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
-    # displays task overdue warnings
+    # displays task overdue status
 
     def is_active(self):
         if not self.actual_finish:
