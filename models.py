@@ -46,6 +46,7 @@ class Employee(models.Model):
     class Meta:
         verbose_name = 'Працівник'
         verbose_name_plural = 'Працівники'
+        ordering = ['name']
 
     def __str__(self):
         return self.name

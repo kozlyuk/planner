@@ -16,7 +16,7 @@
                 {% if not task or task.is_editable %}
                 {{ form.media.css }}
                 {{ form.media.js }}
-                <form class="form-horizontal" action="" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
