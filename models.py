@@ -413,13 +413,16 @@ class Deal(models.Model):
         for task in queryset:
             if task.exec_status == Task.Done:
                 return 'Виконано'
+        for task in queryset:
+            if task.exec_status == Task.Sent:
+                return 'Надіслано'
         return 'Відсутні проекти'
     exec_status.short_description = 'Статус виконання'
 
     def overdue_status(self):
         if 'загальний' in self.number:
             return ''
-        if self.exec_status() == 'Виконано':
+        if self.exec_status() == 'Надіслано':
             value_calc = self.value_calc() + self.value_correction
             if self.value > 0 and self.value != value_calc:
                 return 'Вартість по роботам %s' % value_calc
@@ -487,10 +490,12 @@ class Task(models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
     Done = 'HD'
+    Sent = 'ST'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
-        (Done, 'Виконано')
+        (Done, 'Виконано'),
+        (Sent, 'Надіслано')
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
@@ -565,15 +570,17 @@ class Task(models.Model):
                     < self.project_type.copies_count:
                 return 'Не всі відправки'
         elif self.project_type.copies_count > 0:
-            return 'Не відправлено'
-        return 'Відправлено'
+            return 'Не надіслано'
+        return 'Надіслано'
     # displays task sending warnings
 
     def overdue_status(self):
-        if self.exec_status == self.Done:
-            if self.sending_status() != 'Відправлено':
-                return self.sending_status()
+        if self.exec_status == self.Sent:
             return 'Виконано %s' % self.actual_finish.strftime(date_format)
+        if self.exec_status == self.Done:
+            if self.sending_status() != 'Надіслано':
+                return self.sending_status()
+            return 'Надіслано!'
         if self.execution_status() == 'Виконано':
             return 'Очікує на перевірку'
         if self.planned_finish:
@@ -832,13 +839,14 @@ class IntTask(models.Model):
         verbose_name_plural = 'Завдання'
 
     def save(self, logging=True, *args, **kwargs):
+        title = self.task_name
         if not self.pk:
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додане завдання', extra={"title": self.title})
+                log(user=get_current_user(), action='Додане завдання', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлене завдання', extra={"title": self.title})
+                log(user=get_current_user(), action='Оновлене завдання', extra={"title": title})
         super(IntTask, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
