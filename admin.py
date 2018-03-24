@@ -366,7 +366,7 @@ class SendingsInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super(SendingsInlineFormSet, self).clean()
-        if self.instance.__exec_status__ == Task.Done and not self.forms and self.instance.project_type.copies_count > 0:
+        if self.instance.__exec_status__ == Task.Sent and not self.forms and self.instance.project_type.copies_count > 0:
             raise forms.ValidationError("Ви не можете закрити цей проект без відправки")
 
 class ExecutersInline(admin.TabularInline):
