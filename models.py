@@ -575,11 +575,11 @@ class Task(models.Model):
     # displays task sending warnings
 
     def overdue_status(self):
-        if self.exec_status == self.Sent:
-            return 'Виконано %s' % self.actual_finish.strftime(date_format)
         if self.exec_status == self.Done:
             if self.sending_status() != 'Надіслано':
                 return self.sending_status()
+        if self.exec_status in [self.Sent, self.Done]:
+            return 'Виконано %s' % self.actual_finish.strftime(date_format)
         if self.execution_status() == 'Виконано':
             return 'Очікує на перевірку'
         if self.planned_finish:
