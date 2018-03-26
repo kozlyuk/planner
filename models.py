@@ -580,7 +580,6 @@ class Task(models.Model):
         if self.exec_status == self.Done:
             if self.sending_status() != 'Надіслано':
                 return self.sending_status()
-            return 'Надіслано!'
         if self.execution_status() == 'Виконано':
             return 'Очікує на перевірку'
         if self.planned_finish:
