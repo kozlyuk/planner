@@ -28,9 +28,9 @@ def url_replace(request, field, value):
 
 @register.simple_tag
 def color_status(status):
-    if status == 'HD':
+    if status == 'ST':
         return 'success'
-    elif status == 'IP':
+    elif status == 'HD':
         return 'warning'
     elif status == 'IW':
         return 'info'
