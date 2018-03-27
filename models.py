@@ -691,6 +691,17 @@ class Task(models.Model):
     # total bonus
 
 
+@receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
+def update_subtasks(sender, instance, **kwargs):
+    if instance.exec_status in [Task.Done, Task.Sent]:
+        for execution in instance.execution_set.all():
+            if execution.exec_status != Task.Done:
+                execution.exec_status = Task.Done
+                execution.finish_date = instance.actual_finish
+                execution.save()
+#Change Subtasks status to Done if Task is Done after save Task
+
+
 class Order(models.Model):
     NotPaid = 'NP'
     AdvancePaid = 'AP'
@@ -801,16 +812,6 @@ class Execution(models.Model):
         title = self.task.object_code + ' ' + self.part_name
         log(user=get_current_user(), action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
-
-
-@receiver(post_save, sender=Execution, dispatch_uid="update_subtasks_status")
-def update_subtasks(sender, instance, **kwargs):
-    if instance.task.exec_status in [Task.Done, Task.Sent]:
-        if instance.exec_status != Task.Done:
-            instance.exec_status = Task.Done
-            instance.finish_date = instance.task.actual_finish
-            instance.save()
-#Change Subtask status to Done if Task is Done after save Subtask
 
 
 class IntTask(models.Model):
