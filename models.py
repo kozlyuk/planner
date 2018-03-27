@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
@@ -73,7 +73,8 @@ class Employee(models.Model):
 
     def inttask_count(self):
         active = self.inttask_set.exclude(exec_status=IntTask.Done).count()
-        overdue = self.inttask_set.exclude(exec_status=IntTask.Done).exclude(planned_finish__gte=date.today()).count()
+        overdue = self.inttask_set.exclude(exec_status=IntTask.Done)\
+                                  .exclude(planned_finish__gte=date.today()).count()
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     inttask_count.short_description = 'Завдання'
 
@@ -90,7 +91,9 @@ class Employee(models.Model):
         bonuses = 0
         month, year = self.date_delta(delta)
 
-        executions = self.execution_set.filter(part__gt=0, task__exec_status=Task.Done,
+        executions = self.execution_set.filter(Q(task__exec_status=Task.Done) |
+                                               Q(task__exec_status=Task.Sent))\
+                                       .filter(part__gt=0,
                                                task__actual_finish__month=month,
                                                task__actual_finish__year=year)
         for query in executions:
@@ -103,7 +106,7 @@ class Employee(models.Model):
         bonuses = 0
         month, year = self.date_delta(delta)
 
-        tasks = self.task_set.filter(exec_status=Task.Done,
+        tasks = self.task_set.filter(exec_status=Task.Sent,
                                      actual_finish__month=month,
                                      actual_finish__year=year)
         for query in tasks:
