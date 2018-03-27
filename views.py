@@ -214,7 +214,7 @@ def home_page(request):
         active_deals = Deal.objects.exclude(act_status=Deal.Issued) \
                            .exclude(number__icontains='загальний')
         for deal in active_deals:
-            if deal.exec_status() == 'Виконано':
+            if deal.exec_status() == 'Надіслано':
                 actneed_deals.append(deal)
         debtor_deals = []
         unpaid_deals = Deal.objects.exclude(act_status=Deal.NotIssued) \
@@ -223,13 +223,13 @@ def home_page(request):
         deb_deals = unpaid_deals.exclude(pay_date__isnull=True) \
                                 .exclude(pay_date__gte=date.today())
         for deal in deb_deals:
-            if deal.exec_status() == 'Виконано':
+            if deal.exec_status() == 'Надіслано':
                 debtor_deals.append(deal)
         overdue_deals = []
         deals = Deal.objects.exclude(expire_date__gte=date.today()) \
                             .exclude(number__icontains='загальний')
         for deal in deals:
-            if deal.exec_status() != 'Виконано':
+            if deal.exec_status() != 'Надіслано':
                 overdue_deals.append(deal)
 
         actneed_deals_count = len(actneed_deals)
@@ -241,16 +241,17 @@ def home_page(request):
         overdue_deals_count = len(overdue_deals)
         overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
     elif request.user.groups.filter(name='ГІПи').exists():
-        td_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.ToDo).order_by('creation_date')
-        ip_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.InProgress).order_by('creation_date')
-        hd_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Done).order_by('-actual_finish')[:50]
+        td_tasks = Task.objects.filter(exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
+        ip_tasks = Task.objects.filter(Q(exec_status=Task.Done) | Q(exec_status=Task.InProgress),
+                                       owner__user=request.user).order_by('creation_date')
+        hd_tasks = Task.objects.filter(exec_status=Task.Sent, owner__user=request.user).order_by('-actual_finish')[:50]
 
-        hd_tasks_count = Task.objects.filter(owner__user=request.user, exec_status=Task.Done,
+        hd_tasks_count = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
                                              actual_finish__month=datetime.now().month,
                                              actual_finish__year=datetime.now().year).count()
-        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Done).count() + hd_tasks_count
+        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent).count() + hd_tasks_count
         tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
-        overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Done)\
+        overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent)\
                                       .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
                                       .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
                                       .count()
