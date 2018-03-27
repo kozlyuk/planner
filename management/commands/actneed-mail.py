@@ -17,7 +17,7 @@ class Command(BaseCommand):
         completed = []
 
         for deal in deals:
-            if deal.exec_status() == 'Виконано':
+            if deal.exec_status() == 'Надіслано':
                 completed.append(deal)
 
         for accountant in accountants:

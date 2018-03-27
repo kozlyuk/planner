@@ -695,8 +695,8 @@ class Task(models.Model):
 def update_subtasks(sender, instance, **kwargs):
     if instance.exec_status in [Task.Done, Task.Sent]:
         for execution in instance.execution_set.all():
-            if execution.exec_status != Task.Done:
-                execution.exec_status = Task.Done
+            if execution.exec_status != Execution.Done:
+                execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
 #Change Subtasks status to Done if Task is Done after save Task
@@ -806,6 +806,10 @@ class Execution(models.Model):
                 log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлена частина проекту', extra={"title": title})
+        if self.task.exec_status in [Task.Done, Task.Sent]:
+            if self.exec_status != Execution.Done:
+                self.exec_status = Execution.Done
+                self.finish_date = self.task.actual_finish
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

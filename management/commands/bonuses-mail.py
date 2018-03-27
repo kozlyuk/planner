@@ -3,6 +3,7 @@ from planner.models import Task, IntTask, Employee, Execution
 from django.conf import settings
 from django.core import mail
 from datetime import datetime
+from django.db.models import Q
 
 
 class Command(BaseCommand):
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         tasks = Task.objects.filter(exec_status=Task.Done,
                                     actual_finish__month=month,
                                     actual_finish__year=year)
-        executions = Execution.objects.filter(task__exec_status=Task.Done,
+        executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
                                               task__actual_finish__month=month,
                                               task__actual_finish__year=year)
         inttasks = IntTask.objects.filter(exec_status=IntTask.Done,

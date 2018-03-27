@@ -18,7 +18,7 @@ class Command(BaseCommand):
         overdue = []
 
         for deal in deals:
-            if deal.exec_status() != 'Виконано':
+            if deal.exec_status() != 'Надіслано':
                 overdue.append(deal)
 
 
