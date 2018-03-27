@@ -96,8 +96,8 @@ def bonus_calc(request, employee_id, year, month):
                                 exec_status=Task.Done,
                                 actual_finish__month=month,
                                 actual_finish__year=year)
-    executions = Execution.objects.filter(executor=employee,
-                                          task__exec_status=Task.Done,
+    executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
+                                          executor=employee,
                                           task__actual_finish__month=month,
                                           task__actual_finish__year=year)
     inttasks = IntTask.objects.filter(executor=employee,
@@ -300,8 +300,8 @@ def home_page(request):
     def exec_bonuses(delta):
         bonuses = 0
         month, year = date_delta(delta)
-        executions = Execution.objects.filter(executor__user=request.user,
-                                              task__exec_status=Task.Done,
+        executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
+                                              executor__user=request.user,
                                               task__actual_finish__month=month,
                                               task__actual_finish__year=year, part__gt=0)
         for query in executions:

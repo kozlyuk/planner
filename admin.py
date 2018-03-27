@@ -282,14 +282,14 @@ class TaskForm(forms.ModelForm):
         if project_type and deal:
             if deal.customer != project_type.customer:
                 raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
-        if exec_status == Task.Done:
+        if exec_status in [Task.Done, Task.Sent]:
             if not actual_finish:
                 raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
                 raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
             elif deal.act_status == Deal.Issued:
                 raise forms.ValidationError("Договір закрито, зверніться до керівника")
-        if actual_finish and exec_status != Task.Done:
+        if actual_finish and exec_status not in [Task.Done, Task.Sent]:
                 raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
             raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
