@@ -54,7 +54,7 @@ class Employee(models.Model):
     def owner_count(self):
         active = 0
         overdue = 0
-        for task in self.task_set.exclude(exec_status=Task.Done):
+        for task in self.task_set.exclude(exec_status=Task.Sent):
             active += 1
             if task.overdue_status().startswith('Протерміновано'):
                 overdue += 1
@@ -64,7 +64,7 @@ class Employee(models.Model):
     def task_count(self):
         active = 0
         overdue = 0
-        for task in self.tasks.exclude(exec_status=Task.Done):
+        for task in self.tasks.exclude(exec_status=Task.Sent):
             active += 1
             if task.overdue_status().startswith('Протерміновано'):
                 overdue += 1
