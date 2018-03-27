@@ -92,8 +92,8 @@ class Employee(models.Model):
         month, year = self.date_delta(delta)
 
         executions = self.execution_set.filter(Q(task__exec_status=Task.Done) |
-                                               Q(task__exec_status=Task.Sent))\
-                                       .filter(part__gt=0,
+                                               Q(task__exec_status=Task.Sent),
+                                               part__gt=0,
                                                task__actual_finish__month=month,
                                                task__actual_finish__year=year)
         for query in executions:
@@ -693,7 +693,7 @@ class Task(models.Model):
 
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
-    if instance.exec_status == Task.Done or instance.exec_status == Task.Sent:
+    if instance.exec_status in [Task.Done, Task.Sent]:
         for execution in instance.execution_set.all():
             if execution.exec_status != Task.Done:
                 execution.exec_status = Task.Done
