@@ -93,8 +93,9 @@ class CompanyAdmin(admin.ModelAdmin):
 
 class ContractorAdmin(admin.ModelAdmin):
     list_display = ['name', 'advance_calc', 'credit_calc', 'expect_calc', 'completed_calc', 'active']
-    filter_horizontal = ['project_types']
+    search_fields = ['name', 'contact_person']
     ordering = ['name']
+    filter_horizontal = ['project_types']
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
