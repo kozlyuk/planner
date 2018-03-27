@@ -693,7 +693,7 @@ class Task(models.Model):
 
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
-    if instance.exec_status == Task.Done:
+    if instance.exec_status == Task.Done or instance.exec_status == Task.Sent:
         for execution in instance.execution_set.all():
             if execution.exec_status != Task.Done:
                 execution.exec_status = Task.Done
