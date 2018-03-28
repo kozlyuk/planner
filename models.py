@@ -766,6 +766,9 @@ class Sending(models.Model):
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
+        if self.task.exec_status == Task.Done:
+            self.task.exec_status = Task.Sent
+            self.task.save()
         super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
