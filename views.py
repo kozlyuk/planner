@@ -93,7 +93,7 @@ def bonus_calc(request, employee_id, year, month):
         raise PermissionDenied
 
     tasks = Task.objects.filter(owner=employee,
-                                exec_status=Task.Done,
+                                exec_status=Task.Sent,
                                 actual_finish__month=month,
                                 actual_finish__year=year)
     executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
@@ -313,7 +313,7 @@ def home_page(request):
         bonuses = 0
         month, year = date_delta(delta)
         tasks = Task.objects.filter(owner__user=request.user,
-                                    exec_status=Task.Done,
+                                    exec_status=Task.Sent,
                                     actual_finish__month=month,
                                     actual_finish__year=year)
         for query in tasks:
