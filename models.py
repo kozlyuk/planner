@@ -229,7 +229,7 @@ class Project(models.Model):
     class Meta:
         verbose_name = 'Вид робіт'
         verbose_name_plural = 'Види робіт'
-        ordering = ['price_code']
+        ordering = ['-price_code']
 
     def __str__(self):
         return self.price_code + ' ' + self.project_type + ' ' + self.customer.name
