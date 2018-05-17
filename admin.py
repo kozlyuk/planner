@@ -509,7 +509,7 @@ class TaskAdmin(admin.ModelAdmin):
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
             return self.readonly_fields
-        if request.user.groups.filter(name='Бухгалтери').exists() and obj.is_active():
+        if request.user.groups.filter(name='Бухгалтери').exists():
             return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
 
