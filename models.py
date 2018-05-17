@@ -627,9 +627,10 @@ class Task(models.Model):
         user = get_current_user()
         if user.is_superuser:
             return True
-        elif self.is_active():
-            if user == self.owner.user or user.groups.filter(name='Бухгалтери').exists():
-                return True
+        elif self.is_active() and user == self.owner.user:
+            return True
+        elif self.deal.act_status != Deal.Issued and user.groups.filter(name='Бухгалтери').exists():
+            return True
         else:
             return False
     # try if user has a permitting to edit the task
