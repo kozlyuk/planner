@@ -562,27 +562,27 @@ class TaskUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_form'] = ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_form'] = CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_form'] = SendingFormSet(self.request.POST, instance=self.object)
+            context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object, prefix='executors')
+            context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object, prefix='costs')
+            context['sending_formset'] = SendingFormSet(self.request.POST, instance=self.object, prefix='sending')
         else:
-            context['executors_form'] = ExecutorsFormSet(instance=self.object)
-            context['costs_form'] = CostsFormSet(instance=self.object)
-            context['sending_form'] = SendingFormSet(instance=self.object)
+            context['executors_formset'] = ExecutorsFormSet(instance=self.object, prefix='executors')
+            context['costs_formset'] = CostsFormSet(instance=self.object, prefix='costs')
+            context['sending_formset'] = SendingFormSet(instance=self.object, prefix='sending')
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
-        executors_form = context['executors_form']
-        costs_form = context['costs_form']
-        sending_form = context['sending_form']
-        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
-            executors_form.instance = self.object
-            executors_form.save()
-            costs_form.instance = self.object
-            costs_form.save()
-            sending_form.instance = self.object
-            sending_form.save()
+        executors_formset = context['executors_formset']
+        costs_formset = context['costs_formset']
+        sending_formset = context['sending_formset']
+        if executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
+            executors_formset.instance = self.object
+            executors_formset.save()
+            costs_formset.instance = self.object
+            costs_formset.save()
+            sending_formset.instance = self.object
+            sending_formset.save()
             return super().form_valid(form)
         else:
             return self.form_invalid(form)

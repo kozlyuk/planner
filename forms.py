@@ -40,11 +40,11 @@ class TaskForm(forms.ModelForm):
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part', 'exec_status', 'finish_date'),
-                                         extra=2, widgets={'executor': Select2Widget(), 'finish_date': AdminDateWidget()})
+                                         extra=1, widgets={'executor': Select2Widget(), 'finish_date': AdminDateWidget()})
 CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
-                                     extra=2, widgets={'contractor': Select2Widget(attrs={'data-width': '100%'}), 'pay_date': AdminDateWidget()})
+                                     extra=1, widgets={'contractor': Select2Widget(attrs={'data-width': '100%'}), 'pay_date': AdminDateWidget()})
 SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'),
-                                       extra=2, widgets={'receiver': Select2Widget(attrs={'data-width': '100%'}), 'receipt_date': AdminDateWidget()})
+                                       extra=1, widgets={'receiver': Select2Widget(attrs={'data-width': '100%'}), 'receipt_date': AdminDateWidget()})
 
 
 class TaskFilterForm(forms.Form):

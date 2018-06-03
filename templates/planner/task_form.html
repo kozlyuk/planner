@@ -4,6 +4,37 @@
 {% load widget_tweaks %}
 {% load ita_template_tags %}
 
+
+{% block extrahead %}
+<script type="text/javascript">
+    $(function() {
+        $('#ExecutorsTable tbody ').formset({
+            prefix: '{{ executors_formset.prefix }}',
+            formCssClass: 'dynamic-formset1',
+            addText: 'Додати Виконавця',
+            deleteText: 'Видалити Виконавця'
+        });
+        $('#CostsTable tbody ').formset({
+            prefix: '{{ costs_formset.prefix }}',
+            formCssClass: 'dynamic-formset2',
+            addText: 'Додати Підрядника',
+            deleteText: 'Видалити Підрядника'
+        });
+        $('#SendingTable tbody ').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
+            deleteText: 'Видалити Відправку'
+        });
+    })
+</script>
+<style type="text/css">
+    .delete-row {
+        margin-left:0px;
+    }
+</style>
+{% endblock %}
+
 {% block context %}
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
@@ -14,9 +45,7 @@
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
                 {% if not task or task.is_editable %}
-                {{ form.media.css }}
-                {{ form.media.js }}
-                <form class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
@@ -59,49 +88,58 @@
                         </ul>
                         <div class="tab-content scroller" style="height: 790px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
-                                {{ executors_form.management_form }}
-                                {% for form in executors_form %}
+                              <table id="ExecutorsTable" class="table table-hover">
+                                <col width="30%">
+                                {% for form in executors_formset %}
+                                  <tbody>
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    <table class="table table-hover">
-                                        <col width="30%">
-                                        {{ form.as_table }}
-                                    </table>
+                                    {{ form.as_table }}
+                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                  </tbody>
                                 {% endfor %}
+                              </table>
+                                {{ executors_formset.management_form }}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
-                                {{ costs_form.management_form }}
-                                {% for form in costs_form %}
+                              <table id="CostsTable" class="table table-hover">
+                                <col width="30%">
+                                {% for form in costs_formset %}
+                                  <tbody>
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    <table class="table table-hover">
-                                        <col width="30%">
-                                        {{ form.as_table }}
-                                    </table>
+                                    {{ form.as_table }}
+                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                  </tbody>
                                 {% endfor %}
+                              </table>
+                              {{ costs_formset.management_form }}
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
-                                {{sending_form.management_form }}
-                                {% for form in sending_form %}
+                                <table id="SendingTable" class="table table-hover">
+                                <col width="30%">
+                                {% for form in sending_formset %}
+                                  <tbody>
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    <table class="table table-hover">
-                                        <col width="30%">
-                                        {{ form.as_table }}
-                                    </table>
+                                    {{ form.as_table }}
+                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                  </tbody>
                                 {% endfor %}
+                                </table>
+                                {{ sending_formset.management_form }}
                             </div>
 
                         </div>

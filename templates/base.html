@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load mptt_tags %}
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if IE 8]><html lang="en" class="ie8 no-js"><![endif]-->
+<!--[if IE 9]><html lang="en" class="ie9 no-js"><![endif]-->
 <!--[if !IE]><!-->
 <html lang="en">
 <!--<![endif]-->
@@ -126,7 +126,6 @@
 <!-- END HEADER & CONTENT DIVIDER -->
 <!-- BEGIN CONTAINER -->
 {% block context %}
-
 {% endblock %}
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
@@ -140,7 +139,7 @@
 <!-- END FOOTER -->
 <!--[if lt IE 9]>
 <script src="../assets/global/plugins/respond.min.js"></script>
-<script src="../assets/global/plugins/excanvas.min.js"></script> 
+<script src="../assets/global/plugins/excanvas.min.js"></script>
 <![endif]-->
 <!-- BEGIN CORE PLUGINS -->
 <script src="{% static 'assets/global/plugins/jquery.min.js' %}" type="text/javascript"></script>
@@ -154,6 +153,9 @@
 <script src="{% static 'assets/global/plugins/uniform/jquery.uniform.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"
         type="text/javascript"></script>
+<script src="{% static 'django-dynamic-formset\jquery.formset.js' %}" type="text/javascript"></script>
+{% block extrahead %}
+{% endblock %}
 
 <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
