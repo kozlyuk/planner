@@ -4,36 +4,8 @@
 {% load widget_tweaks %}
 {% load ita_template_tags %}
 
+{% block css %}{{ form.media.css }}{% endblock css %}
 
-{% block extrahead %}
-<script type="text/javascript">
-    $(function() {
-        $('#ExecutorsTable tbody ').formset({
-            prefix: '{{ executors_formset.prefix }}',
-            formCssClass: 'dynamic-formset1',
-            addText: 'Додати Виконавця',
-            deleteText: 'Видалити Виконавця'
-        });
-        $('#CostsTable tbody ').formset({
-            prefix: '{{ costs_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Підрядника',
-            deleteText: 'Видалити Підрядника'
-        });
-        $('#SendingTable tbody ').formset({
-            prefix: '{{ sending_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати Відправку',
-            deleteText: 'Видалити Відправку'
-        });
-    })
-</script>
-<style type="text/css">
-    .delete-row {
-        margin-left:0px;
-    }
-</style>
-{% endblock %}
 
 {% block context %}
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
@@ -43,6 +15,11 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
+
+                <div id="executors-formset-template" style="display: none;">
+                    {{ executors_formset.empty_form }}
+                </div>
+
                 <!-- PERMISSION CHECK -->
                 {% if not task or task.is_editable %}
                 <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
@@ -98,12 +75,11 @@
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {{ form.as_table }}
-                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                    {{ form }}
                                   </tbody>
                                 {% endfor %}
                               </table>
-                                {{ executors_formset.management_form }}
+                              {{ executors_formset.management_form }}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
                               <table id="CostsTable" class="table table-hover">
@@ -116,8 +92,7 @@
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {{ form.as_table }}
-                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                    {{ form }}
                                   </tbody>
                                 {% endfor %}
                               </table>
@@ -134,8 +109,7 @@
                                     <span class="help-inline" style="color:red;">
                                         {{ form.non_field_errors }}
                                     </span>
-                                    {{ form.as_table }}
-                                    {% if form.instance.pk %}Видалити{{ form.DELETE }}{% endif %}
+                                    {{ form }}
                                   </tbody>
                                 {% endfor %}
                                 </table>
@@ -147,12 +121,6 @@
                     <!-- END PORTLET-->
                 </div>
                 </form>
-                <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-                <script type="text/javascript">
-                    window.onerror = function (msg) {
-                        $("body").attr("JSError", msg);
-                    }
-                </script>
                 {% else %}
                     Ви не маєте доступу до редагування даного проекту<br><br>
                 {% endif %}
@@ -162,4 +130,63 @@
         <!-- END CONTENT -->
     </div>
     <!-- END CONTAINER -->
+{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript">
+    window.onerror = function (msg) {
+        $("body").attr("JSError", msg);
+    }
+</script>
+<script src="{% static 'django-dynamic-formset\jquery.formset.js' %}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript">
+    $(function() {
+        $('#ExecutorsTable tbody').formset({
+            prefix: '{{ executors_formset.prefix }}',
+            formCssClass: 'dynamic-formset1',
+            addText: 'Додати Виконавця',
+            deleteText: 'Видалити Виконавця',
+            'added': function(row){
+            //find the fields with the calendar widget
+            $(row).find('.vDateField').each(function(i){
+                //remove the cloned spam element: it links to an incorrect calendar
+                $(this).parent().find('span').remove();
+                //DateTimeShortcuts is in the django admin widgets
+                DateTimeShortcuts.addCalendar(this);
+                })
+            $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+        $('#CostsTable tbody ').formset({
+            prefix: '{{ costs_formset.prefix }}',
+            formCssClass: 'dynamic-formset2',
+            addText: 'Додати Підрядника',
+            deleteText: 'Видалити Підрядника',
+            'added': function(row){
+            $(row).find('.vDateField').each(function(i){
+                $(this).parent().find('span').remove();
+                DateTimeShortcuts.addCalendar(this);
+                });
+            $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+        $('#SendingTable tbody ').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
+            deleteText: 'Видалити Відправку',
+            'added': function(row){
+            $(row).find('.vDateField').each(function(i){
+                $(this).parent().find('span').remove();
+                DateTimeShortcuts.addCalendar(this);
+                });
+            $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+    })
+</script>
+{{ form.media.js }}
 {% endblock %}

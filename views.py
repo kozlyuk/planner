@@ -555,8 +555,9 @@ class TaskUpdate(UpdateView):
         form.fields['planned_finish'].widget = AdminDateWidget()
         form.fields['actual_start'].widget = AdminDateWidget()
         form.fields['actual_finish'].widget = AdminDateWidget()
-        form.fields['object_address'].widget.attrs.update({'size': 70})
-        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        form.fields['tc_received'].widget = AdminDateWidget()
+        form.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
+        form.fields['comment'].widget.attrs.update({'style': 'width:100%; height:63px;'})
         return form
 
     def get_context_data(self, **kwargs):
@@ -602,8 +603,9 @@ class TaskCreate(CreateView):
         form.fields['planned_finish'].widget = AdminDateWidget()
         form.fields['actual_start'].widget = AdminDateWidget()
         form.fields['actual_finish'].widget = AdminDateWidget()
-        form.fields['object_address'].widget.attrs.update({'size': 70})
-        form.fields['comment'].widget.attrs.update({'cols': 70, 'rows': 3})
+        form.fields['tc_received'].widget = AdminDateWidget()
+        form.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
+        form.fields['comment'].widget.attrs.update({'style': 'width:100%; height:63px;'})
         return form
 
     def get_context_data(self, **kwargs):
