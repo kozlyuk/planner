@@ -4,7 +4,11 @@
 {% load widget_tweaks %}
 {% load ita_template_tags %}
 
-{% block css %}{{ form.media.css }}{% endblock css %}
+{% block css %}
+<!-- MEDIA CSS -->
+{{ form.media.css }}
+<!-- MEDIA CSS -->
+{% endblock css %}
 
 
 {% block context %}
@@ -150,14 +154,17 @@
             addText: 'Додати Виконавця',
             deleteText: 'Видалити Виконавця',
             'added': function(row){
-            //find the fields with the calendar widget
-            $(row).find('.vDateField').each(function(i){
-                //remove the cloned spam element: it links to an incorrect calendar
-                $(this).parent().find('span').remove();
-                //DateTimeShortcuts is in the django admin widgets
-                DateTimeShortcuts.addCalendar(this);
+                //find the fields with the calendar widget
+                $(row).find('.vDateField').each(function(i){
+                    //remove the cloned spam element: it links to an incorrect calendar
+                    $(this).parent().find('span').remove();
+                    //DateTimeShortcuts is in the django admin widgets
+                    DateTimeShortcuts.addCalendar(this);
                 })
-            //$(row).find('.django-select2').djangoSelect2();
+                $(row).find('.django-select2').each(function(i){
+                    //$(this).css('border','solid 1px');
+                    $(this).djangoSelect2();
+                })
             }
         });
         $('#CostsTable tbody ').formset({
@@ -188,5 +195,5 @@
         });
     })
 </script>
-{{ form.media.js }}
+
 {% endblock %}
