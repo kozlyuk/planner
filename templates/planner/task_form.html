@@ -161,10 +161,7 @@
                     //DateTimeShortcuts is in the django admin widgets
                     DateTimeShortcuts.addCalendar(this);
                 })
-                $(row).find('.django-select2').each(function(i){
-                    //$(this).css('border','solid 1px');
-                    $(this).djangoSelect2();
-                })
+                $(row).find('.django-select2').djangoSelect2();
             }
         });
         $('#CostsTable tbody ').formset({
@@ -173,11 +170,11 @@
             addText: 'Додати Підрядника',
             deleteText: 'Видалити Підрядника',
             'added': function(row){
-            $(row).find('.vDateField').each(function(i){
-                $(this).parent().find('span').remove();
-                DateTimeShortcuts.addCalendar(this);
-                });
-            //$(row).find('.django-select2').djangoSelect2();
+                $(row).find('.vDateField').each(function(i){
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                    });
+                $(row).find('.django-select2').djangoSelect2();
             }
         });
         $('#SendingTable tbody ').formset({
@@ -186,11 +183,11 @@
             addText: 'Додати Відправку',
             deleteText: 'Видалити Відправку',
             'added': function(row){
-            $(row).find('.vDateField').each(function(i){
-                $(this).parent().find('span').remove();
-                DateTimeShortcuts.addCalendar(this);
-                });
-            //$(row).find('.django-select2').djangoSelect2();
+                $(row).find('.vDateField').each(function(i){
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                    });
+                $(row).find('.django-select2').djangoSelect2();
             }
         });
     })
