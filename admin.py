@@ -65,7 +65,7 @@ class CustomerAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
-                           ('debtor_term'),
+                           ('debtor_term', 'act_template'),
                            ('requisites')
                           ]})
         ]

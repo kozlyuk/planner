@@ -151,12 +151,17 @@ class Employee(models.Model):
 
 
 class Customer(models.Model):
+    ACT_TEMPLATE_CHOICES = (
+        ('gks', 'Шаблон ГКС'),
+        ('msz', 'Шаблон МС'),
+    )
     name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
     requisites = models.TextField('Реквізити', blank=True)
     debtor_term = models.PositiveSmallIntegerField('Термін післяоплати', blank=True, null=True)
+    act_template = models.CharField('Шаблон акту', max_length=3, choices=ACT_TEMPLATE_CHOICES, default='gks')
 
     class Meta:
         verbose_name = 'Замовник'
@@ -377,6 +382,7 @@ class Deal(models.Model):
         unique_together = ('number', 'customer')
         verbose_name = 'Договір'
         verbose_name_plural = 'Договори'
+        ordering = ['-creation_date']
 
     def __str__(self):
         return self.number + ' ' + self.customer.name
