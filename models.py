@@ -151,7 +151,7 @@ class Employee(models.Model):
 
 
 class Customer(models.Model):
-    name = models.CharField('Назва', max_length=100, unique=True)
+    name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
@@ -248,7 +248,7 @@ class Project(models.Model):
 
 
 class Company(models.Model):
-    name = models.CharField('Назва', max_length=100, unique=True)
+    name = models.CharField('Назва', max_length=50, unique=True)
     chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     requisites = models.TextField('Реквізити', blank=True)
 
@@ -282,7 +282,7 @@ class Company(models.Model):
 
 
 class Contractor(models.Model):
-    name = models.CharField('Назва', max_length=100, unique=True)
+    name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
@@ -475,7 +475,7 @@ class Deal(models.Model):
 
 class Receiver(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
-    name = models.CharField('Отримувач', max_length=100, unique=True)
+    name = models.CharField('Отримувач', max_length=50, unique=True)
     address = models.CharField('Адреса', max_length=255)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
