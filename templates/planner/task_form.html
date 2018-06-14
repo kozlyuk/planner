@@ -5,7 +5,6 @@
 {% load ita_template_tags %}
 
 {% block css %}
-<link href="{% static 'django_select2/select2-bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
 {% endblock css %}
 
 
@@ -162,7 +161,7 @@
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
-        $('#CostsTable tbody ').formset({
+        $('#CostsTable tbody').formset({
             prefix: '{{ costs_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
@@ -175,7 +174,7 @@
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
-        $('#SendingTable tbody ').formset({
+        $('#SendingTable tbody').formset({
             prefix: '{{ sending_formset.prefix }}',
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
