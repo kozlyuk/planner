@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # calc_scripts.py
+from .models import Task, Execution, IntTask
+from django.db.models import Q
 
 def gks(deal, tasks):
 
@@ -107,5 +109,96 @@ def msz(deal, tasks):
                     int(swvat), int((swvat - int(swvat)) * 100))
 
     report += '</table>'
+
+    return report
+
+
+def bonus_calculation(request, employee, year, month):
+
+    report = '<html><body>Шановний(а) {}.<br><br>'.format(request.user.first_name)
+
+    tasks = Task.objects.filter(owner=employee,
+                                exec_status=Task.Sent,
+                                actual_finish__month=month,
+                                actual_finish__year=year)
+    executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
+                                          executor=employee,
+                                          task__actual_finish__month=month,
+                                          task__actual_finish__year=year)
+    inttasks = IntTask.objects.filter(executor=employee,
+                                      exec_status=IntTask.Done,
+                                      actual_finish__month=month,
+                                      actual_finish__year=year)
+
+    if tasks.exists() or executions.exists() or inttasks.exists():
+        bonuses = 0
+        if employee.user == request.user:
+            report += 'За {}.{} Вам були нараховані бонуси за виконання проектів та завдань.<br><br>'\
+                .format(month, year)
+        else:
+            report += 'Працівнику {} за {}.{} були нараховані бонуси за виконання проектів та завдань.<br><br>'\
+                .format(employee.user.get_full_name(), month, year)
+
+        if tasks.exists():
+            index = 0
+            report += 'Бонуси за ведення проекту:<br>\
+                       <table border="1">\
+                       <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
+                       <th>Тип проекту</th><th>Відсоток</th><th>Бонус</th>'
+
+            for task in tasks:
+                index += 1
+                report += '<tr>\
+                           <td>{}</td><td>{}</td><td>{:.80}</td>\
+                           <td>{}</td><td>{!s}</td><td>{!s}</td>\
+                           </tr>'\
+                           .format(index, task.object_code, task.object_address,
+                                   task.project_type, task.owner_part(),
+                                   round(task.owner_bonus(), 2))
+                bonuses += task.owner_bonus()
+
+            report += '</table><br>'
+
+        if executions.exists():
+            index = 0
+            report += 'Бонуси за виконання проекту:<br>\
+                       <table border="1">\
+                       <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
+                       <th>Тип проекту</th><th>Назва робіт</th><th>Відсоток</th><th>Бонус</th>'
+
+            for ex in executions:
+                index += 1
+                report += '<tr>\
+                           <td>{}</td><td>{}</td><td>{:.80}</td>\
+                           <td>{}</td><td>{}</td><td>{}</td><td>{!s}</td>\
+                           </tr>'\
+                           .format(index, ex.task.object_code, ex.task.object_address,
+                                   ex.task.project_type, ex.part_name, ex.part,
+                                   round(ex.task.exec_bonus(ex.part), 2))
+                bonuses += ex.task.exec_bonus(ex.part)
+
+            report += '</table><br>'
+
+        if inttasks.exists():
+            index = 0
+            report += 'Бонуси за виконання завдань:<br>\
+                       <table border="1">\
+                       <th>&#8470;</th><th>Завдання</th><th>Бонус</th>'
+
+            for task in inttasks:
+                index += 1
+                report += '<tr>\
+                           <td>{}</td><td>{}</td><td>{}</td>\
+                           </tr>'\
+                           .format(index, task.task_name, task.bonus)
+                bonuses += task.bonus
+
+            report += '</table><br>'
+
+        report += 'Всьго нараховано {} бонусів.</body></html>'.format(round(bonuses, 2))
+
+    else:
+        report += 'За {}.{} немає виконаних проектів чи завдань.<br><br>'\
+                .format(month, year)
 
     return report
