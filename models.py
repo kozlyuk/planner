@@ -462,6 +462,8 @@ class Deal(models.Model):
         total = 0
         for task in self.task_set.all():
             total += task.project_type.price
+            if self.company.taxation == 'wovat':
+                total = total / 6 * 5
         return round(total, 2)
     value_calc.short_description = 'Вартість договору по роботам, грн.'
 
