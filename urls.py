@@ -21,7 +21,7 @@ from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
-from .views import TaskUpdate, TaskCreate, SubtaskUpdate, InttaskDetail
+from .views import TaskUpdate, TaskCreate, TaskDelete, SubtaskUpdate, InttaskDetail
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^project/$', views.projects_list, name='projects_list'),
     url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
+    url(r'^project/(?P<pk>[0-9]+)/delete/$', TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
     url(r'^subtask/(?P<pk>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', InttaskDetail.as_view(), name='inttask_detail'),

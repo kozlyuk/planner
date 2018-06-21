@@ -253,8 +253,13 @@ class Project(models.Model):
 
 
 class Company(models.Model):
+    TAXATION_CHOICES = (
+        ('wvat', 'З ПДВ'),
+        ('wovat', 'Без ПДВ'),
+    )
     name = models.CharField('Назва', max_length=50, unique=True)
     chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
+    taxation = models.CharField('Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
     requisites = models.TextField('Реквізити', blank=True)
 
     class Meta:

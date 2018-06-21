@@ -34,15 +34,12 @@
                         </div>
                         <div class="portlet-body">
                             <div class="widget-bg-color-white">
-                                    <span class="help-inline" style="color:red;">
-                                    {{ form.non_field_errors }}
-                                    </span>
                                     <table class="table table-hover">
                                         <col width="25%">
-                                        {{ form.as_table }}
+                                        {{ form }}
                                     </table>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn red btn-sm btn-outline sbold uppercase" >Видалити</button>
+                                        <a href="{% url 'task_delete' task.pk %}"class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
                                     </div>
                             </div>
@@ -73,9 +70,6 @@
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
-                                    <span class="help-inline" style="color:red;">
-                                        {{ form.non_field_errors }}
-                                    </span>
                                     {{ form }}
                                   </tbody>
                                 {% endfor %}
@@ -90,9 +84,6 @@
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
-                                    <span class="help-inline" style="color:red;">
-                                        {{ form.non_field_errors }}
-                                    </span>
                                     {{ form }}
                                   </tbody>
                                 {% endfor %}
@@ -107,9 +98,6 @@
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
                                     {% endfor %}
-                                    <span class="help-inline" style="color:red;">
-                                        {{ form.non_field_errors }}
-                                    </span>
                                     {{ form }}
                                   </tbody>
                                 {% endfor %}

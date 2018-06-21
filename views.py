@@ -446,6 +446,13 @@ class TaskUpdate(UpdateView):
             context['sending_formset'] = SendingFormSet(instance=self.object, prefix='sending')
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Making sure that only authors can update stories """
+        obj = self.get_object()
+        if obj.author != self.request.user:
+            return redirect(obj)
+        return super(UpdateStory, self).dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         context = self.get_context_data()
         executors_formset = context['executors_formset']
@@ -508,6 +515,11 @@ class TaskCreate(CreateView):
             sending_form.instance = self.object
             sending_form.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+class TaskDelete(DeleteView):
+    model = Task
+    success_url = reverse_lazy('projects_list')
 
 
 class SubtaskUpdate(UpdateView):
