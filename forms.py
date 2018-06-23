@@ -1,9 +1,10 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee
+from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project
 from django.forms import inlineformset_factory
 from django_select2.forms import Select2Widget
 from django.contrib.admin.widgets import AdminDateWidget
+from crum import get_current_user
 
 
 class UserLoginForm(forms.ModelForm):
@@ -32,12 +33,31 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
+            'planned_start': AdminDateWidget,
+            'planned_finish': AdminDateWidget,
+            'actual_start': AdminDateWidget,
+            'actual_finish': AdminDateWidget,
+            'tc_received': AdminDateWidget,
         }
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['deal'].queryset = Deal.objects.all()
-        self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
+        self.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width:100%; height:63px;'})
+
+        if get_current_user().is_superuser:
+            self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
+                                                                    user__is_active=True)
+        elif self.instance.pk is None or self.instance.owner.user == get_current_user():
+            self.fields['owner'].queryset = Employee.objects.filter(user=get_current_user())
+
+        self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+
+        if self.instance.pk is None:
+            self.fields['project_type'].queryset = Project.objects.filter(active=True)
+        else:
+            self.fields['project_type'].queryset = Project.objects.filter(customer=self.instance.deal.customer,
+                                                                          active=True)
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part', 'exec_status', 'finish_date'),
                                          extra=1, widgets={'executor': Select2Widget(), 'finish_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})

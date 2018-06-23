@@ -39,7 +39,7 @@
                                         {{ form }}
                                     </table>
                                     <div class="form-actions">
-                                        <a href="{% url 'task_delete' task.pk %}"class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
+                                        {% if task.pk %}<a href="{% url 'task_delete' task.pk %}"class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>{% endif %}
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Зберегти</button>
                                     </div>
                             </div>

@@ -423,17 +423,6 @@ class TaskUpdate(UpdateView):
         self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
 
-    def get_form(self, form_class=None):
-        form = super(TaskUpdate, self).get_form(form_class)
-        form.fields['planned_start'].widget = AdminDateWidget()
-        form.fields['planned_finish'].widget = AdminDateWidget()
-        form.fields['actual_start'].widget = AdminDateWidget()
-        form.fields['actual_finish'].widget = AdminDateWidget()
-        form.fields['tc_received'].widget = AdminDateWidget()
-        form.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
-        form.fields['comment'].widget.attrs.update({'style': 'width:100%; height:63px;'})
-        return form
-
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
@@ -446,15 +435,10 @@ class TaskUpdate(UpdateView):
             context['sending_formset'] = SendingFormSet(instance=self.object, prefix='sending')
         return context
 
-    def dispatch(self, request, *args, **kwargs):
-        """ Making sure that only authors can update stories """
-        obj = self.get_object()
-        if obj.author != self.request.user:
-            return redirect(obj)
-        return super(UpdateStory, self).dispatch(request, *args, **kwargs)
-
     def form_valid(self, form):
         context = self.get_context_data()
+
+
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
@@ -477,17 +461,6 @@ class TaskCreate(CreateView):
     def get_success_url(self):
         self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
-
-    def get_form(self, form_class=None):
-        form = super(TaskCreate, self).get_form(form_class)
-        form.fields['planned_start'].widget = AdminDateWidget()
-        form.fields['planned_finish'].widget = AdminDateWidget()
-        form.fields['actual_start'].widget = AdminDateWidget()
-        form.fields['actual_finish'].widget = AdminDateWidget()
-        form.fields['tc_received'].widget = AdminDateWidget()
-        form.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
-        form.fields['comment'].widget.attrs.update({'style': 'width:100%; height:63px;'})
-        return form
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
