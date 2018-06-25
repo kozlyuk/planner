@@ -59,6 +59,31 @@ class TaskForm(forms.ModelForm):
             self.fields['project_type'].queryset = Project.objects.filter(customer=self.instance.deal.customer,
                                                                           active=True)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        project_type = cleaned_data.get("project_type")
+        deal = cleaned_data.get("deal")
+        exec_status = cleaned_data.get("exec_status")
+        actual_finish = cleaned_data.get("actual_finish")
+        planned_finish = cleaned_data.get("planned_finish")
+        pdf_copy = cleaned_data.get("pdf_copy")
+
+        if project_type and deal:
+            if deal.customer != project_type.customer:
+                raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
+        if exec_status in [Task.Done, Task.Sent]:
+            if not actual_finish:
+                raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
+            elif not pdf_copy:
+                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
+            elif deal.act_status == Deal.Issued:
+                raise forms.ValidationError("Договір закрито, зверніться до керівника")
+        if actual_finish and exec_status not in [Task.Done, Task.Sent]:
+                raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+        if planned_finish and planned_finish > deal.expire_date:
+            raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
+
+
 ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part', 'exec_status', 'finish_date'),
                                          extra=1, widgets={'executor': Select2Widget(), 'finish_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})
 CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),

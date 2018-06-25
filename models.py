@@ -595,7 +595,7 @@ class Task(models.Model):
         if self.exec_status == self.Done:
             if self.sending_status() != 'Надіслано':
                 return self.sending_status()
-        if self.exec_status in [self.Sent, self.Done]:
+        if self.exec_status in [self.Sent, self.Done] and self.actual_finish:
             return 'Виконано %s' % self.actual_finish.strftime(date_format)
         if self.execution_status() == 'Виконано':
             return 'Очікує на перевірку'

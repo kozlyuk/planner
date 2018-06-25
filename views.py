@@ -437,8 +437,6 @@ class TaskUpdate(UpdateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-
-
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
@@ -449,7 +447,7 @@ class TaskUpdate(UpdateView):
             costs_formset.save()
             sending_formset.instance = self.object
             sending_formset.save()
-            return super().form_valid(form)
+            return super(TaskUpdate, self).form_valid(form)
         else:
             return self.form_invalid(form)
 
