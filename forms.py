@@ -51,7 +51,10 @@ class TaskForm(forms.ModelForm):
         elif self.instance.pk is None or self.instance.owner.user == get_current_user():
             self.fields['owner'].queryset = Employee.objects.filter(user=get_current_user())
 
-        self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+        if self.instance.pk is None or self.instance.deal.act_status != Deal.Issued:
+            self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+        else:
+            self.fields['deal'].widget.attrs['disabled'] = True
 
         if self.instance.pk is None:
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
@@ -60,32 +63,76 @@ class TaskForm(forms.ModelForm):
                                                                           active=True)
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super(TaskForm, self).clean()
         project_type = cleaned_data.get("project_type")
         deal = cleaned_data.get("deal")
         exec_status = cleaned_data.get("exec_status")
         actual_finish = cleaned_data.get("actual_finish")
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
+        self.instance.__exec_status__ = exec_status
+        self.instance.__project_type__ = project_type
 
         if project_type and deal:
             if deal.customer != project_type.customer:
-                raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
+                self.add_error('project_type', "Тип проекту не входить до можливих значень Замовника Договору")
         if exec_status in [Task.Done, Task.Sent]:
             if not actual_finish:
-                raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
+                self.add_error('actual_finish', "Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
-                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
-            elif deal.act_status == Deal.Issued:
-                raise forms.ValidationError("Договір закрито, зверніться до керівника")
+                self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
+           # elif deal.act_status == Deal.Issued:
+           #     self.add_error(None, "Договір закрито, зверніться до керівника")
         if actual_finish and exec_status not in [Task.Done, Task.Sent]:
-                raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+            self.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
-            raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
+            self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
+        return cleaned_data
 
 
-ExecutorsFormSet = inlineformset_factory(Task, Execution, fields=('executor', 'part_name', 'part', 'exec_status', 'finish_date'),
-                                         extra=1, widgets={'executor': Select2Widget(), 'finish_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})
+class ExecutorsInlineFormSet(forms.ModelForm):
+    class Meta:
+        model = Execution
+        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
+        widgets = {
+            'executor': Select2Widget(),
+            'finish_date': AdminDateWidget(),
+            'DELETION_FIELD_NAME': forms.HiddenInput()
+        }
+
+    def clean(self):
+        super(ExecutorsInlineFormSet, self).clean()
+        percent = 0
+        outsourcing_part = 0
+        self.instance.__outsourcing_part__ = outsourcing_part
+        part = self.cleaned_data.get('part', 0)
+        executor = self.cleaned_data.get('executor')
+        percent += part
+        if executor and executor.user.username.startswith('outsourcing'):
+            outsourcing_part += part
+        exec_status = self.cleaned_data.get('exec_status')
+        finish_date = self.cleaned_data.get('finish_date')
+        if finish_date and exec_status != Execution.Done:
+            self.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+        elif exec_status == Execution.Done and not finish_date:
+            self.add_error('finish_date', "Вкажіть будь ласка Дату виконання робіт")
+#        self.instance.__outsourcing_part__ = outsourcing_part
+#        if self.instance.__exec_status__ == Task.Done and percent < 100:
+#            self.add_error('part', ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+#        if self.instance.__project_type__:
+#            if self.instance.__project_type__.executors_bonus > 0:
+#                bonuses_max = 100 + 100 *\
+#                          self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
+#            else:
+#                bonuses_max = 100
+#            if percent > bonuses_max:
+#                self.add_error('part', ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+#                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
+
+
+ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorsInlineFormSet, extra=1)
+
+
 CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
                                      extra=1, widgets={'contractor': Select2Widget(attrs={'data-width': '100%'}), 'pay_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})
 SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'),
@@ -100,6 +147,7 @@ class TaskFilterForm(forms.Form):
         exec_status.insert(1, ('IW', "В черзі"))
         exec_status.insert(2, ('IP', "Виконується"))
         exec_status.insert(3, ('HD', "Виконано"))
+        exec_status.insert(4, ('ST', "Надіслано"))
 
         owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').distinct()]
         owners.insert(0, (0, "Всі"))
