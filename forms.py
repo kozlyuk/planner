@@ -2,6 +2,8 @@
 from django import forms
 from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project
 from django.forms import inlineformset_factory
+from django.forms.models import BaseInlineFormSet
+from django.core.exceptions import ValidationError
 from django_select2.forms import Select2Widget
 from django.contrib.admin.widgets import AdminDateWidget
 from crum import get_current_user
@@ -81,8 +83,8 @@ class TaskForm(forms.ModelForm):
                 self.add_error('actual_finish', "Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
                 self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
-           # elif deal.act_status == Deal.Issued:
-           #     self.add_error(None, "Договір закрито, зверніться до керівника")
+            elif deal.act_status == Deal.Issued:
+                self.add_error(None, "Договір закрито, зверніться до керівника")
         if actual_finish and exec_status not in [Task.Done, Task.Sent]:
             self.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
@@ -90,7 +92,7 @@ class TaskForm(forms.ModelForm):
         return cleaned_data
 
 
-class ExecutorsInlineFormSet(forms.ModelForm):
+class ExecutorsInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
         fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
@@ -101,37 +103,44 @@ class ExecutorsInlineFormSet(forms.ModelForm):
         }
 
     def clean(self):
-        super(ExecutorsInlineFormSet, self).clean()
-        percent = 0
-        outsourcing_part = 0
-        self.instance.__outsourcing_part__ = outsourcing_part
-        part = self.cleaned_data.get('part', 0)
-        executor = self.cleaned_data.get('executor')
-        percent += part
-        if executor and executor.user.username.startswith('outsourcing'):
-            outsourcing_part += part
+        super(ExecutorsInlineForm, self).clean()
         exec_status = self.cleaned_data.get('exec_status')
         finish_date = self.cleaned_data.get('finish_date')
         if finish_date and exec_status != Execution.Done:
             self.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         elif exec_status == Execution.Done and not finish_date:
             self.add_error('finish_date', "Вкажіть будь ласка Дату виконання робіт")
-#        self.instance.__outsourcing_part__ = outsourcing_part
-#        if self.instance.__exec_status__ == Task.Done and percent < 100:
-#            self.add_error('part', ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
-#        if self.instance.__project_type__:
-#            if self.instance.__project_type__.executors_bonus > 0:
-#                bonuses_max = 100 + 100 *\
-#                          self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
-#            else:
-#                bonuses_max = 100
-#            if percent > bonuses_max:
-#                self.add_error('part', ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
-#                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
-ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorsInlineFormSet, extra=1)
+class ExecutorsInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+    def clean(self):
+        """forces each clean() method on the ChildCounts to be called"""
+        super(ExecutorsInlineFormset, self).clean()
+    #    percent = 0
+    #    outsourcing_part = 0
+    #    self.instance.__outsourcing_part__ = outsourcing_part
+    #    part = self.cleaned_data.get('part', 0)
+    #    executor = self.cleaned_data.get('executor')
+    #    percent += part
+    #    if executor and executor.user.username.startswith('outsourcing'):
+    #        outsourcing_part += part
+    #    for form in self.forms:
+    #        self.instance.__outsourcing_part__ = outsourcing_part
+    #        if self.request._obj_.exec_status == Task.Done and percent < 100:
+    #            self.add_error('part', ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+    #        if self.instance.__project_type__:
+    #            if self.instance.__project_type__.executors_bonus > 0:
+    #                bonuses_max = 100 + 100 *\
+    #                          self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
+    #            else:
+    #                bonuses_max = 100
+    #            if percent > bonuses_max:
+    #                self.add_error('part', ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+    #                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
+
+ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorsInlineForm, extra=1, formset=ExecutorsInlineFormset)
 
 CostsFormSet = inlineformset_factory(Task, Order, fields=('contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date'),
                                      extra=1, widgets={'contractor': Select2Widget(attrs={'data-width': '100%'}), 'pay_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})

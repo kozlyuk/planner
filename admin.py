@@ -523,15 +523,6 @@ class TaskAdmin(admin.ModelAdmin):
             self.inlines = [ExecutersInline, SendingsInline]
         return super(TaskAdmin, self).get_inline_instances(request, obj)
 
-    #def has_delete_permission(self, request, obj=None):
-    #    if request.user.is_superuser:
-    #        return True
-    #    if obj == None:
-    #        return self.readonly_fields
-    #    if obj.owner.user == request.user:
-    #        return True
-    #    return False
-
 
 class IntTaskForm(forms.ModelForm):
 

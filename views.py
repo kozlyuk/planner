@@ -426,13 +426,17 @@ class TaskUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object, prefix='executors')
+            executors_formset = ExecutorsFormSet(self.request.POST, instance=self.object, prefix='executors')
+            context['executors_formset'] = executors_formset
             context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object, prefix='costs')
             context['sending_formset'] = SendingFormSet(self.request.POST, instance=self.object, prefix='sending')
+            context['form'] = TaskForm(data=self.request.POST, instance=self.object)
         else:
-            context['executors_formset'] = ExecutorsFormSet(instance=self.object, prefix='executors')
+            executors_formset = ExecutorsFormSet(instance=self.object, prefix='executors')
+            context['executors_formset'] = executors_formset
             context['costs_formset'] = CostsFormSet(instance=self.object, prefix='costs')
             context['sending_formset'] = SendingFormSet(instance=self.object, prefix='sending')
+            context['form'] = TaskForm(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -440,7 +444,9 @@ class TaskUpdate(UpdateView):
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
-        if executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
+        if form.is_valid() and executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
+#            for formset in executors_formset:
+#                form.add_error()
             executors_formset.instance = self.object
             executors_formset.save()
             costs_formset.instance = self.object
@@ -477,7 +483,7 @@ class TaskCreate(CreateView):
         executors_form = context['executors_formset']
         costs_form = context['costs_formset']
         sending_form = context['sending_formset']
-        if executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
+        if form.is_valid() and executors_form.is_valid() and costs_form.is_valid() and sending_form.is_valid():
             self.object = form.save()
             executors_form.instance = self.object
             executors_form.save()
