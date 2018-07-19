@@ -348,9 +348,9 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             value = form.cleaned_data.get("value")
             if pay_status and pay_status != Order.NotPaid:
                 if not pay_date:
-                    raise forms.ValidationError("Вкажіть Дату оплати")
+                    raise forms.ValidationError("Вкажіть будь ласка Дату оплати")
                 if not value or value == 0:
-                    raise forms.ValidationError("Вкажіть Вартість робіт")
+                    raise forms.ValidationError("Вкажіть будь ласка Вартість робіт")
             if pay_date and pay_status == Order.NotPaid:
                     raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
 

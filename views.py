@@ -445,8 +445,6 @@ class TaskUpdate(UpdateView):
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
         if form.is_valid() and executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
-#            for formset in executors_formset:
-#                form.add_error()
             executors_formset.instance = self.object
             executors_formset.save()
             costs_formset.instance = self.object
