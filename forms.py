@@ -101,7 +101,7 @@ class ExecutorInlineForm(forms.ModelForm):
         }
 
     def clean(self):
-        super(ExecutorsInlineForm, self).clean()
+        super(ExecutorInlineForm, self).clean()
         exec_status = self.cleaned_data.get('exec_status')
         finish_date = self.cleaned_data.get('finish_date')
         if finish_date and exec_status != Execution.Done:
@@ -121,12 +121,13 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             part = form.cleaned_data.get('part', 0)
             executor = form.cleaned_data.get('executor')
-            percent += part
-            if executor and executor.user.username.startswith('outsourcing'):
-                outsourcing_part += part
+            if not form.cleaned_data.get('DELETE', False):
+                percent += part
+                if executor and executor.user.username.startswith('outsourcing'):
+                    outsourcing_part += part
         self.instance.__outsourcing_part__ = outsourcing_part
         if self.instance.exec_status == Task.Done and percent < 100:
-            self.forms[0].add_error('part', ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+            self.forms[0].add_error(None, ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
         if self.instance.project_type:
             if self.instance.project_type.executors_bonus > 0:
                 bonuses_max = 100 + 100 * self.instance.project_type.owner_bonus /\
@@ -134,7 +135,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
             else:
                 bonuses_max = 100
             if percent > bonuses_max:
-                self.forms[0].add_error('part', ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+                self.forms[0].add_error(None,  ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
                                         'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
@@ -171,12 +172,12 @@ class CostsInlineFormset(BaseInlineFormSet):
         super(CostsInlineFormset, self).clean()
         outsourcing = 0
         for form in self.forms:
-            if form.is_valid():
+            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
                 outsourcing += form.cleaned_data.get('value', 0)
         if self.instance.exec_status == Task.Done:
             if self.instance.project_type.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                 costs_part = outsourcing / self.instance.project_type.net_price() * 100
-                if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
+                if self.instance.__outsourcing_part__ > 0 and int(costs_part) == 0:
                     self.forms[0].add_error(None, 'Добавте витрати по аутсорсингу')
                 if self.instance.__outsourcing_part__ < costs_part:
                     self.forms[0].add_error(None, 'Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
