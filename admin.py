@@ -358,7 +358,7 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                 costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
                 if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
-                    raise ValidationError('Добавте витрати по аутсорсингу')
+                    raise ValidationError('Добавте будь ласка витрати по аутсорсингу')
                 if self.instance.__outsourcing_part__ < costs_part:
                     raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
             elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:

@@ -16,11 +16,6 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
-
-                <div id="executors-formset-template" style="display: none;">
-                    {{ executors_formset.empty_form }}
-                </div>
-
                 <!-- PERMISSION CHECK -->
                 {% if not task or task.is_editable %}
                 <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
@@ -36,6 +31,9 @@
                             <div class="widget-bg-color-white">
                                     <table class="table table-hover">
                                         <col width="25%">
+                                        {{ executors_formset.non_form_errors }}
+                                        {{ costs_formset.non_form_errors }}
+                                        {{ sending_formset.non_form_errors }}
                                         {{ form }}
                                     </table>
                                     <div class="form-actions">

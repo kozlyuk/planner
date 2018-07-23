@@ -126,8 +126,8 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                 if executor and executor.user.username.startswith('outsourcing'):
                     outsourcing_part += part
         self.instance.__outsourcing_part__ = outsourcing_part
-        if self.instance.exec_status == Task.Done and percent < 100:
-            self.forms[0].add_error(None, ('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+        if self.instance.exec_status in [Task.Done, Task.Sent] and percent < 100:
+            raise ValidationError(('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
         if self.instance.project_type:
             if self.instance.project_type.executors_bonus > 0:
                 bonuses_max = 100 + 100 * self.instance.project_type.owner_bonus /\
@@ -135,8 +135,8 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
             else:
                 bonuses_max = 100
             if percent > bonuses_max:
-                self.forms[0].add_error(None,  ('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
-                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
+                raise ValidationError(('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
+                                       'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=1, formset=ExecutorsInlineFormset)
@@ -174,22 +174,46 @@ class CostsInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             if form.is_valid() and not form.cleaned_data.get('DELETE', False):
                 outsourcing += form.cleaned_data.get('value', 0)
-        if self.instance.exec_status == Task.Done:
+        if self.instance.exec_status in [Task.Done, Task.Sent]:
             if self.instance.project_type.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                 costs_part = outsourcing / self.instance.project_type.net_price() * 100
-                if self.instance.__outsourcing_part__ > 0 and int(costs_part) == 0:
-                    self.forms[0].add_error(None, 'Добавте витрати по аутсорсингу')
+                if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
+                    raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
                 if self.instance.__outsourcing_part__ < costs_part:
-                    self.forms[0].add_error(None, 'Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
+                    raise ValidationError("Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
             elif self.instance.project_type.net_price() == 0 and outsourcing > 0:
-                self.forms[0].add_error(None, 'У проекту вартість якого дорівнює нулю не може бути витрат')
+                raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
 CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=1, formset=CostsInlineFormset)
 
 
-SendingFormSet = inlineformset_factory(Task, Sending, fields=('receiver', 'receipt_date', 'copies_count', 'register_num'),
-                                       extra=1, widgets={'receiver': Select2Widget(attrs={'data-width': '100%'}), 'receipt_date': AdminDateWidget(), 'DELETION_FIELD_NAME': forms.HiddenInput()})
+class SendingInlineForm(forms.ModelForm):
+    class Meta:
+        model = Sending
+        fields = ['receiver', 'receipt_date', 'copies_count', 'register_num']
+        widgets = {
+            'receiver': Select2Widget(attrs={'data-width': '100%'}),
+            'receipt_date': AdminDateWidget(),
+            'DELETION_FIELD_NAME': forms.HiddenInput()
+        }
+
+
+class SendingInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+    def clean(self):
+        """forces each clean() method on the ChildCounts to be called"""
+        super(SendingInlineFormset, self).clean()
+        if self.instance.exec_status == Task.Sent and self.instance.project_type.copies_count > 0:
+            sending = 0
+            for form in self.forms:
+                if form.is_valid() and not form.cleaned_data.get('DELETE', False):
+                    sending += form.cleaned_data.get('copies_count', 0)
+            if sending == 0:
+                raise ValidationError("Ви не можете закрити цей проект без відправки")
+
+
+SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=1, formset=SendingInlineFormset)
 
 
 class TaskFilterForm(forms.Form):
