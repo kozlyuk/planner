@@ -70,7 +70,9 @@
                                 <tbody>
                                 {% for task in page_objects %}
                                     <tr>
-                                        {% if task.is_viewable %}
+                                        {% if task.is_editable and task.is_active %}
+                                            <td><a href="{% url 'task_update' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
+                                        {% elif task.is_viewable %}
                                             <td><a href="{% url 'task_detail' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
                                         {% else %}
                                             <td> {{ task.object_code }} </td>
@@ -81,12 +83,6 @@
                                         <td><span class="label label-sm label-{% color_status task.exec_status %} label-mini"> {{ task.get_exec_status_display }} </span></td>
                                         <td> {{ task.owner.name }} </td>
                                         <td> {{ task.overdue_status }} </td>
-                                        <td>
-                                            {% if task.is_editable %}
-                                            <a href="{% url 'task_update' task.id %}?{{ filters }}"
-                                               class="btn dark btn-sm btn-outline sbold uppercase"> Редагувати </a>
-                                            {% endif %}
-                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
