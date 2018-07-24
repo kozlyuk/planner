@@ -58,11 +58,10 @@ class TaskForm(forms.ModelForm):
         else:
             self.fields['deal'].widget.attrs['disabled'] = True
 
-        if self.instance.pk is None:
+        if self.instance.pk is None or self.instance.project_type.active:
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
         else:
-            self.fields['project_type'].queryset = Project.objects.filter(customer=self.instance.deal.customer,
-                                                                          active=True)
+            self.fields['project_type'].widget.attrs['disabled'] = True
 
     def clean(self):
         cleaned_data = super(TaskForm, self).clean()
@@ -73,16 +72,18 @@ class TaskForm(forms.ModelForm):
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
 
+        if not deal or deal.act_status == Deal.Issued:
+            raise ValidationError("Договір закрито, зверніться до керівника")
+        if not project_type or project_type.active is False:
+            raise ValidationError("Даний Тип проекту не активний")
         if project_type and deal:
             if deal.customer != project_type.customer:
-                self.add_error('project_type', "Тип проекту не входить до можливих значень Замовника Договору")
+                self.add_error('project_type', "Тип проекту не відповідає Замовнику Договору")
         if exec_status in [Task.Done, Task.Sent]:
             if not actual_finish:
                 self.add_error('actual_finish', "Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
                 self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
-            elif deal.act_status == Deal.Issued:
-                self.add_error(None, "Договір закрито, зверніться до керівника")
         if actual_finish and exec_status not in [Task.Done, Task.Sent]:
             self.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
