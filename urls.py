@@ -22,6 +22,7 @@ from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
 from .views import TaskUpdate, TaskCreate, TaskDelete, SubtaskUpdate, InttaskDetail
+from .views import DealList  #, DealDetail, DealUpdate, DealCreate, DealDelete
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -31,6 +32,10 @@ urlpatterns = [
     #url(r'^select2/', include('django_select2.urls')),
 
     url(r'^$', views.home_page, name='home_page'),
+
+    url(r'^deal/$', DealList.as_view(), name='deal_list'),
+    url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
+
     url(r'^project/$', views.projects_list, name='projects_list'),
     url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
@@ -38,14 +43,12 @@ urlpatterns = [
     url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
     url(r'^subtask/(?P<pk>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', InttaskDetail.as_view(), name='inttask_detail'),
-    # url(r'^deal/$', views.deals_list, name='deals_list'),
-    url(r'^deal/$', RedirectView.as_view(url='/admin/planner/deal/'), name='deals_list'),
     url(r'^login/$', views.login_page, name='login_page'),
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
-    url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.bonus_calc, name='bonus_calc'),
+
     url(r'^news/$', NewsList.as_view(), name='news_list'),
     url(r'^news/(?P<pk>[0-9]+)/detail/$', NewsDetail.as_view(), name='news_detail'),
     url(r'^news/(?P<pk>\d+)/change/$', NewsUpdate.as_view(), name='news_update'),

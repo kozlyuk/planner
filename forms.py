@@ -127,9 +127,9 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                 if executor and executor.user.username.startswith('outsourcing'):
                     outsourcing_part += part
         self.instance.__outsourcing_part__ = outsourcing_part
-        if self.instance.exec_status in [Task.Done, Task.Sent] and percent < 100:
-            raise ValidationError(('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
-        if self.instance.project_type:
+        if self.instance.pk:
+            if self.instance.exec_status in [Task.Done, Task.Sent] and percent < 100:
+                raise ValidationError(('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
             if self.instance.project_type.executors_bonus > 0:
                 bonuses_max = 100 + 100 * self.instance.project_type.owner_bonus /\
                               self.instance.project_type.executors_bonus
@@ -175,15 +175,16 @@ class CostsInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             if form.is_valid() and not form.cleaned_data.get('DELETE', False):
                 outsourcing += form.cleaned_data.get('value', 0)
-        if self.instance.exec_status in [Task.Done, Task.Sent]:
-            if self.instance.project_type.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
-                costs_part = outsourcing / self.instance.project_type.net_price() * 100
-                if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
-                    raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
-                if self.instance.__outsourcing_part__ < costs_part:
-                    raise ValidationError("Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
-            elif self.instance.project_type.net_price() == 0 and outsourcing > 0:
-                raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
+        if self.instance.pk:
+            if self.instance.exec_status in [Task.Done, Task.Sent]:
+                if self.instance.project_type.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
+                    costs_part = outsourcing / self.instance.project_type.net_price() * 100
+                    if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
+                        raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
+                    if self.instance.__outsourcing_part__ < costs_part:
+                        raise ValidationError("Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
+                elif self.instance.project_type.net_price() == 0 and outsourcing > 0:
+                    raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
 CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=1, formset=CostsInlineFormset)
@@ -205,13 +206,14 @@ class SendingInlineFormset(BaseInlineFormSet):
     def clean(self):
         """forces each clean() method on the ChildCounts to be called"""
         super(SendingInlineFormset, self).clean()
-        if self.instance.exec_status == Task.Sent and self.instance.project_type.copies_count > 0:
-            sending = 0
-            for form in self.forms:
-                if form.is_valid() and not form.cleaned_data.get('DELETE', False):
-                    sending += form.cleaned_data.get('copies_count', 0)
-            if sending == 0:
-                raise ValidationError("Ви не можете закрити цей проект без відправки")
+        if self.instance.pk:
+            if self.instance.exec_status == Task.Sent and self.instance.project_type.copies_count > 0:
+                sending = 0
+                for form in self.forms:
+                    if form.is_valid() and not form.cleaned_data.get('DELETE', False):
+                        sending += form.cleaned_data.get('copies_count', 0)
+                if sending == 0:
+                    raise ValidationError("Ви не можете закрити цей проект без відправки")
 
 
 SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=1, formset=SendingInlineFormset)

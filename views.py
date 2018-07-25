@@ -2,10 +2,11 @@
 from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order, Sending
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from .forms import UserLoginForm, TaskFilterForm
 from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
-from django.shortcuts import redirect, render, HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
 from django.urls import reverse_lazy
@@ -355,6 +356,12 @@ def home_page(request):
                                   })
 
 
+class DealList(ListView):
+    model = Deal
+    paginate_by = 100
+    success_url = reverse_lazy('home_page')
+
+
 @login_required()
 def projects_list(request):
     filter_form = TaskFilterForm(request.user, request.GET)
@@ -415,6 +422,7 @@ def task_detail(request, project_id):
                               })
 
 
+@method_decorator(login_required, name='dispatch')
 class TaskUpdate(UpdateView):
     model = Task
     form_class = TaskForm
@@ -452,6 +460,7 @@ class TaskUpdate(UpdateView):
             return self.form_invalid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class TaskCreate(CreateView):
     model = Task
     form_class = TaskForm
@@ -484,16 +493,18 @@ class TaskCreate(CreateView):
             costs_formset.save()
             sending_formset.instance = self.object
             sending_formset.save()
-            return super(TaskUpdate, self).form_valid(form)
+            return super(TaskCreate, self).form_valid(form)
         else:
             return self.form_invalid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class TaskDelete(DeleteView):
     model = Task
     success_url = reverse_lazy('projects_list')
 
 
+@method_decorator(login_required, name='dispatch')
 class SubtaskUpdate(UpdateView):
     model = Execution
     fields = ['exec_status', 'finish_date']
@@ -522,31 +533,22 @@ class SubtaskUpdate(UpdateView):
             return super().form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class InttaskDetail(DetailView):
     model = IntTask
     success_url = reverse_lazy('home_page')
 
 
+@method_decorator(login_required, name='dispatch')
 class NewsList(ListView):
     model = News
     success_url = reverse_lazy('home_page')
 
 
+@method_decorator(login_required, name='dispatch')
 class NewsDetail(DetailView):
     model = News
     success_url = reverse_lazy('news_list')
-
-
-class NewsCreate(CreateView):
-    model = News
-    fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
-    success_url = reverse_lazy('news_list')
-
-    def get_form(self, form_class=None):
-        form = super(NewsCreate, self).get_form(form_class)
-        form.fields['actual_from'].widget = AdminDateWidget()
-        form.fields['actual_to'].widget = AdminDateWidget()
-        return form
 
 
 class NewsForm(forms.ModelForm):
@@ -562,27 +564,39 @@ class NewsForm(forms.ModelForm):
         self.fields['actual_to'].widget = AdminDateWidget()
 
 
+@method_decorator(login_required, name='dispatch')
+class NewsCreate(CreateView):
+    model = News
+    form_class = NewsForm
+    success_url = reverse_lazy('news_list')
+
+
+@method_decorator(login_required, name='dispatch')
 class NewsUpdate(UpdateView):
     model = News
     form_class = NewsForm
     success_url = reverse_lazy('news_list')
 
 
+@method_decorator(login_required, name='dispatch')
 class NewsDelete(DeleteView):
     model = News
     success_url = reverse_lazy('news_list')
 
 
+@method_decorator(login_required, name='dispatch')
 class EventList(ListView):
     model = Event
     success_url = reverse_lazy('home_page')
 
 
+@method_decorator(login_required, name='dispatch')
 class EventDetail(DetailView):
     model = Event
     success_url = reverse_lazy('event_list')
 
 
+@method_decorator(login_required, name='dispatch')
 class EventCreate(CreateView):
     model = Event
     fields = ['title', 'date', 'repeat', 'description']
@@ -594,6 +608,7 @@ class EventCreate(CreateView):
         return form
 
 
+@method_decorator(login_required, name='dispatch')
 class EventUpdate(UpdateView):
     model = Event
     fields = ['title', 'date', 'repeat', 'description']
@@ -605,6 +620,7 @@ class EventUpdate(UpdateView):
         return form
 
 
+@method_decorator(login_required, name='dispatch')
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('event_list')
