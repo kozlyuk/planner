@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        pms = Employee.objects.filter(user__username='s.kozlyuk')
+        pms = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
         deals = Deal.objects.exclude(expire_date__gte=date.today()) \
                             .exclude(number__icontains='загальний')
 

@@ -59,7 +59,6 @@ class Command(BaseCommand):
                               message,
                               settings.DEFAULT_FROM_EMAIL,
                               [accountant.user.email],
-                              ['s.kozlyuk@itel.rv.ua'],
                 ))
 
         for email in emails:
