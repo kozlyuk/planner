@@ -356,9 +356,11 @@ def home_page(request):
                                   })
 
 
+@method_decorator(login_required, name='dispatch')
 class DealList(ListView):
     model = Deal
-    paginate_by = 100
+    context_object_name = 'deals'  # Default: object_list
+    paginate_by = 50
     success_url = reverse_lazy('home_page')
 
 
