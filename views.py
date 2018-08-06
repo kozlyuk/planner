@@ -3,7 +3,7 @@ from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import UserLoginForm, TaskFilterForm
+from .forms import UserLoginForm, TaskFilterForm, DealFilterForm
 from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
 from django.shortcuts import redirect, render
@@ -363,13 +363,50 @@ class DealList(ListView):
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser or not request.user.groups.filter(name='Бухгалтери').exists():
+            raise PermissionDenied
+        return super(DealList, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        deals = Deal.objects.all()
+        search_string = self.request.GET.get('filter', '').split()
+        customer = self.request.GET.get('customer', '0')
+        company = self.request.GET.get('company', '0')
+        act_status = self.request.GET.get('act_status', '0')
+        pay_status = self.request.GET.get('pay_status', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            deals = deals.filter(Q(number__icontains=word) |
+                                 Q(value__icontains=word))
+        if customer != '0':
+            deals = deals.filter(customer=customer)
+        if company != '0':
+            deals = deals.filter(company=company)
+        if act_status != '0':
+            deals = deals.filter(act_status=act_status)
+        if pay_status != '0':
+            deals = deals.filter(pay_status=pay_status)
+        if order != '0':
+            deals = deals.order_by(order)
+        return deals
+
+    def get_context_data(self, **kwargs):
+        context = super(DealList, self).get_context_data(**kwargs)
+        context['deals_count'] = Deal.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = DealFilterForm(self.request.user, self.request.POST)
+        else:
+            context['filter_form'] = DealFilterForm(self.request.user, self.request.GET)
+        return context
+
 
 @login_required()
 def projects_list(request):
     filter_form = TaskFilterForm(request.user, request.GET)
     filter_form.is_valid()
 
-    tasks = Task.get_accessable(request.user).order_by('-planned_finish')
+    tasks = Task.objects.all()
     tasks_count = tasks.count()
 
     search_string = request.GET.get('filter', '').split()

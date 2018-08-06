@@ -20,7 +20,7 @@
                             </div>
                             <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
                                 <div class="panel-body">
-                                    <form action="{% url 'projects_list' %}" method="get">
+                                    <form action="{% url 'deal_list' %}" method="get">
                                         {% for hidden_field in filter_form.hidden_fields %}
                                             {{ hidden_field }}
                                         {% endfor %}
@@ -37,7 +37,7 @@
                                         {% endfor %}
                                         <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
                                         <td>
-                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a>
+                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ deals_count }} всього) </a>
                                         </td>
                                         {% if request.user|has_group:"ГІПи" %}
                                         <td>

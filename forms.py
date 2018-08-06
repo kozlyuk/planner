@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project
+from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
@@ -24,6 +24,42 @@ class UserLoginForm(forms.ModelForm):
             return True
         except:
             return False
+
+
+class DealFilterForm(forms.Form):
+    def __init__(self, user, *args, **kwargs):
+        super(DealFilterForm, self).__init__(*args, **kwargs)
+
+        customer = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customer.insert(0, (0, "Всі"))
+
+        company = [(company.id, company.name) for company in Company.objects.all()]
+        company.insert(0, (0, "Всі"))
+
+        act_status = []
+        act_status.insert(0, (0, "Всі"))
+        act_status.insert(1, ('NI', "Не виписаний"))
+        act_status.insert(2, ('PI', "Виписаний частково"))
+        act_status.insert(3, ('IS', "Виписаний"))
+
+        pay_status = []
+        pay_status.insert(0, (0, "Всі"))
+        pay_status.insert(1, ('NP', "Не оплачений"))
+        pay_status.insert(2, ('AP', "Оплачений аванс"))
+        pay_status.insert(3, ('PU', "Оплачений"))
+
+        self.fields['customer'].choices = customer
+        self.fields['company'].choices = company
+        self.fields['act_status'].choices = act_status
+        self.fields['pay_status'].choices = pay_status
+
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    company = forms.ChoiceField(label='Компанія', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    act_status = forms.ChoiceField(label='Акт виконаних робіт', required=False,
+                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
+    pay_status = forms.ChoiceField(label='Статус оплати', required=False,
+                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
 
 
 class TaskForm(forms.ModelForm):

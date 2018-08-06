@@ -387,7 +387,7 @@ class Deal(models.Model):
         unique_together = ('number', 'customer')
         verbose_name = 'Договір'
         verbose_name_plural = 'Договори'
-        ordering = ['-creation_date']
+        ordering = ['-creation_date', 'customer', '-number']
 
     def __str__(self):
         return self.number + ' ' + self.customer.name
@@ -547,6 +547,7 @@ class Task(models.Model):
         unique_together = ('object_code', 'project_type', 'deal')
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекти'
+        ordering = ['-creation_date', '-deal', 'object_code']
 
     def __str__(self):
         return self.object_code + ' ' + self.project_type.__str__()
@@ -659,10 +660,6 @@ class Task(models.Model):
         else:
             return False
     # try if user has a permitting to mark execution of the task
-
-    @staticmethod
-    def get_accessable(user):
-        return Task.objects.all()
 
     def costs_total(self):
         costs = self.costs.all().aggregate(Sum('order__value')).get('order__value__sum')
