@@ -37,7 +37,7 @@
                                         {% endfor %}
                                         <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
                                         <td>
-                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ deals_count }} всього) </a>
+                                            {{ deals_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ deals_count }} всього) </a>
                                         </td>
                                         {% if request.user|has_group:"ГІПи" %}
                                         <td>

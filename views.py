@@ -394,6 +394,7 @@ class DealList(ListView):
     def get_context_data(self, **kwargs):
         context = super(DealList, self).get_context_data(**kwargs)
         context['deals_count'] = Deal.objects.all().count()
+        context['deals_filtered'] = self.get_queryset().count()
         if self.request.POST:
             context['filter_form'] = DealFilterForm(self.request.user, self.request.POST)
         else:
