@@ -62,6 +62,21 @@ class DealFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
 
 
+class DealForm(forms.ModelForm):
+    class Meta:
+        model = Deal
+        fields = ['number', 'date', 'customer', 'company', 'value', 'advance',
+                  'pay_status', 'pay_date', 'expire_date', 'act_status',
+                  'act_date', 'act_value', 'pdf_copy']
+        widgets = {
+            'date': AdminDateWidget,
+            'customer': Select2Widget,
+            'pay_date': AdminDateWidget,
+            'expire_date': AdminDateWidget,
+            'act_date': AdminDateWidget,
+        }
+
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -185,7 +200,7 @@ class OrderInlineForm(forms.ModelForm):
         model = Order
         fields = ['contractor', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date']
         widgets = {
-            'contractor': Select2Widget(attrs={'data-width': '100%'}),
+            'contractor': Select2Widget(),
             'pay_date': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
@@ -233,7 +248,7 @@ class SendingInlineForm(forms.ModelForm):
         model = Sending
         fields = ['receiver', 'receipt_date', 'copies_count', 'register_num']
         widgets = {
-            'receiver': Select2Widget(attrs={'data-width': '100%'}),
+            'receiver': Select2Widget(),
             'receipt_date': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }

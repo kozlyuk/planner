@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .forms import UserLoginForm, TaskFilterForm, DealFilterForm
+from .forms import DealForm
 from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
 from django.shortcuts import redirect, render
@@ -400,6 +401,17 @@ class DealList(ListView):
         else:
             context['filter_form'] = DealFilterForm(self.request.user, self.request.GET)
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class DealUpdate(UpdateView):
+    model = Deal
+    form_class = DealForm
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
+
 
 
 @login_required()

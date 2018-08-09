@@ -22,18 +22,18 @@ from django.conf import settings
 from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
 from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
 from .views import TaskUpdate, TaskCreate, TaskDelete, SubtaskUpdate, InttaskDetail
-from .views import DealList  #, DealDetail, DealUpdate, DealCreate, DealDelete
+from .views import DealList, DealUpdate #, DealCreate, DealDelete
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
-    #url(r'^select2/', include('django_select2.urls')),
 
     url(r'^$', views.home_page, name='home_page'),
 
     url(r'^deal/$', DealList.as_view(), name='deal_list'),
+    url(r'^deal/(?P<pk>\d+)/change/$', DealUpdate.as_view(), name='deal_update'),
     url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
 
     url(r'^project/$', views.projects_list, name='projects_list'),

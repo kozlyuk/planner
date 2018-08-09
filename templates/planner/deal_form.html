@@ -22,8 +22,8 @@
                         <div class="portlet-title">
                             <div class="caption caption-md font-red-sunglo">
                                 <span class="caption-subject theme-font bold uppercase">
-                                    {% if task.pk %}Редагувати проект
-                                    {% else %}Додати проект
+                                    {% if task.pk %}Редагувати договір
+                                    {% else %}Додати договір
                                     {% endif %}
                                 </span>
                             </div>
@@ -138,9 +138,6 @@
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
     $(function() {
-        setTimeout(function() {
-        $('span.select2-container.select2-container--bootstrap').width('auto');
-        }, 1000);
         $('#ExecutorsTable tbody').formset({
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
