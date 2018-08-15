@@ -485,6 +485,7 @@ class TaskUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
+        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
@@ -553,7 +554,10 @@ class TaskCreate(CreateView):
 @method_decorator(login_required, name='dispatch')
 class TaskDelete(DeleteView):
     model = Task
-    success_url = reverse_lazy('projects_list')
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
 
 
 @method_decorator(login_required, name='dispatch')

@@ -560,7 +560,7 @@ class Task(models.Model):
         return self.object_code + ' ' + self.project_type.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.object_code
+        title = self.object_code + ' ' + self.project_type.price_code
         if not self.pk:
             self.creator = get_current_user()
         if logging:
@@ -571,7 +571,7 @@ class Task(models.Model):
         super(Task, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.object_code
+        title = self.object_code + ' ' + self.project_type.price_code
         log(user=get_current_user(), action='Видалений проект', extra={"title": title})
         super(Task, self).delete(*args, **kwargs)
 
