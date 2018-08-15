@@ -69,7 +69,7 @@
                                 <tbody>
                                 {% for task in page_objects %}
                                     <tr>
-                                        {% if task.is_editable and task.is_active %}
+                                        {% if task.is_editable %}
                                             <td><a href="{% url 'task_update' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
                                         {% elif task.is_viewable %}
                                             <td><a href="{% url 'task_detail' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
