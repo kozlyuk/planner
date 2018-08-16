@@ -49,12 +49,11 @@ class Command(BaseCommand):
                                    <table border="1">\
                                    <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
                                    <th>Тип проекту</th><th>Відсоток</th><th>Бонус</th>'
-
                         for task in otasks:
                             index += 1
                             message += '<tr>\
                                        <td>{}</td>\
-                                       <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                                       <td><a href="https://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
                                        <td>{:.80}</td>\
                                        <td>{}</td>\
                                        <td>{!s}</td>\

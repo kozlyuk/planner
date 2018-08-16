@@ -42,7 +42,7 @@ class Command(BaseCommand):
                     index += 1
                     message += '<tr>\
                                <td>{}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                               <td><a href="http://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
                                <td>{:.80}</td>\
                                <td>{}</td>\
                                <td>{!s}</td>\
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                     index += 1
                     message += '<tr>\
                                <td>{}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+                               <td><a href="http://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
                                <td>{:.80}</td>\
                                <td>{}</td>\
                                <td>{!s}</td>\
@@ -87,7 +87,7 @@ class Command(BaseCommand):
                     index += 1
                     message += '<tr>\
                                <td>{}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
+                               <td><a href="http://erp.itel.rv.ua/inttask/{}/">{}</a></td>\
                                <td>{!s}</td>\
                                <td>{}</td>\
                                </tr>'\
