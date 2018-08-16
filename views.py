@@ -524,6 +524,7 @@ class TaskCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
+        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
