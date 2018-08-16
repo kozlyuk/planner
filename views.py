@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .forms import UserLoginForm, TaskFilterForm, DealFilterForm
-from .forms import DealForm
+from .forms import DealForm, TasksFormSet
 from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
 from .utils import get_pagination
 from django.shortcuts import redirect, render
@@ -412,6 +412,14 @@ class DealUpdate(UpdateView):
         self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
 
+    def get_context_data(self, **kwargs):
+        context = super(DealUpdate, self).get_context_data(**kwargs)
+        context['filters'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
+        else:
+            context['tasks_formset'] = TasksFormSet(instance=self.object)
+        return context
 
 
 @login_required()

@@ -77,6 +77,19 @@ class DealForm(forms.ModelForm):
         }
 
 
+class TasksInlineForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
+
+
+class TasksInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+
+
+TasksFormSet = inlineformset_factory(Task, Execution, form=TasksInlineForm, extra=1, formset=TasksInlineFormset)
+
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task

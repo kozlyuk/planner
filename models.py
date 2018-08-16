@@ -751,7 +751,7 @@ class Order(models.Model):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code
+        title = self.task.object_code + ' ' + self.task.project_type.price_code
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
@@ -760,7 +760,7 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code
+        title = self.task.object_code + ' ' + self.task.project_type.price_code
         log(user=get_current_user(), action='Видалений підрядник по проекту', extra={"title": title})
         super(Order, self).delete(*args, **kwargs)
 
@@ -782,7 +782,7 @@ class Sending(models.Model):
         return self.task.__str__() + ' --> ' + self.receiver.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code
+        title = self.task.object_code + ' ' + self.task.project_type.price_code
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
@@ -794,7 +794,7 @@ class Sending(models.Model):
         super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code
+        title = self.task.object_code + ' ' + self.task.project_type.price_code
         log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
         super(Sending, self).delete(*args, **kwargs)
 
