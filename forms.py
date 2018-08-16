@@ -80,7 +80,7 @@ class DealForm(forms.ModelForm):
 class TasksInlineForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
+        fields = ['object_code', 'object_address', 'project_type', 'owner', 'planned_finish', 'exec_status']
 
 
 class TasksInlineFormset(BaseInlineFormSet):
