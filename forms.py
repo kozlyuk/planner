@@ -87,7 +87,7 @@ class TasksInlineFormset(BaseInlineFormSet):
     """used to pass in the constructor of inlineformset_factory"""
 
 
-TasksFormSet = inlineformset_factory(Task, Execution, form=TasksInlineForm, extra=1, formset=TasksInlineFormset)
+TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=1, formset=TasksInlineFormset)
 
 
 class TaskForm(forms.ModelForm):
