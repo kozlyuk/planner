@@ -537,7 +537,10 @@ class Task(models.Model):
     actual_finish = models.DateField('Фактичне закінчення', blank=True, null=True)
     tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
-                                               content_types=['application/pdf', ], max_upload_size=10485760,
+                                               content_types=['application/pdf',
+                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                                               max_upload_size=26214400,
                                                blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     comment = models.TextField('Коментар', blank=True)
@@ -748,7 +751,7 @@ class Order(models.Model):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code
+        title = self.task.object_code + ' ' + self.project_type.price_code
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
@@ -757,7 +760,7 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code
+        title = self.task.object_code + ' ' + self.project_type.price_code
         log(user=get_current_user(), action='Видалений підрядник по проекту', extra={"title": title})
         super(Order, self).delete(*args, **kwargs)
 
@@ -779,7 +782,7 @@ class Sending(models.Model):
         return self.task.__str__() + ' --> ' + self.receiver.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code
+        title = self.task.object_code + ' ' + self.project_type.price_code
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
@@ -791,7 +794,7 @@ class Sending(models.Model):
         super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code
+        title = self.task.object_code + ' ' + self.project_type.price_code
         log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
         super(Sending, self).delete(*args, **kwargs)
 
@@ -822,7 +825,7 @@ class Execution(models.Model):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.part_name
+        title = self.task.object_code + ' ' + self.project_type.price_code + ' ' + self.part_name
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
@@ -835,7 +838,7 @@ class Execution(models.Model):
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.part_name
+        title = self.task.object_code + ' ' + self.project_type.price_code + ' ' + self.part_name
         log(user=get_current_user(), action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
 

@@ -108,11 +108,25 @@ class TaskForm(forms.ModelForm):
             self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
         else:
             self.fields['deal'].widget.attrs['disabled'] = True
+            self.fields['deal'].required = False
 
         if self.instance.pk is None or self.instance.project_type.active:
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
         else:
             self.fields['project_type'].widget.attrs['disabled'] = True
+            self.fields['deal'].required = False
+
+    def clean_deal(self):
+        if self.cleaned_data['deal']:
+            return self.cleaned_data['deal']
+        else:
+            return self.instance.deal
+
+    def clean_project_type(self):
+        if self.cleaned_data['project_type']:
+            return self.cleaned_data['project_type']
+        else:
+            return self.instance.project_type
 
     def clean(self):
         cleaned_data = super(TaskForm, self).clean()
@@ -125,7 +139,7 @@ class TaskForm(forms.ModelForm):
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
-        if not deal or deal.act_status == Deal.Issued:
+        if not get_current_user().is_superuser and (not deal or deal.act_status == Deal.Issued):
             raise ValidationError("Договір закрито, зверніться до керівника")
         if not project_type or project_type.active is False:
             raise ValidationError("Даний Тип проекту не активний")

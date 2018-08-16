@@ -14,11 +14,11 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                {% if not task or task.is_editable %}
+                {% if not task.pk or task.is_editable %}
                 <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
-                    <div class="portlet light tasks-widget" style="height: 870px;">
+                    <div class="portlet light tasks-widget">
                         <div class="portlet-title">
                             <div class="caption caption-md font-red-sunglo">
                                 <span class="caption-subject theme-font bold uppercase">
@@ -61,7 +61,7 @@
                                 <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" style="height: 810px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                        <div class="tab-content scroller" style="height: 800px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
                               <table id="ExecutorsTable" class="table table-hover">
                                 <col width="30%">
