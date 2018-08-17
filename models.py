@@ -825,7 +825,7 @@ class Execution(models.Model):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code + ' ' + self.part_name
+        title = self.task.object_code + ' ' + self.task.project_type.price_code + ' ' + self.part_name
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
@@ -838,7 +838,7 @@ class Execution(models.Model):
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.project_type.price_code + ' ' + self.part_name
+        title = self.task.object_code + ' ' + self.task.project_type.price_code + ' ' + self.part_name
         log(user=get_current_user(), action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
 
