@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2 class="breadcrumbs-title">Видалити договір?</h2>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            {% if perms.planner.can_delete_deal %}
+            <div class="row widget-row">
+                <div class="col-md-2 col-md-offset-5">
+                <form action="" method="post">{% csrf_token %}
+                    <p>Ви впевнені, що хочете видалити "{{ deal }}"?</p>
+                    <input type="submit" value="Так, я впевнений" />
+                </form>
+                </div>
+            </div>
+            {% else %}
+                Ви не маєте доступу до видаленння даного договору<br><br>
+            {% endif %}
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

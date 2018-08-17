@@ -14,15 +14,15 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                {% if not deal.pk or deal.is_editable %}
-                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                {% if perms.planner.can_change_deal %}
+                <form id="DealForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                 <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
                         <div class="portlet-title">
                             <div class="caption caption-md font-red-sunglo">
                                 <span class="caption-subject theme-font bold uppercase">
-                                    {% if task.pk %}Редагувати договір
+                                    {% if deal.pk %}Редагувати договір
                                     {% else %}Додати договір
                                     {% endif %}
                                 </span>
@@ -32,15 +32,12 @@
                             <div class="widget-bg-color-white">
                                     <table class="table table-hover">
                                         <col width="25%">
-                                        {{ executors_formset.non_form_errors }}
-                                        {{ costs_formset.non_form_errors }}
-                                        {{ sending_formset.non_form_errors }}
                                         {{ form }}
                                     </table>
                                     <div class="form-actions">
-                                        {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
+                                        {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<a href="{% url 'projects_list' %}?{{ filters }}"
+                                        {% else %}<a href="{% url 'deal_list' %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Відмінити</a>
                                         {% endif %}
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
@@ -56,21 +53,15 @@
                     <div class="widget-bg-color-white widget-tab">
                         <ul class="nav nav-tabs">
                             <li class="active">
-                                <a href="#tab_2_1" data-toggle="tab"> Виконавці </a>
-                            </li>
-                            <li>
-                                <a href="#tab_2_2" data-toggle="tab"> Витрати </a>
-                            </li>
-                            <li>
-                                <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
+                                <a href="#tab_2_1" data-toggle="tab"> Проекти </a>
                             </li>
                         </ul>
                         <div class="tab-content scroller" style="height: 800px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
-                              <table id="ExecutorsTable" class="table table-hover">
-                                <col width="30%">
-                                {{ executors_formset.non_form_errors }}
-                                {% for form in executors_formset %}
+                              <table id="TasksTable" class="table table-hover">
+                                <col width="10%">
+                                {{ tasks_formset.non_form_errors }}
+                                {% for form in tasks_formset %}
                                   <tbody>
                                     {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
@@ -79,39 +70,8 @@
                                   </tbody>
                                 {% endfor %}
                               </table>
-                              {{ executors_formset.management_form }}
+                              {{ tasks_formset.management_form }}
                             </div>
-                            <div class="tab-pane fade" id="tab_2_2">
-                              <table id="CostsTable" class="table table-hover">
-                                <col width="30%">
-                                {{ costs_formset.non_form_errors }}
-                                {% for form in costs_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
-                                        {{ hidden_field }}
-                                    {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
-                              </table>
-                              {{ costs_formset.management_form }}
-                            </div>
-                            <div class="tab-pane fade" id="tab_2_3">
-                                <table id="SendingTable" class="table table-hover">
-                                <col width="30%">
-                                {{ sending_formset.non_form_errors }}
-                                {% for form in sending_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
-                                        {{ hidden_field }}
-                                    {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
-                                </table>
-                                {{ sending_formset.management_form }}
-                            </div>
-
                         </div>
                     </div>
                     <!-- END PORTLET-->
@@ -146,11 +106,11 @@
         setTimeout(function() {
         $('span.select2-container.select2-container--bootstrap').width('auto');
         }, 100);
-        $('#ExecutorsTable tbody').formset({
+        $('#TasksTable tbody').formset({
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
-            addText: 'Додати Виконавця',
-            deleteText: 'Видалити Виконавця',
+            addText: 'Додати Проект',
+            deleteText: 'Видалити Проект',
             'added': function(row){
                 //find the fields with the calendar widget
                 $(row).find('.vDateField').each(function(i){
@@ -159,32 +119,6 @@
                     //DateTimeShortcuts is in the django admin widgets
                     DateTimeShortcuts.addCalendar(this);
                 })
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-        $('#CostsTable tbody').formset({
-            prefix: '{{ costs_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Підрядника',
-            deleteText: 'Видалити Підрядника',
-            'added': function(row){
-                $(row).find('.vDateField').each(function(i){
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                    });
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-        $('#SendingTable tbody').formset({
-            prefix: '{{ sending_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати Відправку',
-            deleteText: 'Видалити Відправку',
-            'added': function(row){
-                $(row).find('.vDateField').each(function(i){
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                    });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });

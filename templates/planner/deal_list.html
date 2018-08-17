@@ -69,7 +69,11 @@
                             <tbody>
                             {% for deal in deals %}
                                 <tr>
-                                    <td>{{ deal.number }}</td>
+                                    {% if perms.planner.can_change_deal %}
+                                        <td><a href="{% url 'deal_update' deal.id %}?{{ filters }}"> {{ deal.number }} </a></td>
+                                    {% else %}
+                                        <td> {{ deal.number }} </td>
+                                    {% endif %}
                                     <td>{{ deal.customer }}</td>
                                     <td>{{ deal.value }}</td>
                                     <td>{{ deal.get_pay_status_display }}</td>

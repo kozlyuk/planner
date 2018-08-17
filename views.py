@@ -365,9 +365,10 @@ class DealList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser or not request.user.groups.filter(name='Бухгалтери').exists():
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super(DealList, self).dispatch(request, *args, **kwargs)
+        else:
             raise PermissionDenied
-        return super(DealList, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         deals = Deal.objects.all()
@@ -420,6 +421,15 @@ class DealUpdate(UpdateView):
         else:
             context['tasks_formset'] = TasksFormSet(instance=self.object)
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class DealDelete(DeleteView):
+    model = Deal
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
 
 
 @login_required()

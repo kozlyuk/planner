@@ -309,7 +309,7 @@ class TaskFilterForm(forms.Form):
         exec_status.insert(3, ('HD', "Виконано"))
         exec_status.insert(4, ('ST', "Надіслано"))
 
-        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').distinct()]
+        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').order_by().distinct()]
         owners.insert(0, (0, "Всі"))
         customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
         customers.insert(0, (0, "Всі"))
