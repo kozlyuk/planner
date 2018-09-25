@@ -435,6 +435,36 @@ class DealUpdate(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class DealCreate(CreateView):
+    model = Deal
+    form_class = DealForm
+    context_object_name = 'deal'
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        return self.success_url
+
+    def get_context_data(self, **kwargs):
+        context = super(DealCreate, self).get_context_data(**kwargs)
+        context['filters'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
+        else:
+            context['tasks_formset'] = TasksFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        tasks_formset = context['tasks_formset']
+        if tasks_formset.is_valid():
+            tasks_formset.instance = self.object
+            tasks_formset.save()
+            return super(DealCreate, self).form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+@method_decorator(login_required, name='dispatch')
 class DealDelete(DeleteView):
     model = Deal
 

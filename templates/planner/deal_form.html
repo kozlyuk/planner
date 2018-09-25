@@ -20,16 +20,18 @@
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white widget-tab">
                         <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_1_1" data-toggle="tab">
-                                    {% if deal.pk %}Редагувати договір
-                                    {% else %}Додати договір
-                                    {% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#tab_1_2" data-toggle="tab"> Інформація по договру </a>
-                            </li>
+                            {% if deal.pk %}
+                                <li class="active">
+                                    <a href="#tab_1_1" data-toggle="tab">Редагувати договір</a>
+                                </li>
+                                <li>
+                                    <a href="#tab_1_2" data-toggle="tab"> Інформація по договру </a>
+                                </li>
+                            {% else %}
+                                <li class="active">
+                                    <a href="#tab_1_1" data-toggle="tab">Додати договір</a>
+                                </li>
+                            {% endif %}
                         </ul>
                         <div class="tab-content" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_1_1">
@@ -38,6 +40,7 @@
                                         {{ form }}
                                     </table>
                             </div>
+                            {% if deal.pk %}
                             <div class="tab-pane fade" id="tab_1_2">
                                     <table class="table table-hover">
                                         <col width="25%">
@@ -57,6 +60,7 @@
                                         </tr>
                                     </table>
                             </div>
+                            {% endif %}
                             <div class="form-actions">
                                         {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
