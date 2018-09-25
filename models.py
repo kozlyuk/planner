@@ -490,7 +490,7 @@ class Deal(models.Model):
                 pay_date = self.expire_date + BDay(self.customer.debtor_term)
                 return pay_date.strftime(date_format)
         return
-    pay_date_calc.short_description = 'Дата оплати, грн.'
+    pay_date_calc.short_description = 'Дата оплати'
 
 
 class Receiver(models.Model):

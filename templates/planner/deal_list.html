@@ -39,10 +39,10 @@
                                         <td>
                                             {{ deals_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ deals_count }} всього) </a>
                                         </td>
-                                        {% if request.user|has_group:"ГІПи" %}
+                                        {% if perms.planner.add_deal %}
                                         <td>
                                             <a href="{% url 'task_add' %}?{{ filters }}"
-                                               class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
+                                               class="btn dark btn-sm btn-outline sbold uppercase"> Додати договір </a>
                                         </td>
                                         {% endif %}
                                         </tr></table>
@@ -69,7 +69,7 @@
                             <tbody>
                             {% for deal in deals %}
                                 <tr>
-                                    {% if perms.planner.can_change_deal %}
+                                    {% if perms.planner.change_deal %}
                                         <td><a href="{% url 'deal_update' deal.id %}?{{ filters }}"> {{ deal.number }} </a></td>
                                     {% else %}
                                         <td> {{ deal.number }} </td>
@@ -79,7 +79,7 @@
                                     <td>{{ deal.get_pay_status_display }}</td>
                                     <td>{{ deal.get_act_status_display }}</td>
                                     <td>{{ deal.exec_status }}</td>
-                                    <td>{{ deal.overdue_status }}</td>
+                                    <td><span class="label label-sm label-{% deal_status_color deal.overdue_status %} label-mini"> {{ deal.overdue_status }} </span></td>
                                 </tr>
                             {% endfor %}
                             </tbody>

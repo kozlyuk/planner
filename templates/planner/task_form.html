@@ -16,7 +16,7 @@
                 <!-- PERMISSION CHECK -->
                 {% if not task.pk or task.is_editable %}
                 <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
                         <div class="portlet-title">
@@ -51,7 +51,7 @@
                     </div>
                     <!-- END WIDGET -->
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="col-md-5 col-sm-6 col-xs-12">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white widget-tab">
                         <ul class="nav nav-tabs">
@@ -68,7 +68,7 @@
                         <div class="tab-content scroller" style="height: 800px;" data-always-visible="1" data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
                               <table id="ExecutorsTable" class="table table-hover">
-                                <col width="30%">
+                                <col width="25%">
                                 {{ executors_formset.non_form_errors }}
                                 {% for form in executors_formset %}
                                   <tbody>
@@ -83,7 +83,7 @@
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
                               <table id="CostsTable" class="table table-hover">
-                                <col width="30%">
+                                <col width="25%">
                                 {{ costs_formset.non_form_errors }}
                                 {% for form in costs_formset %}
                                   <tbody>
@@ -98,7 +98,7 @@
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
                                 <table id="SendingTable" class="table table-hover">
-                                <col width="30%">
+                                <col width="25%">
                                 {{ sending_formset.non_form_errors }}
                                 {% for form in sending_formset %}
                                   <tbody>

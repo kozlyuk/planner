@@ -41,7 +41,7 @@
                                             {% if task.overdue_status %}
                                                 <span class="label label-warning"> {{ task.overdue_status }} </span>
                                             {% else %}
-                                                <span class="label label-{% color_status item.exec_status %}"> {{ task.get_status }} </span>
+                                                <span class="label label-{% task_status_color item.exec_status %}"> {{ task.get_status }} </span>
                                             {% endif %}
                                         </h3>
                                         <p>Тип проекту: <strong>{{ task.project_type }}</strong></p>
@@ -86,14 +86,14 @@
                                             {% if task.overdue_status %}
                                                 <span class="label label-warning"> {{ task.overdue_status }} </span>
                                             {% else %}
-                                                <span class="label label-{% color_status item.exec_status %}"> {{ task.get_status }} </span>
+                                                <span class="label label-{% task_status_color item.exec_status %}"> {{ task.get_status }} </span>
                                             {% endif %}
                                         </h3>
                                         <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
                                         <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
                                         <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
                                         {% if cost.project_code %}<p>Шифр проекту: <strong>{{ cost.project_code }}</strong></p>>{% endif %}
-                                        {% if cost.comment %}<p>Шифр проекту: <strong>{{ cost.comment }}</strong></p>>{% endif %}
+                                        {% if cost.comment %}<p>Коментар: <strong>{{ cost.comment }}</strong></p>>{% endif %}
                                     </div>
                                 </div>
                             </div>

@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django_select2.forms import Select2Widget
 from django.contrib.admin.widgets import AdminDateWidget
 from crum import get_current_user
+from .formatChecker import NotClearableFileInput
 
 
 class UserLoginForm(forms.ModelForm):
@@ -67,27 +68,87 @@ class DealForm(forms.ModelForm):
         model = Deal
         fields = ['number', 'date', 'customer', 'company', 'value', 'advance',
                   'pay_status', 'pay_date', 'expire_date', 'act_status',
-                  'act_date', 'act_value', 'pdf_copy']
+                  'act_date', 'act_value', 'pdf_copy', 'value_correction', 'comment']
         widgets = {
             'date': AdminDateWidget,
             'customer': Select2Widget,
             'pay_date': AdminDateWidget,
             'expire_date': AdminDateWidget,
             'act_date': AdminDateWidget,
+            'pdf_copy': NotClearableFileInput,
         }
+
+    def __init__(self, *args, **kwargs):
+        super(DealForm, self).__init__(*args, **kwargs)
+        self.fields['number'].widget.attrs.update({'style': 'width:400px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width:100%; height:44px;'})
+
+    def clean(self):
+        cleaned_data = super(DealForm, self).clean()
+        value = cleaned_data.get("value")
+        pay_status = cleaned_data.get("pay_status")
+        pay_date = cleaned_data.get("pay_date")
+        advance = cleaned_data.get("advance")
+        act_status = cleaned_data.get("act_status")
+        act_date = cleaned_data.get("act_date")
+        act_value = cleaned_data.get("act_value")
+        pdf_copy = cleaned_data.get("pdf_copy")
+        self.data.__customer__ = cleaned_data.get("customer")
+        self.data.__expire_date__ = cleaned_data.get("expire_date")
+
+        if pay_status == Deal.PaidUp:
+            if not value or value == 0:
+                self.add_error('value', "Вкажіть Вартість робіт")
+            if not pay_date:
+                self.add_error('pay_date', "Вкажіть Дату оплати")
+        if pay_status == Deal.AdvancePaid:
+            if not advance or advance == 0:
+                self.add_error('advance', "Вкажіть Аванс")
+            if not pay_date:
+                self.add_error('pay_date', "Вкажіть Дату оплати")
+        if act_status == Deal.PartlyIssued or act_status == Deal.Issued:
+            if not value or value == 0:
+                self.add_error('value', "Вкажіть Вартість робіт")
+            if not act_date:
+                self.add_error('act_date', "Вкажіть Дату акту виконаних робіт")
+            if not act_value or act_value == 0:
+                self.add_error('act_value', "Вкажіть Суму акту виконаних робіт")
+        if act_status == Deal.Issued and not pdf_copy:
+            self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
+        return cleaned_data
 
 
 class TasksInlineForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['object_code', 'object_address', 'project_type', 'owner', 'planned_finish', 'exec_status']
+        widgets = {
+            'project_type': Select2Widget(),
+            'planned_finish': AdminDateWidget(),
+            'DELETION_FIELD_NAME': forms.HiddenInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TasksInlineForm, self).__init__(*args, **kwargs)
+        self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
+                                                                user__is_active=True)
+        if self.instance.pk is None or self.instance.project_type.active:
+            self.fields['project_type'].queryset = Project.objects.filter(active=True)
 
 
-class TasksInlineFormset(BaseInlineFormSet):
-    """used to pass in the constructor of inlineformset_factory"""
+    def clean(self):
+        super(TasksInlineForm, self).clean()
+        project_type = self.cleaned_data.get("project_type")
+        planned_finish = self.cleaned_data.get("planned_finish")
+        if project_type and self.data.__customer__:
+            if self.data.__customer__ != project_type.customer:
+                self.add_error('project_type', "Тип проекту не входить до можливих значень Замовника Договору")
+        if planned_finish and self.data.__expire_date__:
+            if planned_finish > self.data.__expire_date__:
+                self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
-TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=1, formset=TasksInlineFormset)
+TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=1)
 
 
 class TaskForm(forms.ModelForm):
@@ -104,6 +165,7 @@ class TaskForm(forms.ModelForm):
             'actual_start': AdminDateWidget,
             'actual_finish': AdminDateWidget,
             'tc_received': AdminDateWidget,
+            'pdf_copy': NotClearableFileInput,
         }
 
     def __init__(self, *args, **kwargs):

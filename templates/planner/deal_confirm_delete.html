@@ -10,7 +10,13 @@
         <!-- BEGIN BREADCRUMBS -->
         <div class="breadcrumbs">
             <div class="container-fluid">
-                <h2 class="breadcrumbs-title">Видалити договір?</h2>
+                <h2 class="breadcrumbs-title">
+                    {% if tasks or not perms.planner.can_delete_deal %}
+                        Не вдається видалити Договір!
+                    {% else %}
+                        Видалити договір?
+                    {% endif %}
+                </h2>
             </div>
         </div>
         <!-- END BREADCRUMBS -->
@@ -18,18 +24,28 @@
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
-            {% if perms.planner.can_delete_deal %}
             <div class="row widget-row">
-                <div class="col-md-2 col-md-offset-5">
-                <form action="" method="post">{% csrf_token %}
-                    <p>Ви впевнені, що хочете видалити "{{ deal }}"?</p>
-                    <input type="submit" value="Так, я впевнений" />
-                </form>
-                </div>
-            </div>
+            <div class="col-md-4 col-md-offset-4">
+            {% if perms.planner.can_delete_deal %}
+                {% if tasks %}
+                    <p>Видалення Договору "{{ deal }}" вимагатиме видалення наступних пов'язаних об'єктів:</p>
+                    {% for task in tasks %}
+                        <a href="{% url 'task_update' task.id %}"> {{ task }} </a> <br>
+                    {% endfor %}
+                    <a href="{% url 'deal_update' object.id %}?{{ filters }}"
+                                                class="btn red btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Відмінити</a>
+                {% else %}
+                    <form action="" method="post">{% csrf_token %}
+                        <p>Ви впевнені, що хочете видалити "{{ deal }}"?</p>
+                        <input type="submit" value="Так, я впевнений" />
+                    </form>
+                {% endif %}
             {% else %}
                 Ви не маєте доступу до видаленння даного договору<br><br>
             {% endif %}
+            </div>
+            </div>
             <!-- END PAGE BASE CONTENT -->
         </div>
         <!-- END CONTENT -->

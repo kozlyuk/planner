@@ -14,27 +14,50 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                {% if perms.planner.can_change_deal %}
+                {% if perms.planner.change_deal %}
                 <form id="DealForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <!-- BEGIN WIDGET TAB -->
-                    <div class="portlet light tasks-widget">
-                        <div class="portlet-title">
-                            <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase">
+                    <div class="widget-bg-color-white widget-tab">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_1_1" data-toggle="tab">
                                     {% if deal.pk %}Редагувати договір
                                     {% else %}Додати договір
                                     {% endif %}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="widget-bg-color-white">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#tab_1_2" data-toggle="tab"> Інформація по договру </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content scroller" data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade active in" id="tab_1_1">
                                     <table class="table table-hover">
                                         <col width="25%">
                                         {{ form }}
                                     </table>
-                                    <div class="form-actions">
+                            </div>
+                            <div class="tab-pane fade" id="tab_1_2">
+                                    <table class="table table-hover">
+                                        <col width="25%">
+                                        <tr><th><p>Вартість договору по роботам:</p></th>
+                                            <th><p><strong>{{ deal.value_calc }} грн.</strong></p></th>
+                                        </tr>
+                                        <tr><th><p>Бонуси по договору:</p></th>
+                                            <th><p><strong>{{ deal.bonuses_calc }} грн.</strong></p></th>
+                                        </tr>
+                                        <tr>
+                                            <th><p>Витрати по договору:</p></th>
+                                            <th><p><strong>{{ deal.costs_calc }} грн.</strong></p></th>
+                                        </tr>
+                                        <tr>
+                                            <th><p>Дата оплати:</p></th>
+                                            <th><p><strong>{{ deal.pay_date_calc }}</strong></p></th>
+                                        </tr>
+                                    </table>
+                            </div>
+                            <div class="form-actions">
                                         {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
                                         {% else %}<a href="{% url 'deal_list' %}?{{ filters }}"
@@ -42,24 +65,22 @@
                                         {% endif %}
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                                 style="float: right;">Зберегти</button>
-                                    </div>
                             </div>
                         </div>
                     </div>
                     <!-- END WIDGET -->
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="col-md-5 col-sm-6 col-xs-12">
                     <!-- BEGIN WIDGET TAB -->
-                    <div class="widget-bg-color-white widget-tab">
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_2_1" data-toggle="tab"> Проекти </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content scroller" style="height: 800px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade active in" id="tab_2_1">
+                    <div class="portlet light tasks-widget">
+                        <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                                <span class="caption-subject theme-font bold uppercase"> Проекти </span>
+                            </div>
+                        </div>
+                        <div class="tab-content scroller" style="height: 770px;" data-handle-color="#D7DCE2">
                               <table id="TasksTable" class="table table-hover">
-                                <col width="10%">
+                                <col width="25%">
                                 {{ tasks_formset.non_form_errors }}
                                 {% for form in tasks_formset %}
                                   <tbody>
@@ -107,7 +128,7 @@
         $('span.select2-container.select2-container--bootstrap').width('auto');
         }, 100);
         $('#TasksTable tbody').formset({
-            prefix: '{{ executors_formset.prefix }}',
+            prefix: '{{ tasks_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Проект',
             deleteText: 'Видалити Проект',

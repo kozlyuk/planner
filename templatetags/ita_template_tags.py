@@ -27,7 +27,7 @@ def url_replace(request, field, value):
 
 
 @register.simple_tag
-def color_status(status):
+def task_status_color(status):
     if status == 'ST':
         return 'success'
     elif status == 'HD':
@@ -36,6 +36,20 @@ def color_status(status):
         return 'info'
     else:
         return 'danger'
+
+
+@register.simple_tag
+def deal_status_color(status):
+    if status.startswith('Оплата'):
+        return 'success'
+    elif status.startswith('Очікує') or status.startswith('Вартість'):
+        return 'warning'
+    elif status.startswith('Закінчується'):
+        return 'info'
+    elif status.startswith('Протерміновано'):
+        return 'danger'
+    else:
+        return
 
 
 @register.simple_tag

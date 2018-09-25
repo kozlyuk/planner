@@ -36,7 +36,7 @@ class Command(BaseCommand):
                     index += 1
                     message += '<tr>\
                                <td>{}</td>\
-                               <td><a href="http://erp.itel.rv.ua/admin/planner/deal/{}/change/">{}</a></td>\
+                               <td><a href="http://erp.itel.rv.ua/deal/{}/change/">{}</a></td>\
                                <td>{}</td>\
                                <td>{}</td>\
                                <td>{!s}</td>\

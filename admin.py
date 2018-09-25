@@ -165,6 +165,7 @@ class DealForm(forms.ModelForm):
         act_status = cleaned_data.get("act_status")
         act_date = cleaned_data.get("act_date")
         act_value = cleaned_data.get("act_value")
+        pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__customer__ = cleaned_data.get("customer")
         self.instance.__expire_date__ = cleaned_data.get("expire_date")
 
@@ -185,6 +186,8 @@ class DealForm(forms.ModelForm):
                 raise forms.ValidationError("Вкажіть Дату акту виконаних робіт")
             if not act_value or act_value == 0:
                 raise forms.ValidationError("Вкажіть Суму акту виконаних робіт")
+            if not pdf_copy:
+                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
 
 class TasksInlineFormSet(BaseInlineFormSet):
 
