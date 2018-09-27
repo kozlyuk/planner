@@ -93,6 +93,7 @@
                                 {% with object_list=page_objects %}
                                     {% if object_list.paginator.num_pages > 1 %}
                                         <div class="text-center">
+                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a><br>
                                             <div class="btn-group">
                                                 <a href="?{% url_replace request 'page' 1 %}"
                                                    class="btn btn-default{% if object_list.number == 1 %} disabled{% endif %}"><i

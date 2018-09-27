@@ -125,11 +125,12 @@ class TasksInlineForm(forms.ModelForm):
         widgets = {
             'project_type': Select2Widget(),
             'planned_finish': AdminDateWidget(),
-            'DELETION_FIELD_NAME': forms.HiddenInput()
+            'DELETION_FIELD_NAME': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
         super(TasksInlineForm, self).__init__(*args, **kwargs)
+        self.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                 user__is_active=True)
         if self.instance.pk is None or self.instance.project_type.active:

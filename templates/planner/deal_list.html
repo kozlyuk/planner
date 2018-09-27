@@ -36,14 +36,11 @@
                                             </td>
                                         {% endfor %}
                                         <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
-                                        <td>
-                                            {{ deals_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ deals_count }} всього) </a>
-                                        </td>
                                         {% if perms.planner.add_deal %}
-                                        <td>
-                                            <a href="{% url 'deal_add' %}?{{ filters }}"
-                                               class="btn dark btn-sm btn-outline sbold uppercase"> Додати договір </a>
-                                        </td>
+                                            <td>
+                                                <a href="{% url 'deal_add' %}?{{ filters }}"
+                                                   class="btn dark btn-sm btn-outline sbold uppercase"> Додати договір </a>
+                                            </td>
                                         {% endif %}
                                         </tr></table>
                                     </form>
@@ -86,27 +83,45 @@
                         </table>
                     </div>
 
-                    {% if is_paginated %}
-                      <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-                        {% else %}
-                          <li class="disabled"><span>&laquo;</span></li>
-                        {% endif %}
-                        {% for i in paginator.page_range %}
-                          {% if page_obj.number == i %}
-                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                          {% else %}
-                            <li><a href="?page={{ i }}">{{ i }}</a></li>
-                          {% endif %}
-                        {% endfor %}
-                        {% if page_obj.has_next %}
-                          <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-                        {% else %}
-                          <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-                      </ul>
-                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            {% if is_paginated %}
+                                <div class="text-center">
+                                    {{ deals_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ deals_count }} всього) </a><br>
+                                    <div class="btn-group">
+                                        <a href="?{% url_replace request 'page' 1 %}"
+                                            class="btn btn-default{% if page_obj.number == 1 %} disabled{% endif %}">
+                                                <i class="fa fa-angle-double-left"></i></a>
+                                        {% if page_obj.has_previous %}
+                                            <a href="?{% url_replace request 'page' page_obj.previous_page_number %}"
+                                               class="btn btn-default"><i class="fa fa-angle-left"></i></a>
+                                        {% else %}
+                                            <a href="?{% url_replace request 'page' 1 %}"
+                                               class="btn btn-default disabled"><i
+                                                    class="fa fa-angle-left"></i></a>
+                                        {% endif %}
+
+                                        {% for index in paginator.page_range %}
+                                            <a href="?{% url_replace request 'page' index %}"
+                                               class="btn {% if index == page_obj.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
+                                        {% endfor %}
+
+                                        {% if page_obj.has_next %}
+                                            <a href="?{% url_replace request 'page' page_obj.next_page_number %}"
+                                               class="btn btn-default"><i class="fa fa-angle-right"></i></a>
+                                        {% else %}
+                                            <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                               class="btn btn-default disabled"><i
+                                                    class="fa fa-angle-right"></i></a>
+                                        {% endif %}
+                                        <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                           class="btn btn-default{% if page_obj.number == paginator.num_pages %} disabled{% endif %}"><i
+                                                class="fa fa-angle-double-right"></i></a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
                     <!-- END PAGE BASE CONTENT -->
                 </div>
