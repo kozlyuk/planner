@@ -400,6 +400,8 @@ class TaskExchangeForm(forms.Form):
         super(TaskExchangeForm, self).clean()
         deal_id = self.cleaned_data.get("deal")
         tasks = Task.objects.filter(id__in=self.tasks_ids)
+        if not self.tasks_ids:
+            raise ValidationError("Ви не обрали жодного проекту")
         if deal_id:
             deal = Deal.objects.get(pk=deal_id)
             for task in tasks:
