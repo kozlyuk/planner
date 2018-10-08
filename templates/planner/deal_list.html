@@ -101,7 +101,7 @@
                                                     class="fa fa-angle-left"></i></a>
                                         {% endif %}
 
-                                        {% for index in paginator.page_range %}
+                                        {% for index in paginator|proper_paginate:page_obj.number %}
                                             <a href="?{% url_replace request 'page' index %}"
                                                class="btn {% if index == page_obj.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
                                         {% endfor %}

@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-from .models import Deal, Task, Execution, IntTask, Employee, News, Event, Order, Sending
+from .models import IntTask, News, Event
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import UserLoginForm, TaskFilterForm, DealFilterForm
-from .forms import DealForm, TasksFormSet
-from .forms import TaskForm, ExecutorsFormSet, CostsFormSet, SendingFormSet
-from .utils import get_pagination
+from .forms import *
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
 from django.urls import reverse_lazy
+from django.views.generic import FormView, TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -63,8 +61,6 @@ def login_page(request):
                                 password=login_form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
-                # if 'next' in request.REQUEST:
-                #     return redirect(request.REQUEST)
                 return redirect('home_page')
             else:
                 return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
@@ -398,9 +394,9 @@ class DealList(ListView):
         context['deals_count'] = Deal.objects.all().count()
         context['deals_filtered'] = self.get_queryset().count()
         if self.request.POST:
-            context['filter_form'] = DealFilterForm(self.request.user, self.request.POST)
+            context['filter_form'] = DealFilterForm(self.request.POST)
         else:
-            context['filter_form'] = DealFilterForm(self.request.user, self.request.GET)
+            context['filter_form'] = DealFilterForm(self.request.GET)
         return context
 
 
@@ -480,48 +476,48 @@ class DealDelete(DeleteView):
         return context
 
 
-@login_required()
-def projects_list(request):
-    filter_form = TaskFilterForm(request.user, request.GET)
-    filter_form.is_valid()
+@method_decorator(login_required, name='dispatch')
+class TaskList(ListView):
+    model = Task
+    context_object_name = 'tasks'  # Default: object_list
+    paginate_by = 50
+    success_url = reverse_lazy('home_page')
 
-    tasks = Task.objects.all()
-    tasks_count = tasks.count()
+    def get_queryset(self):
+        tasks = Task.objects.all()
+        search_string = self.request.GET.get('filter', '').split()
+        exec_status = self.request.GET.get('exec_status', '0')
+        owner = self.request.GET.get('owner', '0')
+        customer = self.request.GET.get('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            tasks = tasks.filter(Q(object_code__icontains=word) |
+                                 Q(object_address__icontains=word) |
+                                 Q(deal__number__icontains=word) |
+                                 Q(project_type__price_code__icontains=word) |
+                                 Q(project_type__project_type__icontains=word))
+        if exec_status != '0':
+            tasks = tasks.filter(exec_status=exec_status)
+        if owner != '0':
+            tasks = tasks.filter(owner=owner)
+        if customer != '0':
+            tasks = tasks.filter(deal__customer=customer)
+        if order != '0':
+            tasks = tasks.order_by(order)
+        else:
+            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        return tasks
 
-    search_string = request.GET.get('filter', '').split()
-    exec_status = request.GET.get('exec_status', '0')
-    owner = request.GET.get('owner', '0')
-    customer = request.GET.get('customer', '0')
-    order = request.GET.get('o', '0')
-    for word in search_string:
-        tasks = tasks.filter(Q(object_code__icontains=word) |
-                         Q(object_address__icontains=word) |
-                         Q(deal__number__icontains=word) |
-                         Q(project_type__price_code__icontains=word) |
-                         Q(project_type__project_type__icontains=word))
-    if exec_status != '0':
-        tasks = tasks.filter(exec_status=exec_status)
-    if owner != '0':
-        tasks = tasks.filter(owner=owner)
-    if customer != '0':
-        tasks = tasks.filter(deal__customer=customer)
-    if order != '0':
-        tasks = tasks.order_by(order)
-    else:
-        tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
-    tasks_filtered = tasks.count()
-
-    page_objects, indexes = get_pagination(tasks, request.GET.get('page', 1), 50)
-
-    return render(request, 'project_list.html',
-                              {
-                                  'filter_form': filter_form,
-                                  'page_objects': page_objects,
-                                  'indexes': indexes,
-                                  'tasks_count': tasks_count,
-                                  'tasks_filtered': tasks_filtered,
-                                  'filters': request.META['QUERY_STRING']
-                              })
+    def get_context_data(self, **kwargs):
+        context = super(TaskList, self).get_context_data(**kwargs)
+        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_filtered'] = self.get_queryset().count()
+        self.request.session['query_string'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['filter_form'] = TaskFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = TaskFilterForm(self.request.GET)
+        return context
 
 
 @login_required()
@@ -546,7 +542,7 @@ class TaskUpdate(UpdateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -585,7 +581,7 @@ class TaskCreate(CreateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -623,8 +619,55 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('projects_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
         return self.success_url
+
+
+@method_decorator(login_required, name='dispatch')
+class TaskExchange(FormView):
+    template_name = 'planner/task_exchange.html'
+    form_class = TaskExchangeForm
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
+        return self.success_url
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            self.tasks_ids = self.request.GET.getlist('ids', '')
+            return super(TaskExchange, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+    def get_form_kwargs(self):
+        kwargs = super(TaskExchange, self).get_form_kwargs()
+        kwargs['tasks_ids'] = self.tasks_ids
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskExchange, self).get_context_data(**kwargs)
+        tasks = Task.objects.filter(id__in=self.tasks_ids)
+        context["tasks_ids"] = self.tasks_ids
+        context["tasks"] = tasks
+        return context
+
+    def form_valid(self, form):
+        deal_id = form.cleaned_data['deal']
+        if deal_id:
+            deal_new = Deal.objects.get(pk=deal_id)
+            tasks = Task.objects.filter(id__in=self.tasks_ids)
+            deals_old = set()
+            for task in tasks:
+                deal_old = Deal.objects.get(id=task.deal.pk)
+                task.deal = deal_new
+                task.save()
+                deals_old.add(deal_old)
+            for deal in deals_old:
+                deal.value = deal.value_calc()
+                deal.save()
+            deal_new.value = deal_new.value_calc()
+            deal_new.save()
+        return super(TaskExchange, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')

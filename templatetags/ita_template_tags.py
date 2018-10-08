@@ -1,22 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
-from django.core.files.storage import default_storage
-from django.contrib.auth.models import Group
 
 register = template.Library()
-
-
-@register.filter(name='file_exists')
-def file_exists(filepath):
-    if default_storage.exists(filepath):
-        return filepath
-    else:
-        return False
-
-
-@register.filter(name='get_annotation')
-def get_annotation(source, name):
-    return source.get(name)
 
 
 @register.simple_tag
@@ -24,6 +9,26 @@ def url_replace(request, field, value):
     get_values = request.GET.copy()
     get_values[field] = value
     return get_values.urlencode()
+
+
+@register.filter(name='proper_paginate')
+def proper_paginate(paginator, current_page, neighbors=10):
+    if paginator.num_pages > 2*neighbors:
+        start_index = max(1, current_page-neighbors)
+        end_index = min(paginator.num_pages, current_page + neighbors)
+        if end_index < start_index + 2*neighbors:
+            end_index = start_index + 2*neighbors
+        elif start_index > end_index - 2*neighbors:
+            start_index = end_index - 2*neighbors
+        if start_index < 1:
+            end_index -= start_index
+            start_index = 1
+        elif end_index > paginator.num_pages:
+            start_index -= (end_index-paginator.num_pages)
+            end_index = paginator.num_pages
+        page_list = [f for f in range(start_index, end_index+1)]
+        return page_list[:(2*neighbors + 1)]
+    return paginator.page_range
 
 
 @register.simple_tag
@@ -55,13 +60,3 @@ def deal_status_color(status):
 @register.simple_tag
 def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)
-
-
-@register.filter(name='has_group')
-def has_group(user, group_name):
-    group = Group.objects.get(name=group_name)
-    return group in user.groups.all()
-
-#@register.simple_tag
-#def is_viewable(task, user):
-#    return task.is_viewable(user)

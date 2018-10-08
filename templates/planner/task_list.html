@@ -20,7 +20,7 @@
                             </div>
                             <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
                                 <div class="panel-body">
-                                    <form action="{% url 'projects_list' %}" method="get">
+                                    <form action="{% url 'task_list' %}" method="get">
                                         {% for hidden_field in filter_form.hidden_fields %}
                                             {{ hidden_field }}
                                         {% endfor %}
@@ -36,14 +36,11 @@
                                             </td>
                                         {% endfor %}
                                         <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
-                                        <td>
-                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a>
-                                        </td>
                                         {% if perms.planner.add_task %}
-                                        <td>
-                                            <a href="{% url 'task_add' %}?{{ filters }}"
-                                               class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
-                                        </td>
+                                            <td>
+                                                <a href="{% url 'task_add' %}?{{ filters }}"
+                                                   class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
+                                            </td>
                                         {% endif %}
                                         </tr></table>
                                     </form>
@@ -52,11 +49,12 @@
                         </div>
                     </div>
 
-                    {% if page_objects|length > 0 %}
+                    <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                         <div class="table-scrollable">
                             <table class="table table-striped table-bordered table-advance table-hover">
                                 <thead>
                                 <tr>
+                                    <th></th>
                                     <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
                                     <th class="hidden-xs"><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА ОБ'ЄКТУ </a></th>
                                     <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ </a></th>
@@ -67,8 +65,9 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for task in page_objects %}
+                                {% for task in tasks %}
                                     <tr>
+                                        <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
                                         {% if task.is_editable %}
                                             <td><a href="{% url 'task_update' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
                                         {% elif task.is_viewable %}
@@ -90,47 +89,46 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                {% with object_list=page_objects %}
-                                    {% if object_list.paginator.num_pages > 1 %}
-                                        <div class="text-center">
-                                            {{ tasks_filtered }} знайдено <a href="{% url 'projects_list' %}"> ({{ tasks_count }} всього) </a><br>
-                                            <div class="btn-group">
+                                {% if is_paginated %}
+                                    <div class="text-center">
+                                        {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього) </a><br>
+                                        <div class="btn-group">
+                                            <a href="?{% url_replace request 'page' 1 %}"
+                                                class="btn btn-default{% if page_obj.number == 1 %} disabled{% endif %}">
+                                                    <i class="fa fa-angle-double-left"></i></a>
+                                            {% if page_obj.has_previous %}
+                                                <a href="?{% url_replace request 'page' page_obj.previous_page_number %}"
+                                                   class="btn btn-default"><i class="fa fa-angle-left"></i></a>
+                                            {% else %}
                                                 <a href="?{% url_replace request 'page' 1 %}"
-                                                   class="btn btn-default{% if object_list.number == 1 %} disabled{% endif %}"><i
-                                                        class="fa fa-angle-double-left"></i></a>
-                                                {% if object_list.number > 1 %}
-                                                    <a href="?{% url_replace request 'page' object_list.previous_page_number %}"
-                                                       class="btn btn-default"><i class="fa fa-angle-left"></i></a>
-                                                {% else %}
-                                                    <a href="?{% url_replace request 'page' 1 %}"
-                                                       class="btn btn-default disabled"><i
-                                                            class="fa fa-angle-left"></i></a>
-                                                {% endif %}
+                                                   class="btn btn-default disabled"><i
+                                                        class="fa fa-angle-left"></i></a>
+                                            {% endif %}
 
-                                                {% for index in indexes %}
-                                                    <a href="?{% url_replace request 'page' index %}"
-                                                       class="btn {% if index == object_list.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
-                                                {% endfor %}
+                                            {% for index in paginator|proper_paginate:page_obj.number %}
+                                                <a href="?{% url_replace request 'page' index %}"
+                                                   class="btn {% if index == page_obj.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
+                                            {% endfor %}
 
-                                                {% if object_list.number < object_list.paginator.num_pages %}
-                                                    <a href="?{% url_replace request 'page' object_list.next_page_number %}"
-                                                       class="btn btn-default"><i class="fa fa-angle-right"></i></a>
-                                                {% else %}
-                                                    <a href="?{% url_replace request 'page' object_list.paginator.num_pages %}"
-                                                       class="btn btn-default disabled"><i
-                                                            class="fa fa-angle-right"></i></a>
-                                                {% endif %}
-                                                <a href="?{% url_replace request 'page' object_list.paginator.num_pages %}"
-                                                   class="btn btn-default{% if object_list.number == object_list.paginator.num_pages %} disabled{% endif %}"><i
-                                                        class="fa fa-angle-double-right"></i></a>
-                                            </div>
+                                            {% if page_obj.has_next %}
+                                                <a href="?{% url_replace request 'page' page_obj.next_page_number %}"
+                                                   class="btn btn-default"><i class="fa fa-angle-right"></i></a>
+                                            {% else %}
+                                                <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                                   class="btn btn-default disabled"><i
+                                                        class="fa fa-angle-right"></i></a>
+                                            {% endif %}
+                                            <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                               class="btn btn-default{% if page_obj.number == paginator.num_pages %} disabled{% endif %}"><i
+                                                    class="fa fa-angle-double-right"></i></a>
                                         </div>
-                                    {% endif %}
-                                {% endwith %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
-                    {% endif %}
-                    {#                <!-- END PAGE BASE CONTENT -->#}
+                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити договір</button>
+                    </form>
+                    <!-- END PAGE BASE CONTENT -->
                 </div>
             </div>
         </div>

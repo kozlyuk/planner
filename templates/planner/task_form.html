@@ -40,7 +40,7 @@
                                     <div class="form-actions">
                                         {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<a href="{% url 'projects_list' %}?{{ filters }}"
+                                        {% else %}<a href="{% url 'task_list' %}?{{ filters }}"
                                                         class="btn red btn-sm btn-outline sbold uppercase">Відмінити</a>
                                         {% endif %}
                                         <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"

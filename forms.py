@@ -28,7 +28,7 @@ class UserLoginForm(forms.ModelForm):
 
 
 class DealFilterForm(forms.Form):
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(DealFilterForm, self).__init__(*args, **kwargs)
 
         customer = [(customer.id, customer.name) for customer in Customer.objects.all()]
@@ -106,15 +106,15 @@ class DealForm(forms.ModelForm):
                 self.add_error('advance', "Вкажіть Аванс")
             if not pay_date:
                 self.add_error('pay_date', "Вкажіть Дату оплати")
-        if act_status == Deal.PartlyIssued or act_status == Deal.Issued:
+        if act_status != Deal.NotIssued:
             if not value or value == 0:
                 self.add_error('value', "Вкажіть Вартість робіт")
             if not act_date:
                 self.add_error('act_date', "Вкажіть Дату акту виконаних робіт")
             if not act_value or act_value == 0:
                 self.add_error('act_value', "Вкажіть Суму акту виконаних робіт")
-        if act_status == Deal.Issued and not pdf_copy:
-            self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
+            if not pdf_copy:
+                self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
         return cleaned_data
 
 
@@ -152,6 +152,31 @@ class TasksInlineForm(forms.ModelForm):
 TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=1)
 
 
+class TaskFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(TaskFilterForm, self).__init__(*args, **kwargs)
+        exec_status = []
+        exec_status.insert(0, (0, "Всі"))
+        exec_status.insert(1, ('IW', "В черзі"))
+        exec_status.insert(2, ('IP', "Виконується"))
+        exec_status.insert(3, ('HD', "Виконано"))
+        exec_status.insert(4, ('ST', "Надіслано"))
+
+        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').order_by().distinct()]
+        owners.insert(0, (0, "Всі"))
+        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customers.insert(0, (0, "Всі"))
+
+        self.fields['exec_status'].choices = exec_status
+        self.fields['owner'].choices = owners
+        self.fields['customer'].choices = customers
+
+    exec_status = forms.ChoiceField(label='Статус виконання', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -180,8 +205,8 @@ class TaskForm(forms.ModelForm):
         elif self.instance.pk is None or self.instance.owner.user == get_current_user():
             self.fields['owner'].queryset = Employee.objects.filter(user=get_current_user())
 
-        if self.instance.pk is None or self.instance.deal.act_status != Deal.Issued:
-            self.fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued)
+        if self.instance.pk is None or self.instance.deal.act_status == Deal.NotIssued:
+            self.fields['deal'].queryset = Deal.objects.filter(act_status=Deal.NotIssued)
         else:
             self.fields['deal'].widget.attrs['disabled'] = True
             self.fields['deal'].required = False
@@ -215,7 +240,7 @@ class TaskForm(forms.ModelForm):
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
-        if not get_current_user().is_superuser and (not deal or deal.act_status == Deal.Issued):
+        if not get_current_user().is_superuser and (not deal or deal.act_status != Deal.NotIssued):
             raise ValidationError("Договір закрито, зверніться до керівника")
         if not project_type or project_type.active is False:
             raise ValidationError("Даний Тип проекту не активний")
@@ -362,26 +387,23 @@ class SendingInlineFormset(BaseInlineFormSet):
 SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=1, formset=SendingInlineFormset)
 
 
-class TaskFilterForm(forms.Form):
-    def __init__(self, user, *args, **kwargs):
-        super(TaskFilterForm, self).__init__(*args, **kwargs)
-        exec_status = []
-        exec_status.insert(0, (0, "Всі"))
-        exec_status.insert(1, ('IW', "В черзі"))
-        exec_status.insert(2, ('IP', "Виконується"))
-        exec_status.insert(3, ('HD', "Виконано"))
-        exec_status.insert(4, ('ST', "Надіслано"))
+class TaskExchangeForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.tasks_ids = kwargs.pop('tasks_ids')
+        super(TaskExchangeForm, self).__init__(*args, **kwargs)
+        deal = [(deal.id, deal.number) for deal in Deal.objects.filter(act_status=Deal.NotIssued)]
+        self.fields['deal'].choices = deal
 
-        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').order_by().distinct()]
-        owners.insert(0, (0, "Всі"))
-        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
-        customers.insert(0, (0, "Всі"))
+    deal = forms.ChoiceField(label='Оберіть договір')
 
-        self.fields['exec_status'].choices = exec_status
-        self.fields['owner'].choices = owners
-        self.fields['customer'].choices = customers
-
-    exec_status = forms.ChoiceField(label='Статус виконання', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+    def clean(self):
+        super(TaskExchangeForm, self).clean()
+        deal_id = self.cleaned_data.get("deal")
+        tasks = Task.objects.filter(id__in=self.tasks_ids)
+        if deal_id:
+            deal = Deal.objects.get(pk=deal_id)
+            for task in tasks:
+                if deal.customer != task.project_type.customer:
+                    self.add_error('deal', "{} - тип проекту не відповідає Замовнику Договору".format(task))
+                if task.deal.act_status != Deal.NotIssued:
+                    self.add_error('deal', "{} - договір закрито, зверніться до керівника".format(task))

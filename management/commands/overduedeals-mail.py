@@ -12,7 +12,8 @@ class Command(BaseCommand):
 
         pms = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
         deals = Deal.objects.exclude(expire_date__gte=date.today()) \
-                            .exclude(number__icontains='загальний')
+                            .exclude(number__icontains='загальний') \
+                            .exclude(number__icontains='злетіли')
 
         emails = []
         overdue = []

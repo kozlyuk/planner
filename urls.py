@@ -19,10 +19,7 @@ from planner import views
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
-from .views import NewsList, NewsCreate, NewsDetail, NewsUpdate, NewsDelete
-from .views import EventList, EventCreate, EventDetail, EventUpdate, EventDelete
-from .views import TaskUpdate, TaskCreate, TaskDelete, SubtaskUpdate, InttaskDetail
-from .views import DealList, DealUpdate, DealCreate ,DealDelete
+from .views import *
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -38,11 +35,14 @@ urlpatterns = [
     url(r'^deal/(?P<pk>[0-9]+)/delete/$', DealDelete.as_view(), name='deal_delete'),
     url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
 
-    url(r'^project/$', views.projects_list, name='projects_list'),
+    url(r'^project/$', TaskList.as_view(), name='task_list'),
     url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
     url(r'^project/(?P<pk>[0-9]+)/delete/$', TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
+    url(r'^project/exchange/$', TaskExchange.as_view(), name='task_exchange'),
+#    url(r'^project/exchange/update/$', TaskExchangeUpdate.as_view(), name='task_exchange_update'),
+
     url(r'^subtask/(?P<pk>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', InttaskDetail.as_view(), name='inttask_detail'),
     url(r'^login/$', views.login_page, name='login_page'),
