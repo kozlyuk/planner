@@ -394,7 +394,7 @@ class TaskExchangeForm(forms.Form):
         deal = [(deal.id, deal.number) for deal in Deal.objects.filter(act_status=Deal.NotIssued)]
         self.fields['deal'].choices = deal
 
-    deal = forms.ChoiceField(label='Оберіть договір')
+    deal = forms.ChoiceField(label='Оберіть договір', widget=Select2Widget())
 
     def clean(self):
         super(TaskExchangeForm, self).clean()

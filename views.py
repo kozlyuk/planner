@@ -649,6 +649,7 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
+        context["query_string"] = self.request.session.get('query_string')
         return context
 
     def form_valid(self, form):

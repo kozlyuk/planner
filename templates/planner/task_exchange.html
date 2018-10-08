@@ -10,8 +10,8 @@
         <form id="TaskExchange" action="" method="post">{% csrf_token %}
             <div class="breadcrumbs">
                 <div class="container-fluid">
-                    <h3 class="breadcrumbs-title">Бажаєте перенести обрані проекти в договір:</h3><br><br>
-                    {{ form }}
+                    <h3 class="breadcrumbs-title">Бажаєте перенести обрані проекти?</h3>
+                    <br><br>{{ form }}
                     <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Перенести</button>
                 </div>
             </div>
@@ -22,30 +22,36 @@
             <div class="row widget-row">
                 <div class="portlet-body">
                     <div class="table-scrollable">
-                        <table class="table table-striped table-bordered table-advance table-hover">
-                            <thead>
-                            <tr>
-                                <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
-                                <th class="hidden-xs"><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА ОБ'ЄКТУ </a></th>
-                                <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ </a></th>
-                                <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
-                                <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
-                                <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
-                                <th> ПОПЕРЕДЖЕННЯ </th>
-                            </tr>
-                            </thead>
-                            {% for task in tasks %}
+                        {% if tasks_ids %}
+                            <table class="table table-striped table-bordered table-advance table-hover">
+                                <thead>
                                 <tr>
-                                    <td> {{ task.object_code }} </td>
-                                    <td class="hidden-xs"> {{ task.object_address }}</td>
-                                    <td> {{ task.project_type }}</td>
-                                    <td class="hidden-xs"> {{ task.deal }}</td>
-                                    <td><span class="label label-sm label-{% task_status_color task.exec_status %} label-mini"> {{ task.get_exec_status_display }} </span></td>
-                                    <td> {{ task.owner.name }} </td>
-                                    <td> {{ task.overdue_status }} </td>
+                                    <th> ШИФР ОБ’ЄКТУ </th>
+                                    <th class="hidden-xs"> АДРЕСА ОБ'ЄКТУ </th>
+                                    <th> ТИП ПРОЕКТУ </th>
+                                    <th class="hidden-xs"> ДОГОВІР </th>
+                                    <th> СТАТУС </th>
+                                    <th> КЕРІВНИК ПРОЕКТУ </th>
+                                    <th> ПОПЕРЕДЖЕННЯ </th>
                                 </tr>
-                            {% endfor %}
-                        </table>
+                                </thead>
+                                {% for task in tasks %}
+                                    <tr>
+                                        <td> {{ task.object_code }} </td>
+                                        <td class="hidden-xs"> {{ task.object_address }}</td>
+                                        <td> {{ task.project_type }}</td>
+                                        <td class="hidden-xs"> {{ task.deal }}</td>
+                                        <td><span class="label label-sm label-{% task_status_color task.exec_status %} label-mini"> {{ task.get_exec_status_display }} </span></td>
+                                        <td> {{ task.owner.name }} </td>
+                                        <td> {{ task.overdue_status }} </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                        <h4 class="text-center">Ви не обрали жодного проекту</h4>
+                        {% endif %}
+                        <br><a href="{% url 'task_list' %}?{{ query_string }}"
+                            class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
                     </div>
                 </div>
             </div>
