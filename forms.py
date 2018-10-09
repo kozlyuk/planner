@@ -171,7 +171,7 @@ class TaskFilterForm(forms.Form):
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
 
-    exec_status = forms.ChoiceField(label='Статус виконання', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    exec_status = forms.ChoiceField(label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)

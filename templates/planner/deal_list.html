@@ -19,7 +19,7 @@
                                 </div>
                             </div>
                             <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
-                                <div class="panel-body">
+                                <div class="table-scrollable">
                                     <form action="{% url 'deal_list' %}" method="get">
                                         {% for hidden_field in filter_form.hidden_fields %}
                                             {{ hidden_field }}
