@@ -644,6 +644,8 @@ class Task(models.Model):
         elif user == self.owner.user or self.executors.filter(user=user).exists() \
                 or self.executors.filter(head__user=user).exists():
             return True
+        elif user.groups.filter(name='Бухгалтери').exists():
+            return True
         else:
             return False
     # try if user has a permitting to view the task
