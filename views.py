@@ -407,12 +407,11 @@ class DealUpdate(UpdateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
-        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
         else:
@@ -437,12 +436,11 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
-        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
         else:
@@ -520,20 +518,17 @@ class TaskList(ListView):
         return context
 
 
-@login_required()
-def task_detail(request, project_id):
-    task = Task.objects.get(pk=project_id)
-    executors = Execution.objects.filter(task=task)
-    costs = Order.objects.filter(task=task)
-    sendings = Sending.objects.filter(task=task)
-    return render(request, 'planner/task_detail.html',
-                              {
-                                  'task': task,
-                                  'executors': executors,
-                                  'costs': costs,
-                                  'sendings': sendings,
-                                  'filters': request.META['QUERY_STRING']
-                              })
+@method_decorator(login_required, name='dispatch')
+class TaskDetail(DetailView):
+    model = Task
+    context_object_name = 'task'
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskDetail, self).get_context_data(**kwargs)
+        context['executors'] = Execution.objects.filter(task=self.kwargs['pk'])
+        context['costs'] = Order.objects.filter(task=self.kwargs['pk'])
+        context['sendings'] = Sending.objects.filter(task=self.kwargs['pk'])
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
@@ -542,12 +537,11 @@ class TaskUpdate(UpdateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
-        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
@@ -581,12 +575,11 @@ class TaskCreate(CreateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
-        context['filters'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
             context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
@@ -718,19 +711,6 @@ class NewsDetail(DetailView):
     success_url = reverse_lazy('news_list')
 
 
-class NewsForm(forms.ModelForm):
-    class Meta:
-        model = News
-        fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
-
-    def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
-        if not self.instance.is_editable():
-            self.fields['text'].widget.attrs['readonly'] = True
-        self.fields['actual_from'].widget = AdminDateWidget()
-        self.fields['actual_to'].widget = AdminDateWidget()
-
-
 @method_decorator(login_required, name='dispatch')
 class NewsCreate(CreateView):
     model = News
@@ -760,7 +740,6 @@ class EventList(ListView):
 @method_decorator(login_required, name='dispatch')
 class EventDetail(DetailView):
     model = Event
-    success_url = reverse_lazy('event_list')
 
 
 @method_decorator(login_required, name='dispatch')

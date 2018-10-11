@@ -38,10 +38,9 @@ urlpatterns = [
     url(r'^project/$', TaskList.as_view(), name='task_list'),
     url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
     url(r'^project/add/$', TaskCreate.as_view(), name='task_add'),
-    url(r'^project/(?P<pk>[0-9]+)/delete/$', TaskDelete.as_view(), name='task_delete'),
-    url(r'^project/(?P<project_id>\d+)/$', views.task_detail, name='task_detail'),
+    url(r'^project/(?P<pk>\d+)/delete/$', TaskDelete.as_view(), name='task_delete'),
+    url(r'^project/(?P<pk>\d+)/$', TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', TaskExchange.as_view(), name='task_exchange'),
-#    url(r'^project/exchange/update/$', TaskExchangeUpdate.as_view(), name='task_exchange_update'),
 
     url(r'^subtask/(?P<pk>\d+)/$', SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', InttaskDetail.as_view(), name='inttask_detail'),
@@ -52,10 +51,10 @@ urlpatterns = [
         views.bonus_calc, name='bonus_calc'),
 
     url(r'^news/$', NewsList.as_view(), name='news_list'),
-    url(r'^news/(?P<pk>[0-9]+)/detail/$', NewsDetail.as_view(), name='news_detail'),
+    url(r'^news/(?P<pk>\d+)/detail/$', NewsDetail.as_view(), name='news_detail'),
     url(r'^news/(?P<pk>\d+)/change/$', NewsUpdate.as_view(), name='news_update'),
     url(r'^news/add/$', NewsCreate.as_view(), name='news_add'),
-    url(r'^news/(?P<pk>[0-9]+)/delete/$', NewsDelete.as_view(), name='news_delete'),
+    url(r'^news/(?P<pk>\d+)/delete/$', NewsDelete.as_view(), name='news_delete'),
 
     url(r'^event/$', EventList.as_view(), name='event_list'),
     url(r'^event/(?P<pk>[0-9]+)/detail/$', EventDetail.as_view(), name='event_detail'),

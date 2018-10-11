@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company
+from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company, News
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
@@ -409,3 +409,16 @@ class TaskExchangeForm(forms.Form):
                     self.add_error('deal', "{} - тип проекту не відповідає Замовнику Договору".format(task))
                 if task.deal.act_status != Deal.NotIssued:
                     self.add_error('deal', "{} - договір закрито, зверніться до керівника".format(task))
+
+
+class NewsForm(forms.ModelForm):
+    class Meta:
+        model = News
+        fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
+
+    def __init__(self, *args, **kwargs):
+        super(NewsForm, self).__init__(*args, **kwargs)
+        if not self.instance.is_editable():
+            self.fields['text'].widget.attrs['readonly'] = True
+        self.fields['actual_from'].widget = AdminDateWidget()
+        self.fields['actual_to'].widget = AdminDateWidget()

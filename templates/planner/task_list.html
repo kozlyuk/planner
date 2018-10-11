@@ -38,7 +38,7 @@
                                         <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
                                         {% if perms.planner.add_task %}
                                             <td>
-                                                <a href="{% url 'task_add' %}?{{ filters }}"
+                                                <a href="{% url 'task_add' %}"
                                                    class="btn dark btn-sm btn-outline sbold uppercase"> Додати проект </a>
                                             </td>
                                         {% endif %}
@@ -69,9 +69,9 @@
                                     <tr>
                                         <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
                                         {% if task.is_editable %}
-                                            <td><a href="{% url 'task_update' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
+                                            <td><a href="{% url 'task_update' task.id %}"> {{ task.object_code }} </a></td>
                                         {% elif task.is_viewable %}
-                                            <td><a href="{% url 'task_detail' task.id %}?{{ filters }}"> {{ task.object_code }} </a></td>
+                                            <td><a href="{% url 'task_detail' task.id %}"> {{ task.object_code }} </a></td>
                                         {% else %}
                                             <td> {{ task.object_code }} </td>
                                         {% endif %}
