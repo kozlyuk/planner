@@ -18,12 +18,14 @@
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
-            {% if user.is_superuser or user == event.creator %}
+            {% if perms.planner.delete_news %}
             <div class="row widget-row">
-                <div class="col-md-2 col-md-offset-5">
+                <div class="col-md-6 col-md-offset-3" align="center">
                 <form action="" method="post">{% csrf_token %}
                     <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
-                    <input type="submit" value="Так, я впевнений" />
+                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Так я впевнений </button>
+                    <a href="{{request.META.HTTP_REFERER}}"
+                       class="btn dark btn-sm btn-outline sbold uppercase"> Повернутись </a>
                 </form>
                 </div>
             </div>

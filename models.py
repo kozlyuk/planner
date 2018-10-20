@@ -1019,11 +1019,3 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
-
-    def is_editable(self):
-        user = get_current_user()
-        if user.is_superuser or user == self.creator:
-            return True
-        else:
-            return False
-    # try if user has a permitting to edit

@@ -27,7 +27,7 @@
                             <thead>
                             <tr>
                                 <th> НАЗВА ПОДІЇ</th>
-                                <th> ПЕРІОДИЧНІСТЬ </th>
+                                <th class="hidden-xs"> ПЕРІОДИЧНІСТЬ </th>
                                 <th> ДАТА</th>
                                 <th></th>
                             </tr>
@@ -40,10 +40,12 @@
                                     <td>{% if event.next_repeat %}{{ event.next_repeat }}
                                         {% else %}{{ event.date }}{% endif %}</td>
                                     <td>
-                                    {% if user.is_superuser or user == event.creator %}
+                                    {% if perms.planner.change_event %}
                                         <a href="{% url 'event_update' event.pk %}"
                                             class="btn dark btn-sm btn-outline sbold uppercase">
                                             Редагувати</a>
+                                    {% endif %}
+                                    {% if perms.planner.delete_event %}
                                         <a href="{% url 'event_delete' event.pk %}"
                                             class="btn dark btn-sm btn-outline sbold uppercase">
                                             Видалити</a>

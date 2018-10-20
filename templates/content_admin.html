@@ -24,7 +24,7 @@
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
                                                 <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             Акт виконаних робіт: {{ deal.get_act_status_display }}
@@ -38,7 +38,7 @@
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
                                                 <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             {{ deal.get_pay_status_display }}
@@ -52,7 +52,7 @@
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'admin:planner_deal_change' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
+                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
                                                 <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             {{ deal.overdue_status }}

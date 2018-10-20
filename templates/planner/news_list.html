@@ -12,9 +12,11 @@
                 <a href="{% url 'news_list' %}">
                     <h2 class="breadcrumbs-title">Новини та повідомлення</h2>
                 </a>
-                <div align="right">
-                    <a href="{% url 'news_add' %}" class="btn dark btn-sm btn-outline sbold uppercase">Додати новину</a>
-                </div>
+                {% if perms.planner.add_news %}
+                    <div align="right">
+                        <a href="{% url 'news_add' %}" class="btn dark btn-sm btn-outline sbold uppercase">Додати новину</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <!-- END BREADCRUMBS -->
@@ -45,10 +47,12 @@
                                     <td class="hidden-xs">{{ news.creator }}</td>
                                     <td class="hidden-xs">{{ news.created }}</td>
                                     <td>
-                                    {% if user.is_superuser or user == event.creator %}
+                                    {% if perms.planner.change_news %}
                                         <a href="{% url 'news_update' news.pk %}"
                                             class="btn dark btn-sm btn-outline sbold uppercase">
                                             Редагувати</a>
+                                    {% endif %}
+                                    {% if perms.planner.delete_news %}
                                         <a href="{% url 'news_delete' news.pk %}"
                                             class="btn dark btn-sm btn-outline sbold uppercase">
                                             Видалити</a>

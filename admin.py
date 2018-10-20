@@ -253,7 +253,8 @@ class DealAdmin(admin.ModelAdmin):
                                                ('customer', 'company'),
                                                ('value', 'advance', 'pay_status'),
                                                ('pay_date', 'expire_date'),
-                                               ('act_status', 'act_date', 'act_value')]}),
+                                               ('act_status', 'act_date', 'act_value'),
+                                               ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
                                              'costs_calc', 'pay_date_calc', 'comment'], 'classes': ['collapse']})
         ]

@@ -393,6 +393,7 @@ class DealList(ListView):
         context = super(DealList, self).get_context_data(**kwargs)
         context['deals_count'] = Deal.objects.all().count()
         context['deals_filtered'] = self.get_queryset().count()
+        self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = DealFilterForm(self.request.POST)
         else:
@@ -407,7 +408,7 @@ class DealUpdate(UpdateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('query_string')
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -436,7 +437,7 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('query_string')
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -463,7 +464,7 @@ class DealDelete(DeleteView):
     model = Deal
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -510,7 +511,7 @@ class TaskList(ListView):
         context = super(TaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.get_queryset().count()
-        self.request.session['query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = TaskFilterForm(self.request.POST)
         else:
@@ -537,7 +538,7 @@ class TaskUpdate(UpdateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -575,7 +576,7 @@ class TaskCreate(CreateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -612,7 +613,7 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.META['QUERY_STRING']
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
         return self.success_url
 
 
@@ -622,7 +623,7 @@ class TaskExchange(FormView):
     form_class = TaskExchangeForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
         return self.success_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -642,7 +643,7 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
-        context["query_string"] = self.request.session.get('query_string')
+        context["query_string"] = self.request.session.get('task_query_string')
         return context
 
     def form_valid(self, form):
@@ -745,25 +746,15 @@ class EventDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class EventCreate(CreateView):
     model = Event
-    fields = ['title', 'date', 'repeat', 'description']
+    form_class = EventForm
     success_url = reverse_lazy('event_list')
-
-    def get_form(self, form_class=None):
-        form = super(EventCreate, self).get_form(form_class)
-        form.fields['date'].widget = AdminDateWidget()
-        return form
 
 
 @method_decorator(login_required, name='dispatch')
 class EventUpdate(UpdateView):
     model = Event
-    fields = ['title', 'date', 'repeat', 'description']
+    form_class = EventForm
     success_url = reverse_lazy('event_list')
-
-    def get_form(self, form_class=None):
-        form = super(EventUpdate, self).get_form(form_class)
-        form.fields['date'].widget = AdminDateWidget()
-        return form
 
 
 @method_decorator(login_required, name='dispatch')

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company, News
+from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company, News, Event
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
@@ -310,6 +310,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
 
 ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=1, formset=ExecutorsInlineFormset)
 
+
 class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -418,7 +419,19 @@ class NewsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(NewsForm, self).__init__(*args, **kwargs)
-        if not self.instance.is_editable():
-            self.fields['text'].widget.attrs['readonly'] = True
         self.fields['actual_from'].widget = AdminDateWidget()
         self.fields['actual_to'].widget = AdminDateWidget()
+        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
+        self.fields['text'].widget.attrs.update({'style': 'width:100%; height:63px;'})
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'date', 'repeat', 'description']
+
+    def __init__(self, *args, **kwargs):
+        super(EventForm, self).__init__(*args, **kwargs)
+        self.fields['date'].widget = AdminDateWidget()
+        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
+        self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})

@@ -26,7 +26,7 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
             <div class="col-md-4 col-md-offset-4">
-            {% if perms.planner.can_delete_deal %}
+            {% if perms.planner.delete_deal %}
                 {% if tasks %}
                     <p>Видалення Договору "{{ deal }}" вимагатиме видалення наступних пов'язаних об'єктів:</p>
                     {% for task in tasks %}

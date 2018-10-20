@@ -4,32 +4,47 @@
 {% load widget_tweaks %}
 {% load ita_template_tags %}
 
-{% block context %}
 
+{% block context %}
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
-        <!-- BEGIN BREADCRUMBS -->
-        <div class="breadcrumbs">
-            <div class="container-fluid">
-                <a href="{% url 'news_list' %}">
-                    <h2 class="breadcrumbs-title">Найближчі події та свята</h2>
-                </a>
-            </div>
-        </div>
-        <!-- END BREADCRUMBS -->
 
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
-            <div class="row widget-row">
-                <div class="col-md-2 col-md-offset-5">
-                <form action="" method="post">{% csrf_token %}
-                    <div class="widget-news-right-body">
-                        <h5 class="widget-news-right-body-title">{{ form.as_p }}</h5>
-                        <input type="submit" value="Зберегти" style="float: right;" />
+            <div class="row widget-row margin-top-20">
+                <!-- PERMISSION CHECK -->
+                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                <div class="col-md-6 col-md-offset-3">
+                    <!-- BEGIN WIDGET TAB -->
+                    <div class="portlet light tasks-widget">
+                        <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                                <span class="caption-subject theme-font bold uppercase">Найближчі події та свята</span>
+                            </div>
+                        </div>
+                        {% if perms.planner.change_event %}
+                        <div class="portlet-body">
+                            <div class="widget-bg-color-white">
+                                    <table class="table table-hover">
+                                        <col width="25%">
+                                        {{ form }}
+                                    </table>
+                                    <div class="form-actions">
+                                        <a href="{{request.META.HTTP_REFERER}}"
+                                            class="btn dark btn-sm btn-outline sbold uppercase"> Повернутись </a>
+                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                            style="float: right;">Зберегти</button>
+                                    </div>
+                            </div>
+                        </div>
+                        {% else %}
+                            Ви не маєте доступу до редагування даного контенту<br><br>
+                        {% endif %}
                     </div>
-                </form><br><br>
+                    <!-- END WIDGET -->
                 </div>
+                </form>
             </div>
             <!-- END PAGE BASE CONTENT -->
         </div>
@@ -48,7 +63,7 @@
         $("body").attr("JSError", msg);
     }
 </script>
-<script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
+
 {% endblock %}
