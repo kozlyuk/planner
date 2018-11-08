@@ -89,9 +89,9 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                {% if is_paginated %}
-                                    <div class="text-center">
-                                        {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього) </a><br>
+                                <div class="text-center">
+                                    {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього) </a><br>
+                                    {% if is_paginated %}
                                         <div class="btn-group">
                                             <a href="?{% url_replace request 'page' 1 %}"
                                                 class="btn btn-default{% if page_obj.number == 1 %} disabled{% endif %}">
@@ -122,8 +122,8 @@
                                                class="btn btn-default{% if page_obj.number == paginator.num_pages %} disabled{% endif %}"><i
                                                     class="fa fa-angle-double-right"></i></a>
                                         </div>
-                                    </div>
-                                {% endif %}
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                         {% if perms.planner.change_deal %}
