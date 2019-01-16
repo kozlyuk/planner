@@ -435,3 +435,16 @@ class EventForm(forms.ModelForm):
         self.fields['date'].widget = AdminDateWidget()
         self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
         self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
+
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar', 'birthday', 'vacation_count',
+                  'vacation_date']
+
+    def __init__(self, *args, **kwargs):
+        super(EventForm, self).__init__(*args, **kwargs)
+        self.fields['date'].widget = AdminDateWidget()
+        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
+        self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})

@@ -8,16 +8,16 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
 from django.urls import reverse_lazy
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django import forms
 from eventlog.models import Log
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from . import calc_scripts
+from crum import get_current_user
 
 
 @login_required()
@@ -761,3 +761,13 @@ class EventUpdate(UpdateView):
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('event_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeUpdate(UpdateView):
+    model = Employee
+    form_class = EventForm
+    success_url = reverse_lazy('home_page')
+
+    def get_object(self):
+        return Employee.objects.get(user=get_current_user())
