@@ -37,7 +37,7 @@ class Employee(models.Model):
                            'large': (400, 400, True),
                            'thumbnail': (100, 100, True),
                            })
-    birthday = models.DateField('День народження', blank=True, null=True)
+    birthday = models.DateField('День народження')
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])

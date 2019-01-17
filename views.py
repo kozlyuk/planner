@@ -766,7 +766,7 @@ class EventDelete(DeleteView):
 @method_decorator(login_required, name='dispatch')
 class EmployeeUpdate(UpdateView):
     model = Employee
-    form_class = EventForm
+    form_class = EmployeeForm
     success_url = reverse_lazy('home_page')
 
     def get_object(self):

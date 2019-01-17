@@ -298,7 +298,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
         if self.instance.pk:
             if self.instance.__exec_status__ in [Task.Done, Task.Sent] and percent < 100:
                 raise ValidationError(('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
-            if self.instance.__project_type__.executors_bonus > 0:
+            if self.instance.__project_type__ and self.instance.__project_type__.executors_bonus > 0:
                 bonuses_max = 100 + 100 * self.instance.__project_type__.owner_bonus /\
                               self.instance.__project_type__.executors_bonus
             else:
@@ -344,7 +344,7 @@ class CostsInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             if form.is_valid() and not form.cleaned_data.get('DELETE', False):
                 outsourcing += form.cleaned_data.get('value', 0)
-        if self.instance.pk:
+        if self.instance.pk and self.instance.__project_type__:
             if self.instance.__exec_status__ in [Task.Done, Task.Sent]:
                 if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                     costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
@@ -375,7 +375,7 @@ class SendingInlineFormset(BaseInlineFormSet):
     def clean(self):
         """forces each clean() method on the ChildCounts to be called"""
         super(SendingInlineFormset, self).clean()
-        if self.instance.pk:
+        if self.instance.pk and self.instance.__project_type__:
             if self.instance.__exec_status__ == Task.Sent and self.instance.__project_type__.copies_count > 0:
                 sending = 0
                 for form in self.forms:
@@ -443,8 +443,12 @@ class EmployeeForm(forms.ModelForm):
         fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar', 'birthday', 'vacation_count',
                   'vacation_date']
 
-    def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
-        self.fields['date'].widget = AdminDateWidget()
-        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
-        self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
+    name = forms.CharField(disabled=True)
+    position = forms.CharField(disabled=True)
+    head = forms.ModelChoiceField(queryset=Employee.objects.all(), disabled=True, required=False)
+    phone = forms.CharField(disabled=True)
+    mobile_phone = forms.CharField(disabled=True)
+    birthday = forms.DateField(disabled=True)
+    vacation_count = forms.IntegerField(disabled=True, required=False)
+    vacation_date = forms.DateField(disabled=True, required=False)
+
