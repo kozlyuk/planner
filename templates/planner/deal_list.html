@@ -10,44 +10,47 @@
         <div class="container-fluid container-lf-space">
             <div class="row widget-row">
                 <div class="portlet-body">
-                    <div class="panel-group accordion" id="accordion1">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <a class="accordion-toggle theme-font bold uppercase" data-toggle="collapse" data-parent="#accordion1"
-                                       href="#collapse_1" aria-expanded="false"> Договори </a>
-                                </div>
-                            </div>
-                            <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
-                                <div class="table-scrollable">
-                                    <form action="{% url 'deal_list' %}" method="get">
-                                        {% for hidden_field in filter_form.hidden_fields %}
-                                            {{ hidden_field }}
-                                        {% endfor %}
 
-                                        <table width="100%"><tr>
-                                        {% for field in filter_form.visible_fields %}
-                                            <td>
-                                            {{ field.label_tag }}
-                                            {{ field }}
-                                            {% if field.help_text %}
-                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                    <!-----------------------filter panel-------------------------->
+                    <div class="panel-group accordion" id="accordion1">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <a class="accordion-toggle theme-font bold uppercase" data-toggle="collapse" data-parent="#accordion1"
+                                           href="#collapse_1" aria-expanded="false"> Проекти </a>
+                                    </div>
+                                </div>
+                                <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
+                                    <div class="container-fluid " style="display:block">
+                                        <form action="{% url 'task_list' %}" method="get">
+                                            {% for hidden_field in filter_form.hidden_fields %}
+                                                {{ hidden_field }}
+                                            {% endfor %}
+
+                                            <table width="100%" style="display:block; float: left"><tr style="display:block">
+                                            {% for field in filter_form.visible_fields %}
+                                                <td style="float:left; margin: 5px">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {% if field.help_text %}
+                                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                                {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                            {% if perms.planner.add_task %}
+                                                <td style="height:30px; bottom: 0px; float: right">
+                                                    <a href="{% url 'task_add' %}"
+                                                       class="btn btn-sm btn-success uppercase" style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"><i class="fa fa-plus"></i> Додати проект </a>
+                                                </td>
                                             {% endif %}
-                                            </td>
-                                        {% endfor %}
-                                        <td><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Пошук </button></td>
-                                        {% if perms.planner.add_deal %}
-                                            <td>
-                                                <a href="{% url 'deal_add' %}"
-                                                   class="btn dark btn-sm btn-outline sbold uppercase"> Додати договір </a>
-                                            </td>
-                                        {% endif %}
-                                        </tr></table>
-                                    </form>
+                                            <td style="height:30px; bottom: 0px; float: left"><button type="submit" class="btn btn-sm btn-primary uppercase" style="float:left; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"> <i class="fa fa-search"></i>Пошук </button></td>
+                                            </tr></table>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    <!-----------------------filter panel-------------------------->
 
                     <div class="table-scrollable">
                         <table class="table table-striped table-bordered table-advance table-hover">
