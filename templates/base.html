@@ -38,6 +38,7 @@
     <link href="{% static 'assets/global/css/components.min.css' %}" rel="stylesheet" id="style_components"
           type="text/css"/>
     <link href="{% static 'assets/global/css/plugins.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/global/css/menu.css'%}" rel="stylesheet" type="text/css"/>
     <!-- END THEME GLOBAL STYLES -->
     <!-- BEGIN THEME LAYOUT STYLES -->
     <link href="{% static 'assets/layouts/layout7/css/layout.min.css' %}" rel="stylesheet" type="text/css"/>
@@ -56,38 +57,26 @@
 <div class="page-header navbar-fixed-top">
     <!-- BEGIN HEADER INNER -->
     <div class="clearfix">
-        <!-- BEGIN BURGER TRIGGER -->
-        <div class="burger-trigger">
-            <button class="menu-trigger">
-                <img src="{% static 'assets/layouts/layout7/img/m_toggler.png' %}" alt=""></button>
-            <div class="menu-overlay menu-overlay-bg-transparent">
-                <div class="menu-overlay-content">
-                    <ul class="menu-overlay-nav text-uppercase">
-                        <li>
-                            <a href="{% url 'home_page' %}">ГОЛОВНА</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'task_list' %}">ПРОЕКТИ</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'deal_list' %}">ДОГОВОРИ</a>
-                        </li>
-                        <li>
-                            <a href="#">АНАЛІТИКА ТА ЗВІТИ</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="menu-bg-overlay">
-                <button class="menu-close">&times;</button>
-            </div>
-            <!-- the overlay element -->
+        <div class="menu-container">
+          <div class="border-menu">
+          <input id="hamburger" class="hamburger" type="checkbox" />
+          <label class="hamburger" for="hamburger"> <i></i> </label>
+          <section class="drawer-list">
+            <ul>
+              <li><a href="{% url 'home_page' %}">Головна</a></li>
+              <li><a href="{% url 'task_list' %}">Проекти</a></li>
+              <li><a href="{% url 'deal_list' %}">Договори</a></li>
+              <li><a href="#">Аналітика та звіти</a></li>
+            </ul>
+          </section>
+        <div class="page-logo">
+            <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>
+        </div>
+        </div>
         </div>
         <!-- END NAV TRIGGER -->
         <!-- BEGIN LOGO -->
-        <div class="page-logo">
-                                <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>
-        </div>
+
         <!-- END LOGO -->
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu">
@@ -103,7 +92,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
-                            <a href="{% url 'employee_update' %}">
+                            <a href="{% url 'employee_update' %}"">
                                 <i class="icon-user"></i>Мій профіль</a>
                         </li>
                         <li>
