@@ -771,11 +771,3 @@ class EmployeeUpdate(UpdateView):
 
     def get_object(self):
         return Employee.objects.get(user=get_current_user())
-
-
-
-
-
-# experiments
-
-
