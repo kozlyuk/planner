@@ -25,6 +25,10 @@ def user_directory_path(instance, filename):
     return 'projects/user_{0}/{1}/{2}/{3}'\
         .format(get_current_user().id, datetime.now().year, datetime.now().month, filename)
 
+def avatar_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
+    return 'avatars/user_{0}/{1}'\
+        .format(get_current_user().id, filename)
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
@@ -33,7 +37,7 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник', blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
-    avatar = StdImageField('Фото', upload_to='users/avatars', default='users/avatars/no_image.jpg', variations={
+    avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg', variations={
                            'large': (400, 400, True),
                            'thumbnail': (100, 100, True),
                            })
@@ -925,6 +929,7 @@ class Event(models.Model):
     class Meta:
         verbose_name = 'Подія'
         verbose_name_plural = 'Події'
+        ordering = ['next_date']
 
     def save(self, logging=True, *args, **kwargs):
         if not self.pk:
@@ -1000,6 +1005,7 @@ class News(models.Model):
     class Meta:
         verbose_name = 'Новина'
         verbose_name_plural = 'Новини'
+        ordering = ['-created']
 
     def save(self, *args, **kwargs):
         if not self.pk:
