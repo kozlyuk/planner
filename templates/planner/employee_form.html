@@ -80,11 +80,9 @@ div.fakefile {
                                                 </div>
                                                 <div style="text-align:center" class="modal-body">
                                                     <div class="custom-file">
-        {% csrf_token %}
-                                                        <form action="" id="avatar_submit" method="post" enctype="multipart/form-data">
+                                                        <form action="" id="avatar_submit" method="post" enctype="multipart/form-data">{% csrf_token %}
                                                             <div><p>Мобільний телефон: {{  form.mobile_phone  }}</p></div>
                                                             <div>                      {{  form.avatar  }}          </div>
-        {% csrf_token %}
                                                             <button type="upload" style="position: relative; top: -99px; right: 83px; width: 129px; z-index: 1" class="btn btn-light border border-dark btn-lg waves-effect waves-light" data-dismiss="modal"> Обрати фото    </button>
                                                             <button type="button" style="position: relative; width: 100%; bottom: 15px" class="btn btn-outline-dark border border-danger btn-lg" data-dismiss="modal"> Закрити    </button>
                                                             <div class="fakefile">
