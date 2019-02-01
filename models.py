@@ -12,7 +12,7 @@ from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
 from stdimage.models import StdImageField
-from eventlog.models import log
+from planner.eventlog.models import log
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -41,7 +41,7 @@ class Employee(models.Model):
                            'large': (400, 400, True),
                            'thumbnail': (100, 100, True),
                            })
-    birthday = models.DateField('День народження')
+    birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])

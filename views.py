@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .models import IntTask, News, Event
+from .models import IntTask
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -12,7 +12,7 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from eventlog.models import Log
+from planner.eventlog.models import Log
 from django.db.models import Q
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
