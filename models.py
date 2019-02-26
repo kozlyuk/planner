@@ -153,6 +153,18 @@ class Employee(models.Model):
         .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
 
+    def total_bonuses_pppm(self):
+        return self.total_bonuses(-3)
+    total_bonuses_pm.short_description = 'Бонуси {}.{}'\
+        .format(datetime.now().month -3 if datetime.now().month >3 else datetime.now().month + 11,
+                datetime.now().year if datetime.now().month >3 else datetime.now().year - 1)
+
+    def total_bonuses_ppppm(self):
+        return self.total_bonuses(-4)
+    total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
+        .format(datetime.now().month -4 if datetime.now().month >4 else datetime.now().month + 10,
+                datetime.now().year if datetime.now().month >4 else datetime.now().year - 1)
+
 
 class Customer(models.Model):
     ACT_TEMPLATE_CHOICES = (
@@ -227,9 +239,9 @@ class Project(models.Model):
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
                                                       validators=[MaxValueValidator(100)], default=75)
     owner_bonus = models.PositiveSmallIntegerField('Бонус керівника проекту, %',
-                                                      validators=[MaxValueValidator(100)], default=5)
+                                                      validators=[MaxValueValidator(100)], default=6)
     executors_bonus = models.PositiveSmallIntegerField('Бонус виконавців, %',
-                                                      validators=[MaxValueValidator(100)], default=10)
+                                                      validators=[MaxValueValidator(100)], default=12)
     copies_count = models.PositiveSmallIntegerField('Кількість примірників',default=0,
                                                     validators=[MaxValueValidator(10)])
     description = models.TextField('Опис', blank=True)
@@ -383,15 +395,16 @@ class Deal(models.Model):
     act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
     act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
-    comment = models.TextField('Коментар', blank=True)
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
-    creation_date = models.DateField(auto_now_add=True)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                                               max_upload_size=26214400,
                                               blank=True, null=True)
+    comment = models.TextField('Коментар', blank=True)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         unique_together = ('number', 'customer')
@@ -547,15 +560,16 @@ class Task(models.Model):
                                                max_upload_size=26214400,
                                                blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
-    comment = models.TextField('Коментар', blank=True)
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
-    creation_date = models.DateField(auto_now_add=True)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                                               max_upload_size=26214400,
                                               blank=True, null=True)
+    comment = models.TextField('Коментар', blank=True)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')
@@ -777,7 +791,7 @@ class Sending(models.Model):
     receipt_date = models.DateField('Дата відправки')
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', validators=[MaxValueValidator(10)])
     register_num = models.CharField('Реєстр', max_length=30, blank=True)
-    comment = models.CharField('Коментар', max_length=100, blank=True)
+    comment = models.CharField('Коментар', max_length=255, blank=True)
 
     class Meta:
         unique_together = ('receiver', 'task', 'receipt_date')
