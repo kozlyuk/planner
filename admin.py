@@ -36,6 +36,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class EmployeeAdmin(admin.ModelAdmin):
 
     list_display = ['name', 'owner_count', 'task_count', 'inttask_count',
+                    'total_bonuses_ppppm', 'total_bonuses_pppm',
                     'total_bonuses_ppm', 'total_bonuses_pm', 'total_bonuses_cm']
     fieldsets = [
         (None, {'fields': [('user', 'name'),
