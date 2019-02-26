@@ -155,13 +155,13 @@ class Employee(models.Model):
 
     def total_bonuses_pppm(self):
         return self.total_bonuses(-3)
-    total_bonuses_pm.short_description = 'Бонуси {}.{}'\
+    total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -3 if datetime.now().month >3 else datetime.now().month + 11,
                 datetime.now().year if datetime.now().month >3 else datetime.now().year - 1)
 
     def total_bonuses_ppppm(self):
         return self.total_bonuses(-4)
-    total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
+    total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -4 if datetime.now().month >4 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month >4 else datetime.now().year - 1)
 
