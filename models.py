@@ -142,25 +142,25 @@ class Employee(models.Model):
     total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
 
     def total_bonuses_pm(self):
-        return self.total_bonuses(-1)
+        return self.total_bonuses(-5)
     total_bonuses_pm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
                 datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
 
     def total_bonuses_ppm(self):
-        return self.total_bonuses(-2)
+        return self.total_bonuses(-6)
     total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
 
     def total_bonuses_pppm(self):
-        return self.total_bonuses(-3)
+        return self.total_bonuses(-7)
     total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -3 if datetime.now().month >3 else datetime.now().month + 9,
                 datetime.now().year if datetime.now().month >3 else datetime.now().year - 1)
 
     def total_bonuses_ppppm(self):
-        return self.total_bonuses(-4)
+        return self.total_bonuses(-8)
     total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month -4 if datetime.now().month >4 else datetime.now().month + 8,
                 datetime.now().year if datetime.now().month >4 else datetime.now().year - 1)
