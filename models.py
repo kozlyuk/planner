@@ -902,7 +902,7 @@ class IntTask(models.Model):
 
     def delete(self, *args, **kwargs):
         log(user=get_current_user(), action='Видалене завдання',
-            extra={"title": self.title})
+            extra={"title": self.task_name})
         super(IntTask, self).delete(*args, **kwargs)
 
     def __str__(self):
