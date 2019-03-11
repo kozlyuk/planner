@@ -22,7 +22,7 @@
                                 </div>
                                 <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
                                     <div class="container-fluid " style="display:block">
-                                        <form action="{% url 'task_list' %}" method="get">
+                                        <form action="{% url 'deal_list' %}" method="get">
                                             {% for hidden_field in filter_form.hidden_fields %}
                                                 {{ hidden_field }}
                                             {% endfor %}
@@ -37,10 +37,10 @@
                                                 {% endif %}
                                                 </td>
                                             {% endfor %}
-                                            {% if perms.planner.add_task %}
+                                            {% if perms.planner.add_deal %}
                                                 <td style="height:30px; bottom: 0px; float: right">
-                                                    <a href="{% url 'task_add' %}"
-                                                       class="btn btn-sm btn-success uppercase" style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"><i class="fa fa-plus"></i> Додати проект </a>
+                                                    <a href="{% url 'deal_add' %}"
+                                                       class="btn btn-sm btn-success uppercase" style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"><i class="fa fa-plus"></i> Додати договір </a>
                                                 </td>
                                             {% endif %}
                                             <td style="height:30px; bottom: 0px; float: left"><button type="submit" class="btn btn-sm btn-primary uppercase" style="float:left; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"> <i class="fa fa-search"></i>Пошук </button></td>
