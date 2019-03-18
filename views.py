@@ -63,12 +63,12 @@ def login_page(request):
                 login(request, user)
                 return redirect('home_page')
             else:
-                return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True}, renderer=None)
+                return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
         else:
-            return render(request, 'auth.html', {'form': login_form, 'not_valid': True}, renderer=None)
+            return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
     else:
         login_form = UserLoginForm()
-    return render(request, 'auth.html', {'form': login_form}, renderer=None)
+    return render(request, 'auth.html', {'form': login_form})
 
 
 @login_required()
@@ -270,8 +270,7 @@ def home_page(request):
                                       'news': news,
                                       'events': events,
                                       'activities': activities
-                                  },
-                      renderer=None)
+                                  })
     elif request.user.groups.filter(name='ГІПи').exists():
         return render(request, 'content_gip.html',
                                   {
@@ -311,8 +310,7 @@ def home_page(request):
                                       'news': news,
                                       'events': events,
                                       'activities': activities
-                                  },
-                      renderer=None)
+                                  })
     else:
         return render(request, 'content_exec.html',
                                   {
@@ -352,8 +350,7 @@ def home_page(request):
                                       'news': news,
                                       'events': events,
                                       'activities': activities
-                                  },
-                      renderer=None)
+                                  })
 
 
 @method_decorator(login_required, name='dispatch')
