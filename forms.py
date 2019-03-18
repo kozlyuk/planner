@@ -445,3 +445,4 @@ class EmployeeForm(forms.ModelForm):
         widgets = {
             'avatar': AvatarInput,
         }
+
