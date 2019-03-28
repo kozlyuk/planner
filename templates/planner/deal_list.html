@@ -15,9 +15,17 @@
                     <div class="panel-group accordion" id="accordion1">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
+                                {% if perms.planner.add_deal %}
+                                    <a href="{% url 'deal_add' %}" class="btn btn-sm btn-success uppercase"
+                                       style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 5px">
+                                       <i class="fa fa-plus"></i> Додати договір </a>
+                                {% endif %}
                                     <div class="panel-title">
-                                        <a class="accordion-toggle theme-font bold uppercase" data-toggle="collapse" data-parent="#accordion1"
-                                           href="#collapse_1" aria-expanded="false"> Проекти </a>
+                                        <a class="accordion-toggle theme-font bold uppercase"
+                                           data-toggle="collapse" data-parent="#accordion1"
+                                           href="#collapse_1" aria-expanded="false"> Договори </a>
+                                    </div>
+                                    <div style="height:30px; bottom: 0px; float: right">
                                     </div>
                                 </div>
                                 <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
@@ -28,22 +36,25 @@
                                             {% endfor %}
 
                                             <table width="100%" style="display:block; float: left"><tr style="display:block">
-                                            {% for field in filter_form.visible_fields %}
+                                            {% for field in filter_form.visible_fields|slice:":4" %}
                                                 <td style="float:left; margin: 5px">
-                                                {{ field.label_tag }}
-                                                {{ field }}
+                                                    {{ field.label_tag }}
+                                                    {{ field }}
+                                                    {% if field.help_text %}
+                                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                            <td style="float: left; margin: 0px">
+                                                {{ filter_form.filter.label_tag }}
+                                                {{ filter_form.filter }}
                                                 {% if field.help_text %}
                                                     <small class="form-text text-muted">{{ field.help_text }}</small>
                                                 {% endif %}
-                                                </td>
-                                            {% endfor %}
-                                            {% if perms.planner.add_deal %}
-                                                <td style="height:30px; bottom: 0px; float: right">
-                                                    <a href="{% url 'deal_add' %}"
-                                                       class="btn btn-sm btn-success uppercase" style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"><i class="fa fa-plus"></i> Додати договір </a>
-                                                </td>
-                                            {% endif %}
-                                            <td style="height:30px; bottom: 0px; float: left"><button type="submit" class="btn btn-sm btn-primary uppercase" style="float:left; margin-right: 5px; margin-bottom: 5px; margin-top: 1px"> <i class="fa fa-search"></i>Пошук </button></td>
+                                                <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                                <i class="fa fa-search"></i>Пошук</button>
+                                            </td>
                                             </tr></table>
                                         </form>
                                     </div>
