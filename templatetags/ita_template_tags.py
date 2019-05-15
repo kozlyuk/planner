@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
+from planner.settings import MEDIA_URL
 
 register = template.Library()
 
@@ -9,6 +10,11 @@ def url_replace(request, field, value):
     get_values = request.GET.copy()
     get_values[field] = value
     return get_values.urlencode()
+
+
+@register.simple_tag
+def media_url(file_path):
+    return MEDIA_URL + str(file_path)
 
 
 @register.filter(name='proper_paginate')
