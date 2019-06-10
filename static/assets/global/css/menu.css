@@ -106,7 +106,7 @@ input.hamburger:checked ~ .drawer-list {
 input.hamburger:checked ~ .drawer-list li {
   transform: translatex(0);
 }
-input.hamburger:checked ~ .drawer-list li:nth-child(1) {
+/* input.hamburger:checked ~ .drawer-list li:nth-child(1) {
   transition: transform 1s 0.08s cubic-bezier(0.39, 0.14, 0.79, -0.46);
 }
 input.hamburger:checked ~ .drawer-list li:nth-child(2) {
@@ -255,7 +255,7 @@ input.hamburger:checked ~ .drawer-list li:nth-child(49) {
 }
 input.hamburger:checked ~ .drawer-list li:nth-child(50) {
   transition: transform 1s 4s cubic-bezier(0.39, 0.14, 0.79, -0.46);
-}
+} */
 input.hamburger:checked ~ .drawer-list li a {
   padding-left: 15px;
 }

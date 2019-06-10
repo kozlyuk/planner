@@ -3,6 +3,7 @@ migrations/
 media/
 .idea/
 settings.py
+myvenv/
 
 # Windows image file caches
 Thumbs.db
