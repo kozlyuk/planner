@@ -1,4 +1,4 @@
-Django==2.1.7
+Django==2.1.9
 django-admin-list-filter-dropdown==1.0.2
 django-appconf==1.0.3
 django-crum==0.7.3
