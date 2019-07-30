@@ -14,6 +14,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from planner.eventlog.models import Log
 from django.db.models import Q
+from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from . import calc_scripts
@@ -423,9 +424,11 @@ class DealUpdate(UpdateView):
         context = self.get_context_data()
         tasks_formset = context['tasks_formset']
         if tasks_formset.is_valid():
-            tasks_formset.instance = self.object
-            tasks_formset.save()
-            return super(DealUpdate, self).form_valid(form)
+            with transaction.atomic():
+                form.save()
+                tasks_formset.instance = self.object
+                tasks_formset.save()
+            return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
@@ -443,18 +446,20 @@ class DealCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
+            context['tasks_formset'] = TasksFormSet(self.request.POST)
         else:
-            context['tasks_formset'] = TasksFormSet(instance=self.object)
+            context['tasks_formset'] = TasksFormSet()
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         tasks_formset = context['tasks_formset']
-        if tasks_formset.is_valid():
-            tasks_formset.instance = self.object
-            tasks_formset.save()
-            return super(DealCreate, self).form_valid(form)
+        if form.is_valid() and tasks_formset.is_valid():
+            with transaction.atomic():
+                self.object = form.save()
+                tasks_formset.instance = self.object
+                tasks_formset.save()
+            return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
@@ -558,14 +563,17 @@ class TaskUpdate(UpdateView):
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
-        if executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
-            executors_formset.instance = self.object
-            executors_formset.save()
-            costs_formset.instance = self.object
-            costs_formset.save()
-            sending_formset.instance = self.object
-            sending_formset.save()
-            return super(TaskUpdate, self).form_valid(form)
+        if form.is_valid() and executors_formset.is_valid()\
+                and costs_formset.is_valid() and sending_formset.is_valid():
+            with transaction.atomic():
+                form.save()
+                executors_formset.instance = self.object
+                executors_formset.save()
+                costs_formset.instance = self.object
+                costs_formset.save()
+                sending_formset.instance = self.object
+                sending_formset.save()
+            return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
@@ -582,13 +590,13 @@ class TaskCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_formset'] = SendingFormSet(self.request.POST, instance=self.object)
+            context['executors_formset'] = ExecutorsFormSet(self.request.POST)
+            context['costs_formset'] = CostsFormSet(self.request.POST)
+            context['sending_formset'] = SendingFormSet(self.request.POST)
         else:
-            context['executors_formset'] = ExecutorsFormSet(instance=self.object)
-            context['costs_formset'] = CostsFormSet(instance=self.object)
-            context['sending_formset'] = SendingFormSet(instance=self.object)
+            context['executors_formset'] = ExecutorsFormSet()
+            context['costs_formset'] = CostsFormSet()
+            context['sending_formset'] = SendingFormSet()
         return context
 
     def form_valid(self, form):
@@ -596,14 +604,17 @@ class TaskCreate(CreateView):
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']
         sending_formset = context['sending_formset']
-        if executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
-            executors_formset.instance = self.object
-            executors_formset.save()
-            costs_formset.instance = self.object
-            costs_formset.save()
-            sending_formset.instance = self.object
-            sending_formset.save()
-            return super(TaskCreate, self).form_valid(form)
+        if form.is_valid() and executors_formset.is_valid()\
+                and costs_formset.is_valid() and sending_formset.is_valid():
+            with transaction.atomic():
+                self.object = form.save()
+                executors_formset.instance = self.object
+                executors_formset.save()
+                costs_formset.instance = self.object
+                costs_formset.save()
+                sending_formset.instance = self.object
+                sending_formset.save()
+            return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
