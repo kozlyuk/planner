@@ -15,7 +15,7 @@ class Command(BaseCommand):
         year = datetime.now().year
 
         employees = Employee.objects.exclude(user__username__startswith='outsourcing')
-        tasks = Task.objects.filter(exec_status=Task.Done,
+        tasks = Task.objects.filter(exec_status=Task.Sent,
                                     actual_finish__month=month,
                                     actual_finish__year=year)
         executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
@@ -117,8 +117,7 @@ class Command(BaseCommand):
                                   settings.DEFAULT_FROM_EMAIL,
                                   [employee.user.email],
                                   ['s.kozlyuk@itel.rv.ua'],
-                    ))
-
+                                  ))
 
         for email in emails:
             email.content_subtype = "html"
