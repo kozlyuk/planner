@@ -632,13 +632,13 @@ class Task(models.Model):
             if self.planned_finish < date.today():
                 return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
             elif self.planned_finish - timedelta(days=7) <= date.today():
-                return 'Завершується %s' % self.planned_finish.strftime(date_format)
+                return 'Завершити до %s' % self.planned_finish.strftime(date_format)
             else:
                 return 'Завершити до %s' % self.planned_finish.strftime(date_format)
         if self.deal.expire_date < date.today():
             return 'Протерміновано %s' % self.deal.expire_date.strftime(date_format)
         if self.deal.expire_date - timedelta(days=7) <= date.today():
-            return 'Завершується %s' % self.deal.expire_date.strftime(date_format)
+            return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
         return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
     # displays task overdue status
 
