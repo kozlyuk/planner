@@ -38,18 +38,6 @@ def proper_paginate(paginator, current_page, neighbors=10):
 
 
 @register.simple_tag
-def task_status_color(status):
-    if status == 'ST':
-        return 'success'
-    elif status == 'HD':
-        return 'warning'
-    elif status == 'IW':
-        return 'info'
-    else:
-        return 'danger'
-
-
-@register.simple_tag
 def task_overdue_color(status):
     if status.startswith('Виконано'):
         return 'success'
