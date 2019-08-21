@@ -313,7 +313,6 @@ class Contractor(models.Model):
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
     requisites = models.TextField('Реквізити', blank=True)
-    project_types = models.ManyToManyField(Project, verbose_name='Види робіт', blank=True)
     active = models.BooleanField('Активний', default=True)
 
     class Meta:

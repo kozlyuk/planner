@@ -97,13 +97,11 @@ class ContractorAdmin(admin.ModelAdmin):
     list_display = ['name', 'advance_calc', 'credit_calc', 'expect_calc', 'completed_calc', 'active']
     search_fields = ['name', 'contact_person']
     ordering = ['name']
-    filter_horizontal = ['project_types']
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
-                           ('requisites'),
-                           ('project_types'),
-                           ('active')
+                           'requisites',
+                           'active'
                            ]})
         ]
 
@@ -444,7 +442,7 @@ class OrdersInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "contractor":
-            kwargs["queryset"] = Contractor.objects.filter(project_types=request._obj_.project_type, active=True)
+            kwargs["queryset"] = Contractor.objects.filter(active=True)
         return super(OrdersInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class TaskAdmin(admin.ModelAdmin):
