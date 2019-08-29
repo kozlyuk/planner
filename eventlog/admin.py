@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from planner.eventlog.models import Log
+from eventlog.models import Log
 
 
 class LogAdmin(admin.ModelAdmin):
