@@ -94,7 +94,9 @@
                                             {% endif %}
                                         </td>
                                         <td> {{ task.project_type }}</td>
-                                        <td class="hidden-xs"> {{ task.deal }}</td>
+                                        <td class="hidden-xs">
+                                            <a href="{% url 'deal_update' task.deal.id %}"> {{ task.deal }} </a>
+                                        </td>
                                         <td> {{ task.get_exec_status_display }} </td>
                                         <td> {{ task.owner.name }} </td>
                                         <td><span class="label label-sm label-{% task_overdue_color task.overdue_status %} label-mini"> {{ task.overdue_status }}  </span></td>
