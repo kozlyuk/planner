@@ -1,5 +1,6 @@
 {% extends 'main.html' %}
 {% block 'row1' %}
+{% load ita_template_tags %}
         <!-- BEGIN CONTAINER -->
                 <div class="row widget-row">
                     <div class="col-md-6 margin-bottom-20">
@@ -26,7 +27,7 @@
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
 {#                                                {% if task.overdue_status %}#}
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                                <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
 {#                                                {% else %}#}
 {#                                                <span class="label label-default"> {{ task.exec_status }} </span>#}
 {#                                                {% endif %}#}
@@ -43,7 +44,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                                <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
                                             </h3>
                                             {{ task.project_type }}
                                         </div>
@@ -57,7 +58,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-                                                <span class="label label-warning"> {{ task.overdue_status }} </span>
+                                                <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
                                             </h3>
                                             {{ task.project_type }}
                                         </div>
@@ -91,7 +92,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' task.pk %}">{{ task.task_name }}</a>
-                                                <span class="label label-default"> {{ task.get_exec_status_display }} </span>
+                                                <span class="label label-{% task_secondary_overdue_color task.get_exec_status_display %}"> {{ task.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>
@@ -104,7 +105,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' task.pk %}">{{ task.task_name }}</a>
-                                                <span class="label label-default"> {{ task.get_exec_status_display }} </span>
+                                                <span class="label label-{% task_secondary_overdue_color task.get_exec_status_display %}"> {{ task.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>
@@ -117,7 +118,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' task.pk %}">{{ task.task_name }}</a>
-                                                <span class="label label-default"> {{ task.get_exec_status_display }} </span>
+                                                <span class="label label-{% task_secondary_overdue_color task.get_exec_status_display %}"> {{ task.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>

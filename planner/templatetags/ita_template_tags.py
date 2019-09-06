@@ -66,5 +66,19 @@ def deal_status_color(status):
 
 
 @register.simple_tag
+def task_secondary_overdue_color(status):
+    if status.startswith('Виконується'):
+        return 'success'
+    elif status.startswith('В очікуванні') or status.startswith('Не'):
+        return 'warning'
+    elif status.startswith('Виконано'):
+        return 'info'
+    elif status.startswith('Протерміновано'):
+        return 'danger'
+    else:
+        return
+
+
+@register.simple_tag
 def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)

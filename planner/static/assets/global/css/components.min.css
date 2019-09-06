@@ -15231,7 +15231,6 @@ body[ng-controller] .modal {
 .widget-news .widget-news-right-body .widget-news-right-body-title .label {
   float: right;
   font-weight: 600;
-  background: #a1afbb;
   border-radius: 3px !important;
 }
 .widget-news .widget-news-right-body p {
