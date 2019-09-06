@@ -9,6 +9,7 @@ from django.contrib.admin.widgets import AdminDateWidget
 from crum import get_current_user
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
+from .btnWidget import BtnWidget
 
 
 class UserLoginForm(forms.ModelForm):
@@ -124,6 +125,7 @@ class TasksInlineForm(forms.ModelForm):
         model = Task
         fields = ['object_code', 'object_address', 'project_type', 'owner', 'planned_finish', 'exec_status']
         widgets = {
+            'object_code': BtnWidget(),
             'project_type': Select2Widget(),
             'planned_finish': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput(),
@@ -134,6 +136,7 @@ class TasksInlineForm(forms.ModelForm):
         self.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                 user__is_active=True)
+        self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
         if self.instance.pk is None or self.instance.project_type.active:
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
 

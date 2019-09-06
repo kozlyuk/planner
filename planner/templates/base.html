@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load i18n %}
 {% load mptt_tags %}
+{% load fontawesome_5 %}
 <!DOCTYPE html>
 <!--[if IE 8]><html lang="en" class="ie8 no-js"><![endif]-->
 <!--[if IE 9]><html lang="en" class="ie9 no-js"><![endif]-->
@@ -43,6 +44,7 @@
     <!-- BEGIN THEME LAYOUT STYLES -->
     <link href="{% static 'assets/layouts/layout7/css/layout.min.css' %}" rel="stylesheet" type="text/css"/>
     <link href="{% static 'assets/layouts/layout7/css/custom.min.css' %}" rel="stylesheet" type="text/css"/>
+    {% fontawesome_5_static %} 
     <!-- END THEME LAYOUT STYLES -->
     <link rel="shortcut icon" href="favicon.ico"/>
     <!-- MEDIA CSS -->
@@ -123,7 +125,7 @@
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
     <div class="page-footer-inner container-fluid container-lf-space">
-        <p class="page-footer-copyright">2018 &copy; Itel-Service</p>
+        <p class="page-footer-copyright">2019 &copy; Itel-Service</p>
     </div>
     <div class="go2top">
         <i class="icon-arrow-up"></i>

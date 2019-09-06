@@ -21,3 +21,4 @@ python-dateutil
 python-utils
 pytz
 six
+django-fontawesome-5

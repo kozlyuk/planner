@@ -6,16 +6,17 @@
 
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
-         xmlns="http://www.w3.org/1999/html">
+<div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
 
-        <!-- BEGIN CONTENT -->
-        <div class="container-fluid container-lf-space">
-            <!-- BEGIN PAGE BASE CONTENT -->
-            <div class="row widget-row margin-top-20">
-                <!-- PERMISSION CHECK -->
-                {% if not task.pk or task.is_editable %}
-                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+    <!-- BEGIN CONTENT -->
+    <div class="container-fluid container-lf-space">
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="row widget-row margin-top-20">
+            <!-- PERMISSION CHECK -->
+            {% if not task.pk or task.is_editable %}
+            <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
                 <div class="col-md-7">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
@@ -30,22 +31,22 @@
                         </div>
                         <div class="portlet-body">
                             <div class="widget-bg-color-white">
-                                    <table class="table table-hover">
-                                        <col width="25%">
-                                        {{ executors_formset.non_form_errors }}
-                                        {{ costs_formset.non_form_errors }}
-                                        {{ sending_formset.non_form_errors }}
+                                <table class="table table-hover">
+                                    <col width="25%">
+                                    {{ executors_formset.non_form_errors }}
+                                    {{ costs_formset.non_form_errors }}
+                                    {{ sending_formset.non_form_errors }}
                                         {{ form }}
-                                    </table>
-                                    <div class="form-actions">
-                                        {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
-                                                        class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<a href="{% url 'task_list' %}?{{ filters }}"
-                                                        class="btn red btn-sm btn-outline sbold uppercase">Відмінити</a>
-                                        {% endif %}
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                                style="float: right;">Зберегти</button>
-                                    </div>
+                                </table>
+                                <div class="form-actions">
+                                    {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
+                                        class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
+                                    {% else %}<a href="{% url 'task_list' %}?{{ filters }}"
+                                        class="btn red btn-sm btn-outline sbold uppercase">Відмінити</a>
+                                    {% endif %}
+                                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                        style="float: right;">Зберегти</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -65,49 +66,50 @@
                                 <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" style="height: 810px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                        <div class="tab-content scroller" style="height: 810px;" data-always-visible="1"
+                            data-handle-color="#D7DCE2">
                             <div class="tab-pane fade active in" id="tab_2_1">
-                              <table id="ExecutorsTable" class="table table-hover">
-                                <col width="25%">
-                                {{ executors_formset.non_form_errors }}
-                                {% for form in executors_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
+                                <table id="ExecutorsTable" class="table table-hover">
+                                    <col width="25%">
+                                    {{ executors_formset.non_form_errors }}
+                                    {% for form in executors_formset %}
+                                    <tbody>
+                                        {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
+                                        {% endfor %}
+                                        {{ form }}
+                                    </tbody>
                                     {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
-                              </table>
-                              {{ executors_formset.management_form }}
+                                </table>
+                                {{ executors_formset.management_form }}
                             </div>
                             <div class="tab-pane fade" id="tab_2_2">
-                              <table id="CostsTable" class="table table-hover">
-                                <col width="25%">
-                                {{ costs_formset.non_form_errors }}
-                                {% for form in costs_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
+                                <table id="CostsTable" class="table table-hover">
+                                    <col width="25%">
+                                    {{ costs_formset.non_form_errors }}
+                                    {% for form in costs_formset %}
+                                    <tbody>
+                                        {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
+                                        {% endfor %}
+                                        {{ form }}
+                                    </tbody>
                                     {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
-                              </table>
-                              {{ costs_formset.management_form }}
+                                </table>
+                                {{ costs_formset.management_form }}
                             </div>
                             <div class="tab-pane fade" id="tab_2_3">
                                 <table id="SendingTable" class="table table-hover">
-                                <col width="25%">
-                                {{ sending_formset.non_form_errors }}
-                                {% for form in sending_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
+                                    <col width="25%">
+                                    {{ sending_formset.non_form_errors }}
+                                    {% for form in sending_formset %}
+                                    <tbody>
+                                        {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
+                                        {% endfor %}
+                                        {{ form }}
+                                    </tbody>
                                     {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
                                 </table>
                                 {{ sending_formset.management_form }}
                             </div>
@@ -116,16 +118,16 @@
                     </div>
                     <!-- END PORTLET-->
                 </div>
-                </form>
-                {% else %}
-                    Ви не маєте доступу до редагування даного проекту<br><br>
-                {% endif %}
-            </div>
-            <!-- END PAGE BASE CONTENT -->
+            </form>
+            {% else %}
+            Ви не маєте доступу до редагування даного проекту<br><br>
+            {% endif %}
         </div>
-        <!-- END CONTENT -->
+        <!-- END PAGE BASE CONTENT -->
     </div>
-    <!-- END CONTAINER -->
+    <!-- END CONTENT -->
+</div>
+<!-- END CONTAINER -->
 {% endblock %}
 
 {% block css %}
@@ -142,18 +144,18 @@
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
-    $(function() {
-        setTimeout(function() {
-        $('span.select2-container.select2-container--bootstrap').width('auto');
+    $(function () {
+        setTimeout(function () {
+            $('span.select2-container.select2-container--bootstrap').width('auto');
         }, 100);
         $('#ExecutorsTable tbody').formset({
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Виконавця',
             deleteText: 'Видалити Виконавця',
-            'added': function(row){
+            'added': function (row) {
                 //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function(i){
+                $(row).find('.vDateField').each(function (i) {
                     //remove the cloned spam element: it links to an incorrect calendar
                     $(this).parent().find('span').remove();
                     //DateTimeShortcuts is in the django admin widgets
@@ -167,11 +169,11 @@
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
             deleteText: 'Видалити Підрядника',
-            'added': function(row){
-                $(row).find('.vDateField').each(function(i){
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
                     DateTimeShortcuts.addCalendar(this);
-                    });
+                });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
@@ -180,11 +182,11 @@
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
             deleteText: 'Видалити Відправку',
-            'added': function(row){
-                $(row).find('.vDateField').each(function(i){
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
                     DateTimeShortcuts.addCalendar(this);
-                    });
+                });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
