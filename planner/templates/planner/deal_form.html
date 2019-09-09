@@ -74,29 +74,31 @@
                     </div>
                     <!-- END WIDGET -->
                 </div>
-                <div class="col-md-5 col-sm-6 col-xs-12">
+                <div class="col-md-5 col-sm-12 col-xs-12  margin-top-sm-20">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="portlet light tasks-widget">
-                        <div class="portlet-title">
+                        <div class="text-center">
                             <div class="caption caption-md font-red-sunglo">
                                 <span class="caption-subject theme-font bold uppercase"> Проекти </span>
                             </div>
                         </div>
-                        <div class="tab-content scroller" style="height: 770px;" data-handle-color="#D7DCE2">
-                              <table id="TasksTable" class="table table-hover">
-                                <col width="25%">
+                    </div>
+                        <div class="tab-content" style="height: 770px;" data-handle-color="#D7DCE2">
                                 {{ tasks_formset.non_form_errors }}
                                 {% for form in tasks_formset %}
-                                  <tbody>
-                                    {% for hidden_field in form.hidden_fields %}
-                                        {{ hidden_field }}
-                                    {% endfor %}
-                                    {{ form }}
-                                  </tbody>
-                                {% endfor %}
-                              </table>
-                              {{ tasks_formset.management_form }}
+                            <div class="portlet light margin-top-20">
+                                <table id="TasksTable" class="table table-hover">
+                                    <col width="25%">
+                                    <tbody>
+                                        {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
+                                        {% endfor %}
+                                        {{ form }}
+                                    </tbody>
+                                </table>
                             </div>
+                                {% endfor %}
+                                {{ tasks_formset.management_form }}
                         </div>
                     </div>
                     <!-- END PORTLET-->

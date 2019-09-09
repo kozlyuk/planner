@@ -1520,6 +1520,12 @@ code {
     display: none;
   }
 }
+
+@media (max-width: 1024px) {
+  .margin-top-sm-20 {
+    margin-top: 20px;
+  }
+}
 .scrollspy-example {
   position: relative;
   height: 200px;
@@ -19207,4 +19213,18 @@ body[ng-controller] .modal {
 #collapse_1  tbody {
   display: block;
   width: 100%;
+}
+
+.add-row {
+  width: 100%;
+  margin-bottom: 1em;
+  right: 25px;
+  bottom: 20px;
+}
+
+.delete-row {
+  width: 100%;
+  margin-bottom: 1em;
+  left: 25px;
+  bottom: 20px;
 }

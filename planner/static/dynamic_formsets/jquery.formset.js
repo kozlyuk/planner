@@ -216,16 +216,16 @@
 
     /* Setup plugin defaults */
     $.fn.formset.defaults = {
-        prefix: 'form',                  // The form prefix for your django formset
-        formTemplate: null,              // The jQuery selection cloned to generate new form instances
-        addText: 'add another',          // Text for the add link
-        deleteText: 'remove',            // Text for the delete link
-        addCssClass: 'add-row',          // CSS class applied to the add link
-        deleteCssClass: 'delete-row',    // CSS class applied to the delete link
-        formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
-        extraClasses: [],                // Additional CSS classes, which will be applied to each form in turn
-        keepFieldValues: '',             // jQuery selector for fields whose values should be kept when the form is cloned
-        added: null,                     // Function called each time a new form is added
-        removed: null                    // Function called each time a form is deleted
+        prefix: 'form',                                                         // The form prefix for your django formset
+        formTemplate: null,                                                     // The jQuery selection cloned to generate new form instances
+        addText: 'add another',                                                 // Text for the add link
+        deleteText: 'remove',                                                   // Text for the delete link
+        addCssClass: 'add-row btn dark btn-sm btn-outline',                     // CSS class applied to the add link
+        deleteCssClass: 'delete-row btn red btn-sm btn-outline',                // CSS class applied to the delete link
+        formCssClass: 'dynamic-form',                                           // CSS class applied to each form in a formset
+        extraClasses: [],                                                       // Additional CSS classes, which will be applied to each form in turn
+        keepFieldValues: '',                                                    // jQuery selector for fields whose values should be kept when the form is cloned
+        added: null,                                                            // Function called each time a new form is added
+        removed: null                                                           // Function called each time a form is deleted
     };
 })(jQuery);
