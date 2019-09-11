@@ -139,170 +139,219 @@
 {% endblock css %}
 
 {% block extrahead %}
-<script type="text/javascript">
-    window.onload = function () {
-        let updateElement = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > td > input');
-        let updateSelect = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > td > select');
-        let updateLabel = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > th > label');
-        let updateManagement = document.querySelector('#id_task_set-TOTAL_FORMS')
-        let baseId = '0';
-        let addBtn = document.querySelector('.add-formset');
-        let deleteBtn = document.querySelector('.delete-formset:last-of-type'); //node list
-        let wrapperFormset = document.querySelector('#tasks_formset');
-        let parentWrapper = document.querySelector('#parentWrapper');
-
-        addBtn.addEventListener('click', () => {
-            changeFormsets(updateManagement, 'Initial formset');
-            addFormset(wrapperFormset, parentWrapper, baseId);
-        }, {once: false});
-
-        // deleteBtn.forEach(function () {
-        //     deleteBtn.addEventListener('click', () => {
-        //     deleteFormset(wrapperFormset);
-        // }, {once: false});
-        // })
-
-
-        if (updateElement == undefined || updateSelect == undefined || updateLabel == undefined) {
-            console.error('Not find label, select or input in form. Check variables');
+<script>
+window.onload = function () {
+    const addBtn = document.querySelector('.add-formset');
+    const updateManagement = document.querySelector('#id_task_set-TOTAL_FORMS');
+    const hiddenTemplate = document.querySelector('#tasks_formset');
+    const lastFormset = document.querySelectorAll('#tasks_formset:last-of-type')[0]
+    addBtn.addEventListener('click', () => {
+        if (updateManagement.attributes.value.value > 0) {
+            addFormsets(lastFormset, 'common');
         } else {
-            changeLabelId(updateLabel, baseId);
-
-            // function ChangeAttrs(element, selectElem, id) {
-            //     id++
-            //     element.forEach(function (element, ndx) {
-            //         if (element == null) {
-            //             console.error('Function ChangeAttrs return: ' + element);
-            //         } else {
-            //             let attrNameVal = element.attributes.name.value;
-            //             let splitNameVal = attrNameVal.split('-');
-            //             splitNameVal[1] = id;
-            //             console.log(splitNameVal)
-            //             let newValString = splitNameVal.join('-');
-            //             element.setAttribute('name', newValString);
-            //             if (element.hasAttribute('id')) {
-            //                 let attrIdVal = element.attributes.id.value;
-            //                 let splitIdVal = attrNameVal.split('-');
-            //                 splitIdVal[1] = id;
-            //                 let newIdString = splitIdVal.join('-');
-            //                 element.setAttribute('id', newIdString);
-            //             };
-            //         };
-            //     });
-
-            //     selectElem.forEach(function (element, ndx) {
-            //         if (element == null) {
-            //             console.error('Function ChangeAttrs return: ' + element + '. Check function ChangeAttrs');
-            //         } else {
-            //             let attrNameVal = element.attributes.name.value;
-            //             let splitNameVal = attrNameVal.split('-');
-            //             splitNameVal[1] = id;
-            //             let newValString = splitNameVal.join('-');
-            //             element.setAttribute('name', newValString);
-            //             if (element.hasAttribute('id')) {
-            //                 let attrIdVal = element.attributes.id.value;
-            //                 let splitIdVal = attrNameVal.split('-');
-            //                 splitIdVal[1] = id;
-            //                 let newIdString = splitIdVal.join('-');
-            //                 element.setAttribute('id', newIdString);
-            //             };
-            //         };
-            //     });
-            // };
-        };
-
-        let lastAddBtn = document.querySelectorAll('.add-formset');
-        lastAddBtn = lastAddBtn[lastAddBtn.length - 1];
-        if (lastAddBtn == null) {
-            console.error('Element not find, check function updateNdx');
-        } else {
-            // lastAddBtn.addEventListener('click', updateNdx);
-
-            function updateNdx() {
-                
-            };
-        };
-
-        function changeLabelId (element, id) {
-            element.forEach(function (element, ndx) {
-                let getLabelFor = element.attributes.for.value;
-                let splitFor = getLabelFor.split('-');
-                splitFor[1] = id;
-                let newForString = splitFor.join('-');
-                element.setAttribute('for', newForString);
-            });
-        };
-
-        function changeFormsets (element, event) {
-            if (event == 'Add formset') {
-                let id = ++element.attributes.value.value;
-                element.attributes.setValue = id;
-            }
-            else if (event == 'Initial formset') {
-                // changeLabelId()
-            }
-            
+            changeManagement(updateManagement, 'Add formset');
+            addFormsets(lastFormset, 'initial');
         }
-        
+    })
 
-        function addFormset(wrapperId, parentWrapper, baseId) {
-            let hiddenForm = document.querySelector('#tasks_formset');
-            hiddenForm.setAttribute('style', '');
-            let deleteBtn = document.querySelectorAll('.delete-formset:last-of-type')[0];
-            let baseIdForDelBtn = deleteBtn.attributes.id.value;
-            baseIdForDelBtn = parseInt(baseIdForDelBtn, 10);
-            baseIdForDelBtn = ++baseIdForDelBtn
-            deleteBtn.setAttribute('id', baseIdForDelBtn);
-            deleteBtn.setAttribute('style', '');
-            if (updateManagement.value == 0) {
-                updateManagement.value = 1
-                updateManagement.setAttribute('value', '1');
-            } else if (updateManagement.value != 0) {
-                let newFormset = wrapperId.cloneNode(true);
-                parentWrapper.insertBefore(newFormset, addBtn)
-                let increasedVal = ++updateManagement.value;
-                updateManagement.setAttribute('value', increasedVal);
-            }
-            let allFormsets = document.querySelectorAll('#TasksTableEmptyForm');
-            let lastFormset = allFormsets[allFormsets.length - 1]
-            lastFormsetVal = lastFormset.querySelectorAll('tbody > tr > td > input')[0].attributes.name.value
-            getNameVal = lastFormsetVal.split('-');
-            if (getNameVal[1] == '__prefix__') {
-                getNameVal[1] = 0;
-            } else {
-                ++getNameVal[1];
-            };
-            let newValString = getNameVal.join('-');
-            console.log(newValString)
 
-            // let getPrevLabel = document.querySelectorAll('#TasksTableEmptyForm:last-of-type > tbody > tr > th > label')
-            // let id = document.querySelectorAll('#tasks_formset:last-of-type > div > table > tbody > tr > td > input')[0].attributes.name.value
-            // let prevIdVal = id.split('-')[1];
-            // prevIdVal++;
-            // // changeLabelId(getPrevLabel, prevIdVal);
-            // let parentElem = document.querySelectorAll('#tasks_formset:last-of-type > div > table > tbody > tr > td > input');
-            // parentElem.forEach(function (element, ndx) {
-            //     let attrNameVal = element.attributes.name.value;
-            //     let splitNameVal = attrNameVal.split('-');
-            //     splitNameVal[1] = prevIdVal;
-            //     let newNameString = splitNameVal.join('-');
-            //     element.setAttribute('name', newNameString);
-            //     if (element.hasAttribute('id')) {
-            //         let attrIdVal = element.attributes.id.value;
-            //         let splitIdVal = attrNameVal.split('-');
-            //         splitIdVal[1] = prevIdVal;
-            //         let newIdString = splitIdVal.join('-');
-            //         element.setAttribute('id', newIdString);
-            //     };
-            // });
-        };
-
-        
-
-        function deleteFormset(wrapperFormset) {
-            console.log('delete')
+    function changeManagement(element, event) {
+        if (event == 'Add formset') {
+            let id = ++element.attributes.value.value;
+            element.attributes.setValue = id;
+        } else if (event == 'Delete formset') {
+            let id = --element.attributes.value.value;
+            element.attributes.setValue = id;
         }
+    }
+
+    function addFormsets (formset, event) {
+        if (event == 'initial') {
+            hiddenTemplate.setAttribute('style', '')
+        } else if (event == 'common') {
+            let cloneFormset = formset.cloneNode(true);
+            let labels = cloneFormset.querySelectorAll('div > table > tbody > tr > th > label');
+            changeLabelId(labels)
+        }
+    }
+
+    function changeLabelId(element) {
+        let id = 0
+        id+=  //error this
+        element.forEach(function (element, ndx) {
+            let getLabelFor = element.attributes.for.value;
+            let splitFor = getLabelFor.split('-');
+            splitFor[1] = id;
+            let newForString = splitFor.join('-');
+            element.setAttribute('for', newForString);
+            console.log(element)
+        });
     };
+}
+</script>
+<script>
+    //     let updateElement = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > td > input');
+    //     let updateSelect = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > td > select');
+    //     let updateLabel = document.querySelectorAll('#TasksTableEmptyForm > tbody > tr > th > label');
+    //     let updateManagement = document.querySelector('#id_task_set-TOTAL_FORMS')
+    //     let baseId = '0';
+    //     let addBtn = document.querySelector('.add-formset');
+    //     let deleteBtn = document.querySelector('.delete-formset:last-of-type'); //node list
+    //     let wrapperFormset = document.querySelector('#tasks_formset');
+    //     let parentWrapper = document.querySelector('#parentWrapper');
+
+    //     addBtn.addEventListener('click', () => {
+    //         changeFormsets(updateManagement, 'Initial formset');
+    //         addFormset(wrapperFormset, parentWrapper, baseId);
+    //     }, {once: false});
+
+    //     // deleteBtn.forEach(function () {
+    //     //     deleteBtn.addEventListener('click', () => {
+    //     //     deleteFormset(wrapperFormset);
+    //     // }, {once: false});
+    //     // })
+
+
+    //     if (updateElement == undefined || updateSelect == undefined || updateLabel == undefined) {
+    //         console.error('Not find label, select or input in form. Check variables');
+    //     } else {
+    //         changeLabelId(updateLabel, baseId);
+
+    //         // function ChangeAttrs(element, selectElem, id) {
+    //         //     id++
+    //         //     element.forEach(function (element, ndx) {
+    //         //         if (element == null) {
+    //         //             console.error('Function ChangeAttrs return: ' + element);
+    //         //         } else {
+    //         //             let attrNameVal = element.attributes.name.value;
+    //         //             let splitNameVal = attrNameVal.split('-');
+    //         //             splitNameVal[1] = id;
+    //         //             console.log(splitNameVal)
+    //         //             let newValString = splitNameVal.join('-');
+    //         //             element.setAttribute('name', newValString);
+    //         //             if (element.hasAttribute('id')) {
+    //         //                 let attrIdVal = element.attributes.id.value;
+    //         //                 let splitIdVal = attrNameVal.split('-');
+    //         //                 splitIdVal[1] = id;
+    //         //                 let newIdString = splitIdVal.join('-');
+    //         //                 element.setAttribute('id', newIdString);
+    //         //             };
+    //         //         };
+    //         //     });
+
+    //         //     selectElem.forEach(function (element, ndx) {
+    //         //         if (element == null) {
+    //         //             console.error('Function ChangeAttrs return: ' + element + '. Check function ChangeAttrs');
+    //         //         } else {
+    //         //             let attrNameVal = element.attributes.name.value;
+    //         //             let splitNameVal = attrNameVal.split('-');
+    //         //             splitNameVal[1] = id;
+    //         //             let newValString = splitNameVal.join('-');
+    //         //             element.setAttribute('name', newValString);
+    //         //             if (element.hasAttribute('id')) {
+    //         //                 let attrIdVal = element.attributes.id.value;
+    //         //                 let splitIdVal = attrNameVal.split('-');
+    //         //                 splitIdVal[1] = id;
+    //         //                 let newIdString = splitIdVal.join('-');
+    //         //                 element.setAttribute('id', newIdString);
+    //         //             };
+    //         //         };
+    //         //     });
+    //         // };
+    //     };
+
+    //     let lastAddBtn = document.querySelectorAll('.add-formset');
+    //     lastAddBtn = lastAddBtn[lastAddBtn.length - 1];
+    //     if (lastAddBtn == null) {
+    //         console.error('Element not find, check function updateNdx');
+    //     } else {
+    //         // lastAddBtn.addEventListener('click', updateNdx);
+
+    //         function updateNdx() {
+                
+    //         };
+    //     };
+
+    //     function changeLabelId (element, id) {
+    //         element.forEach(function (element, ndx) {
+    //             let getLabelFor = element.attributes.for.value;
+    //             let splitFor = getLabelFor.split('-');
+    //             splitFor[1] = id;
+    //             let newForString = splitFor.join('-');
+    //             element.setAttribute('for', newForString);
+    //         });
+    //     };
+
+    //     function changeFormsets (element, event) {
+    //         if (event == 'Add formset') {
+    //             let id = ++element.attributes.value.value;
+    //             element.attributes.setValue = id;
+    //         }
+    //         else if (event == 'Initial formset') {
+    //             // changeLabelId()
+    //         }
+            
+    //     }
+        
+
+    //     function addFormset(wrapperId, parentWrapper, baseId) {
+    //         let hiddenForm = document.querySelector('#tasks_formset');
+    //         hiddenForm.setAttribute('style', '');
+    //         let deleteBtn = document.querySelectorAll('.delete-formset:last-of-type')[0];
+    //         let baseIdForDelBtn = deleteBtn.attributes.id.value;
+    //         baseIdForDelBtn = parseInt(baseIdForDelBtn, 10);
+    //         baseIdForDelBtn = ++baseIdForDelBtn
+    //         deleteBtn.setAttribute('id', baseIdForDelBtn);
+    //         deleteBtn.setAttribute('style', '');
+    //         if (updateManagement.value == 0) {
+    //             updateManagement.value = 1
+    //             updateManagement.setAttribute('value', '1');
+    //         } else if (updateManagement.value != 0) {
+    //             let newFormset = wrapperId.cloneNode(true);
+    //             parentWrapper.insertBefore(newFormset, addBtn)
+    //             let increasedVal = ++updateManagement.value;
+    //             updateManagement.setAttribute('value', increasedVal);
+    //         }
+    //         let allFormsets = document.querySelectorAll('#TasksTableEmptyForm');
+    //         let lastFormset = allFormsets[allFormsets.length - 1]
+    //         lastFormsetVal = lastFormset.querySelectorAll('tbody > tr > td > input')[0].attributes.name.value
+    //         getNameVal = lastFormsetVal.split('-');
+    //         if (getNameVal[1] == '__prefix__') {
+    //             getNameVal[1] = 0;
+    //         } else {
+    //             ++getNameVal[1];
+    //         };
+    //         let newValString = getNameVal.join('-');
+    //         console.log(newValString)
+
+    //         // let getPrevLabel = document.querySelectorAll('#TasksTableEmptyForm:last-of-type > tbody > tr > th > label')
+    //         // let id = document.querySelectorAll('#tasks_formset:last-of-type > div > table > tbody > tr > td > input')[0].attributes.name.value
+    //         // let prevIdVal = id.split('-')[1];
+    //         // prevIdVal++;
+    //         // // changeLabelId(getPrevLabel, prevIdVal);
+    //         // let parentElem = document.querySelectorAll('#tasks_formset:last-of-type > div > table > tbody > tr > td > input');
+    //         // parentElem.forEach(function (element, ndx) {
+    //         //     let attrNameVal = element.attributes.name.value;
+    //         //     let splitNameVal = attrNameVal.split('-');
+    //         //     splitNameVal[1] = prevIdVal;
+    //         //     let newNameString = splitNameVal.join('-');
+    //         //     element.setAttribute('name', newNameString);
+    //         //     if (element.hasAttribute('id')) {
+    //         //         let attrIdVal = element.attributes.id.value;
+    //         //         let splitIdVal = attrNameVal.split('-');
+    //         //         splitIdVal[1] = prevIdVal;
+    //         //         let newIdString = splitIdVal.join('-');
+    //         //         element.setAttribute('id', newIdString);
+    //         //     };
+    //         // });
+    //     };
+
+        
+
+    //     function deleteFormset(wrapperFormset) {
+    //         console.log('delete')
+    //     }
+    // };
 
 </script>
 
@@ -318,51 +367,5 @@ $(document).ready(function(){
 <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
-<!-- <script type="text/javascript">
-    $(function() {
-        setTimeout(function() {
-        $('span.select2-container.select2-container--bootstrap').width('auto');
-        }, 100);
-        $('#TasksTable tbody').formset({
-            prefix: '{{ tasks_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Проект',
-            deleteText: 'Видалити Проект',
-            'added': function(row){
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function(i){
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-    })
-</script>
-<script type="text/javascript">
-    $(function() {
-        setTimeout(function() {
-        $('span.select2-container.select2-container--bootstrap').width('auto');
-        }, 100);
-        $('#TasksTableEmptyForm tbody').formset({
-            prefix: '{{ tasks_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Проект',
-            deleteText: 'Видалити Проект',
-            'added': function(row){
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function(i){
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-    })
-</script> -->
 
 {% endblock %}

@@ -4,6 +4,7 @@ media/
 .idea/
 settings.py
 venv/
+myvenv/
 
 # Windows image file caches
 Thumbs.db
