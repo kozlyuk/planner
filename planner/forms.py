@@ -134,6 +134,7 @@ class TasksInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TasksInlineForm, self).__init__(*args, **kwargs)
         self.fields['object_address'].widget.attrs.update({'style': 'width:100%;'})
+        self.fields['project_type'].widget.attrs.update({'style': 'width:100%'})
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                 user__is_active=True)
         self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
@@ -153,7 +154,7 @@ class TasksInlineForm(forms.ModelForm):
                 self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
-TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=1)
+TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
 
 
 class TaskFilterForm(forms.Form):
