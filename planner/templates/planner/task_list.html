@@ -59,7 +59,7 @@
                             </div>
                         </div>
                     <!-----------------------filter panel-------------------------->
-
+                    
                     <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                         <div class="table-scrollable">
                             <table class="table table-striped table-bordered table-advance table-hover">
@@ -95,7 +95,7 @@
                                         </td>
                                         <td> {{ task.project_type }}</td>
                                         <td class="hidden-xs">
-                                            {% if perms.planner.add_deal %}
+                                            {% if perms.planner.change_deal %}
                                             <a href="{% url 'deal_update' task.deal.id %}"> {{ task.deal }} </a>
                                             {% else %}
                                             {{ task.deal }}
