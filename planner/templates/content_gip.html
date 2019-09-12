@@ -136,7 +136,7 @@
                                     <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ tasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
@@ -144,15 +144,15 @@
                                     <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_tasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ overdue_tasks_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                                <span class="widget-progress-title">Виконано завдань
-                                    <span class="pull-right">{{ hd_inttasks_count }}/{{ active_inttasks_count }}</span>
+                                <span class="widget-progress-title">Продуктивність
+                                    <span class="pull-right">{{ owner_productivity }}%</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ inttasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ owner_productivity }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-purple">
@@ -160,7 +160,7 @@
                                     <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" aria-valuenow="{{ overdue_inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_inttasks_div }}%;"> </div>
+                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ overdue_inttasks_div }}%;"> </div>
                                 </div>
                             </div>
                         </div>
