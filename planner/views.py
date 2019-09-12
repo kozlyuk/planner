@@ -147,20 +147,23 @@ def home_page(request):
                                             .count()
         overdue_executions_div = int(overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
 
-    td_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.ToDo).order_by
-    ip_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.InProgress)
-    hd_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done).order_by('-actual_finish')[:50]
+    inttasks = IntTask.objects.filter(executor__user=request.user)\
+                              .exclude(exec_status=IntTask.Done)\
+                              .order_by('exec_status')
+#    inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.To_Do)
+#    ip_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.InProgress)
+#    hd_inttasks = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done).order_by('-actual_finish')[:50]
 
-    hd_inttasks_count = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done,
-                                               actual_finish__month=datetime.now().month,
-                                               actual_finish__year=datetime.now().year).count()
-    active_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
-                                           .exclude(exec_status=IntTask.Done).count() + hd_inttasks_count
-    inttasks_div = int(hd_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
-    overdue_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
-                                            .exclude(exec_status=IntTask.Done)\
-                                            .exclude(planned_finish__gte=date.today()).count()
-    overdue_inttasks_div = int(overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
+#    hd_inttasks_count = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done,
+#                                               actual_finish__month=datetime.now().month,
+#                                               actual_finish__year=datetime.now().year).count()
+#    active_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
+#                                           .exclude(exec_status=IntTask.Done).count() + hd_inttasks_count
+#    inttasks_div = int(hd_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
+#    overdue_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
+#                                            .exclude(exec_status=IntTask.Done)\
+#                                            .exclude(planned_finish__gte=date.today()).count()
+#    overdue_inttasks_div = int(overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
 
     def date_delta(delta):
         month = datetime.now().month + delta
@@ -236,9 +239,10 @@ def home_page(request):
                                       'actneed_deals': actneed_deals,
                                       'debtor_deals': debtor_deals,
                                       'overdue_deals': overdue_deals,
-                                      'td_inttasks': td_inttasks,
-                                      'ip_inttasks': ip_inttasks,
-                                      'hd_inttasks': hd_inttasks,
+                                      'inttasks': inttasks,
+                                      #'td_inttasks': td_inttasks,
+                                      #'ip_inttasks': ip_inttasks,
+                                      #'hd_inttasks': hd_inttasks,
                                       'actneed_deals_count': actneed_deals_count,
                                       'active_deals_count': active_deals_count,
                                       'deals_div': deals_div,
@@ -247,11 +251,11 @@ def home_page(request):
                                       'debtor_deals_div': debtor_deals_div,
                                       'overdue_deals_count': overdue_deals_count,
                                       'overdue_deals_div': overdue_deals_div,
-                                      'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      #'hd_inttasks_count': hd_inttasks_count,
+                                      #'active_inttasks_count': active_inttasks_count,
+                                      #'inttasks_div': inttasks_div,
+                                      #'overdue_inttasks_count': overdue_inttasks_count,
+                                      #'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
                                       'exec_bonuses_pm': exec_bonuses_pm,
                                       'exec_bonuses_ppm': exec_bonuses_ppm,
@@ -279,19 +283,20 @@ def home_page(request):
                                       'td_tasks': td_tasks,
                                       'ip_tasks': ip_tasks,
                                       'hd_tasks': hd_tasks,
-                                      'td_inttasks': td_inttasks,
-                                      'ip_inttasks': ip_inttasks,
-                                      'hd_inttasks': hd_inttasks,
+                                      'inttasks': inttasks,
+                                      #'td_inttasks': td_inttasks,
+                                      #'ip_inttasks': ip_inttasks,
+                                      #'hd_inttasks': hd_inttasks,
                                       'hd_tasks_count': hd_tasks_count,
                                       'active_tasks_count': active_tasks_count,
                                       'tasks_div': tasks_div,
                                       'overdue_tasks_count': overdue_tasks_count,
                                       'overdue_tasks_div': overdue_tasks_div,
-                                      'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      #'hd_inttasks_count': hd_inttasks_count,
+                                      #'active_inttasks_count': active_inttasks_count,
+                                      #'inttasks_div': inttasks_div,
+                                      #'overdue_inttasks_count': overdue_inttasks_count,
+                                      #'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
                                       'exec_bonuses_pm': exec_bonuses_pm,
                                       'exec_bonuses_ppm': exec_bonuses_ppm,
@@ -319,19 +324,20 @@ def home_page(request):
                                       'td_executions': td_executions,
                                       'ip_executions': ip_executions,
                                       'hd_executions': hd_executions,
-                                      'td_inttasks': td_inttasks,
-                                      'ip_inttasks': ip_inttasks,
-                                      'hd_inttasks': hd_inttasks,
+                                      'inttasks': inttasks,
+                                      #'td_inttasks': td_inttasks,
+                                      #'ip_inttasks': ip_inttasks,
+                                      #'hd_inttasks': hd_inttasks,
                                       'hd_executions_count': hd_executions_count,
                                       'active_executions_count': active_executions_count,
                                       'executions_div': executions_div,
                                       'overdue_executions_count': overdue_executions_count,
                                       'overdue_executions_div': overdue_executions_div,
-                                      'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
+                                      #'hd_inttasks_count': hd_inttasks_count,
+                                      #'active_inttasks_count': active_inttasks_count,
+                                      #'inttasks_div': inttasks_div,
+                                      #'overdue_inttasks_count': overdue_inttasks_count,
+                                      #'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
                                       'exec_bonuses_pm': exec_bonuses_pm,
                                       'exec_bonuses_ppm': exec_bonuses_ppm,
