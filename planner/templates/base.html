@@ -50,12 +50,13 @@
     <!-- MEDIA CSS -->
     {{ form.media.css }}
     <link href="{% static '/django_select2/select2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
     <!-- MEDIA CSS -->
     {% block css %}{% endblock css %}
 </head>
 <!-- END HEAD -->
 
-<body class="page-container-bg-solid">
+<body style="font-size: 14px;" class="page-container-bg-solid">
 <!-- BEGIN HEADER -->
 <div class="page-header navbar-fixed-top">
     <!-- BEGIN HEADER INNER -->
@@ -89,7 +90,7 @@
                 <li class="dropdown dropdown-user">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
                        data-close-others="true">
-                        <div class="dropdown-user-inner">
+                        <div style="width: 155px" class="dropdown-user-inner">
                             <span class="username username-hide-on-mobile">{{ user.username }}</span>
                             <img alt="" src="{{ user.employee.avatar.thumbnail.url }}"/></div>
                     </a>
