@@ -44,7 +44,7 @@
                                 <div class="widget-thumb-body">
 {#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ owner_bonuses_cm }}">0</span>
-                                    <nobr><strong>{{ owner_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ owner_bonuses_ppm }}</nobr>
+{#                                    <nobr><strong>{{ owner_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ owner_bonuses_ppm }}</nobr>  #}
                                 </div>
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                                 <div class="widget-thumb-body">
 {#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ exec_bonuses_cm }}">0</span>
-                                    <nobr><strong>{{ exec_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ exec_bonuses_ppm }}</nobr>
+{#                                    <nobr><strong>{{ exec_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ exec_bonuses_ppm }}</nobr>  #}
                                 </div>
                             </div>
                         </div>
@@ -72,9 +72,9 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-green icon-bulb"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
+{#                                    <span class="widget-thumb-subtitle">ГРН</span> #}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ inttask_bonuses_cm }}">0</span>
-                                    <nobr><strong>{{ inttask_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ inttask_bonuses_ppm }}</nobr>
+{#                                    <nobr><strong>{{ inttask_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ inttask_bonuses_ppm }}</nobr> #}
                                 </div>
                             </div>
                         </div>
@@ -87,10 +87,10 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
+{#                                    <span class="widget-thumb-subtitle">ГРН</span>    #}
                                     <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a>
-                                    <nobr><strong><a href={% url 'bonus_calc' employee_id pm.1 pm.0 %}> {{ total_bonuses_pm }} </a></strong>&nbsp;/&nbsp;
-                                    <a href={% url 'bonus_calc' employee_id ppm.1 ppm.0 %}> {{ total_bonuses_ppm }} </a></nobr>
+{#                                    <nobr><strong><a href={% url 'bonus_calc' employee_id pm.1 pm.0 %}> {{ total_bonuses_pm }} </a></strong>&nbsp;/   #}
+{#                                    <a href={% url 'bonus_calc' employee_id ppm.1 ppm.0 %}> {{ total_bonuses_ppm }} </a></nobr>   #}
                                 </div>
                             </div>
                         </div>

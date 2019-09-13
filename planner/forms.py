@@ -141,7 +141,6 @@ class TasksInlineForm(forms.ModelForm):
         if self.instance.pk is None or self.instance.project_type.active:
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
 
-
     def clean(self):
         super(TasksInlineForm, self).clean()
         project_type = self.cleaned_data.get("project_type")

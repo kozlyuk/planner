@@ -15,6 +15,7 @@ from stdimage.models import StdImageField
 from eventlog.models import log
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from decimal import Decimal
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -25,10 +26,12 @@ def user_directory_path(instance, filename):
     return 'projects/user_{0}/{1}/{2}/{3}'\
         .format(get_current_user().id, datetime.now().year, datetime.now().month, filename)
 
+
 def avatar_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
     return 'avatars/user_{0}/{1}'\
         .format(get_current_user().id, filename)
+
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
@@ -136,7 +139,6 @@ class Employee(models.Model):
         return self.exec_bonuses(delta) + self.owner_bonuses(delta) + self.inttask_bonuses(delta)
         # total bonuses
 
-
     def total_bonuses_cm(self):
         return self.total_bonuses(0)
     total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
@@ -144,26 +146,48 @@ class Employee(models.Model):
     def total_bonuses_pm(self):
         return self.total_bonuses(-1)
     total_bonuses_pm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -1 if datetime.now().month >1 else datetime.now().month + 11,
-                datetime.now().year if datetime.now().month >1 else datetime.now().year - 1)
+        .format(datetime.now().month -1 if datetime.now().month > 1 else datetime.now().month + 11,
+                datetime.now().year if datetime.now().month > 1 else datetime.now().year - 1)
 
     def total_bonuses_ppm(self):
         return self.total_bonuses(-2)
     total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -2 if datetime.now().month >2 else datetime.now().month + 10,
-                datetime.now().year if datetime.now().month >2 else datetime.now().year - 1)
+        .format(datetime.now().month -2 if datetime.now().month > 2 else datetime.now().month + 10,
+                datetime.now().year if datetime.now().month > 2 else datetime.now().year - 1)
 
     def total_bonuses_pppm(self):
         return self.total_bonuses(-3)
     total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -3 if datetime.now().month >3 else datetime.now().month + 9,
-                datetime.now().year if datetime.now().month >3 else datetime.now().year - 1)
+        .format(datetime.now().month -3 if datetime.now().month > 3 else datetime.now().month + 9,
+                datetime.now().year if datetime.now().month > 3 else datetime.now().year - 1)
 
     def total_bonuses_ppppm(self):
         return self.total_bonuses(-4)
     total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -4 if datetime.now().month >4 else datetime.now().month + 8,
-                datetime.now().year if datetime.now().month >4 else datetime.now().year - 1)
+        .format(datetime.now().month -4 if datetime.now().month > 4 else datetime.now().month + 8,
+                datetime.now().year if datetime.now().month > 4 else datetime.now().year - 1)
+
+    def productivity(self):
+        return self.total_bonuses(0) / self.salary / datetime.now().day * 30    # days in month
+    productivity.short_description = 'Продуктивність'
+
+    def owner_productivity(self):
+        income = Decimal(0)
+        salaries = self.salary
+        done_tasks = self.task_set.filter(Q(exec_status=Task.Done) |
+                                          Q(exec_status=Task.Sent),
+                                          actual_finish__month=datetime.now().month,
+                                          actual_finish__year=datetime.now().year)
+        for task in done_tasks:
+            income += task.project_type.net_price()
+
+        team_members = self.employee_set.filter(user__is_active=True)
+        for member in team_members:
+            salaries += member.salary
+
+        return int(income / salaries / datetime.now().day * 600)
+        # 600 = / 5(productivity norm) * 30(days in month) * 100(percentage)
+    owner_productivity.short_description = 'Продуктивність'
 
 
 class Customer(models.Model):
