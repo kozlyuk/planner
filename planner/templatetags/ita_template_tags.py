@@ -50,6 +50,19 @@ def task_overdue_color(status):
     else:
         return
 
+@register.simple_tag
+def task_status_color(status):
+    if status.startswith('Виконано'):
+        return 'success'
+    elif status.startswith('В черзі') or status.startswith('Не'):
+        return 'warning'
+    elif status.startswith('Виконується'):
+        return 'info'
+    elif status.startswith('Надіслано'):
+        return 'primary'
+    else:
+        return
+
 
 @register.simple_tag
 def deal_status_color(status):

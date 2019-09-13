@@ -3,8 +3,10 @@
 {% load mptt_tags %}
 {% load widget_tweaks %}
 {% load ita_template_tags %}
+{% load fontawesome_5 %}
 
 {% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
             <!-- BEGIN BREADCRUMBS -->
@@ -221,6 +223,7 @@
                         <div class="portlet light">
                             <div class="portlet-title">
                                 <div class="caption caption-md font-blue">
+                                    <i class="icon-clock font-blue"></i>
                                     <span class="caption-subject theme-font bold uppercase">Недавні дії</span>
                                 </div>
                             </div>

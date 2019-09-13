@@ -43,6 +43,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                            ('position', 'head'),
                            ('phone', 'mobile_phone'),
                            ('vacation_count', 'vacation_date'),
+                           ('salary'),
                            ('birthday'),
                            ('avatar')
                           ]})

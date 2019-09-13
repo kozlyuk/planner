@@ -8,7 +8,6 @@
 {% block context %}
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
-
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
@@ -25,7 +24,7 @@
                                     <a href="#tab_1_1" data-toggle="tab">Редагувати договір</a>
                                 </li>
                                 <li>
-                                    <a href="#tab_1_2" data-toggle="tab"> Інформація по договру </a>
+                                    <a href="#tab_1_2" data-toggle="tab"> Інформація по договору </a>
                                 </li>
                             {% else %}
                                 <li class="active">
@@ -83,22 +82,43 @@
                             </div>
                         </div>
                     </div>
-                        <div class="tab-content" style="height: 770px;" data-handle-color="#D7DCE2">
+                        <div class="tab-content" style="height: max-content" data-handle-color="#D7DCE2">
                                 {{ tasks_formset.non_form_errors }}
-                                {% for form in tasks_formset %}
+                                <!--check the length of the formset-->
+                            <!--if formset is not empty-->
+                            {% if tasks_formset|length %}
+                            {% for form in tasks_formset %}
                             <div class="portlet light margin-top-20">
                                 <table id="TasksTable" class="table table-hover">
                                     <col width="25%">
                                     <tbody>
                                         {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                        {{ hidden_field }}
                                         {% endfor %}
                                         {{ form }}
                                     </tbody>
                                 </table>
                             </div>
-                                {% endfor %}
-                                {{ tasks_formset.management_form }}
+                            {% endfor %}
+                            <!--if formset is empty-->
+                            {% else %}
+                            <div style="display:none" id="tasks_formset">
+                                <div class="portlet light margin-top-20">
+                                    <table id="TasksTableEmptyForm" class="table table-hover task-formset">
+                                        <col width="25%">
+                                            {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
+                                        <tbody>
+                                            {% endfor %}
+                                            {{ tasks_formset.empty_form }}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button style="display: none" type="button" class="delete-formset btn red btn-sm btn-outline margin-bottom-20 float-right">Видалити проект</button>
+                            </div>
+                            <button style="width: 100%" type="button" class="add-formset btn dark btn-sm btn-outline padding-bottom-20">Додати проект</button>
+                            {% endif %}
+                            {{ tasks_formset.management_form }}
                         </div>
                     </div>
                     <!-- END PORTLET-->
@@ -123,7 +143,6 @@
     window.onerror = function (msg) {
         $("body").attr("JSError", msg);
     }
-
 $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();
 });
@@ -132,27 +151,71 @@ $(document).ready(function(){
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
-    $(function() {
-        setTimeout(function() {
-        $('span.select2-container.select2-container--bootstrap').width('auto');
-        }, 100);
-        $('#TasksTable tbody').formset({
-            prefix: '{{ tasks_formset.prefix }}',
-            formCssClass: 'dynamic-formset1',
-            addText: 'Додати Проект',
-            deleteText: 'Видалити Проект',
-            'added': function(row){
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function(i){
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
+
+const addBtn = document.querySelector('.add-formset');
+if (document.querySelector('#tasks_formset')) {
+    addBtn.addEventListener('click', () => {
+        addInitialFormset();
+        cliсk();
     })
+}
+
+function addInitialFormset() {
+    const formsetTemplate = document.querySelector('#tasks_formset');
+    formsetTemplate.setAttribute('style', '');
+    addBtn.setAttribute('style', 'display:none');
+}
+
+function cliсk() {
+    const initialBtn = document.querySelector('.add-row');
+    const formsetTemplate = document.querySelector('#tasks_formset');
+    initialBtn.click();
+    const dynamicFormsetFirst = document.querySelectorAll('.dynamic-formset1')[0]
+    dynamicFormsetFirst.setAttribute('style', 'display:none');
+}
+
+$(function () {
+    setTimeout(function () {
+        $('span.select2-container.select2-container--bootstrap').width('auto');
+    }, 100);
+    $('#tasks_formset tbody').formset({
+        prefix: '{{ tasks_formset.prefix }}',
+        formCssClass: 'dynamic-formset1',
+        addText: 'Додати Проект',
+        deleteText: 'Видалити Проект',
+        'added': function (row) {
+            //find the fields with the calendar widget
+            $(row).find('.vDateField').each(function (i) {
+                //remove the cloned spam element: it links to an incorrect calendar
+                $(this).parent().find('span').remove();
+                //DateTimeShortcuts is in the django admin widgets
+                DateTimeShortcuts.addCalendar(this);
+            })
+            $(row).find('.django-select2').djangoSelect2();
+        }
+    });
+})
+$(function () {
+    setTimeout(function () {
+        $('span.select2-container.select2-container--bootstrap').width('auto');
+    }, 100);
+    $('#TasksTable tbody').formset({
+        prefix: '{{ tasks_formset.prefix }}',
+        formCssClass: 'dynamic-formset1',
+        addText: 'Додати Проект',
+        deleteText: 'Видалити Проект',
+        'added': function (row) {
+            //find the fields with the calendar widget
+            $(row).find('.vDateField').each(function (i) {
+                //remove the cloned spam element: it links to an incorrect calendar
+                $(this).parent().find('span').remove();
+                //DateTimeShortcuts is in the django admin widgets
+                DateTimeShortcuts.addCalendar(this);
+            })
+            $(row).find('.django-select2').djangoSelect2();
+        }
+    });
+})
 </script>
 
 {% endblock %}

@@ -6,7 +6,7 @@
                     <div class="col-md-6 margin-bottom-20">
                         <!-- BEGIN WIDGET TAB -->
                         <div class="widget-bg-color-white widget-tab">
-                            <span class="caption-subject theme-font bold uppercase">Проекти</span>
+                            <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Проекти </span>
                             <ul class="nav nav-tabs">
                                 <li>
                                     <a href="#tab_1_1" data-toggle="tab"> В черзі </a>
@@ -19,7 +19,7 @@
                                 </li>
                             </ul>
                             <div class="tab-content scroller" style="height: 350px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                <div class="tab-pane fade active in" id="tab_1_1">
+                                <div class="tab-pane active in" id="tab_1_1">
                                     {% for task in td_tasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -37,7 +37,7 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <div class="tab-pane fade active in" id="tab_1_2">
+                                <div class="tab-pane active in" id="tab_1_2">
                                     {% for task in ip_tasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -51,7 +51,7 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <div class="tab-pane fade" id="tab_1_3">
+                                <div class="tab-pane" id="tab_1_3">
                                     {% for task in hd_tasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -126,7 +126,7 @@
                                     <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
+                                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
@@ -134,7 +134,7 @@
                                     <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ overdue_tasks_div }}%;"> </div>
+                                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_tasks_div }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
@@ -142,7 +142,7 @@
                                     <span class="pull-right">{{ owner_productivity }}%</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ owner_productivity }}%;"> </div>
+                                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ owner_productivity }}%;"> </div>
                                 </div>
                             </div>
                             <div class="widget-progress-element widget-bg-color-purple">
@@ -150,7 +150,7 @@
                                     <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
                                 </span>
                                 <div class="progress">
-                                    <div class="progress-bar widget-bg-color-white" role="progressbar" style="width: {{ overdue_inttasks_div }}%;"> </div>
+                                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_inttasks_div }}%;"> </div>
                                 </div>
                             </div>
                         </div>
