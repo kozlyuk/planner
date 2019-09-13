@@ -1,0 +1,7 @@
+.dropdown-toggle::after {
+    display:none!important;
+}
+
+.widget-news {
+    border-bottom: solid rgba(215, 220, 226, 0.3);
+}
