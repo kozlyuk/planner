@@ -91,3 +91,13 @@ a.nav-link.active {
 .breadcrumbs {
     width: 100%;
 }
+
+.page-header .top-menu .dropdown-user .dropdown-toggle {
+    top: 15px;
+    text-decoration: none;
+    padding: 0px!important
+}
+
+.card-header {
+    padding: 0px;
+}

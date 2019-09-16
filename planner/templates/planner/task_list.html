@@ -12,67 +12,25 @@
         <br><!-- BEGIN CONTENT -->
         <div class="container-fluid">
                 <div class="portlet-body">
-<div class="accordion" id="accordionExample">
-  <div class="card">
-    <div class="card-header" id="headingOne">
-      <h2 class="mb-0">
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Collapsible Group Item #1
-        </button>
-      </h2>
-    </div>
-
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingTwo">
-      <h2 class="mb-0">
-        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Collapsible Group Item #2
-        </button>
-      </h2>
-    </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingThree">
-      <h2 class="mb-0">
-        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Collapsible Group Item #3
-        </button>
-      </h2>
-    </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-</div>
                     <!-----------------------filter panel-------------------------->
-                    <div class="panel-group accordion" id="accordion1">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    {% if perms.planner.add_task %}
-                                        <a href="{% url 'task_add' %}" class="btn btn-sm btn-success uppercase"
-                                        style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 5px">
-                                        <i class="fa fa-plus"></i> Додати проект </a>
-                                    {% endif %}
-                                    <div class="panel-title">
-                                        <a class="accordion-toggle theme-font bold uppercase" data-toggle="collapse" data-parent="#accordion1"
-                                           href="#collapse_1" aria-expanded="false"> Проекти </a>
-                                    </div>
-                                </div>
-                                <div id="collapse_1" class="panel-collapse collapse in" aria-expanded="false">
-                                    <div class="container-fluid " style="display:block">
+                <div class="accordion" id="filter">
+                    <div class="card">
+                        <div class="card-header" id="filter">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#filterBody" aria-expanded="true" aria-controls="filterBody">
+                            Проекти
+                            </button>
+                            {% if perms.planner.add_task %}
+                                <a href="{% url 'task_add' %}" class="btn btn-sm btn-success uppercase"
+                                style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 5px">
+                                <i class="fa fa-plus"></i> Додати проект </a>
+                            {% endif %}
+                        </h2>
+                        </div>
+
+                        <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
+                        <div class="card-body">
+                            <div class="container-fluid " style="display:block">
                                         <form action="{% url 'task_list' %}" method="get">
                                             {% for hidden_field in filter_form.hidden_fields %}
                                                 {{ hidden_field }}
@@ -101,9 +59,10 @@
                                             </tr></table>
                                         </form>
                                     </div>
-                                </div>
-                            </div>
                         </div>
+                        </div>
+                    </div>
+                </div>
                     <!-----------------------filter panel-------------------------->
                     
                     <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
