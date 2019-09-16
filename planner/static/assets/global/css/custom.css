@@ -5,3 +5,45 @@
 .widget-news {
     border-bottom: solid rgba(215, 220, 226, 0.3);
 }
+
+.col-md-3 .widget-tab {
+    max-height: 440px;
+}
+
+.noTasks {
+    position:relative;
+}
+
+.noTasks:before {
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    content: "\f519";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 600;
+    font-size: 100px;
+    color: #f1f3fa;
+}
+
+.noTasks > p {
+    text-align: center;
+}
+
+.dropdown.dropdown-user {
+    text-align: right
+}
+
+.userpic {
+    margin-right: 0px;
+    display: block;
+    margin-left: auto;
+}
+/* 
+@media (max-width: 1024px) {
+    a.dropdown-user-inner {
+        width: 45px;
+    }
+} */

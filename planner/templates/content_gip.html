@@ -74,47 +74,25 @@
                         <div class="widget-bg-color-white widget-tab">
                             <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Завдання </span>
 
-                            <div class="tab-content scroller" style="height: 400px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                <div class="">
+                            {% if inttasks %}
+                            <div class="tab-content scroller" style="height: 410px;" data-always-visible="1" data-handle-color="#D7DCE2">
                                     {% for inttask in inttasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                                                <span class="label label-success"> {{ inttask.exec_status }} </span>
+                                                <span class="label label-success"> {{ inttask.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>
                                     {% endfor %}
-                                </div>
-                                <div class="tab-pane active in" id="tab_2_2">
-                                    {% for task in ip_inttasks %}
-                                    <div class="widget-news margin-bottom-20">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'inttask_detail' task.pk %}">{{ task.task_name }}</a>
-                                                <span class="label label-{% task_secondary_overdue_color task.get_exec_status_display %}"> {{ task.get_exec_status_display }} </span>
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <div class="tab-pane" id="tab_2_3">
-                                    {% for task in hd_inttasks %}
-                                    <div class="widget-news margin-bottom-20">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'inttask_detail' task.pk %}">{{ task.task_name }}</a>
-                                                <span class="label label-{% task_secondary_overdue_color task.get_exec_status_display %}"> {{ task.get_exec_status_display }} </span>
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
                             </div>
+                                {% else %}
+                                <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                                    <p>Нажаль у вас не має завдань</p>
+                                    </div>
+                            {% endif %}
                         </div>
                         <!-- END WIDGET TAB -->
                     </div>
