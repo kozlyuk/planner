@@ -7,37 +7,38 @@
                         <!-- BEGIN WIDGET TAB -->
                         <div class="widget-bg-color-white widget-tab">
                             <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Проекти </span>
-                            <ul class="nav nav-tabs">
-                                <li>
-                                    <a href="#tab_1_1" data-toggle="tab"> В черзі </a>
+
+                            <ul class="nav nav-pills mb-3 nav-tabs" id="pills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
+                                        role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> В черзі </a>
                                 </li>
-                                <li class="active">
-                                    <a href="#tab_1_2" data-toggle="tab"> Виконуються </a>
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
+                                        role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Виконуються </a>
                                 </li>
-                                <li>
-                                    <a href="#tab_1_3" data-toggle="tab"> Виконано </a>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3"
+                                        role="tab" aria-controls="pills-tab_1_3" aria-selected="false"> Виконано </a>
                                 </li>
                             </ul>
-                            <div class="tab-content scroller" style="height: 350px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                <div class="tab-pane active in" id="tab_1_1">
+                            <div style="height: 300px" class="tab-content scroller" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
+                                    aria-labelledby="pills-tab_1_1">
                                     {% for task in td_tasks %}
                                     <div class="widget-news margin-bottom-20">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }} {{ task.object_address|slice:":75" }}</a>
-{#                                                {% if task.overdue_status %}#}
                                                 <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
-{#                                                {% else %}#}
-{#                                                <span class="label label-default"> {{ task.exec_status }} </span>#}
-{#                                                {% endif %}#}
                                             </h3>
                                             {{ task.project_type }}
                                         </div>
                                     </div>
                                     {% endfor %}
-                                </div>
-                                <div class="tab-pane active in" id="tab_1_2">
+                                    </div>
+                                <div class="tab-pane fade" id="tab_1_2" role="tabpanel"
+                                    aria-labelledby="pills-tab_1_2">
                                     {% for task in ip_tasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -50,8 +51,9 @@
                                         </div>
                                     </div>
                                     {% endfor %}
-                                </div>
-                                <div class="tab-pane" id="tab_1_3">
+                                    </div>
+                                <div class="tab-pane fade" id="tab_1_3" role="tabpanel"
+                                    aria-labelledby="pills-tab_1_3">
                                     {% for task in hd_tasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -64,18 +66,18 @@
                                         </div>
                                     </div>
                                     {% endfor %}
-                                </div>
+                                    </div>
                             </div>
                         </div>
                         <!-- END WIDGET TAB -->
                     </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
                         <!-- BEGIN WIDGET TAB -->
                         <div class="widget-bg-color-white widget-tab">
                             <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Завдання </span>
 
                             {% if inttasks %}
-                            <div class="tab-content scroller" style="height: 410px;" data-always-visible="1" data-handle-color="#D7DCE2">
+                            <div class="tab-content scroller" style="height: 380px;" data-always-visible="1" data-handle-color="#D7DCE2">
                                     {% for inttask in inttasks %}
                                     <div class="widget-news margin-bottom-20">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}

@@ -7,23 +7,12 @@
 
 {% block context %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
             <!-- BEGIN BREADCRUMBS -->
             <div class="breadcrumbs">
                 <div class="container-fluid">
                     <h2 class="breadcrumbs-title">Головна</h2>
-{#                    <ol class="breadcrumbs-list">#}
-{#                        <li>#}
-{#                            <a class="breadcrumbs-item-link" href="#">Голо</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="breadcrumbs-item-link" href="#">Features</a>#}
-{#                        </li>#}
-{#                        <li>#}
-{#                            <a class="breadcrumbs-item-link" href="#">Dashboard</a>#}
-{#                        </li>#}
-{#                    </ol>#}
                 </div>
             </div>
             <!-- END BREADCRUMBS -->
@@ -42,9 +31,7 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-purple icon-screen-desktop"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ owner_bonuses_cm }}">0</span>
-{#                                    <nobr><strong>{{ owner_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ owner_bonuses_ppm }}</nobr>  #}
                                 </div>
                             </div>
                         </div>
@@ -57,9 +44,7 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-red icon-layers"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span>#}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ exec_bonuses_cm }}">0</span>
-{#                                    <nobr><strong>{{ exec_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ exec_bonuses_ppm }}</nobr>  #}
                                 </div>
                             </div>
                         </div>
@@ -72,9 +57,7 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-green icon-bulb"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span> #}
                                     <span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ inttask_bonuses_cm }}">0</span>
-{#                                    <nobr><strong>{{ inttask_bonuses_pm }}</strong>&nbsp;/&nbsp;{{ inttask_bonuses_ppm }}</nobr> #}
                                 </div>
                             </div>
                         </div>
@@ -87,10 +70,7 @@
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
                                 <div class="widget-thumb-body">
-{#                                    <span class="widget-thumb-subtitle">ГРН</span>    #}
                                     <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span class="widget-thumb-body-stat" data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a>
-{#                                    <nobr><strong><a href={% url 'bonus_calc' employee_id pm.1 pm.0 %}> {{ total_bonuses_pm }} </a></strong>&nbsp;/   #}
-{#                                    <a href={% url 'bonus_calc' employee_id ppm.1 ppm.0 %}> {{ total_bonuses_ppm }} </a></nobr>   #}
                                 </div>
                             </div>
                         </div>
@@ -105,18 +85,7 @@
                                 <div class="caption caption-md font-blue">
                                     <i class="icon-share font-blue"></i>
                                     <span class="caption-subject theme-font bold uppercase">Новини та повідомлення</span>
-{#                                    <span class="caption-helper">37 New Supports</span>#}
                                 </div>
-{#                                <div class="actions">#}
-{#                                    <div class="btn-group btn-group-devided" data-toggle="buttons">#}
-{#                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">#}
-{#                                            <input type="radio" name="options" class="toggle" id="option1">Friends</label>#}
-{#                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm">#}
-{#                                            <input type="radio" name="options" class="toggle" id="option2">Team</label>#}
-{#                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm">#}
-{#                                            <input type="radio" name="options" class="toggle" id="option3">Company</label>#}
-{#                                    </div>#}
-{#                                </div>#}
                             </div>
                             <div class="portlet-body">
                                 <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
@@ -124,18 +93,12 @@
                                     <div class="widget-media">
                                         <div class="widget-media-elements text-center">
                                             <img class="widget-media-avatar circle margin-bottom-15" src="{{ new.creator.employee.avatar.thumbnail.url }}" alt="">
-{#                                            <a class="widget-btn-default circle" href="#">Follow</a>#}
                                         </div>
                                         <div class="widget-media-body">
                                             <h4 class="widget-media-body-title">
                                                 <a href="{% url 'news_detail' new.pk %}">{{ new.title }}</a>
                                             </h4>
                                             <p class="widget-media-body-subtitle">{{ new.text|slice:":400" }}</p>
-{#                                            <a class="widget-btn-red circle" href="#">+7</a>#}
-{#                                            <a class="widget-btn-blue circle" href="#">Like</a>#}
-{#                                            <a class="widget-btn-default circle pull-right" href="#">#}
-{#                                                <i class="widget-btn-icon icon-share"></i>#}
-{#                                            </a>#}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -158,54 +121,33 @@
                                     <i class="icon-bell font-blue"></i>
                                     <span class="caption-subject theme-font bold uppercase">Найближчі події та свята</span>
                                 </div>
-{#                                <div class="actions">#}
-{#                                    <div class="btn-group">#}
-{#                                        <a class="btn btn-sm btn-default dropdown-toggle" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"> Filter By#}
-{#                                            <i class="fa fa-angle-down"></i>#}
-{#                                        </a>#}
-{#                                        <div class="dropdown-menu hold-on-click dropdown-checkboxes pull-right">#}
-{#                                            <label>#}
-{#                                                <input type="checkbox" /> Finance</label>#}
-{#                                            <label>#}
-{#                                                <input type="checkbox" checked="" /> Membership</label>#}
-{#                                            <label>#}
-{#                                                <input type="checkbox" /> Customer Support</label>#}
-{#                                            <label>#}
-{#                                                <input type="checkbox" checked="" /> HR</label>#}
-{#                                            <label>#}
-{#                                                <input type="checkbox" /> System</label>#}
-{#                                        </div>#}
-{#                                    </div>#}
-{#                                </div>#}
                             </div>
                             <div class="portlet-body">
                                 <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible="0">
                                     <ul class="feeds">
                                     {% for event in events %}
                                         <li>
-{#                                            <a href="#">#}
-                                                <div class="col1">
-                                                    <div class="cont">
-                                                        <div class="cont-col1">
-                                                            <div class="label label-sm label-success">
-                                                                <i class="fa fa-user"></i>
-                                                            </div>
+                                            <div class="col1">
+                                                <div class="cont">
+                                                    <div class="cont-col1">
+                                                        <div class="label label-sm label-success">
+                                                            <i class="fa fa-user"></i>
                                                         </div>
-                                                        <div class="cont-col2">
-                                                            <div class="desc">
-                                                                <a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>
-                                                            </div>
+                                                    </div>
+                                                    <div class="cont-col2">
+                                                        <div class="desc">
+                                                            <a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col2">
-                                                    {% if event.is_today %}
-                                                        <div class="label label-sm label-warning"> {{ event.next_date }} </div>
-                                                    {% else %}
-                                                        <div class="label label-sm label-success"> {{ event.next_date }} </div>
-                                                    {% endif %}
-                                                </div>
-{#                                            </a>#}
+                                            </div>
+                                            <div class="col2">
+                                                {% if event.is_today %}
+                                                    <div class="label label-sm label-warning"> {{ event.next_date }} </div>
+                                                {% else %}
+                                                    <div class="label label-sm label-success"> {{ event.next_date }} </div>
+                                                {% endif %}
+                                            </div>
                                         </li>
                                     {% endfor %}
                                     </ul>
@@ -238,8 +180,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 <!-- END PAGE BASE CONTENT -->
             </div>

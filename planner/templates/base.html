@@ -26,10 +26,10 @@
           type="text/css"/>
     <link href="{% static 'assets/global/plugins/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet"
           type="text/css"/>
-    <link href="{% static 'assets/global/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/>
+    {% comment %} <link href="{% static 'assets/global/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/> {% endcomment %}
     <link href="{% static 'assets/global/plugins/uniform/css/uniform.default.css' %}" rel="stylesheet" type="text/css"/>
-    <link href="{% static 'assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css' %}" rel="stylesheet"
-          type="text/css"/>
+    {% comment %} <link href="{% static 'assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css' %}" rel="stylesheet"
+          type="text/css"/> {% endcomment %}
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <link href="{% static 'assets/global/plugins/morris/morris.css' %}" rel="stylesheet" type="text/css"/>
@@ -67,21 +67,21 @@
           <label class="hamburger" for="hamburger"> <i></i> </label>
           <section class="drawer-list">
             <ul>
-              <li><a href="{% url 'home_page' %}">Головна</a></li>
-              <li><a href="{% url 'task_list' %}">Проекти</a></li>
-              <li><a href="{% url 'deal_list' %}">Договори</a></li>
-              <li><a href="#">Аналітика та звіти</a></li>
+              <li><a style="color: #f1f3fa!important" href="{% url 'home_page' %}">Головна</a></li>
+              <li><a style="color: #f1f3fa!important" href="{% url 'task_list' %}">Проекти</a></li>
+              <li><a style="color: #f1f3fa!important" href="{% url 'deal_list' %}">Договори</a></li>
+              <li><a style="color: #f1f3fa!important" href="#">Аналітика та звіти</a></li>
             </ul>
           </section>
+        <!-- BEGIN LOGO -->
         <div class="page-logo">
             <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>
         </div>
+        <!-- END LOGO -->
         </div>
         </div>
         <!-- END NAV TRIGGER -->
-        <!-- BEGIN LOGO -->
 
-        <!-- END LOGO -->
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu">
             <ul class="nav navbar-nav pull-right">
@@ -119,14 +119,13 @@
 </div>
 <!-- END HEADER -->
 <!-- BEGIN HEADER & CONTENT DIVIDER -->
-<div class="clearfix"></div>
 <!-- END HEADER & CONTENT DIVIDER -->
 <!-- BEGIN CONTAINER -->
 {% block context %}
 {% endblock %}
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
-    <div class="page-footer-inner container-fluid container-lf-space">
+    <div class="container-fluid container-lf-space">
         <p class="page-footer-copyright">2019 &copy; Itel-Service</p>
     </div>
     <div class="go2top">
@@ -140,7 +139,8 @@
 <![endif]-->
 <!-- BEGIN CORE PLUGINS -->
 <script src="{% static 'jquery/jquery.js' %}" type="text/javascript"></script>
-<script src="{% static 'assets/global/plugins/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src="{% static 'assets/global/plugins/js.cookie.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js' %}"
         type="text/javascript"></script>
