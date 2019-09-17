@@ -101,3 +101,7 @@ a.nav-link.active {
 .card-header {
     padding: 0px;
 }
+
+#filterBody .card-body {
+    padding: 0.25rem;
+}
