@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import include, path
 from django.contrib import admin
 from planner import views
 from django.views.generic.base import RedirectView
@@ -22,7 +23,11 @@ from django.conf import settings
 from .views import *
 from django.views.i18n import JavaScriptCatalog
 
+if settings.DEBUG:
+    import debug_toolbar
+
 urlpatterns = [
+    path('__debug__/', include(debug_toolbar.urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),

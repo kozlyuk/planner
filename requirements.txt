@@ -22,3 +22,4 @@ python-utils
 pytz
 six
 django-fontawesome-5
+django-debug-toolbar
