@@ -89,10 +89,10 @@
                                 </div>
                                 {% endif %}
                                 <div class="form-actions">
-                                    {% if deal.pk %}<button href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
-                                        class="btn red btn-sm btn-outline sbold uppercase">Видалити</button>
+                                    {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
+                                        class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
                                     {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
-                                        class="btn red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                                        class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
                                     {% endif %}
                                     <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                         style="float: right;">Зберегти</button>

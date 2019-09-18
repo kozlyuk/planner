@@ -129,3 +129,17 @@ a.nav-link.active {
 .padding-top-0 {
     padding-top: 0px!important;
 }
+
+.deal-delete,
+.deal-cancel,
+.task-delete,
+.task-cancel {
+    color: #e7505a !important;
+}
+
+.deal-delete:hover,
+.deal-cancel:hover,
+.task-delete:hover,
+.task-cancel:hover {
+    color: #fff !important;
+}
