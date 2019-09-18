@@ -125,3 +125,7 @@ a.nav-link.active {
 .delete-row:hover {
     color: #fff!important;
 }
+
+.padding-top-0 {
+    padding-top: 0px!important;
+}
