@@ -6,85 +6,113 @@
 
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
-         xmlns="http://www.w3.org/1999/html">
-        <!-- BEGIN CONTENT -->
-        <div class="container-fluid container-lf-space">
-            <!-- BEGIN PAGE BASE CONTENT -->
-            <div class="row widget-row margin-top-20">
-                <!-- PERMISSION CHECK -->
-                {% if perms.planner.change_deal %}
-                <form id="DealForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                <div class="col-md-7">
-                    <!-- BEGIN WIDGET TAB -->
-                    <div class="widget-bg-color-white widget-tab">
-                        <ul class="nav nav-tabs">
-                            {% if deal.pk %}
-                                <li class="active">
-                                    <a href="#tab_1_1" data-toggle="tab">Редагувати договір</a>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <!-- BEGIN CONTENT -->
+    <div class="container-fluid container-lf-space">
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="widget-row margin-top-20">
+            <!-- PERMISSION CHECK -->
+            {% if perms.planner.change_deal %}
+            <form id="DealForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-7">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div style="min-height: max-content!important" class="widget-bg-color-white widget-tab">
+                            <ul class="nav nav-pills mb-3 nav-tabs">
+                                {% if deal.pk %}
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
+                                        role="tab" aria-controls="pills-tab_1_1" aria-selected="true">Редагувати договір</a>
                                 </li>
-                                <li>
-                                    <a href="#tab_1_2" data-toggle="tab"> Інформація по договору </a>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
+                                        role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Інформація по договору </a>
                                 </li>
-                            {% else %}
-                                <li class="active">
-                                    <a href="#tab_1_1" data-toggle="tab">Додати договір</a>
+                                {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
+                                        role="tab" aria-controls="pills-tab_1_1" aria-selected="true">Додати договір</a>
                                 </li>
-                            {% endif %}
-                        </ul>
-                        <div class="tab-content" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade active in" id="tab_1_1">
+                                {% endif %}
+                            </ul>
+                            <div class="tab-content" data-handle-color="#D7DCE2" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
+                                    aria-labelledby="pills-tab_1_1">
                                     <table class="table table-hover">
                                         <col width="25%">
                                         {{ form }}
                                     </table>
-                            </div>
-                            {% if deal.pk %}
-                            <div class="tab-pane fade" id="tab_1_2">
+                                </div>
+                                {% if deal.pk %}
+                                <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
+                                    aria-labelledby="pills-tab_1_2">
                                     <table class="table table-hover">
                                         <col width="25%">
-                                        <tr><th><p>Вартість договору по роботам:</p></th>
-                                            <th><p><strong>{{ deal.value_calc }} грн.</strong></p></th>
-                                        </tr>
-                                        <tr><th><p>Бонуси по договору:</p></th>
-                                            <th><p><strong>{{ deal.bonuses_calc }} грн.</strong></p></th>
+                                        <tr>
+                                            <th>
+                                                <p>Вартість договору по роботам:</p>
+                                            </th>
+                                            <th>
+                                                <p><strong>{{ deal.value_calc }} грн.</strong></p>
+                                            </th>
                                         </tr>
                                         <tr>
-                                            <th><p>Витрати по договору:</p></th>
-                                            <th><p><strong>{{ deal.costs_calc }} грн.</strong></p></th>
+                                            <th>
+                                                <p>Бонуси по договору:</p>
+                                            </th>
+                                            <th>
+                                                <p><strong>{{ deal.bonuses_calc }} грн.</strong></p>
+                                            </th>
                                         </tr>
                                         <tr>
-                                            <th><p>Дата оплати:</p></th>
-                                            <th><p><strong>{{ deal.pay_date_calc }}</strong></p></th>
+                                            <th>
+                                                <p>Витрати по договору:</p>
+                                            </th>
+                                            <th>
+                                                <p><strong>{{ deal.costs_calc }} грн.</strong></p>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <p>Дата оплати:</p>
+                                            </th>
+                                            <th>
+                                                <p><strong>{{ deal.pay_date_calc }}</strong></p>
+                                            </th>
                                         </tr>
                                     </table>
-                            </div>
-                            {% endif %}
-                            <div class="form-actions">
-                                        {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
-                                                        class="btn red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<a href="{% url 'deal_list' %}?{{ filters }}"
-                                                        class="btn red btn-sm btn-outline sbold uppercase">Відмінити</a>
-                                        {% endif %}
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                                style="float: right;">Зберегти</button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END WIDGET -->
-                </div>
-                <div class="col-md-5 col-sm-12 col-xs-12  margin-top-sm-20">
-                    <!-- BEGIN WIDGET TAB -->
-                    <div class="portlet light tasks-widget">
-                        <div class="text-center">
-                            <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase"> Проекти </span>
+                                </div>
+                                {% endif %}
+                                <div class="form-actions">
+                                    {% if deal.pk %}<button href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
+                                        class="btn red btn-sm btn-outline sbold uppercase">Видалити</button>
+                                    {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
+                                        class="btn red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                                    {% endif %}
+                                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                        style="float: right;">Зберегти</button>
+                                </div>
                             </div>
                         </div>
+                        <!-- END WIDGET -->
                     </div>
+                    <div class="col-md-5 col-sm-12 col-xs-12  margin-top-sm-20">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div class="portlet light tasks-widget">
+                            <div class="text-center">
+                                <div class="caption caption-md font-red-sunglo">
+                                    <span class="caption-subject theme-font bold uppercase"> Проекти </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-content" style="height: max-content" data-handle-color="#D7DCE2">
-                                {{ tasks_formset.non_form_errors }}
-                                <!--check the length of the formset-->
+                            {{ tasks_formset.non_form_errors }}
+                            <!--check the length of the formset-->
                             <!--if formset is not empty-->
                             {% if tasks_formset|length %}
                             {% for form in tasks_formset %}
@@ -106,32 +134,36 @@
                                 <div class="portlet light margin-top-20">
                                     <table id="TasksTableEmptyForm" class="table table-hover task-formset">
                                         <col width="25%">
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                        {% for hidden_field in form.hidden_fields %}
+                                        {{ hidden_field }}
                                         <tbody>
                                             {% endfor %}
                                             {{ tasks_formset.empty_form }}
                                         </tbody>
                                     </table>
                                 </div>
-                                <button style="display: none" type="button" class="delete-formset btn red btn-sm btn-outline margin-bottom-20 float-right">Видалити проект</button>
+                                <button style="display: none" type="button"
+                                    class="delete-formset btn red btn-sm btn-outline margin-bottom-20 float-right">Видалити
+                                    проект</button>
                             </div>
-                            <button style="width: 100%" type="button" class="add-formset btn dark btn-sm btn-outline padding-bottom-20">Додати проект</button>
+                            <button style="width: 100%" type="button"
+                                class="add-formset btn dark btn-sm btn-outline padding-bottom-20">Додати проект</button>
                             {% endif %}
                             {{ tasks_formset.management_form }}
                         </div>
                     </div>
-                    <!-- END PORTLET-->
-                </form>
-                {% else %}
-                    Ви не маєте доступу до редагування даного проекту<br><br>
-                {% endif %}
-            </div>
-            <!-- END PAGE BASE CONTENT -->
+                </div>
+                <!-- END PORTLET-->
+            </form>
+            {% else %}
+            Ви не маєте доступу до редагування даного проекту<br><br>
+            {% endif %}
         </div>
-        <!-- END CONTENT -->
+        <!-- END PAGE BASE CONTENT -->
     </div>
-    <!-- END CONTAINER -->
+    <!-- END CONTENT -->
+</div>
+<!-- END CONTAINER -->
 {% endblock %}
 
 {% block css %}
@@ -183,6 +215,8 @@ $(function () {
         formCssClass: 'dynamic-formset1',
         addText: 'Додати Проект',
         deleteText: 'Видалити Проект',
+        addCssClass: 'add-row btn dark btn-sm btn-outline margin-bottom-10',
+        deleteCssClass: 'delete-row btn red btn-sm btn-outline margin-bottom-10',
         'added': function (row) {
             //find the fields with the calendar widget
             $(row).find('.vDateField').each(function (i) {

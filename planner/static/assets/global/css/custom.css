@@ -105,3 +105,23 @@ a.nav-link.active {
 #filterBody .card-body {
     padding: 0.25rem;
 }
+
+.add-row, .delete-row {
+    font-size: 12px;
+}
+
+.add-row {
+    color: #212529!important;
+}
+
+.add-row:hover {
+    color: #fff!important;
+}
+
+.delete-row {
+    color: #e7505a!important;
+}
+
+.delete-row:hover {
+    color: #fff!important;
+}
