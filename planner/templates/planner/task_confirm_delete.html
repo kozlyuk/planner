@@ -5,6 +5,8 @@
 {% load ita_template_tags %}
 
 {% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
         <!-- BEGIN BREADCRUMBS -->
@@ -20,10 +22,10 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             {% if user.is_superuser or user == event.creator %}
             <div class="row widget-row">
-                <div class="col-md-2 col-md-offset-5">
+                <div class="col">
                 <form action="" method="post">{% csrf_token %}
                     <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
-                    <input type="submit" value="Так, я впевнений" />
+                    <button class="btn dark btn-sm btn-outline sbold uppercase mb-4" type="submit">Так, я впевнений</button>
                 </form>
                 </div>
             </div>
