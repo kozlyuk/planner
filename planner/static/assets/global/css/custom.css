@@ -44,6 +44,7 @@
 
 a {
     color: #337ab7!important;
+    font-size: 14px!important;
 }
 
 a:hover {
@@ -111,12 +112,18 @@ a.nav-link.active {
 }
 
 .add-row,
-.task-return {
+.task-return,
+.news-edit,
+.news-delete,
+.news-add {
     color: #212529!important;
 }
 
 .add-row:hover,
-.task-return:hover {
+.task-return:hover,
+.news-edit:hover,
+.news-delete:hover,
+.news-add:hover {
     color: #fff!important;
 }
 
@@ -160,4 +167,12 @@ a.nav-link.active {
 
 .badge-danger {
     background-color: #ed6b75!important;
+}
+
+.news {
+    padding: 8px!important;
+}
+
+.btn-sm {
+    font-size: 12px!important;
 }
