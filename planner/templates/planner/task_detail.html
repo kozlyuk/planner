@@ -5,7 +5,9 @@
 {% load ita_template_tags %}
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
         <!-- BEGIN BREADCRUMBS -->
         <div class="breadcrumbs">
@@ -24,20 +26,23 @@
                 <div class="col-md-8 margin-bottom-20">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white widget-tab">
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_1_1" data-toggle="tab"> Опис </a>
+                        <ul class="nav nav-pills nav-tabs" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
+                                    role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> Опис </a>
                             </li>
-                            <li>
-                                <a href="#tab_1_2" data-toggle="tab"> Додатково </a>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
+                                        role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Додатково </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" style="height: 500px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade active in" id="tab_1_1">
+                        <div class="tab-content scroller" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
+                                    aria-labelledby="pills-tab_1_1">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
                                         <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
-                                            <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
+                                            <span class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right"> {{ task.overdue_status }} </span>
                                         </h3>
                                         <p>Тип проекту: <strong>{{ task.project_type }}</strong></p>
                                         <p>Договір: <strong>{{ task.deal }}</strong></p>
@@ -73,7 +78,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="tab_1_2">
+                            <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
+                                    aria-labelledby="pills-tab_1_2">
                                 <div class="widget-news margin-bottom-20">
                                     {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                     <div class="widget-news-right-body">
@@ -89,7 +95,7 @@
                                 </div>
                             </div>
                             <a href="{{request.META.HTTP_REFERER}}"
-                                class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
+                                class="btn dark task-return btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
                         </div>
                     </div>
                     <!-- END WIDGET -->
@@ -97,19 +103,23 @@
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white widget-tab">
-                        <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#tab_2_1" data-toggle="tab"> Виконавці </a>
+                        <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                    role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
                             </li>
-                            <li>
-                                <a href="#tab_2_2" data-toggle="tab"> Витрати </a>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
                             </li>
-                            <li>
-                                <a href="#tab_2_3" data-toggle="tab"> Відправки </a>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
+                                    role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" style="height: 500px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade active in" id="tab_2_1">
+                        <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
+                            <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
+                                aria-labelledby="pills-tab_2_1">
                                 {% if executors|length > 0 %}
                                     {% for executor in executors %}
                                         <div class="widget-media">
@@ -136,32 +146,36 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="tab-pane fade" id="tab_2_2">
+                            <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
+                                aria-labelledby="pills-tab_2_2">
                                 {% if costs|length > 0 %}
-                                    {% for cost in costs %}
-                                        <div class="widget-media">
-                                            <div class="widget-media-body">
-                                                <h4 class="widget-media-body-title">
-                                                    <a href="#">{{ cost.contractor.name }}</a>
-                                                </h4>
-                                                Назва робіт: <strong>{{ cost.order_name }}</strong><br>
-                                                Договір: <strong>{{ cost.deal_number }}</strong><br>
-                                                Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div><br>
-                                                Аванс: <strong>{{ cost.advance }}</strong><br>
-                                                Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
-                                                {% if cost.pay_date %}Дата оплати: <strong>{{ cost.pay_date }}</strong>{% endif %}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="widget-media">
-                                        <div class="widget-media-body">
-                                            <p class="widget-media-body-subtitle">Витрати відсутні</p>
-                                        </div>
+                                {% for cost in costs %}
+                                <div class="widget-media">
+                                    <div class="widget-media-body">
+                                        <h4 class="widget-media-body-title">
+                                            <a href="#">{{ cost.contractor.name }}</a>
+                                        </h4>
+                                        Назва робіт: <strong>{{ cost.order_name }}</strong><br>
+                                        Договір: <strong>{{ cost.deal_number }}</strong><br>
+                                        Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div>
+                                        <br>
+                                        Аванс: <strong>{{ cost.advance }}</strong><br>
+                                        Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
+                                        {% if cost.pay_date %}Дата оплати:
+                                        <strong>{{ cost.pay_date }}</strong>{% endif %}
                                     </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <div class="widget-media">
+                                    <div class="widget-media-body">
+                                        <p class="widget-media-body-subtitle">Витрати відсутні</p>
+                                    </div>
+                                </div>
                                 {% endif %}
                             </div>
-                            <div class="tab-pane fade" id="tab_2_3">
+                            <div class="tab-pane fade show" id="tab_2_3" role="tabpane2"
+                                aria-labelledby="pills-tab_2_3">
                                 {% if sendings|length > 0 %}
                                     {% for sending in sendings %}
                                         <div class="widget-media">

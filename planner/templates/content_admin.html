@@ -30,7 +30,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
+                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             Акт виконаних робіт: {{ deal.get_act_status_display }}
                                         </div>
@@ -45,7 +45,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
+                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             {{ deal.get_pay_status_display }}
                                         </div>
@@ -60,7 +60,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="label label-warning"> Вартість робіт: {{ deal.value }} грн. </span>
+                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
                                             </h3>
                                             {{ deal.overdue_status }}
                                         </div>
@@ -86,7 +86,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                                                <span class="label label-success"> {{ inttask.get_exec_status_display }} </span>
+                                                <span class="badge badge-pill badge-success float-right"> {{ inttask.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>

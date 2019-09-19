@@ -110,11 +110,13 @@ a.nav-link.active {
     font-size: 12px;
 }
 
-.add-row {
+.add-row,
+.task-return {
     color: #212529!important;
 }
 
-.add-row:hover {
+.add-row:hover,
+.task-return:hover {
     color: #fff!important;
 }
 
@@ -142,4 +144,20 @@ a.nav-link.active {
 .task-delete:hover,
 .task-cancel:hover {
     color: #fff !important;
+}
+
+.badge-warning {
+    background-color: #f1c40f!important;
+}
+
+.badge-success {
+    background-color: #36c6d3!important;
+}
+
+.badge-info {
+    background-color: #659be0!important;
+}
+
+.badge-danger {
+    background-color: #ed6b75!important;
 }
