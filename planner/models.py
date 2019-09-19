@@ -168,7 +168,8 @@ class Employee(models.Model):
                 datetime.now().year if datetime.now().month > 4 else datetime.now().year - 1)
 
     def productivity(self):
-        return self.total_bonuses(0) / self.salary / datetime.now().day * 30    # days in month
+        return int(self.total_bonuses(0) / self.salary / datetime.now().day * 3000)
+        # 3000 = 30(days in month) * 100(percentage)
     productivity.short_description = 'Продуктивність'
 
     def owner_productivity(self):

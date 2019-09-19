@@ -129,6 +129,7 @@ def home_page(request):
                                       .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
                                       .count()
         overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        owner_productivity = request.user.employee.owner_productivity()
     else:
         td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
         ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
@@ -146,6 +147,7 @@ def home_page(request):
                                             .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__gte=date.today())\
                                             .count()
         overdue_executions_div = int(overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
+        productivity = request.user.employee.productivity()
 
     inttasks = IntTask.objects.filter(executor__user=request.user)\
                               .exclude(exec_status=IntTask.Done)\
@@ -211,17 +213,17 @@ def home_page(request):
         # inttask bonuses
 
     exec_bonuses_cm = exec_bonuses(0)
-    exec_bonuses_pm = exec_bonuses(-1)
-    exec_bonuses_ppm = exec_bonuses(-2)
+#    exec_bonuses_pm = exec_bonuses(-1)
+#    exec_bonuses_ppm = exec_bonuses(-2)
     owner_bonuses_cm = owner_bonuses(0)
-    owner_bonuses_pm = owner_bonuses(-1)
-    owner_bonuses_ppm = owner_bonuses(-2)
+#    owner_bonuses_pm = owner_bonuses(-1)
+#    owner_bonuses_ppm = owner_bonuses(-2)
     inttask_bonuses_cm = inttask_bonuses(0)
-    inttask_bonuses_pm = inttask_bonuses(-1)
-    inttask_bonuses_ppm = inttask_bonuses(-2)
+#    inttask_bonuses_pm = inttask_bonuses(-1)
+#    inttask_bonuses_ppm = inttask_bonuses(-2)
     total_bonuses_cm = exec_bonuses_cm + owner_bonuses_cm + inttask_bonuses_cm
-    total_bonuses_pm = exec_bonuses_pm + owner_bonuses_pm + inttask_bonuses_pm
-    total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
+#    total_bonuses_pm = exec_bonuses_pm + owner_bonuses_pm + inttask_bonuses_pm
+#    total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
 
     news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today()).order_by('-created')
 
@@ -257,17 +259,17 @@ def home_page(request):
                                       'overdue_inttasks_count': overdue_inttasks_count,
                                       'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
-                                      'exec_bonuses_pm': exec_bonuses_pm,
-                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      #'exec_bonuses_pm': exec_bonuses_pm,
+                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
                                       'owner_bonuses_cm': owner_bonuses_cm,
-                                      'owner_bonuses_pm': owner_bonuses_pm,
-                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      #'owner_bonuses_pm': owner_bonuses_pm,
+                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
                                       'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
                                       'total_bonuses_cm': total_bonuses_cm,
-                                      'total_bonuses_pm': total_bonuses_pm,
-                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      #'total_bonuses_pm': total_bonuses_pm,
+                                      #'total_bonuses_ppm': total_bonuses_ppm,
                                       'employee_id': Employee.objects.get(user=request.user).id,
                                       'cm': date_delta(0),
                                       'pm': date_delta(-1),
@@ -292,23 +294,24 @@ def home_page(request):
                                       'tasks_div': tasks_div,
                                       'overdue_tasks_count': overdue_tasks_count,
                                       'overdue_tasks_div': overdue_tasks_div,
+                                      'owner_productivity': owner_productivity,
                                       #'hd_inttasks_count': hd_inttasks_count,
                                       'active_inttasks_count': active_inttasks_count,
                                       #'inttasks_div': inttasks_div,
                                       'overdue_inttasks_count': overdue_inttasks_count,
                                       'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
-                                      'exec_bonuses_pm': exec_bonuses_pm,
-                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      #'exec_bonuses_pm': exec_bonuses_pm,
+                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
                                       'owner_bonuses_cm': owner_bonuses_cm,
-                                      'owner_bonuses_pm': owner_bonuses_pm,
-                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      #'owner_bonuses_pm': owner_bonuses_pm,
+                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
                                       'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
                                       'total_bonuses_cm': total_bonuses_cm,
-                                      'total_bonuses_pm': total_bonuses_pm,
-                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      #'total_bonuses_pm': total_bonuses_pm,
+                                      #'total_bonuses_ppm': total_bonuses_ppm,
                                       'employee_id': Employee.objects.get(user=request.user).id,
                                       'cm': date_delta(0),
                                       'pm': date_delta(-1),
@@ -333,23 +336,24 @@ def home_page(request):
                                       'executions_div': executions_div,
                                       'overdue_executions_count': overdue_executions_count,
                                       'overdue_executions_div': overdue_executions_div,
+                                      'productivity': productivity,
                                       #'hd_inttasks_count': hd_inttasks_count,
                                       'active_inttasks_count': active_inttasks_count,
                                       #'inttasks_div': inttasks_div,
                                       'overdue_inttasks_count': overdue_inttasks_count,
                                       'overdue_inttasks_div': overdue_inttasks_div,
                                       'exec_bonuses_cm': exec_bonuses_cm,
-                                      'exec_bonuses_pm': exec_bonuses_pm,
-                                      'exec_bonuses_ppm': exec_bonuses_ppm,
+                                      #'exec_bonuses_pm': exec_bonuses_pm,
+                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
                                       'owner_bonuses_cm': owner_bonuses_cm,
-                                      'owner_bonuses_pm': owner_bonuses_pm,
-                                      'owner_bonuses_ppm': owner_bonuses_ppm,
+                                      #'owner_bonuses_pm': owner_bonuses_pm,
+                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
                                       'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
+                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
                                       'total_bonuses_cm': total_bonuses_cm,
-                                      'total_bonuses_pm': total_bonuses_pm,
-                                      'total_bonuses_ppm': total_bonuses_ppm,
+                                      #'total_bonuses_pm': total_bonuses_pm,
+                                      #'total_bonuses_ppm': total_bonuses_ppm,
                                       'employee_id': Employee.objects.get(user=request.user).id,
                                       'cm': date_delta(0),
                                       'pm': date_delta(-1),
