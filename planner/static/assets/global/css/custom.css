@@ -170,7 +170,7 @@ a.nav-link.active {
 }
 
 .btn-sm {
-    font-size: 12px!important;
+    font-size: 11px!important;
 }
 
 .widget-tab .nav-tabs > li > a {
@@ -212,7 +212,11 @@ a.nav-link.active {
     font-size: 20px;
 }
 
-.table td {
+.table td, .table th {
     padding-top: 8px;
     padding-bottom: 8px;
+}
+
+.widget-progress {
+    min-height: 0!important;
 }

@@ -4,7 +4,6 @@
 {% load static %}
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
 <!-- BEGIN CONTAINER -->
-<div class="row widget-row">
     <div class="col-md-6 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
         <div class="widget-bg-color-white widget-tab main-widget-tab">
@@ -106,45 +105,45 @@
     </div>
     <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
         <!-- BEGIN WIDGET PROGRESS -->
-        <div class="widget-progress">
-            <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
-                <span class="widget-progress-title">Виконано проектів
-                    <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
-                </div>
-            </div>
-            <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
-                <span class="widget-progress-title">Протерміновано проектів
-                    <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_tasks_div }}%;">
-                    </div>
-                </div>
-            </div>
-            <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                <span class="widget-progress-title">Продуктивність
-                    <span class="pull-right">{{ owner_productivity }}%</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ owner_productivity }}%;">
-                    </div>
-                </div>
-            </div>
-            <div class="widget-progress-element widget-bg-color-purple">
-                <span class="widget-progress-title">Протерміновано завдань
-                    <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_inttasks_div }}%;">
-                    </div>
-                </div>
-            </div>
-        </div>
+        <canvas id="myChart" width="400" height="400"></canvas>
         <!-- END WIDGET PROGRESS -->
     </div>
-</div>
         <!-- END CONTAINER -->
+        <script>
+        	window.onload = function() {
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3, 5],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+</script>
 {% endblock %}
