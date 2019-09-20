@@ -1,15 +1,15 @@
 {% extends 'main.html' %}
 {% block 'row1' %}
 {% load ita_template_tags %}
+{% load static %}
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
 <!-- BEGIN CONTAINER -->
 <div class="row widget-row">
     <div class="col-md-6 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
-        <div class="widget-bg-color-white widget-tab">
-            <span style="color: #8e9daa;"
-                class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Проекти </span>
-
-            <ul class="nav nav-pills mb-3 nav-tabs" id="pills-tab" role="tablist">
+        <div class="widget-bg-color-white widget-tab main-widget-tab">
+            <h6 class="task-header center-block text-center">Проекти</h6>
+            <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
                         aria-controls="pills-tab_1_1" aria-selected="true"> В черзі </a>
@@ -23,8 +23,8 @@
                         aria-controls="pills-tab_1_3" aria-selected="false"> Виконано </a>
                 </li>
             </ul>
-            <div style="height: 300px" class="tab-content scroller" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
+            <div style="height: 380px;" class="tab-content scroller pt-1" id="pills-tabContent">
+                <div class="tab-pane fade" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
                     {% for task in td_tasks %}
                     <div class="widget-news margin-bottom-20">
                         <div class="widget-news-right-body">
@@ -40,10 +40,9 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="tab-pane fade" id="tab_1_2" role="tabpanel" aria-labelledby="pills-tab_1_2">
+                <div class="tab-pane fade show active" id="tab_1_2" role="tabpanel" aria-labelledby="pills-tab_1_2">
                     {% for task in ip_tasks %}
-                    <div class="widget-news margin-bottom-20">
-                        {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                    <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
@@ -60,7 +59,6 @@
                 <div class="tab-pane fade" id="tab_1_3" role="tabpanel" aria-labelledby="pills-tab_1_3">
                     {% for task in hd_tasks %}
                     <div class="widget-news margin-bottom-20">
-                        {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
@@ -80,15 +78,13 @@
     <!-- END WIDGET TAB -->
     <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
-        <div class="widget-bg-color-white widget-tab">
-            <span style="color: #8e9daa;"
-                class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Завдання </span>
-
+        <div class="widget-bg-color-white widget-tab main-widget-tab">
+        <h6 class="task-header center-block text-center">Завдання</h6>
             {% if inttasks %}
-            <div class="tab-content scroller" style="height: 380px;" data-always-visible="1"
+            <div class="tab-content scroller pt-3" style="height: 432px;" data-always-visible="1"
                 data-handle-color="#D7DCE2">
                 {% for inttask in inttasks %}
-                <div class="widget-news margin-bottom-20">
+                <div class="widget-news mb-3">
                     <div class="widget-news-right-body">
                         <h3 class="widget-news-right-body-title">
                             <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
@@ -102,7 +98,7 @@
             {% else %}
             <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1"
                 data-handle-color="#D7DCE2">
-                <p>На жаль у вас не має завдань</p>
+                <p class="noContent">На жаль у вас не має завдань <i class="far fa-frown"></i></p>
             </div>
             {% endif %}
         </div>

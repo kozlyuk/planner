@@ -1,19 +1,20 @@
 {% extends 'main.html' %}
 {% block 'row1' %}
+{% load static %}
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
         <!-- BEGIN CONTAINER -->
                 <div class="row widget-row">
                     <div class="col-md-6 margin-bottom-20">
                         <!-- BEGIN WIDGET TAB -->
-                        <div class="widget-bg-color-white widget-tab">
-                            <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Угоди </span>
-
-                            <ul class="nav nav-pills mb-3 nav-tabs" id="pills-tab" role="tablist">
+                        <div class="widget-bg-color-white widget-tab main-widget-tab">
+                        <h6 class="task-header center-block text-center">Угоди</h6>
+                            <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
+                                    <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
                                         role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> Чекають закриття </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
+                                    <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
                                         role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Протермінована оплата </a>
                                 </li>
                                 <li class="nav-item">
@@ -21,12 +22,11 @@
                                         role="tab" aria-controls="pills-tab_1_3" aria-selected="false"> Протерміноване виконання </a>
                                 </li>
                             </ul>
-                            <div style="height: 300px" class="tab-content scroller" id="pills-tabContent">
+                            <div style="height: 400px" class="tab-content scroller pt-1" id="pills-tabContent">
                                 <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
                                     aria-labelledby="pills-tab_1_1">
                                     {% for deal in actneed_deals %}
                                     <div class="widget-news margin-bottom-20">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
@@ -69,19 +69,16 @@
                                     </div>
                             </div>
                         </div>
-
-
                         <!-- END WIDGET TAB -->
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
                         <!-- BEGIN WIDGET TAB -->
-                        <div class="widget-bg-color-white widget-tab">
-                            <span style="color: #8e9daa;" class="center-block text-center caption-subject theme-font bold uppercase pt-3"> Завдання </span>
-
+                        <div class="widget-bg-color-white widget-tab main-widget-tab">
+                            <h6 class="task-header center-block text-center">Завдання</h6>
                             {% if inttasks %}
                             <div class="tab-content scroller" style="height: 380px;" data-always-visible="1" data-handle-color="#D7DCE2">
                                     {% for inttask in inttasks %}
-                                    <div class="widget-news margin-bottom-20">
+                                    <div class="widget-news margin-bottom-10">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
@@ -94,7 +91,7 @@
                             </div>
                                 {% else %}
                                 <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                    <p>На жаль у вас не має завдань</p>
+                                    <p class="noContent">На жаль у вас не має завдань <i class="far fa-frown"></i></p>
                                     </div>
                             {% endif %}
                         </div>
