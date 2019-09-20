@@ -211,3 +211,8 @@ a.nav-link.active {
             transform: translate(-50%, -50%);
     font-size: 20px;
 }
+
+.table td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
