@@ -15,69 +15,9 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div id="row1" class="mt-3">
-                <div class="row widget-row">
+                
                     {% block 'row1' %}
                     {% endblock %}
-                </div>
-                <div class="row widget-row">
-
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
-                                <span class="widget-progress-title">Виконано проектів
-                                    <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar"
-                                        style="width: {{ tasks_div }}%;"> </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
-                                <span class="widget-progress-title">Протерміновано проектів
-                                    <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar"
-                                        style="width: {{ overdue_tasks_div }}%;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                                <span class="widget-progress-title">Продуктивність
-                                    <span class="pull-right">{{ owner_productivity }}%</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar"
-                                        style="width: {{ owner_productivity }}%;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-purple">
-                                <span class="widget-progress-title">Протерміновано завдань
-                                    <span
-                                        class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar"
-                                        style="width: {{ overdue_inttasks_div }}%;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
