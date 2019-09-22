@@ -111,7 +111,8 @@ a.nav-link.active {
 .task-return,
 .news-edit,
 .news-delete,
-.news-add {
+.news-add,
+.news-cancel {
     color: #212529!important;
 }
 
@@ -119,7 +120,8 @@ a.nav-link.active {
 .task-return:hover,
 .news-edit:hover,
 .news-delete:hover,
-.news-add:hover {
+.news-add:hover,
+.news-cancel:hover {
     color: #fff!important;
 }
 

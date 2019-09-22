@@ -6,7 +6,9 @@
 
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
 
         <!-- BEGIN CONTENT -->
@@ -14,36 +16,36 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row margin-top-20">
                 <!-- PERMISSION CHECK -->
-                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                <div class="col-md-6 col-md-offset-3">
-                    <!-- BEGIN WIDGET TAB -->
-                    <div class="portlet light tasks-widget">
-                        <div class="portlet-title">
-                            <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase">Новини та повідомлення</span>
+                <form id="TaskForm" class="form-horizontal container" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                    <div class="col-12">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div class="portlet light tasks-widget">
+                            <div class="portlet-title">
+                                <div class="caption caption-md font-red-sunglo">
+                                    <span class="caption-subject theme-font bold uppercase">Новини та повідомлення</span>
+                                </div>
                             </div>
-                        </div>
-                        {% if perms.planner.change_news %}
-                        <div class="portlet-body">
-                            <div class="widget-bg-color-white">
-                                    <table class="table table-hover">
-                                        <col width="25%">
-                                        {{ form }}
-                                    </table>
-                                    <div class="form-actions">
-                                        <a href="{{request.META.HTTP_REFERER}}"
-                                            class="btn dark btn-sm btn-outline sbold uppercase"> Повернутись </a>
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                            style="float: right;">Зберегти</button>
-                                    </div>
+                            {% if perms.planner.change_news %}
+                            <div class="portlet-body">
+                                <div class="widget-bg-color-white">
+                                        <table class="table table-hover">
+                                            <col width="25%">
+                                            {{ form }}
+                                        </table>
+                                        <div class="form-actions">
+                                            <a href="{{request.META.HTTP_REFERER}}"
+                                                class="btn dark btn-sm news-cancel btn-outline sbold uppercase"> Повернутись </a>
+                                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Зберегти</button>
+                                        </div>
+                                </div>
                             </div>
+                            {% else %}
+                                Ви не маєте доступу до редагування даного контенту<br><br>
+                            {% endif %}
                         </div>
-                        {% else %}
-                            Ви не маєте доступу до редагування даного контенту<br><br>
-                        {% endif %}
+                        <!-- END WIDGET -->
                     </div>
-                    <!-- END WIDGET -->
-                </div>
                 </form>
             </div>
             <!-- END PAGE BASE CONTENT -->
