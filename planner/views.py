@@ -83,32 +83,23 @@ def logout_page(request):
 def home_page(request):
 
     if request.user.groups.filter(name='Бухгалтери').exists():
-        actneed_deals = []
         active_deals = Deal.objects.exclude(act_status=Deal.Issued) \
-                           .exclude(number__icontains='загальний')
-        for deal in active_deals:
-            if deal.exec_status() == 'Надіслано':
-                actneed_deals.append(deal)
-        debtor_deals = []
+                                   .exclude(number__icontains='загальний')
+        actneed_deals = active_deals.filter(exec_status=Deal.Sent)
         unpaid_deals = Deal.objects.exclude(act_status=Deal.NotIssued) \
                                    .exclude(pay_status=Deal.PaidUp) \
                                    .exclude(number__icontains='загальний')
-        deb_deals = unpaid_deals.exclude(pay_date__isnull=True) \
-                                .exclude(pay_date__gte=date.today())
-        for deal in deb_deals:
-            if deal.exec_status() == 'Надіслано':
-                debtor_deals.append(deal)
-        overdue_deals = []
-        deals = Deal.objects.exclude(expire_date__gte=date.today()) \
-                            .exclude(number__icontains='загальний')
-        for deal in deals:
-            if deal.exec_status() != 'Надіслано':
-                overdue_deals.append(deal)
+        debtor_deals = unpaid_deals.filter(exec_status=Deal.Sent)\
+                                   .exclude(pay_date__isnull=True) \
+                                   .exclude(pay_date__gte=date.today())
+        overdue_deals = Deal.objects.exclude(exec_status=Deal.Sent) \
+                                    .exclude(expire_date__gte=date.today()) \
+                                    .exclude(number__icontains='загальний')
 
-        actneed_deals_count = len(actneed_deals)
+        actneed_deals_count = actneed_deals.count()
         active_deals_count = active_deals.count()
         deals_div = int(actneed_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
-        debtor_deals_count = len(debtor_deals)
+        debtor_deals_count = debtor_deals.count()
         unpaid_deals_count = unpaid_deals.count()
         debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
         overdue_deals_count = len(overdue_deals)
@@ -117,7 +108,7 @@ def home_page(request):
         td_tasks = Task.objects.filter(exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
         ip_tasks = Task.objects.filter(Q(exec_status=Task.Done) | Q(exec_status=Task.InProgress),
                                        owner__user=request.user).order_by('creation_date')
-        hd_tasks = Task.objects.filter(exec_status=Task.Sent, owner__user=request.user).order_by('-actual_finish')[:50]
+        hd_tasks = Task.objects.filter(exec_status=Task.Sent, owner__user=request.user).order_by('-actual_finish')[:20]
 
         hd_tasks_count = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
                                              actual_finish__month=datetime.now().month,
@@ -133,7 +124,7 @@ def home_page(request):
     else:
         td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
         ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
-        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done).order_by('-finish_date')[:50]
+        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done).order_by('-finish_date')[:20]
         hd_executions_count = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
                                                        finish_date__month=datetime.now().month,
                                                        finish_date__year=datetime.now().year).count()
@@ -226,12 +217,7 @@ def home_page(request):
 #    total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
 
     news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today()).order_by('-created')
-
-    for event in Event.objects.all():
-        event.next_date = event.next_repeat()
-        event.save(update_fields=['next_date'], logging=False)
     events = Event.objects.filter(next_date__isnull=False).order_by('next_date')
-
     activities = Log.objects.filter(user=request.user)[:50]
 
     if request.user.groups.filter(name='Бухгалтери').exists():

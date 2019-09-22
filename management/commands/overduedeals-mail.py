@@ -19,7 +19,7 @@ class Command(BaseCommand):
         overdue = []
 
         for deal in deals:
-            if deal.exec_status() != 'Надіслано':
+            if deal.exec_status() != 'Надіслано':   # todo make filter by exec_status
                 overdue.append(deal)
 
 
@@ -52,7 +52,7 @@ class Command(BaseCommand):
                                .format(index, deal.pk, deal.number, deal.customer,
                                        deal.value, deal.get_pay_status_display(),
                                        deal.get_act_status_display(), deal.expire_date,
-                                       deal.exec_status())
+                                       deal.exec_status())  # todo make filter by exec_status
 
                 message += '</table></body></html><br>'
 

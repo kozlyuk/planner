@@ -268,9 +268,9 @@ class Project(models.Model):
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
                                                       validators=[MaxValueValidator(100)], default=75)
     owner_bonus = models.PositiveSmallIntegerField('Бонус керівника проекту, %',
-                                                      validators=[MaxValueValidator(100)], default=6)
+                                                   validators=[MaxValueValidator(100)], default=6)
     executors_bonus = models.PositiveSmallIntegerField('Бонус виконавців, %',
-                                                      validators=[MaxValueValidator(100)], default=12)
+                                                       validators=[MaxValueValidator(100)], default=12)
     copies_count = models.PositiveSmallIntegerField('Кількість примірників',default=0,
                                                     validators=[MaxValueValidator(10)])
     description = models.TextField('Опис', blank=True)
@@ -410,6 +410,16 @@ class Deal(models.Model):
         (PartlyIssued, 'Виписаний частково'),
         (Issued, 'Виписаний')
         )
+    ToDo = 'IW'
+    InProgress = 'IP'
+    Done = 'HD'
+    Sent = 'ST'
+    EXEC_STATUS_CHOICES = (
+        (ToDo, 'В черзі'),
+        (InProgress, 'Виконується'),
+        (Done, 'Виконано'),
+        (Sent, 'Надіслано')
+    )
     number = models.CharField('Номер договору', max_length=30)
     date = models.DateField('Дата договору', default=now)
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
@@ -421,6 +431,8 @@ class Deal(models.Model):
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
     expire_date = models.DateField('Дата закінчення договору')
     act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
+    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    warning = models.CharField('Попередження', max_length=30, blank=True)
     act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
@@ -466,41 +478,6 @@ class Deal(models.Model):
     def svalue(self):
         return u'{0:,}'.format(self.value).replace(u',', u' ')
     svalue.short_description = 'Вартість робіт, грн.'
-
-    def exec_status(self):
-        queryset = self.task_set.all()
-        for task in queryset:
-            if task.exec_status == Task.ToDo:
-                return 'В черзі'
-        for task in queryset:
-            if task.exec_status == Task.InProgress:
-                return 'Виконується'
-        for task in queryset:
-            if task.exec_status == Task.Done:
-                return 'Виконано'
-        for task in queryset:
-            if task.exec_status == Task.Sent:
-                return 'Надіслано'
-        return 'Відсутні проекти'
-    exec_status.short_description = 'Статус виконання'
-
-    def overdue_status(self):
-        if 'загальний' in self.number:
-            return ''
-        if self.exec_status() == 'Надіслано':
-            value_calc = self.value_calc() + self.value_correction
-            if self.value > 0 and self.value != value_calc:
-                return 'Вартість по роботам %s' % value_calc
-            if self.act_status == self.NotIssued or self.act_status == self.PartlyIssued:
-                return 'Очікує закриття акту'
-            if self.pay_status != self.PaidUp and self.pay_date:
-                return 'Оплата %s' % self.pay_date.strftime(date_format)
-            return ''
-        elif self.expire_date < date.today():
-            return 'Протерміновано %s' % self.expire_date.strftime(date_format)
-        elif self.expire_date - timedelta(days=7) <= date.today():
-            return 'Закінчується %s' % self.expire_date.strftime(date_format)
-        return ''
 
     def bonuses_calc(self):                                          # total deal's bonuses
         total = 0
@@ -974,6 +951,7 @@ class Event(models.Model):
         ordering = ['next_date']
 
     def save(self, logging=True, *args, **kwargs):
+        self.next_date = self.next_repeat()
         if not self.pk:
             self.creator = get_current_user()
         if logging:
@@ -1017,7 +995,7 @@ class Event(models.Model):
 
     @property
     def is_today(self):
-        return date.today() == self.next_repeat()
+        return self.next_date == date.today()
 
     def is_editable(self):
         user = get_current_user()

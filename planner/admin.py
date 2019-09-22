@@ -221,27 +221,28 @@ class TasksInline(admin.TabularInline):
             kwargs["queryset"] = Project.objects.filter(customer=request._obj_.customer, active=True)
         return super(TasksInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class DealAdmin(admin.ModelAdmin):
 
     form = DealForm
 
-    def overdue_mark(self, obj):
-        status = obj.overdue_status()
-        if 'Протерміновано' in status:
-            return format_html('<div style="color:red;">%s</div>' % status)
-        elif 'Закінчується' in status:
-            return format_html('<div style="color:orange;">%s</div>' % status)
-        elif status == 'Очікує закриття акту' or 'Оплата' in status:
-            return format_html('<div style="color:blue;">%s</div>' % status)
-        elif 'Вартість' in status:
-            return format_html('<div style="color:purple;">%s</div>' % status)
-        return status
+#    def overdue_mark(self, obj):
+#        status = obj.overdue_status()
+#        if 'Протерміновано' in status:
+#            return format_html('<div style="color:red;">%s</div>' % status)
+#        elif 'Закінчується' in status:
+#            return format_html('<div style="color:orange;">%s</div>' % status)
+#        elif status == 'Очікує закриття акту' or 'Оплата' in status:
+#            return format_html('<div style="color:blue;">%s</div>' % status)
+#        elif 'Вартість' in status:
+#            return format_html('<div style="color:purple;">%s</div>' % status)
+#        return status
 
-    overdue_mark.allow_tags = True
-    overdue_mark.short_description = 'Попередження'
+#    overdue_mark.allow_tags = True
+#    overdue_mark.short_description = 'Попередження'
 
     list_display = ['number', 'customer', 'svalue', 'pay_status',
-                    'act_status', 'exec_status', 'overdue_mark']
+                    'act_status', 'exec_status']  #, 'overdue_mark']
     list_per_page = 50
     search_fields = ['number', 'value']
     ordering = ['-creation_date', 'customer', '-number']

@@ -5,6 +5,9 @@ media/
 settings.py
 venv/
 myvenv/
+/celerybeat-schedule
+/dump.rdb
+/celerybeat.pid
 
 # Windows image file caches
 Thumbs.db
