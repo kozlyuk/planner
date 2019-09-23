@@ -30,29 +30,29 @@
                         </div>
 
                         <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
-                        <div class="card-body">
-                            <div class="container-fluid " style="display:block">
-                                        <form action="{% url 'task_list' %}" method="get">
-                                            {% for hidden_field in filter_form.hidden_fields %}
-                                                {{ hidden_field }}
-                                            {% endfor %}
+                            <div class="card-body">
+                                <div class="container-fluid " style="display:block">
+                                            <form action="{% url 'task_list' %}" method="get">
+                                                {% for hidden_field in filter_form.hidden_fields %}
+                                                    {{ hidden_field }}
+                                                {% endfor %}
 
-                                            {% for field in filter_form.visible_fields %}
-                                                {{ field.label_tag }}
-                                                {{ field }}
-                                                {% if field.help_text %}
-                                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                {% endif %}
-                                            {% endfor %}
-                                                {% if field.help_text %}
-                                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                {% endif %}
-                                                <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                                <i class="fa fa-search"></i>Пошук </button>
-                                        </form>
-                                    </div>
-                        </div>
+                                                {% for field in filter_form.visible_fields %}
+                                                    {{ field.label_tag }}
+                                                    {{ field }}
+                                                    {% if field.help_text %}
+                                                        <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                    {% if field.help_text %}
+                                                        <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                                    {% endif %}
+                                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                                    <i class="fa fa-search"></i>Пошук </button>
+                                            </form>
+                                        </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -83,10 +83,10 @@
                                 <td>{{ deal.value }}</td>
                                 <td>{{ deal.get_pay_status_display }}</td>
                                 <td>{{ deal.get_act_status_display }}</td>
-                                <td>{{ deal.exec_status }}</td>
+                                <td>{{ deal.get_exec_status_display }}</td>
                                 <td><span
-                                        class="badge badge-pill badge-{% deal_status_color deal.overdue_status %} label-mini">
-                                        {{ deal.overdue_status }} </span></td>
+                                        class="badge badge-pill badge-{% deal_status_color deal.warning %} label-mini">
+                                        {{ deal.warning }} </span></td>
                             </tr>
                             {% endfor %}
                         </tbody>
