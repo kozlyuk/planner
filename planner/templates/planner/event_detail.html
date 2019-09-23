@@ -5,7 +5,9 @@
 {% load ita_template_tags %}
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
         <!-- BEGIN BREADCRUMBS -->
         <div class="breadcrumbs">
@@ -21,7 +23,7 @@
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
             <div class="row widget-row">
-                <div class="col-md-8 col-md-offset-2 margin-bottom-20">
+                <div class="container">
                     <!-- BEGIN WIDGET -->
                     <div class="portlet light tasks-widget">
                         <div class="portlet-title">
