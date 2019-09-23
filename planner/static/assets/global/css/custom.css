@@ -112,7 +112,9 @@ a.nav-link.active {
 .news-edit,
 .news-delete,
 .news-add,
-.news-cancel {
+.news-cancel,
+.event-add,
+.event-edit {
     color: #212529!important;
 }
 
@@ -121,15 +123,19 @@ a.nav-link.active {
 .news-edit:hover,
 .news-delete:hover,
 .news-add:hover,
-.news-cancel:hover {
+.news-cancel:hover,
+.event-add:hover,
+.event-edit:hover {
     color: #fff!important;
 }
 
-.delete-row {
+.delete-row,
+.event-delete {
     color: #e7505a!important;
 }
 
-.delete-row:hover {
+.delete-row:hover,
+.event-delete:hover {
     color: #fff!important;
 }
 
