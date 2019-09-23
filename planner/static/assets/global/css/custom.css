@@ -114,7 +114,8 @@ a.nav-link.active {
 .news-add,
 .news-cancel,
 .event-add,
-.event-edit {
+.event-edit,
+.event-cancel {
     color: #212529!important;
 }
 
@@ -125,7 +126,8 @@ a.nav-link.active {
 .news-add:hover,
 .news-cancel:hover,
 .event-add:hover,
-.event-edit:hover {
+.event-edit:hover,
+.event-cancel:hover {
     color: #fff!important;
 }
 
