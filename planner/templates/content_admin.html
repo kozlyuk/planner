@@ -1,5 +1,6 @@
 {% extends 'main.html' %}
 {% block 'row1' %}
+{% load ita_template_tags %}
 {% load static %}
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
         <!-- BEGIN CONTAINER -->
@@ -26,7 +27,7 @@
                                 <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
                                     aria-labelledby="pills-tab_1_1">
                                     {% for deal in actneed_deals %}
-                                    <div class="widget-news margin-bottom-20">
+                                    <div class="widget-news margin-bottom-10">
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
@@ -40,7 +41,7 @@
                                 <div class="tab-pane fade" id="tab_1_2" role="tabpanel"
                                     aria-labelledby="pills-tab_1_2">
                                     {% for deal in debtor_deals %}
-                                    <div class="widget-news margin-bottom-20">
+                                    <div class="widget-news margin-bottom-10">
 {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
@@ -83,7 +84,7 @@
                                         <div class="widget-news-right-body">
                                             <h3 class="widget-news-right-body-title">
                                                 <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                                                <span class="badge badge-pill badge-success float-right"> {{ inttask.get_exec_status_display }} </span>
+                                                <span class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right"> {{ inttask.get_exec_status_display }} </span>
                                             </h3>
                                         </div>
                                     </div>
