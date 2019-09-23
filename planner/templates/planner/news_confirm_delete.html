@@ -25,7 +25,7 @@
                 <div class="container" align="center">
                 <form action="" method="post">{% csrf_token %}
                     <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
-                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Так я впевнений </button>
+                    <button type="submit" class="btn red btn-sm btn-outline sbold uppercase"> Так я впевнений </button>
                     <a href="{{request.META.HTTP_REFERER}}"
                        class="btn dark btn-sm news-cancel btn-outline sbold uppercase"> Повернутись </a>
                 </form>

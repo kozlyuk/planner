@@ -5,6 +5,8 @@
 {% load ita_template_tags %}
 
 {% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
     <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
         <!-- BEGIN BREADCRUMBS -->
@@ -20,12 +22,12 @@
             <!-- BEGIN PAGE BASE CONTENT -->
             {% if perms.planner.delete_event %}
             <div class="row widget-row">
-                <div class="col-md-6 col-md-offset-3" align="center">
+                <div class="container" align="center">
                 <form action="" method="post">{% csrf_token %}
                     <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
-                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"> Так я впевнений </button>
+                    <button type="submit" class="btn red btn-sm btn-outline sbold uppercase"> Так я впевнений </button>
                     <a href="{{request.META.HTTP_REFERER}}"
-                        class="btn dark btn-sm btn-outline sbold uppercase"> Повернутись </a>
+                        class="btn dark btn-sm event-cancel btn-outline sbold uppercase"> Повернутись </a>
 
                 </form>
                 </div>

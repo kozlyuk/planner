@@ -107,37 +107,19 @@ a.nav-link.active {
     font-size: 12px;
 }
 
-.add-row,
-.task-return,
-.news-edit,
-.news-delete,
-.news-add,
-.news-cancel,
-.event-add,
-.event-edit,
-.event-cancel {
+.dark {
     color: #212529!important;
 }
 
-.add-row:hover,
-.task-return:hover,
-.news-edit:hover,
-.news-delete:hover,
-.news-add:hover,
-.news-cancel:hover,
-.event-add:hover,
-.event-edit:hover,
-.event-cancel:hover {
+.dark:hover {
     color: #fff!important;
 }
 
-.delete-row,
-.event-delete {
+.red {
     color: #e7505a!important;
 }
 
-.delete-row:hover,
-.event-delete:hover {
+.red:hover{
     color: #fff!important;
 }
 
