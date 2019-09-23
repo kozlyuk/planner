@@ -6,142 +6,138 @@
 
 
 {% block context %}
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
-<!-- Bootstrap core CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
-<!--<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.6.1/css/mdb.min.css" rel="stylesheet">-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
 
 <!-- Horrible piece of shit start -->
 
 <style type="text/css">
 
-.widget-tab {
-    min-height: max-content;
-    border-radius: 10px;
-}
 .dropdown-toggle::after {
     display: none;
 }
+
 .navbar-nav .dropdown-menu {
      position: absolute; 
      float: none;
 }
+
 input[type=file] {
     position: relative;
     opacity: 0;
     z-index: 100;
 }
+
 div.fakefile {
 	position: absolute;
-	top: 40px;
+	top: 48px;
 	left: 220px;
 	z-index: 1;
 }
-    
 </style>
 <!-- Horrible piece of shit end -->
 
 <!-- BEGIN CONTENT -->
-<!-- PERMISSION CHECK -->
-                <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                
-<div style="margin-top: 80px; font-size: 16px">
-    <div class="container-fluid container-lf-space">
-        <div class="row1">
-            <div class="row widget-row">
-                <div class="col-md-6">
-                    <div class="widget-bg-color-white widget-tab mt-4 mb-4">
-                        
-<!-- Card -->
-                        <div class="card testimonial-card example hoverable shadow">
+<div class="container-fluid container-lf-space">
+    <div class="row1">
+    <form id="TaskForm" class="form-horizontal" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+        <div class="row widget-row">
+            <div class="col-md-6 margin-bottom-20">
+                <div class="widget-bg-color-white mt-4 mb-4">
+                    <!-- Card -->
+                    <div class="card testimonial-card hoverable shadow">
 
-                            <!-- Background color -->
-                            <div class="card-up indigo lighten-1"></div>
-  
-                                <!-- Avatar -->
-                                <div class="avatar mx-auto white mt-2 view overlay zoom rounded-circle">
-                                    <img src="{{ employee.avatar.large.url }}" class="rounded-circle img-fluid" alt="avatar">
-                                </div>
-                                <div class="btn-group btn-group-lg md-5 justify-content-center mt-2" role="group" aria-label="Basic example">
-                                    
-                                    <button form="avatar_submit" type="submit"  class="btn btn-outline-dark border border-success btn-lg" data-toggle="modal" data-target="#foto_upload">Редагувати профіль</button>
-                                  
-<!-- Modal upload foto -->
-                                    <div class="modal fade" id="foto_upload" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h2 class="modal-title text-lg" id="exampleModalLabel">Завантажити фото</h2>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div style="text-align:center" class="modal-body">
-                                                    <div class="custom-file">
-                                                        <form action="" id="avatar_submit" method="post" enctype="multipart/form-data">{% csrf_token %}
-                                                            <div><p>Мобільний телефон: {{  form.mobile_phone  }}</p></div>
-                                                            <div>                      {{  form.avatar  }}          </div>
-                                                            <button type="upload" style="position: relative; top: -99px; right: 83px; width: 129px; z-index: 1" class="btn btn-light border border-dark btn-lg waves-effect waves-light" data-dismiss="modal"> Обрати фото    </button>
-                                                            <button type="button" style="position: relative; width: 100%; bottom: 15px" class="btn btn-outline-dark border border-danger btn-lg" data-dismiss="modal"> Закрити    </button>
-                                                            <div class="fakefile">
-                                                        		<input id="filename" />
-                                                        		<img src="" />
-                                                        	</div>
-                                                        </form>
+                        <!-- Background color -->
+                        <div class="card-up indigo lighten-1"></div>
+
+                        <!-- Avatar -->
+                        <div class="avatar mx-auto white mt-2 view overlay zoom rounded-circle">
+                            <picture>
+                                <img src="{{ employee.avatar.large.url }}" class="rounded-circle img-fluid"
+                                    alt="avatar">
+                            </picture>
+                        </div>
+                        <div class="md-5 text-center mt-2" role="group"
+                            aria-label="Basic">
+
+                            <button form="avatar_submit" type="submit"
+                                class="btn dark btn-sm news-cancel btn-outline sbold uppercase" data-toggle="modal"
+                                data-target="#foto_upload" style="font-size: 14px!important">Редагувати профіль</button>
+
+                            <!-- Modal upload foto -->
+                            <div class="modal fade" id="foto_upload" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h6 class="center-block text-center mb-0">Оновити профіль</h6>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div style="text-align:center" class="modal-body">
+                                            <div class="custom-file">
+                                                <form action="" id="avatar_submit" method="post"
+                                                    enctype="multipart/form-data">{% csrf_token %}
+                                                    <div>
+                                                        <p>Мобільний телефон: {{  form.mobile_phone  }}</p>
                                                     </div>
-                                                </div>
+                                                    <div> {{  form.avatar  }} </div>
+                                                    <button type="upload"
+                                                        style="position: relative; top: -86px; right: 83px; width: 125px; z-index: 1;"
+                                                        class="btn dark btn-sm btn-outline sbold uppercase"
+                                                        data-dismiss="modal"> Обрати фото </button>
+                                                    <div class="fakefile">
+                                                        <input id="filename" />
+                                                        <img src="" />
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-<!-- modal upload foto end -->
-                                    </form>
                                 </div>
-<!-- Content -->
-    <div class="card-body">
-      <!-- Name -->
-      <h4 class="card-title text-center"><b>{{ employee.name }}</b></h4>
-          <hr>
-<!-- Quotation -->
-                <p><i class="far fa-user">    </i> login:                                     <b>{{  employee.user  }}</b></p>
-                <p><i class="far fa-envelope"></i> email:                                     <b>{{  user.email  }}</b></p>
-                <p><i class="fas fa-phone">   </i> Мобільний телефон:                         <b>{{  employee.mobile_phone  }}</b></p>
-                <p><i class="fas fa-phone">   </i> Внутрішній номер:                          <b>{{  employee.phone  }}</b></p>
-                <!-- <p><i class="fas fa-scroll">  </i> Основні засоби закріплені за мною: </p> -->
-            <!-- <ul class="list-group list-group-flush">
-                <li class="list-group-item">       Cras justo odio                             </li>
-                <li class="list-group-item">       Dapibus ac facilisis in                     </li>
-                <li class="list-group-item">       Morbi leo risus                             </li>
-                <li class="list-group-item">       Porta ac consectetur ac                     </li>
-                <li class="list-group-item">       Vestibulum at eros                          </li>
-            </ul> -->
-    </div>
-  
-  </div>
-<!-- Card -->
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="widget-bg-color-white widget-tab mt-4 mb-4 example example hoverable shadow">
-                        <div class="card testimonial-card">
-                            <ul class="list-group list-group-flush">
-                                <h2 class="text-center text-uppercase">Про мене</h2>
-                                    <li class="list-group-item">ПІБ:                          <b>{{  employee.name }}</b></li>
-                                    <li class="list-group-item">Посада:                       <b>{{  employee.position  }}</b></li>
-                                    <li class="list-group-item">Керівник:                     <b>{{  employee.head  }}</b> </li>
-                                    <li class="list-group-item">Заробітня плата:              <b>{{  employee.salary  }}</b></li>
-                                    <li class="list-group-item">День народження:              <b>{{  employee.birthday  }}</b></li>
-                                    <li class="list-group-item">Кількість днів відпустки:     <b>{{  employee.vacation_count  }}</b></li>
-                                    <li class="list-group-item">Дата нарахування відпустки:   <b>{{  employee.vacation_date  }}</b></li>
-                            </ul>
+                            </div>
+                            <!-- modal upload foto end -->
                         </div>
+                        <!-- Content -->
+                        <div class="card-body">
+                            <!-- Name -->
+                            <h4 class="card-title text-center"><b>{{ employee.name }}</b></h4>
+                            <hr>
+                            <p><i class="far fa-user"> </i> login: <b>{{  employee.user  }}</b></p>
+                            <p><i class="far fa-envelope"></i> email: <b>{{  user.email  }}</b></p>
+                            <p><i class="fas fa-phone"> </i> Мобільний телефон: <b>{{  employee.mobile_phone  }}</b></p>
+                            <p><i class="fas fa-phone"> </i> Внутрішній номер: <b>{{  employee.phone  }}</b></p>
+                            <!-- <p><i class="fas fa-scroll">  </i> Основні засоби закріплені за мною: </p> -->
+                        </div>
+
+                    </div>
+                    <!-- Card -->
+                </div>
+            </div>
+            <div class="col-md-6 margin-bottom-20">
+                <div class="widget-bg-color-white mt-4 mb-4 hoverable shadow">
+                    <div class="card testimonial-card">
+                        <ul class="list-group list-group-flush">
+                            <h4 class="text-center text-uppercase">Про мене</h4>
+                            <li class="list-group-item">ПІБ: <b>{{  employee.name }}</b></li>
+                            <li class="list-group-item">Посада: <b>{{  employee.position  }}</b></li>
+                            <li class="list-group-item">Керівник: <b>{{  employee.head  }}</b> </li>
+                            <li class="list-group-item">Заробітня плата: <b>{{  employee.salary  }}</b></li>
+                            <li class="list-group-item">День народження: <b>{{  employee.birthday  }}</b></li>
+                            <li class="list-group-item">Кількість днів відпустки: <b>{{  employee.vacation_count  }}</b>
+                            </li>
+                            <li class="list-group-item">Дата нарахування відпустки:
+                                <b>{{  employee.vacation_date  }}</b></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
+    </form>
     </div>
 </div>
+
 <!-- END CONTENT -->
 <!-- JQuery -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
