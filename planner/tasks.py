@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 @app.task
 def update_deal_statuses():
     """Update statuses and warnings of all deals with unsent tasks"""
-    deals = Deal.objects.all().order_by('-id')[:100]
+    deals = Deal.objects.all().order_by('-id')  # todo limit qs to 100 records after first execution [:100]
     for deal in deals:
         if deal.task_set.filter(exec_status=Task.ToDo).count() > 0:
             deal.exec_status = Deal.ToDo
@@ -27,7 +27,7 @@ def update_deal_statuses():
 
         if 'загальний' in deal.number:
             deal.warning = ''
-        elif deals.count() == 0:
+        elif deal.task_set.all().count() == 0:
             deal.warning = 'Відсутні проекти'
         elif deal.exec_status == Deal.Sent:
             value_calc = deal.value_calc() + deal.value_correction
@@ -37,7 +37,6 @@ def update_deal_statuses():
                 deal.warning = 'Очікує закриття акту'
             if deal.pay_status != deal.PaidUp and deal.pay_date:
                 deal.warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
-            deal.warning = ''
         elif deal.expire_date < date.today():
             deal.warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
         elif deal.expire_date - timedelta(days=7) <= date.today():
@@ -50,6 +49,7 @@ def update_deal_statuses():
 
 @app.task
 def event_next_date_calculate():
+    """Calculate next_date fields for Events"""
     for event in Event.objects.all():
         event.next_date = event.next_repeat()
         event.save(update_fields=['next_date'], logging=False)
