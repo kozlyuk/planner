@@ -1,6 +1,6 @@
 # Installing
 1. install Python3
-2. install virtual env ``` python3 -m venv /path/to/new/virtual/environment```
+2. create virtual env ``` python3 -m venv /path/to/new/virtual/environment```
 3. activate venv ``` source venv/bin/activate```
 4. install dependencies ``` pip install -r requirements.txt ```
 5. in folder planner create ```settings_local.py``` file
