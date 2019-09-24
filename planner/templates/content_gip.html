@@ -27,7 +27,7 @@
             <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
                 <div class="tab-pane fade" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
                     {% for task in td_tasks %}
-                    <div class="widget-news margin-bottom-20">
+                    <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
@@ -59,7 +59,7 @@
                 </div>
                 <div class="tab-pane fade" id="tab_1_3" role="tabpanel" aria-labelledby="pills-tab_1_3">
                     {% for task in hd_tasks %}
-                    <div class="widget-news margin-bottom-20">
+                    <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
