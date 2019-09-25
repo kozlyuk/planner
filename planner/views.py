@@ -36,8 +36,49 @@ class DealCalculation(TemplateView):
         context = super().get_context_data(**kwargs)
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
         tasks = Task.objects.filter(deal=deal)
+        objects = tasks.values('object_code', 'object_address').distinct()
+        taxation = deal.company.taxation
+        project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
+                             .order_by('project_type__price_code').distinct()
+
+        index = 0
+        svalue = 0
+        object_lists = []
+        for ptype in project_types:
+            if ptype['project_type__price'] != 0:
+                index += 1
+                object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                    .values_list('object_code', flat=True)
+                object_list = ''
+                for obj in object_codes:
+                    object_list += obj + ' '
+                count = object_codes.count()
+                price = ptype['project_type__price']
+                value = price * count
+                if deal.company.taxation == 'wovat':
+                    price = price / 6 * 5
+                    value = value / 6 * 5
+                svalue += value
+
+                object_lists.extend(index, ptype['project_type__description'], object_list,
+                            count, round(price, 2), round(value, 2))
+
+        if deal.company.taxation == 'wvat':
+            vat = round(svalue / 6, 2)
+            svalue = round(svalue, 2)
+            wovat = svalue - vat
+        elif deal.company.taxation == 'wovat':
+            vat = 0
+            svalue = round(svalue, 2)
+            wovat = svalue
+
         context['deal'] = deal
-        context['tasks'] = tasks
+        context['objects'] = objects
+        context['taxation'] = taxation
+        context['object_lists'] = object_lists
+        context['vat'] = object_lists
+        context['svalue'] = object_lists
+        context['wovat'] = object_lists
         return context
 
 
