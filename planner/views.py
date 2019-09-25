@@ -784,3 +784,10 @@ class BonusesList (ListView):  ##  temporary view
 
     def get_queryset(self):
         employee = Employee.objects.all()
+
+class DealCalc (ListView):  ##  temporary view
+    template_name = "planner/deal_calc.html"
+    context_object_name = 'calculation'  
+
+    def get_queryset(self):
+        deal = Deal.objects.all()

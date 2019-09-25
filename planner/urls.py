@@ -63,6 +63,7 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/change/$', EventUpdate.as_view(), name='event_update'),
     url(r'^event/add/$', EventCreate.as_view(), name='event_add'),
     url(r'^event/(?P<pk>[0-9]+)/delete/$', EventDelete.as_view(), name='event_delete'),
+    url(r'^deal/calculation/', DealCalc.as_view(), name='deal_calc'), ## temporary url
 ]
 
 urlpatterns += staticfiles_urlpatterns()
