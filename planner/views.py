@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
 from django.urls import reverse_lazy
+from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -21,22 +22,23 @@ from . import calc_scripts
 from crum import get_current_user
 
 
-@login_required()
-def calculation(request, deal_id):
-    if not request.user.groups.filter(name='Бухгалтери').exists():
-        raise PermissionDenied
+@method_decorator(login_required, name='dispatch')
+class DealCalculation(TemplateView):
+    template_name = "home.html"
 
-    deal = Deal.objects.get(id=deal_id)
-    tasks = Task.objects.filter(deal=deal)
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
-    template = getattr(calc_scripts, deal.customer.act_template)
-
-    if tasks.exists():
-        report = template(deal, tasks)
-    else:
-        report = 'Відсутні проекти'
-
-    return HttpResponse(report)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deal = Deal.objects.get(id=self.kwargs['deal_id'])
+        tasks = Task.objects.filter(deal=deal)
+        context['deal'] = deal
+        context['tasks'] = tasks
+        return context
 
 
 @login_required()

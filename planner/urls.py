@@ -20,8 +20,12 @@ from planner import views
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
-from .views import *
 from django.views.i18n import JavaScriptCatalog
+from .views import DealList, DealUpdate, DealCreate, DealDelete, DealCalculation
+from .views import TaskList, TaskUpdate, TaskCreate, TaskDelete, TaskDetail, TaskExchange
+from .views import EmployeeUpdate, SubtaskUpdate, InttaskDetail
+from .views import NewsList, NewsDetail, NewsUpdate, NewsCreate, NewsDelete
+from .views import EventList, EventDetail, EventUpdate, EventCreate, EventDelete
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -34,7 +38,7 @@ urlpatterns = [
     url(r'^deal/(?P<pk>\d+)/change/$', DealUpdate.as_view(), name='deal_update'),
     url(r'^deal/add/$', DealCreate.as_view(), name='deal_add'),
     url(r'^deal/(?P<pk>[0-9]+)/delete/$', DealDelete.as_view(), name='deal_delete'),
-    url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.calculation, name='calculation'),
+    url(r'^deal/(?P<deal_id>\d+)/calculation/$', DealCalculation.as_view(), name='calculation'),
 
     url(r'^project/$', TaskList.as_view(), name='task_list'),
     url(r'^project/(?P<pk>\d+)/change/$', TaskUpdate.as_view(), name='task_update'),
