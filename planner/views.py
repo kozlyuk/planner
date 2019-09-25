@@ -60,8 +60,8 @@ class DealCalculation(TemplateView):
                     value = value / 6 * 5
                 svalue += value
 
-                object_lists.extend(index, ptype['project_type__description'], object_list,
-                            count, round(price, 2), round(value, 2))
+                object_lists.append([index, ptype['project_type__description'], object_list,
+                                     count, round(price, 2), round(value, 2)])
 
         if deal.company.taxation == 'wvat':
             vat = round(svalue / 6, 2)
