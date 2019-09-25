@@ -24,7 +24,7 @@ from crum import get_current_user
 
 @method_decorator(login_required, name='dispatch')
 class DealCalculation(TemplateView):
-    template_name = "home.html"
+    template_name = "deal_calc.html"
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
