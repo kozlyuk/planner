@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<div class="page-container page-container-bg-solid mb-5" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <div class="container-fluid">
+    <h5 class="title text-center">Калькуляція по договору 127-37 Семенович-Галкомсервіс ПП ,,ГАЛКОМСЕРВІС” від 08.07.2019:<br><br></h5>
+    <div id="copy-wrapper">
+        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
+            <tbody>
+                <tr>
+                    <th>Шифр об’єкту</th>
+                    <th>Адреса об’єкту</th>
+                </tr>
+                <tr>
+                    <td align="center">UL0868</td>
+                    <td>Львівська обл., м. Львів, вул. Пасічна, 67</td>
+                </tr>
+                <tr>
+                    <td align="center">UL1805</td>
+                    <td>Львівська обл., м. Львів, вул. Городоцька, 168</td>
+                </tr>
+            </tbody>
+        </table><br>
+        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
+            <tbody>
+                <tr>
+                    <th>№ п/п</th>
+                    <th>Назва об’єкту та вид робіт</th>
+                    <th>Кількість</th>
+                    <th>Ціна, без ПДВ грн.</th>
+                    <th>Вартість, без ПДВ грн.</th>
+                </tr>
+                <tr align="center">
+                    <td>1</td>
+                    <td align="left">Доопрацювання робочого проекту об’єкту на існуючий обєкт мережі. UL0868 UL1805 </td>
+                    <td>2</td>
+                    <td>6300.00</td>
+                    <td>12600.00</td>
+                </tr>
+                <tr align="center">
+                    <td colspan="2" rowspan="4">Загальна вартість</td>
+                </tr>
+                <tr align="center">
+                    <td colspan="3">без ПДВ: 12600 грн. 0 коп.</td>
+                </tr>
+                <tr align="center">
+                    <td colspan="3">ПДВ: 0 грн. 0 коп.</td>
+                </tr>
+                <tr align="center">
+                    <td colspan="3">з ПДВ: 12600 грн. 0 коп.</td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" id="copy" class="btn dark btn-sm btn-outline sbold uppercase ml-3">Копіювати в буфер</button>
+        </div>
+    </div>
+    
+</div>
+<div aria-live="polite" aria-atomic="true" style="position: relative">
+    <div class="toast" data-delay="3000" style="position: fixed; bottom: 25px; right: 15px;">
+        <div class="toast-header">
+            <strong class="mr-auto">Копіювання</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Таблицю скопійовано в буфер.
+        </div>
+    </div>
+</div>
+
+<script>
+const button = document.getElementById('copy');
+button.addEventListener('click', function () {
+    //clear selected before copy
+    window.getSelection().removeAllRanges()
+    //get container
+    const ta = document.getElementById('copy-wrapper');
+    const range = document.createRange();
+    range.selectNode(ta);
+    window.getSelection().addRange(range);
+
+    //put container to bufer
+    try {
+        document.execCommand('copy');
+        $('.toast').toast('show')
+    } catch (err) {
+        console.log('Can`t copy');
+    }
+    //clear selected range
+    window.getSelection().removeAllRanges();
+});
+</script>
+{% endblock context %}

@@ -4,29 +4,30 @@
 {% load static %}
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
 <!-- BEGIN CONTAINER -->
-<div class="row widget-row">
-    <div class="col-md-6 margin-bottom-20">
+
+<div class="row">
+    <div class="col-xl-5 col-lg-6 col-md-6 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
         <div class="widget-bg-color-white widget-tab main-widget-tab">
             <h6 class="task-header center-block text-center">Проекти</h6>
             <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
-                        aria-controls="pills-tab_1_1" aria-selected="true"> В черзі </a>
+                        aria-controls="pills-tab_1_1" aria-selected="false"> В черзі </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2" role="tab"
-                        aria-controls="pills-tab_1_2" aria-selected="false"> Виконуються </a>
+                        aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3" role="tab"
                         aria-controls="pills-tab_1_3" aria-selected="false"> Виконано </a>
                 </li>
             </ul>
-            <div style="height: 380px;" class="tab-content scroller pt-1" id="pills-tabContent">
+            <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
                 <div class="tab-pane fade" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
                     {% for task in td_tasks %}
-                    <div class="widget-news margin-bottom-20">
+                    <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
@@ -58,7 +59,7 @@
                 </div>
                 <div class="tab-pane fade" id="tab_1_3" role="tabpanel" aria-labelledby="pills-tab_1_3">
                     {% for task in hd_tasks %}
-                    <div class="widget-news margin-bottom-20">
+                    <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
@@ -74,21 +75,23 @@
                 </div>
             </div>
         </div>
+        <!-- END WIDGET TAB -->
     </div>
-    <!-- END WIDGET TAB -->
-    <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
         <div class="widget-bg-color-white widget-tab main-widget-tab">
-        <h6 class="task-header center-block text-center">Завдання</h6>
+            <h6 class="task-header center-block text-center">Завдання</h6>
             {% if inttasks %}
-            <div class="tab-content scroller pt-3" style="height: 432px;" data-always-visible="1"
+            <div class="tab-content scroller" style="height: 390px;" data-always-visible="1"
                 data-handle-color="#D7DCE2">
                 {% for inttask in inttasks %}
-                <div class="widget-news mb-3">
+                <div class="widget-news margin-bottom-10">
+                    {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                     <div class="widget-news-right-body">
                         <h3 class="widget-news-right-body-title">
                             <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                            <span class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right">
+                            <span
+                                class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right">
                                 {{ inttask.get_exec_status_display }} </span>
                         </h3>
                     </div>
@@ -104,104 +107,122 @@
         </div>
         <!-- END WIDGET TAB -->
     </div>
-    <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
-        <!-- BEGIN WIDGET PROGRESS -->
-        <div class="widget-bg-color-white widget-tab main-widget-tab">
-            <h6 class="task-header center-block text-center">Бонуси</h6>
-            <canvas class="mt-4" id="myChart" width="200" height="200"></canvas>
+    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+        <!-- BEGIN WIDGET THUMB -->
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-red icon-layers"></i>
+                    <p class="mb-0">Ведення проектів</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                            data-counter="counterup" data-value="{{ owner_bonuses_cm }}">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
         </div>
-        <!-- END WIDGET PROGRESS -->
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-green icon-layers mt-1"></i>
+                    <p class="mb-0">Виконання проектів</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                            data-counter="counterup" data-value="{{ exec_bonuses_cm }}">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-blue icon-bulb"></i>
+                    <p class="mb-0">Виконання завдань</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                            data-counter="counterup" data-value="{{ inttask_bonuses_cm }}">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+        <div class="col-12 pl-0 pr-0">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
+                    <p class="mb-0">Сумарно</p>
+                    <div class="widget-thumb-body">
+                        <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px"
+                                class="widget-thumb-body-stat" data-counter="counterup"
+                                data-value="{{ total_bonuses_cm }}">0</span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-blue mb-4">
+                    <span class="widget-progress-title">Виконано проектів
+                        <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-red mb-4">
+                    <span class="widget-progress-title">Протерміновано проектів
+                        <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_tasks_div }}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-green mb-4">
+                    <span class="widget-progress-title">Продуктивність
+                        <span class="pull-right">{{ owner_productivity }}%</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" style="width: {{ owner_productivity }}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-purple">
+                    <span class="widget-progress-title">Протерміновано завдань
+                        <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar"
+                            style="width: {{ overdue_inttasks_div }}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET PROGRESS -->
+        </div>
     </div>
 </div>
-<div class="row widget-row">
-    <div class="col">
-        <div class="widget-progress">
-            <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
-                <span class="widget-progress-title">Виконано проектів
-                    <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="widget-progress">
-            <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
-                <span class="widget-progress-title">Протерміновано проектів
-                    <span class="pull-right">{{ overdue_tasks_count }}/{{ active_tasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_tasks_div }}%;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="widget-progress">
-            <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                <span class="widget-progress-title">Продуктивність
-                    <span class="pull-right">{{ owner_productivity }}%</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ owner_productivity }}%;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="widget-progress">
-            <div class="widget-progress-element widget-bg-color-purple">
-                <span class="widget-progress-title">Протерміновано завдань
-                    <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
-                </span>
-                <div class="progress">
-                    <div class="progress-bar bg-light" role="progressbar" style="width: {{ overdue_inttasks_div }}%;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <!-- END CONTAINER -->
-<script>
-	window.onload = function() {
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green'],
-            datasets: [{
-                label: '# of Votes',
-                data: [{{ owner_bonuses_cm }}, {{ exec_bonuses_cm }}, {{ inttask_bonuses_cm }}, {{ total_bonuses_cm }}],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-}
-</script>
 {% endblock %}

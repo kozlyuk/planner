@@ -53,7 +53,7 @@ urlpatterns = [
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
-        views.bonus_calc, name='bonus_calc'),
+        BonusesList.as_view(), name='bonus_calc'),
     url(r'^employee/change/$', EmployeeUpdate.as_view(), name='employee_update'),
 
     url(r'^news/$', NewsList.as_view(), name='news_list'),
@@ -67,6 +67,7 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/change/$', EventUpdate.as_view(), name='event_update'),
     url(r'^event/add/$', EventCreate.as_view(), name='event_add'),
     url(r'^event/(?P<pk>[0-9]+)/delete/$', EventDelete.as_view(), name='event_delete'),
+    url(r'^deal/calculation/', DealCalc.as_view(), name='deal_calc'), ## temporary url
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -43,7 +43,6 @@ class DealCalculation(TemplateView):
 
 @login_required()
 def bonus_calc(request, employee_id, year, month):
-
     employee = Employee.objects.get(id=employee_id)
 
     if not request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
@@ -780,3 +779,17 @@ class EmployeeUpdate(UpdateView):
 
     def get_object(self):
         return Employee.objects.get(user=get_current_user())
+
+class BonusesList (ListView):  ##  temporary view
+    template_name = "planner/bonuses_list.html"
+    context_object_name = 'bonuses'  
+
+    def get_queryset(self):
+        employee = Employee.objects.all()
+
+class DealCalc (ListView):  ##  temporary view
+    template_name = "planner/deal_calc.html"
+    context_object_name = 'calculation'  
+
+    def get_queryset(self):
+        deal = Deal.objects.all()

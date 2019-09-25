@@ -4,151 +4,221 @@
 {% load static %}
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
         <!-- BEGIN CONTAINER -->
-        <div class="row">
-                    <div class="col-md-6 margin-bottom-20">
-                        <!-- BEGIN WIDGET TAB -->
-                        <div class="widget-bg-color-white widget-tab main-widget-tab">
-                        <h6 class="task-header center-block text-center">Угоди</h6>
-                            <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
-                                        role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> Чекають закриття </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
-                                        role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Протермінована оплата </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3"
-                                        role="tab" aria-controls="pills-tab_1_3" aria-selected="false"> Протерміноване виконання </a>
-                                </li>
-                            </ul>
-                            <div style="height: 400px" class="tab-content scroller pt-1" id="pills-tabContent">
-                                <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
-                                    aria-labelledby="pills-tab_1_1">
-                                    {% for deal in actneed_deals %}
-                                    <div class="widget-news margin-bottom-10">
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
-                                            </h3>
-                                            Акт виконаних робіт: {{ deal.get_act_status_display }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    </div>
-                                <div class="tab-pane fade" id="tab_1_2" role="tabpanel"
-                                    aria-labelledby="pills-tab_1_2">
-                                    {% for deal in debtor_deals %}
-                                    <div class="widget-news margin-bottom-10">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
-                                            </h3>
-                                            {{ deal.get_pay_status_display }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    </div>
-                                <div class="tab-pane fade" id="tab_1_3" role="tabpanel"
-                                    aria-labelledby="pills-tab_1_3">
-                                    {% for deal in overdue_deals %}
-                                    <div class="widget-news margin-bottom-20">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }} {{ deal.customer.name|slice:":75" }}</a>
-                                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт: {{ deal.value }} грн. </span>
-                                            </h3>
-                                            {{ deal.overdue_status }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    </div>
-                            </div>
+<div class="row">
+    <div class="col-xl-5 col-lg-6 col-md-6 margin-bottom-20">
+        <!-- BEGIN WIDGET TAB -->
+        <div class="widget-bg-color-white widget-tab main-widget-tab">
+            <h6 class="task-header center-block text-center">Угоди</h6>
+            <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
+                        aria-controls="pills-tab_1_1" aria-selected="true"> Чекають закриття </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2" role="tab"
+                        aria-controls="pills-tab_1_2" aria-selected="false"> Протермінована оплата </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3" role="tab"
+                        aria-controls="pills-tab_1_3" aria-selected="false"> Протерміноване виконання </a>
+                </li>
+            </ul>
+            <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
+                    {% for deal in actneed_deals %}
+                    <div class="widget-news margin-bottom-10">
+                        <div class="widget-news-right-body">
+                            <h3 class="widget-news-right-body-title">
+                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }}
+                                    {{ deal.customer.name|slice:":75" }}</a>
+                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт:
+                                    {{ deal.value }} грн. </span>
+                            </h3>
+                            Акт виконаних робіт: {{ deal.get_act_status_display }}
                         </div>
-                        <!-- END WIDGET TAB -->
                     </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12 margin-bottom-20">
-                        <!-- BEGIN WIDGET TAB -->
-                        <div class="widget-bg-color-white widget-tab main-widget-tab">
-                            <h6 class="task-header center-block text-center">Завдання</h6>
-                            {% if inttasks %}
-                            <div class="tab-content scroller" style="height: 380px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                    {% for inttask in inttasks %}
-                                    <div class="widget-news margin-bottom-10">
-{#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                        <div class="widget-news-right-body">
-                                            <h3 class="widget-news-right-body-title">
-                                                <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                                                <span class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right"> {{ inttask.get_exec_status_display }} </span>
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                            </div>
-                                {% else %}
-                                <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1" data-handle-color="#D7DCE2">
-                                    <p class="noContent">На жаль у вас не має завдань <i class="far fa-frown"></i></p>
-                                    </div>
-                            {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="tab-pane fade" id="tab_1_2" role="tabpanel" aria-labelledby="pills-tab_1_2">
+                    {% for deal in debtor_deals %}
+                    <div class="widget-news margin-bottom-10">
+                        {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                        <div class="widget-news-right-body">
+                            <h3 class="widget-news-right-body-title">
+                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }}
+                                    {{ deal.customer.name|slice:":75" }}</a>
+                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт:
+                                    {{ deal.value }} грн. </span>
+                            </h3>
+                            {{ deal.get_pay_status_display }}
                         </div>
-                        <!-- END WIDGET TAB -->
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="tab-pane fade" id="tab_1_3" role="tabpanel" aria-labelledby="pills-tab_1_3">
+                    {% for deal in overdue_deals %}
+                    <div class="widget-news margin-bottom-20">
+                        {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                        <div class="widget-news-right-body">
+                            <h3 class="widget-news-right-body-title">
+                                <a href="{% url 'deal_update' deal.pk %}">{{ deal.number }}
+                                    {{ deal.customer.name|slice:":75" }}</a>
+                                <span class="badge badge-pill badge-warning float-right"> Вартість робіт:
+                                    {{ deal.value }} грн. </span>
+                            </h3>
+                            {{ deal.overdue_status }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- END WIDGET TAB -->
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 margin-bottom-20">
+        <!-- BEGIN WIDGET TAB -->
+        <div class="widget-bg-color-white widget-tab main-widget-tab">
+            <h6 class="task-header center-block text-center">Завдання</h6>
+            {% if inttasks %}
+            <div class="tab-content scroller" style="height: 390px;" data-always-visible="1"
+                data-handle-color="#D7DCE2">
+                {% for inttask in inttasks %}
+                <div class="widget-news margin-bottom-10">
+                    {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
+                    <div class="widget-news-right-body">
+                        <h3 class="widget-news-right-body-title">
+                            <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
+                            <span
+                                class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right">
+                                {{ inttask.get_exec_status_display }} </span>
+                        </h3>
                     </div>
                 </div>
-                <div class="row widget-row">
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
-                                <span class="widget-progress-title">Чекають закриття актів
-                                    <span class="pull-right">{{ actneed_deals_count }}/{{ active_deals_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ deals_div }}%;"> </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-red margin-bottom-25">
-                                <span class="widget-progress-title">Протермінована оплата
-                                    <span class="pull-right">{{ debtor_deals_count }}/{{ unpaid_deals_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ debtor_deals_div }}%;"> </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-green  margin-bottom-25">
-                                <span class="widget-progress-title">Протерміноване виконання
-                                    <span class="pull-right">{{ overdue_deals_count }}/{{ active_deals_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_deals_div }}%;"> </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="widget-progress">
-                            <div class="widget-progress-element widget-bg-color-purple">
-                                <span class="widget-progress-title">Протерміновано завдань
-                                    <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
-                                </span>
-                                <div class="progress">
-                                    <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_inttasks_div }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_inttasks_div }}%;"> </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END WIDGET PROGRESS -->
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1"
+                data-handle-color="#D7DCE2">
+                <p class="noContent">На жаль у вас не має завдань <i class="far fa-frown"></i></p>
+            </div>
+            {% endif %}
+        </div>
+        <!-- END WIDGET TAB -->
+    </div>
+    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+        <!-- BEGIN WIDGET THUMB -->
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-red icon-layers"></i>
+                    <p class="mb-0">Ведення проектів</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                            data-counter="counterup" data-value="{{ owner_bonuses_cm }}">0</span>
                     </div>
                 </div>
-        <!-- END CONTAINER -->
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-green icon-layers mt-1"></i>
+                    <p class="mb-0">Виконання проектів</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat" data-counter="counterup"
+                            data-value="{{ exec_bonuses_cm }}">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+        <div class="col-12 pl-0 pr-0 mb-3">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-blue icon-bulb"></i>
+                    <p class="mb-0">Виконання завдань</p>
+                    <div class="widget-thumb-body">
+                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat" data-counter="counterup"
+                            data-value="{{ inttask_bonuses_cm }}">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+        <div class="col-12 pl-0 pr-0">
+            <!-- BEGIN WIDGET THUMB -->
+            <div class="widget-thumb widget-bg-color-white pt-3 pb-3">
+                <div class="widget-thumb-wrap">
+                    <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
+                    <p class="mb-0">Сумарно</p>
+                    <div class="widget-thumb-body">
+                        <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                                data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET THUMB -->
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-blue mb-4">
+                    <span class="widget-progress-title">Чекають закриття актів
+                        <span class="pull-right">{{ actneed_deals_count }}/{{ active_deals_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ tasks_div }}"
+                            aria-valuemin="0" aria-valuemax="100" style="width: {{ deals_div }}%;"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-red mb-4">
+                    <span class="widget-progress-title">Протермінована оплата
+                        <span class="pull-right">{{ debtor_deals_count }}/{{ unpaid_deals_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}"
+                            aria-valuemin="0" aria-valuemax="100" style="width: {{ debtor_deals_div }}%;"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-green mb-4">
+                    <span class="widget-progress-title">Протерміноване виконання
+                        <span class="pull-right">{{ overdue_deals_count }}/{{ active_deals_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ inttasks_div }}"
+                            aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_deals_div }}%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widget-progress">
+                <div class="widget-progress-element widget-bg-color-purple">
+                    <span class="widget-progress-title">Протерміновано завдань
+                        <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_inttasks_div }}"
+                            aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_inttasks_div }}%;"> </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END WIDGET PROGRESS -->
+        </div>
+    </div>
+</div>
 {% endblock %}
