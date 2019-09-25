@@ -68,7 +68,7 @@ def task_status_color(status):
 def deal_status_color(status):
     if status.startswith('Оплата'):
         return 'success'
-    elif status.startswith('Очікує') or status.startswith('Вартість'):
+    elif status.startswith('Очікує') or status.startswith('Вартість') or status.startswith('Відсутні'):
         return 'warning'
     elif status.startswith('Закінчується'):
         return 'info'
