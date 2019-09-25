@@ -76,9 +76,9 @@ class DealCalculation(TemplateView):
         context['objects'] = objects
         context['taxation'] = taxation
         context['object_lists'] = object_lists
-        context['vat'] = object_lists
-        context['svalue'] = object_lists
-        context['wovat'] = object_lists
+        context['vat'] = vat
+        context['svalue'] = svalue
+        context['wovat'] = wovat
         return context
 
 
