@@ -60,7 +60,7 @@ class DealCalculation(TemplateView):
                     value = value / 6 * 5
                 svalue += value
 
-                object_lists.append([index, ptype['project_type__description'], object_list,
+                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
                                      count, round(price, 2), round(value, 2)])
 
         if deal.company.taxation == 'wvat':
@@ -76,9 +76,9 @@ class DealCalculation(TemplateView):
         context['objects'] = objects
         context['taxation'] = taxation
         context['object_lists'] = object_lists
+        context['wovat'] = wovat
         context['vat'] = vat
         context['svalue'] = svalue
-        context['wovat'] = wovat
         return context
 
 
