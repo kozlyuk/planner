@@ -53,8 +53,8 @@ class DealCalc(TemplateView):
                 for obj in object_codes:
                     object_list += obj + ' '
                 count = object_codes.count()
-                price = ptype['project_type__price']
-                value = price * count / 6 * 5
+                price = ptype['project_type__price'] / 6 * 5
+                value = price * count
                 if deal.company.taxation == 'wovat':
                     price = price / 6 * 5
                     value = value / 6 * 5
@@ -860,17 +860,3 @@ class EmployeeUpdate(UpdateView):
 
     def get_object(self):
         return Employee.objects.get(user=get_current_user())
-
-class BonusesList (ListView):  ##  temporary view
-    template_name = "planner/bonuses_list.html"
-    context_object_name = 'bonuses'  
-
-    def get_queryset(self):
-        employee = Employee.objects.all()
-
-class DealCalc (ListView):  ##  temporary view
-    template_name = "planner/deal_calc.html"
-    context_object_name = 'calculation'  
-
-    def get_queryset(self):
-        deal = Deal.objects.all()
