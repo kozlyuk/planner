@@ -37,7 +37,6 @@ class DealCalculation(TemplateView):
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
         tasks = Task.objects.filter(deal=deal)
         objects = tasks.values('object_code', 'object_address').distinct()
-        taxation = deal.company.taxation
         project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
                              .order_by('project_type__price_code').distinct()
 
@@ -54,7 +53,7 @@ class DealCalculation(TemplateView):
                     object_list += obj + ' '
                 count = object_codes.count()
                 price = ptype['project_type__price']
-                value = price * count
+                value = price * count / 6 * 5
                 if deal.company.taxation == 'wovat':
                     price = price / 6 * 5
                     value = value / 6 * 5
@@ -63,22 +62,12 @@ class DealCalculation(TemplateView):
                 object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
                                      count, round(price, 2), round(value, 2)])
 
-        if deal.company.taxation == 'wvat':
-            vat = round(svalue / 6, 2)
-            svalue = round(svalue, 2)
-            wovat = svalue - vat
-        elif deal.company.taxation == 'wovat':
-            vat = 0
-            svalue = round(svalue, 2)
-            wovat = svalue
-
         context['deal'] = deal
         context['objects'] = objects
-        context['taxation'] = taxation
+        context['taxation'] = deal.company.taxation
+        context['template'] = deal.customer.act_template
         context['object_lists'] = object_lists
-        context['wovat'] = wovat
-        context['vat'] = vat
-        context['svalue'] = svalue
+        context['svalue'] = round(svalue, 2)
         return context
 
 
