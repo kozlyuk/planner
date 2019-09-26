@@ -23,7 +23,8 @@ from crum import get_current_user
 
 
 @method_decorator(login_required, name='dispatch')
-class DealCalculation(TemplateView):
+class DealCalc(TemplateView):
+    """ View for displaying calculation to a deal """
     template_name = "deal_calc.html"
 
     def dispatch(self, request, *args, **kwargs):
@@ -71,16 +72,66 @@ class DealCalculation(TemplateView):
         return context
 
 
-@login_required()
-def bonus_calc(request, employee_id, year, month):
-    employee = Employee.objects.get(id=employee_id)
+@method_decorator(login_required, name='dispatch')
+class BonusesCalc(TemplateView):
+    """ View for displaying bonuses calculation to a employee """
+    template_name = "bonuses_list.html"
 
-    if not request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
-        raise PermissionDenied
+    def dispatch(self, request, *args, **kwargs):
+        employee = Employee.objects.get(id=self.kwargs['employee_id'])
+        if request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
-    report = calc_scripts.bonus_calculation(request, employee, year, month)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        employee = Employee.objects.get(id=self.kwargs['employee_id'])
 
-    return HttpResponse(report)
+        tasks = Task.objects.filter(owner=employee,
+                                    exec_status=Task.Sent,
+                                    actual_finish__month=self.kwargs['month'],
+                                    actual_finish__year=self.kwargs['year'])
+        bonuses = 0
+        index = 0
+        task_list = []
+        for task in tasks:
+            index += 1
+            task_list.append([index, task.object_code, task.object_address,
+                              task.project_type, task.owner_part(),
+                              round(task.owner_bonus(), 2)])
+            bonuses += task.owner_bonus()
+
+        executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
+                                              executor=employee,
+                                              task__actual_finish__month=self.kwargs['month'],
+                                              task__actual_finish__year=self.kwargs['year'])
+
+        index = 0
+        executions_list = []
+        for ex in executions:
+            index += 1
+            executions_list.append([index, ex.task.object_code, ex.task.object_address,
+                                   ex.task.project_type, ex.part_name, ex.part,
+                                   round(ex.task.exec_bonus(ex.part), 2)])
+            bonuses += ex.task.exec_bonus(ex.part)
+
+        inttasks = IntTask.objects.filter(executor=employee,
+                                          exec_status=IntTask.Done,
+                                          actual_finish__month=self.kwargs['month'],
+                                          actual_finish__year=self.kwargs['year'])
+        index = 0
+        inttasks_list = []
+        for task in inttasks:
+            index += 1
+            inttasks_list.append([index, task.task_name, task.bonus])
+            bonuses += task.bonus
+
+        context['tasks'] = task_list
+        context['executions'] = executions_list
+        context['inttasks'] = executions_list
+        context['bonuses'] = bonuses
+        return context
 
 
 def login_page(request):

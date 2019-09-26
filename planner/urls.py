@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^deal/(?P<pk>\d+)/change/$', views.DealUpdate.as_view(), name='deal_update'),
     url(r'^deal/add/$', views.DealCreate.as_view(), name='deal_add'),
     url(r'^deal/(?P<pk>[0-9]+)/delete/$', views.DealDelete.as_view(), name='deal_delete'),
-    url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.DealCalculation.as_view(), name='calculation'),
+    url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.DealCalc.as_view(), name='calculation'),
 
     url(r'^project/$', views.TaskList.as_view(), name='task_list'),
     url(r'^project/(?P<pk>\d+)/change/$', views.TaskUpdate.as_view(), name='task_update'),
@@ -48,7 +48,7 @@ urlpatterns = [
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
-        views.bonus_calc, name='bonus_calc'),
+        views.BonusesCalc.as_view(), name='bonus_calc'),
     url(r'^employee/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
 
     url(r'^news/$', views.NewsList.as_view(), name='news_list'),
