@@ -79,7 +79,7 @@ class BonusesCalc(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
-        if request.user.is_superuser and request.user != employee.user and request.user != employee.head.user:
+        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user:
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
