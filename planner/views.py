@@ -40,6 +40,7 @@ class DealCalc(TemplateView):
         objects = tasks.values('object_code', 'object_address').distinct()
         project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
                              .order_by('project_type__price_code').distinct()
+        template = deal.customer.act_template
 
         index = 0
         svalue = 0
@@ -60,13 +61,17 @@ class DealCalc(TemplateView):
                     value = value / 6 * 5
                 svalue += value
 
-                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'шт.',
-                                     count, round(price, 2), round(value, 2)])
+                if template == 'gks':
+                    object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
+                                        count, round(price, 2), round(value, 2)])
+                elif template == 'msz':
+                    object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'шт.',
+                                        count, round(price, 2), round(value, 2)])
 
         context['deal'] = deal
         context['objects'] = objects
         context['taxation'] = deal.company.taxation
-        context['template'] = deal.customer.act_template
+        context['template'] = template
         context['object_lists'] = object_lists
         context['svalue'] = round(svalue, 2)
         return context
@@ -126,10 +131,14 @@ class BonusesCalc(TemplateView):
             index += 1
             inttasks_list.append([index, task.task_name, task.bonus])
             bonuses += task.bonus
+        first_name = employee.user.first_name
 
+        bonuses = round( bonuses, 2 )
+
+        context['first_name'] = first_name
         context['tasks'] = task_list
         context['executions'] = executions_list
-        context['inttasks'] = executions_list
+        context['inttasks'] = inttasks_list
         context['bonuses'] = bonuses
         return context
 

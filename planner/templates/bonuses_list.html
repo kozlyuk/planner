@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block context %}
+{{context}}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <br><!-- BEGIN CONTENT -->
+    <div class="container-fluid">
+    {% if executions|length == 0 and tasks|length == 0 and inttasks|length == 0 %}
+        <h5 class="title text-center">Шановний(а) {{ first_name }}.<br>За {{ month }}.{{ year }} відсутні бонуси.</h5>
+    {% else %}
+        <h5 class="title text-center">Шановний(а) {{ first_name }}.<br>За {{ month }}.{{ year }} Вам були нараховані бонуси за виконання проектів та
+            завдань.</h5>
+            <div class="row">
+                <div class="col-9">
+                    <div class="widget-bg-color-white main-widget-tab mt-2">
+                        <h6 class="task-header center-block text-center">Бонуси за виконання проектів</h6>
+                        <table id="exec_bonuses" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">№</th>
+                                    <th scope="col">Шифр об'єкту</th>
+                                    <th scope="col">Адреса об'єкту</th>
+                                    <th scope="col">Тип проекту</th>
+                                    <th scope="col">Назва робіт</th>
+                                    <th scope="col">%</th>
+                                    <th scope="col">Бонус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for fields in executions %}
+                                <tr>
+                                {% for field in fields %}
+                                    <td>{{ field }}</td>
+                                {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="widget-bg-color-white main-widget-tab mt-4">
+                        <h6 class="task-header center-block text-center">Бонуси за ведення проектів</h6>
+                        <table id="owner_bonuses" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">№</th>
+                                    <th scope="col">Шифр об'єкту</th>
+                                    <th scope="col">Адреса об'єкту</th>
+                                    <th scope="col">Тип проекту</th>
+                                    <th scope="col">%</th>
+                                    <th scope="col">Бонус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for fields in tasks %}
+                                <tr>
+                                {% for field in fields %}
+                                    <td>{{ field }}</td>
+                                {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="widget-bg-color-white main-widget-tab mt-2">
+                        <h6 class="task-header center-block text-center">Бонуси за виконання завдань</h6>
+                        <table id="inttasks_bonuses" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">№</th>
+                                    <th scope="col">Завдання</th>
+                                    <th scope="col">Бонус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for fields in inttasks %}
+                                <tr>
+                                    {% for field in fields %}
+                                        <td>{{ field }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+                <h6 class="text-muted mt-2">Всього нараховано {{ bonuses }} бонусів.</h5>
+            <div class="row">
+                <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-3">Головна</button>
+                <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-2">Позапопередній місяць</button>
+                <button type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2">Попередній місяць</button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock context %}
