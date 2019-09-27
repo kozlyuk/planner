@@ -1,116 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load ita_template_tags %}
 
 {% block context %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
 <div class="page-container page-container-bg-solid mb-5" xmlns="http://www.w3.org/1999/html"
     xmlns="http://www.w3.org/1999/html">
-    <div class="container-fluid">
-    <h5 class="title text-center">Калькуляція по договору {{deal}} від {{deal.date}}:<br><br></h5>
-    <div id="copy-wrapper">
-        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
-            <tbody>
-                <tr>
-                    <th>Шифр об’єкту</th>
-                    <th>Адреса об’єкту</th>
-                </tr>
-                {% for field in objects %}
-                <tr>
-                    <td align="center">{{ field.object_code }}</td>
-                    <td>{{ field.object_address }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table><br>
-        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
-            <tbody>
-                <tr align="center">
-                    <th width="6%">№ п/п</th>
-                    <th>Назва об’єкту та вид робіт</th>
-                    <th>Кількість</th>
-                    {% if taxation == 'wvat' %}
-                    <th>Ціна, з ПДВ грн.</th>
-                    <th>Вартість, з ПДВ грн.</th>
-                    {% else %}
-                    <th>Ціна, без ПДВ грн.</th>
-                    <th>Вартість, без ПДВ грн.</th>
-                    {% endif %}
-                </tr>
-                {% for fields in object_lists %}
-                <tr align="center">
-                    {% for field in fields %}
-                        {% if taxation == 'wvat' %}
-                        <td>{% calc_vat field %}</td>
-                        {% else %}
-                        <td>{{field}}</td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                <tr align="center">
-                    <td colspan="2" rowspan="4">Загальна вартість</td>
-                </tr>
-                {% if taxation == 'wvat' %}
-                <tr align="center">
-                    <td colspan="3">без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
-                </tr>
-                {% else %}
-                <tr align="center">
-                    <td colspan="3">Без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
-                </tr>
-                {% endif %}
-                {% if taxation == 'wvat' %}
-                <tr align="center">
-                    <td colspan="3">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</td>
-                </tr>
-                <tr align="center">
-                    <td colspan="3">з ПДВ: {% calc_vat svalue 'with_currency' %}</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-        <button type="button" id="copy" class="btn dark btn-sm btn-outline sbold uppercase ml-3">Копіювати в буфер</button>
-        </div>
-    </div>
-    
-    
-</div>
-<div aria-live="polite" aria-atomic="true" style="position: relative">
-    <div class="toast" data-delay="3000" style="position: fixed; bottom: 25px; right: 15px;">
-        <div class="toast-header">
-            <strong class="mr-auto">Копіювання</strong>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="toast-body">
-            Таблицю скопійовано в буфер.
-        </div>
-    </div>
-</div>
-
-<script>
-const button = document.getElementById('copy');
-button.addEventListener('click', function () {
-    //clear selected before copy
-    window.getSelection().removeAllRanges()
-    //get container
-    const ta = document.getElementById('copy-wrapper');
-    const range = document.createRange();
-    range.selectNode(ta);
-    window.getSelection().addRange(range);
-
-    //put container to bufer
-    try {
-        document.execCommand('copy');
-        $('.toast').toast('show')
-    } catch (err) {
-        console.log('Can`t copy');
-    }
-    //clear selected range
-    window.getSelection().removeAllRanges();
-});
-</script>
+    {% if template == 'gks' %}
+    {% include 'deal_calc_templates/gks.html' %}
+    {% elif template == 'msz' %}
+    {% include 'deal_calc_templates/msz.html' %}
+    {% endif %}
 {% endblock context %}

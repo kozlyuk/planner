@@ -1,0 +1,103 @@
+{% load ita_template_tags %}
+
+<h5 class="title text-center">Калькуляція по договору {{deal}} від {{deal.date}}:<br><br></h5>
+<div class="container-fluid">
+    <div id="copy-wrapper">
+        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
+            <tbody>
+                <tr>
+                    <th>Шифр об’єкту</th>
+                    <th>Адреса об’єкту</th>
+                </tr>
+                {% for field in objects %}
+                <tr>
+                    <td align="center">{{ field.object_code }}</td>
+                    <td>{{ field.object_address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table><br>
+        <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
+            <tbody>
+                <tr align="center">
+                    <th width="6%">№ п/п</th>
+                    <th width="60%">Найменування робіт</th>
+                    <th>Одиниця виміру</th>
+                    <th>Кількість</th>
+                    <th>Ціна за одиницю без ПДВ, грн.</th>
+                    <th>Вартість без ПДВ, грн.</th>
+                </tr> 
+                {% for object in objects %}
+                <tr>
+                    <td class="bold" colspan="6"> {{ forloop.counter0|add:'+1' }}. {{ object.object_code }} {{ object.object_address }} </td>
+                </tr>
+                {% endfor %}
+                    {% with project_id=forloop.counter0|add:'+1' %}
+                    {% for object_list in object_lists %}
+                    <tr align="center">
+                        {% for object in object_list %}
+                            {% comment %} {% if object_list|first %}
+                                <td>{{project_id}}.{{object}}</td>
+                            {% endif %} {% endcomment %}
+                                <td>{{object}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    {% endwith %}
+                <tr align="right">
+                    <td colspan="4">Загальна вартість без ПДВ:</td>
+                    <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
+                </tr>
+                <tr align="right">
+                    <td colspan="4">ПДВ 20%:</td>
+                    <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
+                </tr>
+                <tr align="right">
+                    <td class="bold" colspan="4">Всього з ПДВ:</td>
+                    <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" id="copy" class="btn dark btn-sm btn-outline sbold uppercase ml-3">Копіювати в
+            буфер</button>
+    </div>
+</div>
+
+
+</div>
+<div aria-live="polite" aria-atomic="true" style="position: relative">
+    <div class="toast" data-delay="3000" style="position: fixed; bottom: 25px; right: 15px;">
+        <div class="toast-header">
+            <strong class="mr-auto">Копіювання</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Таблицю скопійовано в буфер.
+        </div>
+    </div>
+</div>
+
+<script>
+const button = document.getElementById('copy');
+button.addEventListener('click', function () {
+    //clear selected before copy
+    window.getSelection().removeAllRanges()
+    //get container
+    const ta = document.getElementById('copy-wrapper');
+    const range = document.createRange();
+    range.selectNode(ta);
+    window.getSelection().addRange(range);
+
+    //put container to bufer
+    try {
+        document.execCommand('copy');
+        $('.toast').toast('show')
+    } catch (err) {
+        console.log('Can`t copy');
+    }
+    //clear selected range
+    window.getSelection().removeAllRanges();
+});
+</script>

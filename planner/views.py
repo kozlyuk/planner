@@ -60,7 +60,7 @@ class DealCalc(TemplateView):
                     value = value / 6 * 5
                 svalue += value
 
-                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
+                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'шт.',
                                      count, round(price, 2), round(value, 2)])
 
         context['deal'] = deal
