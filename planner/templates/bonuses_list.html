@@ -16,8 +16,9 @@
         <h5 class="title text-center">Шановний(а) {{ first_name }}.<br>За {{ month }}.{{ year }} Вам були нараховані бонуси за виконання проектів та
             завдань.</h5>
             <div class="row">
-                <div class="col-9">
-                    <div class="widget-bg-color-white main-widget-tab mt-2">
+                <div class="{% if inttasks %}col-lg-12 col-xl-9{% else %}col-12{% endif %}">
+                    {% if executions %}
+                    <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-2">
                         <h6 class="task-header center-block text-center">Бонуси за виконання проектів</h6>
                         <table id="exec_bonuses" class="table table-hover">
                             <thead>
@@ -42,9 +43,11 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="widget-bg-color-white main-widget-tab mt-4">
+                    {% endif %}
+                    {% if tasks %}
+                    <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-4">
                         <h6 class="task-header center-block text-center">Бонуси за ведення проектів</h6>
-                        <table id="owner_bonuses" class="table table-hover">
+                        <table style="overflow-x:scroll" id="owner_bonuses" class="table table-hover">
                             <thead>
                                 <tr>
                                     <th scope="col">№</th>
@@ -66,9 +69,11 @@
                             </tbody>
                         </table>
                     </div>
+                    {% endif %}
                 </div>
-                <div class="col-3">
-                    <div class="widget-bg-color-white main-widget-tab mt-2">
+                {% if inttasks %}
+                <div class="col-lg-12 col-xl-3">
+                    <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-2">
                         <h6 class="task-header center-block text-center">Бонуси за виконання завдань</h6>
                         <table id="inttasks_bonuses" class="table table-hover">
                             <thead>
@@ -90,16 +95,30 @@
                         </table>
                     </div>
                 </div>
+                {% endif %}
             </div>
                 <h6 class="text-muted mt-2">Всього нараховано {{ bonuses }} бонусів.</h5>
             <div class="row">
-                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-3" onclick="window.location.href = '{% url 'home_page' %}'">Головна</button>
-                    {% comment %} <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
-                                    data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a> {% endcomment %}
-                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-2" onclick="window.location.href = '{% month_url request.get_full_path 'next_month' %}'">Наступний місяць</button>
-                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2" onclick="window.location.href = '{% month_url request.get_full_path 'prev_month' %}'">Попередній місяць</button>
+                    <button id="prevMonth" type="" class="btn dark btn-sm btn-outline sbold uppercase ml-2" onclick="window.location.href = '{% month_url request.get_full_path 'prev_month' %}'"><i class="far fa-arrow-alt-circle-left"></i> Попередній місяць</button>
+                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-auto" onclick="window.location.href = '{% url 'home_page' %}'"><i class="fas fa-home"></i> Головна</button>
+                    <button id="nextMonth" type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2" onclick="window.location.href = '{% month_url request.get_full_path 'next_month' %}'">Наступний місяць <i class="far fa-arrow-alt-circle-right"></i></button>
             </div>
         </div>
     {% endif %}
 </div>
+<script>
+// define a handler
+function keyUp(e) {
+    if (e.ctrlKey && e.keyCode == 37) {
+        let prevMonthBtn = document.querySelector('#prevMonth');
+        prevMonthBtn.click();
+    }
+    if (e.ctrlKey && e.keyCode == 39) {
+        let nextMonthBtn = document.querySelector('#nextMonth');
+        nextMonthBtn.click();
+    }
+}
+// register the handler 
+document.addEventListener('keyup', keyUp, false);
+</script>
 {% endblock context %}
