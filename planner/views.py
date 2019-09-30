@@ -135,11 +135,21 @@ class BonusesCalc(TemplateView):
 
         bonuses = round( bonuses, 2 )
 
+        def date_delta(delta):
+            month = datetime.now().month + delta
+            year = datetime.now().year
+            if month < 1:
+                month += 12
+                year += -1
+            return month, year
+
         context['first_name'] = first_name
         context['tasks'] = task_list
         context['executions'] = executions_list
         context['inttasks'] = inttasks_list
         context['bonuses'] = bonuses
+        context['pm'] = date_delta(-1)
+        context['ppm'] = date_delta(-2)
         return context
 
 
