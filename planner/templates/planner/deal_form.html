@@ -96,8 +96,10 @@
                                     {% endif %}
                                     <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                         style="float: right;">Зберегти</button>
+                                    {% if deal.pk %}
                                     <a href = "{% url 'calculation' deal.pk %}" class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                         style="float: right;">Калькуляція по договору</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
