@@ -38,35 +38,42 @@ class DealCalc(TemplateView):
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
         tasks = Task.objects.filter(deal=deal)
         objects = tasks.values('object_code', 'object_address').distinct()
-        project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
-                             .order_by('project_type__price_code').distinct()
         template = deal.customer.act_template
 
         index = 0
         svalue = 0
         object_lists = []
-        for ptype in project_types:
-            if ptype['project_type__price'] != 0:
-                index += 1
-                object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
-                    .values_list('object_code', flat=True)
-                object_list = ''
-                for obj in object_codes:
-                    object_list += obj + ' '
-                count = object_codes.count()
-                price = ptype['project_type__price'] / 6 * 5
-                value = price * count
-                if deal.company.taxation == 'wovat':
-                    price = price / 6 * 5
-                    value = value / 6 * 5
-                svalue += value
-
-                if template == 'gks':
-                    object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
-                                        count, round(price, 2), round(value, 2)])
-                elif template == 'msz':
-                    object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'шт.',
-                                        count, round(price, 2), round(value, 2)])
+        if template == 'gks':
+            project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
+                .order_by('project_type__price_code').distinct()
+            for ptype in project_types:
+                if ptype['project_type__price'] != 0:
+                    index += 1
+                    object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                        .values_list('object_code', flat=True)
+                    object_list = ''
+                    for obj in object_codes:
+                        object_list += obj + ' '
+                    count = object_codes.count()
+                    price = ptype['project_type__price'] / 6 * 5
+                    value = price * count
+                    if deal.company.taxation == 'wovat':
+                        price = price / 6 * 5
+                        value = value / 6 * 5
+                    svalue += round(value, 2)
+            object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
+                                count, round(price, 2), round(value, 2)])
+        elif template == 'msz':
+            object_lists = [[] for _ in range(len(objects))]
+            for obj in range(len(objects)):
+                for task in tasks.values('project_type__price_code', 'project_type__description', 'project_type__price'):
+                    if task['project_type__price'] != 0:
+                        index += 1
+                        price = round(task['project_type__price'] / 6 * 5, 2)
+                        if deal.company.taxation == 'wovat':
+                            price = round(price / 6 * 5, 2)
+                        svalue += price
+                    object_lists[obj].append([index, task['project_type__description'], 'шт.', 1, price, price])
 
         context['deal'] = deal
         context['objects'] = objects
@@ -139,8 +146,8 @@ class BonusesCalc(TemplateView):
             month = datetime.now().month + delta
             year = datetime.now().year
             if month < 1:
-                month += 12
-                year += -1
+                month = 12
+                year -= 1
             return month, year
 
         context['first_name'] = first_name
@@ -149,7 +156,7 @@ class BonusesCalc(TemplateView):
         context['inttasks'] = inttasks_list
         context['bonuses'] = bonuses
         context['pm'] = date_delta(-1)
-        context['ppm'] = date_delta(-2)
+        context['nm'] = date_delta(1)
         return context
 
 
