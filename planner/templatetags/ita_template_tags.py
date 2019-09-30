@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
+from datetime import datetime, date
 from planner.settings import MEDIA_URL
 
 register = template.Library()
@@ -144,4 +145,27 @@ def calc_vat(value, option='without_currency'):
         vat = str(vat).split('.')
         return vat[0] + ',' + vat[1]
 
+@register.simple_tag()
+def month_url( request_url, direction = 'next_month' ):
+    '''
+    next_month return +1 month.
+    prev_month return -1 month.
+    '''
+    request_url = request_url.split('/')
+    month = int(request_url[5])
+    year = int(request_url[4])
+    if direction == 'next_month':
+        month += 1
+        if month > 12:
+            month = 1
+            year += 1
+    elif direction == 'prev_month':
+        month -= 1 
+        if month < 1:
+            month = 12
+            year -= 1
+    request_url[5] = str(month)
+    request_url[4] = str(year)
+    url_str = '/'.join(request_url)
+    return url_str
 

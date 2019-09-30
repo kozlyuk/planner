@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load ita_template_tags %}
 {% load static %}
 
 {% block context %}
@@ -92,11 +93,11 @@
             </div>
                 <h6 class="text-muted mt-2">Всього нараховано {{ bonuses }} бонусів.</h5>
             <div class="row">
-                <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-3" onclick="window.location.href = '{% url 'home_page' %}'">Головна</button>
-                {% comment %} <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
-                                data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a> {% endcomment %}
-                <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-2" onclick="window.location.href = '{% url 'bonus_calc' employee_id ppm.1 ppm.0 %}'">Позапопередній місяць</button>
-                <button type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2" onclick="window.location.href = '{% url 'bonus_calc' employee_id pm.1 pm.0 %}'">Попередній місяць</button>
+                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-3" onclick="window.location.href = '{% url 'home_page' %}'">Головна</button>
+                    {% comment %} <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
+                                    data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a> {% endcomment %}
+                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-2" onclick="window.location.href = '{% month_url request.get_full_path 'next_month' %}'">Наступний місяць</button>
+                    <button type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2" onclick="window.location.href = '{% month_url request.get_full_path 'prev_month' %}'">Попередній місяць</button>
             </div>
         </div>
     {% endif %}
