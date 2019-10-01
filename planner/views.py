@@ -37,7 +37,7 @@ class DealCalc(TemplateView):
         context = super().get_context_data(**kwargs)
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
         tasks = Task.objects.filter(deal=deal)
-        objects = tasks.values('object_code', 'object_address').distinct()
+        objects = tasks.values('object_code', 'object_address').order_by().distinct()
         template = deal.customer.act_template
 
         index = 0
@@ -61,12 +61,12 @@ class DealCalc(TemplateView):
                         price = price / 6 * 5
                         value = value / 6 * 5
                     svalue += round(value, 2)
-            object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
-                                count, round(price, 2), round(value, 2)])
+                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
+                                    count, round(price, 2), round(value, 2)])
         elif template == 'msz':
             object_lists = [[] for _ in range(len(objects))]
             for obj in range(len(objects)):
-                for task in tasks.values('project_type__price_code', 'project_type__description', 'project_type__price'):
+                for task in tasks.values('project_type__price_code', 'project_type__description', 'project_type__price').order_by().distinct():
                     if task['project_type__price'] != 0:
                         index += 1
                         price = round(task['project_type__price'] / 6 * 5, 2)
@@ -82,7 +82,6 @@ class DealCalc(TemplateView):
         context['object_lists'] = object_lists
         context['svalue'] = round(svalue, 2)
         return context
-
 
 @method_decorator(login_required, name='dispatch')
 class BonusesCalc(TemplateView):

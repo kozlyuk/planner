@@ -6,8 +6,8 @@
         <table border="1" class="table table-bordered" style="width: auto; background-color: transparent">
             <tbody>
                 <tr>
-                    <th>Шифр об’єкту</th>
-                    <th>Адреса об’єкту</th>
+                    <th>Шифр об'єкту</th>
+                    <th>Адреса об'єкту</th>
                 </tr>
                 {% for field in objects %}
                 <tr>
@@ -40,6 +40,7 @@
                                         {% if forloop.first %}
                                             <td>{{ project_id }}.{{object}}</td>
                                         {% else %}
+                                        <!--TODO: add filter-->
                                             <td>{{object}}</td>
                                         {% endif %}
                                     {% endfor %}
