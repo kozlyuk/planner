@@ -26,24 +26,28 @@
                     <th>Кількість</th>
                     <th>Ціна за одиницю без ПДВ, грн.</th>
                     <th>Вартість без ПДВ, грн.</th>
-                </tr> 
-                {% for object in objects %}
-                <tr>
-                    <td class="bold" colspan="6"> {{ forloop.counter0|add:'+1' }}. {{ object.object_code }} {{ object.object_address }} </td>
                 </tr>
-                {% endfor %}
-                    {% with project_id=forloop.counter0|add:'+1' %}
-                    {% for object_list in object_lists %}
-                    <tr align="center">
-                        {% for object in object_list %}
-                            {% comment %} {% if object_list|first %}
-                                <td>{{project_id}}.{{object}}</td>
-                            {% endif %} {% endcomment %}
-                                <td>{{object}}</td>
-                        {% endfor %}
+                {% for object in objects %}
+                    <tr>
+                        <td class="bold" colspan="6"> {{ forloop.counter0|add:'+1' }}. {{ object.object_code }}
+                            {{ object.object_address }} </td>
                     </tr>
-                    {% endfor %}
+                    {% with project_id=forloop.counter0|add:'+1' %}
+                        {% for object_list in object_lists %}
+                            {% for objects in object_list %}
+                                <tr align="center">
+                                    {% for object in objects %}
+                                        {% if forloop.first %}
+                                            <td>{{ project_id }}.{{object}}</td>
+                                        {% else %}
+                                            <td>{{object}}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
                     {% endwith %}
+                {% endfor %}
                 <tr align="right">
                     <td colspan="4">Загальна вартість без ПДВ:</td>
                     <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
