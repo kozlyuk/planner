@@ -32,22 +32,18 @@
                         <td class="bold" colspan="6"> {{ forloop.counter0|add:'+1' }}. {{ object.object_code }}
                             {{ object.object_address }} </td>
                     </tr>
-                    {% with project_id=forloop.counter0|add:'+1' %}
                         {% for object_list in object_lists %}
                             {% for objects in object_list %}
                                 <tr align="center">
-                                    {% for object in objects %}
                                         {% if forloop.first %}
                                             <td>{{ project_id }}.{{object}}</td>
                                         {% else %}
                                         <!--TODO: add filter-->
                                             <td>{{object}}</td>
                                         {% endif %}
-                                    {% endfor %}
                                 </tr>
                             {% endfor %}
                         {% endfor %}
-                    {% endwith %}
                 {% endfor %}
                 <tr align="right">
                     <td colspan="4">Загальна вартість без ПДВ:</td>
