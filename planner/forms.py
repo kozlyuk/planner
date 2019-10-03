@@ -82,7 +82,7 @@ class DealForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DealForm, self).__init__(*args, **kwargs)
-        self.fields['number'].widget.attrs.update({'style': 'width:400px;'})
+        self.fields['number'].widget.attrs.update({'style': 'width:100%'})
         self.fields['comment'].widget.attrs.update({'style': 'width:100%; height:44px;'})
 
     def clean(self):
@@ -128,7 +128,7 @@ class TasksInlineForm(forms.ModelForm):
             'object_code': BtnWidget(),
             'project_type': Select2Widget(),
             'planned_finish': AdminDateWidget(),
-            'DELETION_FIELD_NAME': forms.HiddenInput(),
+            'DELETE': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
