@@ -27,27 +27,33 @@
                     <th>Ціна за одиницю без ПДВ, грн.</th>
                     <th>Вартість без ПДВ, грн.</th>
                 </tr>
-                {% for object in objects %}
-                    <tr>
-                        <td class="bold" colspan="6"> {{ forloop.counter0|add:'+1' }}. {{ object.object_code }}
-                            {{ object.object_address }} </td>
-                    </tr>
-                    {% with project_id=forloop.counter0|add:'+1' %}
-                        {% for object_list in object_lists %}
-                            {% for objects in object_list %}
-                                <tr align="center">
-                                    {% for object in objects %}
-                                        {% if forloop.first %}
-                                            <td>{{ project_id }}.{{object}}</td>
-                                        {% else %}
-                                        <!--TODO: add filter-->
-                                            <td>{{object}}</td>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tr>
+                {% for objects in object_lists %}
+                {% with forloop.counter as main_index %}
+                    {% for object in objects %}
+                        {% if forloop.first %}
+                        <tr>
+                            <td class="bold" colspan="6">{{main_index}}. {{ object.0 }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                        {% with forloop.counter|add:'-1' as submain_index %}
+                            {% for field in object %}
+                            {% if forloop.first %}
+                            <td align="center">{{field}}.{{submain_index}}</td>
+                            {% else %}
+                                {% if forloop.counter == 2 %}
+                                    <td align="left">{{field}}</td>
+                                {% else %}
+                                    <td align="center">{{field}}</td>
+                                {% endif %}
+                            {% endif %}
                             {% endfor %}
-                        {% endfor %}
-                    {% endwith %}
+                        {% endwith %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                {% endwith %}
                 {% endfor %}
                 <tr align="right">
                     <td colspan="4">Загальна вартість без ПДВ:</td>
@@ -55,11 +61,11 @@
                 </tr>
                 <tr align="right">
                     <td colspan="4">ПДВ 20%:</td>
-                    <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
+                    <td colspan="2"> {% calc_summary svalue 'vat_with_currency' %} </td>
                 </tr>
                 <tr align="right">
                     <td class="bold" colspan="4">Всього з ПДВ:</td>
-                    <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
+                    <td colspan="2"> {% calc_vat svalue 'with_currency' %} </td>
                 </tr>
             </tbody>
         </table>

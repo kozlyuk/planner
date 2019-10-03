@@ -119,14 +119,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = '/media/'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 26214400
 
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'LR5KF=TW' #my gmail password
-EMAIL_HOST_USER = 'info@itel.rv.ua' #my gmail username
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'Адміністратор проектів Ітел-Сервіс <erp@itel.rv.ua>'
-
 SELECT2_JS = 'django_select2/select2.min.js'
 SELECT2_CSS = 'django_select2/select2.min.css'
 SELECT2_I18N_PATH = 'django_select2/i18n'

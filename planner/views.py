@@ -66,9 +66,11 @@ class DealCalc(TemplateView):
         elif template == 'msz':
             object_lists = [[] for _ in range(len(objects))]
             for obj in range(len(objects)):
-                for task in tasks.values('project_type__price_code', 'project_type__description', 'project_type__price').order_by().distinct():
+                index += 1
+                object_lists[obj].append([objects[obj]['object_code'] + ' ' + objects[obj]['object_address']])
+                for task in tasks.filter(object_code=objects[obj]['object_code'])\
+                        .values('project_type__price_code', 'project_type__description', 'project_type__price'):
                     if task['project_type__price'] != 0:
-                        index += 1
                         price = round(task['project_type__price'] / 6 * 5, 2)
                         if deal.company.taxation == 'wovat':
                             price = round(price / 6 * 5, 2)
