@@ -90,10 +90,11 @@ class NotClearableFileInput(FileInput):
         substitutions['input'] = super(NotClearableFileInput, self).render(name, value, attrs)
 
         if value and hasattr(value, "url"):
-            file_name = str(value.url).split('/')[-1]
+            full_url = value.name
+            file_name = full_url.split('/')[-1]
             template = self.template_with_initial
             substitutions['initial'] = format_html(self.url_markup_template,
                                                value,
-                                               force_text(file_name))
+                                               force_text(file_name, encoding='utf-8'))
 
         return mark_safe(template % substitutions)
