@@ -26,14 +26,30 @@ app.conf.beat_schedule = {
     },
     'event_next_date': {
         'task': 'planner.tasks.event_next_date_calculate',
-        'schedule': crontab(minute=0, hour=0),  # at midnight
+        'schedule': crontab(minute=0, hour=0),                      # at midnight
     },
     'actneed_report': {
         'task': 'planner.tasks.send_actneed_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=0),    # workdays at 8-00
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=0),   # workdays at 8-00
     },
     'debtors_report': {
         'task': 'planner.tasks.send_debtors_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=5),  # workdays at 8-05
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=5),   # workdays at 8-05
+    },
+    'overdue_deals_report': {
+        'task': 'planner.tasks.send_overdue_deals_report',
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=10),  # workdays at 8-10
+    },
+    'overdue_tasks_report': {
+        'task': 'planner.tasks.send_overdue_tasks_report',
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=15),  # workdays at 8-15
+    },
+    'urgent_tasks_report': {
+        'task': 'planner.tasks.send_urgent_tasks_report',
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=20),  # workdays at 8-20
+    },
+    'monthly_report': {
+        'task': 'planner.tasks.send_monthly_report',
+        'schedule': crontab(day_of_month=10, hour=17, minute=00),   # on 10th of month at 17-00
     },
 }
