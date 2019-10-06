@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load ita_template_tags %}
+{% load static %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <br><!-- BEGIN CONTENT -->
+    <div class="container-fluid">
+        {% if executions|length == 0 and tasks|length == 0 and inttasks|length == 0 %}
+        <h5 class="title text-center">Шановний(а) {{ first_name }}.<br>За {{ month }}.{{ year }} відсутні бонуси.</h5>
+        {% else %}
+        <h5 class="title text-center">Шановний(а) {{ first_name }}.<br>За {{ month }}.{{ year }} Вам були нараховані
+            бонуси за виконання проектів та
+            завдань.</h5>
+        <div class="row">
+            <div class="{% if inttasks %}col-lg-12 col-xl-9{% else %}col-12{% endif %}">
+                {% if executions %}
+                <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-2">
+                    <h6 class="task-header center-block text-center">Бонуси за виконання проектів</h6>
+                    <table id="exec_bonuses" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Шифр об'єкту</th>
+                                <th scope="col">Адреса об'єкту</th>
+                                <th scope="col">Тип проекту</th>
+                                <th scope="col">Назва робіт</th>
+                                <th scope="col">%</th>
+                                <th scope="col">Бонус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fields in executions %}
+                            <tr>
+                                {% for field in fields %}
+                                <td>{{ field }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                {% if tasks %}
+                <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-4">
+                    <h6 class="task-header center-block text-center">Бонуси за ведення проектів</h6>
+                    <table style="overflow-x:scroll" id="owner_bonuses" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Шифр об'єкту</th>
+                                <th scope="col">Адреса об'єкту</th>
+                                <th scope="col">Тип проекту</th>
+                                <th scope="col">%</th>
+                                <th scope="col">Бонус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fields in tasks %}
+                            <tr>
+                                {% for field in fields %}
+                                <td>{{ field }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+            {% if inttasks %}
+            <div class="col-lg-12 col-xl-3">
+                <div style="overflow-x:auto;" class="widget-bg-color-white main-widget-tab mt-2">
+                    <h6 class="task-header center-block text-center">Бонуси за виконання завдань</h6>
+                    <table id="inttasks_bonuses" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Завдання</th>
+                                <th scope="col">Бонус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fields in inttasks %}
+                            <tr>
+                                {% for field in fields %}
+                                <td>{{ field }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <h6 class="text-muted mt-2">Всього нараховано {{ bonuses }} бонусів.</h5>
+    </div>
+    {% endif %}
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <button id="prevMonth" type="" class="btn dark btn-sm btn-outline sbold uppercase ml-2"
+                onclick="window.location.href = '{% month_url request.get_full_path 'prev_month' %}'"
+                data-toggle="tooltip" data-placement="right" title="Ctrl + &lArr;"><i
+                    class="far fa-arrow-alt-circle-left"></i> Попередній місяць</button>
+            <button type="" class="btn dark btn-sm btn-outline sbold uppercase ml-auto mr-auto"
+                onclick="window.location.href = '{% url 'home_page' %}'"><i class="fas fa-home"></i> Головна</button>
+            <button id="nextMonth" type="" class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                onclick="window.location.href = '{% month_url request.get_full_path 'next_month' %}'"
+                data-toggle="tooltip" data-placement="left" title="Ctrl + &rArr;">Наступний місяць <i
+                    class="far fa-arrow-alt-circle-right"></i></button>
+        </div>
+    </div>
+</div>
+<script>
+// define a handler
+function keyUp(e) {
+    if (e.ctrlKey && e.keyCode == 37) {
+        let prevMonthBtn = document.querySelector('#prevMonth');
+        prevMonthBtn.click();
+    }
+    if (e.ctrlKey && e.keyCode == 39) {
+        let nextMonthBtn = document.querySelector('#nextMonth');
+        nextMonthBtn.click();
+    }
+}
+// register the handler 
+document.addEventListener('keyup', keyUp, false);
+
+document.addEventListener("DOMContentLoaded", () => {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock context %}

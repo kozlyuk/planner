@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
+from datetime import datetime, date
 from planner.settings import MEDIA_URL
 
 register = template.Library()
@@ -95,3 +96,76 @@ def task_secondary_overdue_color(status):
 @register.simple_tag
 def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)
+
+@register.simple_tag
+def calc_summary(summary_value, option='without_currency'):
+    '''
+    with_currency return * грн. ** коп.
+    without_currency return *.**.
+    where * is the value
+    '''
+    if option == 'with_currency':
+        if summary_value is None or summary_value is 0:
+            return '0 грн. 0 коп.'
+        summary_value = str(summary_value).split('.')
+        return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
+    elif option == 'without_currency':
+        if summary_value is None or summary_value is 0:
+            return '0.00'
+        summary_value = str(summary_value).split('.')
+        return summary_value[0] + ',' + summary_value[1]
+    elif option == 'vat_with_currency':
+        if summary_value is None or summary_value is 0:
+            return '0.00'
+        summary_value = summary_value / 5
+        summary_value = str(summary_value).split('.')
+        return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
+
+@register.simple_tag
+def calc_vat(value, option='without_currency'):
+    '''
+    with_currency return * грн. ** коп.
+    without_currency return *.**.
+    where * is the value
+    '''
+    if type(value) == str:
+        return value
+    if type(value) == int:
+        return value
+    if option == 'with_currency':
+        if value is None or value is 0:
+            return '0 грн. 00 коп.'
+        vat = round( value + value / 5 , 2 )
+        vat = str(vat).split('.')
+        return vat[0] + ' грн. ' + vat[1] + ' коп.'
+    elif option == 'without_currency':
+        if value is None or value is 0:
+            return '0.00'
+        vat = round( value + value / 5 , 2 )
+        vat = str(vat).split('.')
+        return vat[0] + ',' + vat[1]
+
+@register.simple_tag()
+def month_url( request_url, direction = 'next_month' ):
+    '''
+    next_month return +1 month.
+    prev_month return -1 month.
+    '''
+    request_url = request_url.split('/')
+    month = int(request_url[5])
+    year = int(request_url[4])
+    if direction == 'next_month':
+        month += 1
+        if month > 12:
+            month = 1
+            year += 1
+    elif direction == 'prev_month':
+        month -= 1 
+        if month < 1:
+            month = 12
+            year -= 1
+    request_url[5] = str(month)
+    request_url[4] = str(year)
+    url_str = '/'.join(request_url)
+    return url_str
+

@@ -17,22 +17,27 @@
                     <div class="card">
                         <div class="card-header" id="filter">
                         <h2 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#filterBody" aria-expanded="true" aria-controls="filterBody">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                        <div class="panel-title">
+                            <button class="btn text-muted bold btn-block" type="button" data-toggle="collapse" data-target="#filterBody" aria-expanded="true" aria-controls="filterBody">
                             Договори
                             </button>
-                            {% if perms.planner.add_task %}
+                            {% if perms.planner.add_deal %}
                                 <button onclick="window.location.href = '{% url 'deal_add' %}'"
                                     class="btn dark btn-sm btn-outline sbold uppercase"
-                                    style="float:right; margin-right: 5px; margin-bottom: 5px; margin-top: 5px">
+                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
                                     <i class="fa fa-plus"></i> Додати договір </button>
                             {% endif %}
+                        </div>
+                        </div>
                         </h2>
                         </div>
 
                         <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
                             <div class="card-body">
                                 <div class="container-fluid " style="display:block">
-                                            <form action="{% url 'task_list' %}" method="get">
+                                            <form action="{% url 'deal_list' %}" method="get">
                                                 {% for hidden_field in filter_form.hidden_fields %}
                                                     {{ hidden_field }}
                                                 {% endfor %}
