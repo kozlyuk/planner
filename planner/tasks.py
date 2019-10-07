@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 @app.task
 def update_deal_statuses():
     """Update statuses and warnings of all deals with unsent tasks"""
-    deals = Deal.objects.all().order_by('-id')  # todo limit qs to 100 records after first execution [:100]
+    deals = Deal.objects.all().order_by('-id')[:100]
     for deal in deals:
         if deal.task_set.filter(exec_status=Task.ToDo).count() > 0:
             deal.exec_status = Deal.ToDo

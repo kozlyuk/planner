@@ -217,11 +217,11 @@ def home_page(request):
         td_tasks = Task.objects.filter(exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
         ip_tasks = Task.objects.filter(Q(exec_status=Task.Done) | Q(exec_status=Task.InProgress),
                                        owner__user=request.user).order_by('creation_date')
-        hd_tasks = Task.objects.filter(exec_status=Task.Sent, owner__user=request.user).order_by('-actual_finish')[:20]
-
-        hd_tasks_count = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
-                                             actual_finish__month=datetime.now().month,
-                                             actual_finish__year=datetime.now().year).count()
+        hd_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
+                                       actual_finish__month=datetime.now().month,
+                                       actual_finish__year=datetime.now().year)\
+                               .order_by('-actual_finish')
+        hd_tasks_count = hd_tasks.count()
         active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent).count() + hd_tasks_count
         tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
         overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent)\
@@ -514,7 +514,7 @@ class DealUpdate(UpdateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -545,7 +545,7 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -574,7 +574,7 @@ class DealDelete(DeleteView):
     model = Deal
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string')
+        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -648,7 +648,7 @@ class TaskUpdate(UpdateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -689,7 +689,7 @@ class TaskCreate(CreateView):
     form_class = TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -729,7 +729,7 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
 
@@ -739,7 +739,7 @@ class TaskExchange(FormView):
     form_class = TaskExchangeForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string')
+        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -759,7 +759,7 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
-        context["query_string"] = self.request.session.get('task_query_string')
+        context["query_string"] = self.request.session.get('task_query_string', '')
         return context
 
     def form_valid(self, form):
