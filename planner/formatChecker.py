@@ -96,5 +96,4 @@ class NotClearableFileInput(FileInput):
             substitutions['initial'] = format_html(self.url_markup_template,
                                                value,
                                                force_text(file_name, encoding='utf-8'))
-
         return mark_safe(template % substitutions)
