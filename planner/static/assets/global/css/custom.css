@@ -105,6 +105,12 @@ a.nav-link.active {
 
 .add-row, .delete-row {
     font-size: 12px;
+    color: white!important;
+}
+
+.add-row:hover, .delete-row:hover {
+    font-size: 12px;
+    color: white!important;
 }
 
 .dark {
@@ -211,4 +217,12 @@ a.nav-link.active {
 
 .widget-progress {
     min-height: 0!important;
+}
+
+hidden {
+    display: none;
+}
+
+.width-0 {
+    width: max-content;
 }
