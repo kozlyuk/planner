@@ -19,7 +19,6 @@
             {% if perms.planner.change_deal %}
             <form id="DealForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
-                {% if 0 == 0 %}
                 <!--alert: inline layout-->
                 <div class="row">
                     <div class="col-md-9">
@@ -38,13 +37,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.number.name }}">{{ form.number.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.number.name }}">{{ form.number.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.number }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.date.name }}">{{ form.date.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.date.name }}">{{ form.date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.date|attr:"style: width:60%" }}
@@ -54,13 +55,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.customer.name }}">{{ form.customer.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.customer.name }}">{{ form.customer.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.customer }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.company.name }}">{{ form.company.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.company.name }}">{{ form.company.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.company|attr:"style: width:100%" }}
@@ -70,13 +73,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.value.name }}">{{ form.value.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.value.name }}">{{ form.value.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.value|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.advance.name }}">{{ form.advance.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.advance.name }}">{{ form.advance.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.advance|attr:"style: width:100%" }}
@@ -86,13 +91,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.pay_status.name }}">{{ form.pay_status.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.pay_status.name }}">{{ form.pay_status.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.pay_status|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.pay_date.name }}">{{ form.pay_date.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.pay_date.name }}">{{ form.pay_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.pay_date|attr:"style: width:60%" }}
@@ -102,13 +109,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.act_status.name }}">{{ form.act_status.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.act_status.name }}">{{ form.act_status.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.act_status|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.act_date.name }}">{{ form.act_date.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.act_date.name }}">{{ form.act_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.act_date|attr:"style: width:60%" }}
@@ -118,13 +127,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.expire_date.name }}">{{ form.expire_date.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.expire_date.name }}">{{ form.expire_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.expire_date|attr:"style: width:60%" }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.act_value.name }}">{{ form.act_value.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.act_value.name }}">{{ form.act_value.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.act_value|attr:"style: width:100%" }}
@@ -134,13 +145,15 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.pdf_copy }}
                                                     </div>
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.value_correction.name }}">{{ form.value_correction.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.value_correction.name }}">{{ form.value_correction.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.value_correction|attr:"style: width:100%" }}
@@ -150,7 +163,8 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
+                                                        <label
+                                                            for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
                                                     <div class="col-10">
                                                         {{ form.comment }}
@@ -179,224 +193,120 @@
                         <!-- END WIDGET -->
                     </div>
                     <div class="col-md-3 col-sm-12 col-xs-12  margin-top-sm-20">
-                            <!--alert: deal info-->
-                            <div class="card main-widget-tab">
-                                <h6 class="task-header center-block text-center">Інформація по договору</h6>
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">Вартість договору по роботам:
-                                            <b>{{ deal.value_calc }} грн.</b></li>
-                                        <li class="list-group-item">Бонуси по договору: <b>{{ deal.bonuses_calc }}
-                                                грн.</b></li>
-                                        <li class="list-group-item">Витрати по договору: <b>{{ deal.costs_calc }}
-                                                грн.</b></li>
-                                        <li class="list-group-item">Дата оплати: <b>{{ deal.pay_date_calc }}</b></li>
-                                    </ul>
-                                </div>
+                        <!--alert: deal info-->
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">Інформація по договору</h6>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Вартість договору по роботам:
+                                        <b>{{ deal.value_calc }} грн.</b></li>
+                                    <li class="list-group-item">Бонуси по договору: <b>{{ deal.bonuses_calc }}
+                                            грн.</b></li>
+                                    <li class="list-group-item">Витрати по договору: <b>{{ deal.costs_calc }}
+                                            грн.</b></li>
+                                    <li class="list-group-item">Дата оплати: <b>{{ deal.pay_date_calc }}</b></li>
+                                </ul>
                             </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card main-widget-tab">
                             <h6 class="task-header center-block text-center">Проекти</h6>
-                            <div class="card-body">
+                            <div class="card-body pb-1">
                                 {{ tasks_formset.non_form_errors }}
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if tasks_formset|length %}
-                                    {% for hidden_field in form.hidden_fields %}
-                                        {{ hidden_field }}
-                                    {% endfor %}
-                                        <div class="row">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr align="center">
-                                                        <th width="5%" scope="col">ШИФР ОБ’ЄКТУ</th>
-                                                        <th scope="col">АДРЕСА ОБ’ЄКТУ</th>
-                                                        <th scope="col">ТИП ПРОЕКТУ</th>
-                                                        <th scope="col">КЕРІВНИК ПРОЕКТУ</th>
-                                                        <th scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
-                                                        <th scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                        {% for form in tasks_formset %}
-                                                    <tr>
-                                                        {% for field in form %}
-                                                        <th>
-                                                            {% if field.name == 'deal' or field.name == 'id' or field.name == 'DELETE'  %}
-                                                            {% else %}
-                                                            {% comment %} <div class="col {{field.name}}">
-                                                                <label
-                                                                    for="id_{{ form.prefix }}-{{field.name}}">{{ field.label }}:</label>
-                                                            </div> {% endcomment %}
-                                                            {{field.errors}}
-                                                            <div class="col">
-                                                                {% if field.name == 'planned_finish' %}
-                                                                {{ field|attr:"style: width:50%" }}
-                                                                {% elif field %}
-                                                                {{ field|attr:"style: width:100%" }}
-                                                                {% endif %}
-                                                            </div>
-                                                            {% endif %}
-                                                        </th>
-                                                        {% endfor %}
-                                                        {% endfor %}
-                                                </tbody>
-                                            </table>
-
-
-
-                                            {% comment %} {% for field in form %}
-                                            <div class="col">
-                                                <label for="id_{{ field.field.name }}">{{ field.label }}:</label>
-                                            </div>
-                                            <div class="col">
-                                                {{ field }}
-                                            </div>
-                                            {% endfor %} {% endcomment %}
-                                        </div>
-                                    
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                    {% elif 0 == 1 %}
-                    <!--alert: card layout-->
-                    <div class="row">
-                        <div class="col-md-7">
-                            <!-- BEGIN WIDGET TAB -->
-                            <div style="min-height: max-content!important" class="widget-bg-color-white widget-tab">
-                                <ul class="nav nav-pills mb-3 nav-tabs">
-                                    {% if deal.pk %}
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill"
-                                            href="#tab_1_1" role="tab" aria-controls="pills-tab_1_1"
-                                            aria-selected="true">Редагувати договір</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
-                                            role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Інформація
-                                            по договору </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="pills-tab_1_1-tab" data-toggle="pill"
-                                            href="#tab_1_1" role="tab" aria-controls="pills-tab_1_1"
-                                            aria-selected="true">Додати договір</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                                <div class="tab-content" data-handle-color="#D7DCE2" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
-                                        aria-labelledby="pills-tab_1_1">
-                                        <table class="table table-hover">
-                                            <col width="25%">
-                                            {{ form }}
-                                        </table>
-                                    </div>
-                                    {% if deal.pk %}
-                                    <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
-                                        aria-labelledby="pills-tab_1_2">
-                                        <table class="table table-hover">
-                                            <col width="25%">
-                                            <tr>
-                                                <th>
-                                                    <p>Вартість договору по роботам:</p>
-                                                </th>
-                                                <th>
-                                                    <p><strong>{{ deal.value_calc }} грн.</strong></p>
-                                                </th>
+                                {% for hidden_field in form.hidden_fields %}
+                                {{ hidden_field }}
+                                {% endfor %}
+                                <div class="row">
+                                    <table class="table table-hover mb-0 table-responsive-xl" id="tasks_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="10%" scope="col">ШИФР ОБ’ЄКТУ</th>
+                                                <th scope="col">АДРЕСА ОБ’ЄКТУ</th>
+                                                <th scope="col">ТИП ПРОЕКТУ</th>
+                                                <th width="10%" scope="col">КЕРІВНИК ПРОЕКТУ</th>
+                                                <th width="15%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="3%" scope="col">Дії</th>
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in tasks_formset %}
                                             <tr>
-                                                <th>
-                                                    <p>Бонуси по договору:</p>
+                                                {% for field in form %}
+                                                {% if field.name == 'deal' or field.name == 'id' or field.name == 'DELETE'  %}
+                                                {% else %}
+                                                <th class="pl-1 pr-1">
+                                                    {% comment %} <div class="col {{field.name}}">
+                                                        <label
+                                                            for="id_{{ form.prefix }}-{{field.name}}">{{ field.label }}:</label>
+                                                    </div> {% endcomment %}
+                                                    {{field.errors}}
+                                                    {% if field.name == 'planned_finish' %}
+                                                    {{ field|attr:"style: width:50%" }}
+                                                    {% elif field.name == 'object_code' %}
+                                                    {{ field|attr:"style: width:50%" }}
+                                                    {% elif field %}
+                                                    {{ field|attr:"style: width:100%" }}
+                                                    {% endif %}
                                                 </th>
+                                                {% endif %}
+                                                {% endfor %}
                                                 <th>
-                                                    <p><strong>{{ deal.bonuses_calc }} грн.</strong></p>
+                                                    {{form.deal}}
+                                                    {{form.id}}
                                                 </th>
-                                            </tr>
-                                            <tr>
-                                                <th>
-                                                    <p>Витрати по договору:</p>
-                                                </th>
-                                                <th>
-                                                    <p><strong>{{ deal.costs_calc }} грн.</strong></p>
-                                                </th>
-                                            </tr>
-                                            <tr>
-                                                <th>
-                                                    <p>Дата оплати:</p>
-                                                </th>
-                                                <th>
-                                                    <p><strong>{{ deal.pay_date_calc }}</strong></p>
-                                                </th>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    {% endif %}
-                                    <div class="form-actions">
-                                        {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
-                                            class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
-                                            class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
-                                        {% endif %}
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                            style="float: right;">Зберегти</button>
-                                        {% if deal.pk %}
-                                        <a href="{% url 'calculation' deal.pk %}"
-                                            class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                            style="float: right;">Калькуляція по договору</a>
-                                        {% endif %}
-                                    </div>
+                                                {% endfor %}
+                                                <button type="button"
+                                                    class="hidden add-formset badge badge-pill badge-info"> +
+                                                </button>
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
-                            <!-- END WIDGET -->
-                        </div>
-                        <div class="col-md-5 col-sm-12 col-xs-12  margin-top-sm-20">
-                            <!-- BEGIN WIDGET TAB -->
-                            <div class="portlet light tasks-widget">
-                                <div class="text-center">
-                                    <div class="caption caption-md font-red-sunglo">
-                                        <span class="caption-subject theme-font bold uppercase"> Проекти </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-content" style="height: max-content" data-handle-color="#D7DCE2">
-                                {{ tasks_formset.non_form_errors }}
-                                <!--check the length of the formset-->
-                                <!--if formset is not empty-->
-                                {% if tasks_formset|length %}
-                                {% for form in tasks_formset %}
-                                <div class="portlet light margin-top-20">
-                                    <table id="TasksTable" class="table table-hover">
-                                        <col width="25%">
+                                {% else %}
+                                <div style="display:none" id="tasks_formset">
+                                    <table id="TasksTableEmptyForm" class="table table-hover task-formset table-responsive-xl">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="10%" scope="col">ШИФР ОБ’ЄКТУ</th>
+                                                <th scope="col">АДРЕСА ОБ’ЄКТУ</th>
+                                                <th scope="col">ТИП ПРОЕКТУ</th>
+                                                <th width="10%" scope="col">КЕРІВНИК ПРОЕКТУ</th>
+                                                <th width="15%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="2%" scope="col">Дії</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             {% for hidden_field in form.hidden_fields %}
                                             {{ hidden_field }}
                                             {% endfor %}
-                                            {{ form }}
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.object_code|attr:"style: width:50%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.object_address|attr:"style: width:100%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.project_type|attr:"style: width:100%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.owner|attr:"style: width:100%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.planned_finish|attr:"style: width:50%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.exec_status|attr:"style: width:100%" }}
+                                            </th>
+                                            <th class="pl-1 pr-1"> </th>
                                         </tbody>
                                     </table>
-                                </div>
-                                {% endfor %}
-                                <!--if formset is empty-->
-                                {% else %}
-                                <div style="display:none" id="tasks_formset">
-                                    <div class="portlet light margin-top-20">
-                                        <table id="TasksTableEmptyForm" class="table table-hover task-formset">
-                                            <col width="25%">
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
-                                            <tbody>
-                                                {% endfor %}
-                                                {{ tasks_formset.empty_form }}
-                                            </tbody>
-                                        </table>
-                                    </div>
                                     <button style="display: none" type="button"
                                         class="delete-formset btn red btn-sm btn-outline margin-bottom-20 float-right">Видалити
                                         проект</button>
@@ -409,8 +319,8 @@
                             </div>
                         </div>
                     </div>
-                    {% endif %}
-                    <!-- END PORTLET-->
+                </div>
+                <!-- END PORTLET-->
             </form>
             {% else %}
             Ви не маєте доступу до редагування даного проекту<br><br>
@@ -433,7 +343,7 @@
         $("body").attr("JSError", msg);
     }
 $(document).ready(function(){
-  $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
 <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
@@ -467,13 +377,13 @@ $(function () {
     setTimeout(function () {
         $('span.select2-container.select2-container--bootstrap').width('auto');
     }, 100);
-    $('#tasks_formset tbody').formset({
+    $('#tasks_formset_not_empty tbody tr').formset({
         prefix: '{{ tasks_formset.prefix }}',
         formCssClass: 'dynamic-formset1',
         addText: 'Додати Проект',
-        deleteText: 'Видалити Проект',
-        addCssClass: 'add-row btn dark btn-sm btn-outline margin-bottom-10',
-        deleteCssClass: 'delete-row btn red btn-sm btn-outline margin-bottom-10',
+        deleteText: ' - ',
+        addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+        deleteCssClass: 'delete-row badge badge-pill badge-danger',
         'added': function (row) {
             //find the fields with the calendar widget
             $(row).find('.vDateField').each(function (i) {
@@ -483,18 +393,29 @@ $(function () {
                 DateTimeShortcuts.addCalendar(this);
             })
             $(row).find('.django-select2').djangoSelect2();
+            updateDealVal()
         }
     });
 })
+
+function updateDealVal() {
+    const getTargetInput = document.querySelectorAll("[id$='-deal']");
+    let dealId = getTargetInput[0].attributes.value.value;
+    let lastTarget = getTargetInput[getTargetInput.length - 1];
+    lastTarget.setAttribute( 'value', dealId );
+};
+
 $(function () {
     setTimeout(function () {
         $('span.select2-container.select2-container--bootstrap').width('auto');
     }, 100);
-    $('#TasksTable tbody').formset({
+    $('#tasks_formset tbody tr').formset({
         prefix: '{{ tasks_formset.prefix }}',
         formCssClass: 'dynamic-formset1',
         addText: 'Додати Проект',
-        deleteText: 'Видалити Проект',
+        deleteText: '-',
+        addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+        deleteCssClass: 'delete-row badge badge-pill badge-danger',
         'added': function (row) {
             //find the fields with the calendar widget
             $(row).find('.vDateField').each(function (i) {
