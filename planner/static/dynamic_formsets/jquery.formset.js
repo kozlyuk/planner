@@ -178,7 +178,7 @@
                 // "add" button in a new table row:
                 var numCols = $$.eq(0).children().length,   // This is a bit of an assumption :|
                     buttonRow = $('<tr><td colspan="' + numCols + '"><a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a></tr>')
-                                .addClass(options.formCssClass + '-add');
+                                .addClass(options.formCssClass + '-add last-row');
                 $$.parent().append(buttonRow);
                 if (hideAddButton) buttonRow.hide();
                 addButton = buttonRow.find('a');
