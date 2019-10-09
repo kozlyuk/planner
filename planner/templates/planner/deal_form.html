@@ -393,7 +393,8 @@ $(function () {
                 DateTimeShortcuts.addCalendar(this);
             })
             $(row).find('.django-select2').djangoSelect2();
-            updateDealVal()
+            updateDealVal();
+            deleteLastProjectBtn();
         }
     });
 })
@@ -404,6 +405,15 @@ function updateDealVal() {
     let lastTarget = getTargetInput[getTargetInput.length - 1];
     lastTarget.setAttribute( 'value', dealId );
 };
+
+function deleteLastProjectBtn() {
+    const getDividers = document.querySelectorAll('.divider');
+    const getButtons = document.querySelectorAll('.btnLink');
+    let lastDivider = getDividers[getDividers.length - 1];
+    let lastButton = getButtons[getButtons.length - 1];
+    lastDivider.style.display = 'none';
+    lastButton.style.display = 'none';
+}
 
 $(function () {
     setTimeout(function () {

@@ -2,8 +2,8 @@
     <input style="width: 75%" type="{{ widget.type }}" name="{{ widget.name }}" value="{{ widget.value }}" required="{{ widget.required }}"
         is_hidden="{{ widget.is_hidden }}" maxlength="{{ widget.attrs.maxlength }}">
     {% if widget.attrs.task_id %}
-    <span style="font-size: 20px; font-weight: 100;">|</span>
-    <a href="/project/{{widget.attrs.task_id}}/change/" target="_blank">
+    <span class="divider" style="font-size: 20px; font-weight: 100;">|</span>
+    <a class="btnLink" href="/project/{{widget.attrs.task_id}}/change/" target="_blank">
         <i style="font-size: 16px;" data-toggle="tooltip" title="Відкрити редагування проекту" data-placement="right" class="far fa-sticky-note"></i>
     </a>
 </div>
