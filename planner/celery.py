@@ -48,6 +48,10 @@ app.conf.beat_schedule = {
         'task': 'planner.tasks.send_urgent_tasks_report',
         'schedule': crontab(day_of_week="1-5", hour=8, minute=20),  # workdays at 8-20
     },
+    'unsent_tasks_report': {
+        'task': 'planner.tasks.send_unsent_tasks_report',
+        'schedule': crontab(day_of_week=1, hour=8, minute=25),    # monday at 8-25
+    },
     'monthly_report': {
         'task': 'planner.tasks.send_monthly_report',
         'schedule': crontab(day_of_month=10, hour=17, minute=00),   # on 10th of month at 17-00

@@ -18,7 +18,6 @@ from django.db.models import Q
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
-from . import calc_scripts
 from crum import get_current_user
 
 
@@ -85,6 +84,7 @@ class DealCalc(TemplateView):
         context['svalue'] = round(svalue, 2)
         return context
 
+
 @method_decorator(login_required, name='dispatch')
 class BonusesCalc(TemplateView):
     """ View for displaying bonuses calculation to a employee """
@@ -143,21 +143,11 @@ class BonusesCalc(TemplateView):
 
         bonuses = round( bonuses, 2 )
 
-        def date_delta(delta):
-            month = datetime.now().month + delta
-            year = datetime.now().year
-            if month < 1:
-                month = 12
-                year -= 1
-            return month, year
-
         context['first_name'] = first_name
         context['tasks'] = task_list
         context['executions'] = executions_list
         context['inttasks'] = inttasks_list
         context['bonuses'] = bonuses
-        context['pm'] = date_delta(-1)
-        context['nm'] = date_delta(1)
         return context
 
 
