@@ -1,0 +1,28 @@
+{% load widget_tweaks %}
+
+{% for field in form %}
+    {% if field.name == 'deal' or field.name == 'id' or field.name == 'DELETE'  %}
+    {% else %}
+    {% comment %} <div class="col {{field.name}}">
+        <label for="id_{{ form.prefix }}-{{field.name}}">{{ field.label }}:</label>
+    </div> {% endcomment %}
+    {{field.errors}}
+    <div class="col">
+        {% if field.name == 'planned_finish' %}
+        {{ field|attr:"style: width:65%" }}
+        {% else %}
+        {{ field|attr:"style: width:100%" }}
+        {% endif %}
+    </div>
+    {% endif %}
+{% endfor %}
+
+
+{% comment %} {% for field in form %}
+    <div class="col">
+        <label for="id_{{ field.field.name }}">{{ field.label }}:</label>
+    </div>
+    <div class="col">
+        {{ field }}
+    </div>
+{% endfor %} {% endcomment %}

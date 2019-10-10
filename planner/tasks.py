@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 @app.task
 def update_deal_statuses():
     """Update statuses and warnings of all deals with unsent tasks"""
-    deals = Deal.objects.all().order_by('-id')  # todo limit qs to 100 records after first execution [:100]
+    deals = Deal.objects.all().order_by('-id')[:100]
     for deal in deals:
         if deal.task_set.filter(exec_status=Task.ToDo).count() > 0:
             deal.exec_status = Deal.ToDo
@@ -147,7 +147,7 @@ def send_debtors_report():
                            </tr>' \
                     .format(index, deal.pk, deal.number, deal.customer,
                             deal.value, deal.get_pay_status_display(),
-                            deal.get_act_status_display(), deal.exec_status)
+                            deal.get_act_status_display(), deal.get_exec_status_display())
 
             message += '</table></body></html><br>'
 
@@ -169,17 +169,79 @@ def send_debtors_report():
 
 
 @app.task
+def send_overdue_deals_report():
+    """Sending notifications about overdue deals to PMs"""
+
+    pms = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    deals = Deal.objects.exclude(exec_status=Deal.Sent)\
+                        .exclude(expire_date__gte=date.today()) \
+                        .exclude(number__icontains='загальний') \
+                        .exclude(number__icontains='злетіли')
+    emails = []
+
+    for pm in pms:
+
+        if deals and pm.user.email:
+            index = 0
+            message = '<html><body>\
+                               Шановна(ий) {}.<br><br>\
+                               Маємо такі протерміновані угоди:<br>\
+                               <table border="1">\
+                               <th>&#8470;</th><th>Номер договору</th><th>Замовник</th>\
+                               <th>Вартість робіт</th><th>Статус оплати</th>\
+                               <th>Акт виконаних робіт</th><th>Дата закінчення договору</th>\
+                               <th>Статус виконання</th>' \
+                .format(pm.user.first_name)
+
+            for deal in deals:
+                index += 1
+                message += '<tr>\
+                                   <td>{}</td>\
+                                   <td><a href="http://erp.itel.rv.ua/deal/{}/change/">{}</a></td>\
+                                   <td>{}</td>\
+                                   <td>{}</td>\
+                                   <td>{!s}</td>\
+                                   <td>{!s}</td>\
+                                   <td>{!s}</td>\
+                                   <td>{}</td>\
+                                   </tr>' \
+                    .format(index, deal.pk, deal.number, deal.customer,
+                            deal.value, deal.get_pay_status_display(),
+                            deal.get_act_status_display(), deal.expire_date,
+                            deal.get_exec_status_display())
+
+            message += '</table></body></html><br>'
+
+            emails.append(mail.EmailMessage(
+                'Протерміновані угоди',
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [pm.user.email],
+            ))
+
+    for email in emails:
+        email.content_subtype = "html"
+
+    connection = mail.get_connection()
+    connection.open()
+    if connection.send_messages(emails) > 0:
+        logger.info("Sent notifications about overdue deals to PMs")
+    connection.close()
+
+
+@app.task
 def send_overdue_tasks_report():
     """Sending notifications about overdue tasks to owners and executors"""
 
     employees = Employee.objects.filter(user__is_active=True)
-    tasks = Task.objects.exclude(exec_status=Task.Sent). \
-        exclude(deal__expire_date__gte=date.today(),
-                planned_finish__isnull=True). \
-        exclude(deal__expire_date__gte=date.today(),
-                planned_finish__gte=date.today())
+    tasks = Task.objects.exclude(exec_status=Task.Sent) \
+                        .exclude(exec_status=Task.Done) \
+                        .exclude(deal__expire_date__gte=date.today(),
+                                 planned_finish__isnull=True) \
+                        .exclude(deal__expire_date__gte=date.today(),
+                                 planned_finish__gte=date.today())
     inttasks = IntTask.objects.exclude(exec_status=IntTask.Done) \
-        .exclude(planned_finish__gte=date.today())
+                              .exclude(planned_finish__gte=date.today())
 
     emails = []
 
@@ -282,15 +344,16 @@ def send_urgent_tasks_report():
 
     employees = Employee.objects.filter(user__is_active=True)
     tasks = Task.objects.exclude(exec_status=Task.Sent) \
-        .exclude(planned_finish__isnull=True,
-                 deal__expire_date__lt=date.today()) \
-        .exclude(planned_finish__isnull=True,
-                 deal__expire_date__gt=date.today() + timedelta(days=7)) \
-        .exclude(planned_finish__lt=date.today()) \
-        .exclude(planned_finish__gt=date.today() + timedelta(days=7))
+                        .exclude(exec_status=Task.Done) \
+                        .exclude(planned_finish__isnull=True,
+                                 deal__expire_date__lt=date.today()) \
+                        .exclude(planned_finish__isnull=True,
+                                 deal__expire_date__gt=date.today() + timedelta(days=7)) \
+                        .exclude(planned_finish__lt=date.today()) \
+                        .exclude(planned_finish__gt=date.today() + timedelta(days=7))
     inttasks = IntTask.objects.exclude(exec_status=IntTask.Done) \
-        .exclude(planned_finish__lt=date.today()) \
-        .exclude(planned_finish__gt=date.today() + timedelta(days=7))
+                              .exclude(planned_finish__lt=date.today()) \
+                              .exclude(planned_finish__gt=date.today() + timedelta(days=7))
 
     emails = []
 
@@ -386,54 +449,49 @@ def send_urgent_tasks_report():
 
 
 @app.task
-def send_overdue_deals_report():
-    """Sending notifications about overdue deals to PMs"""
+def send_unsent_tasks_report():
+    """Sending notifications about unsent tasks to owners"""
 
-    pms = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
-    deals = Deal.objects.exclude(exec_status=Deal.Sent)\
-                        .exclude(expire_date__gte=date.today()) \
-                        .exclude(number__icontains='загальний') \
-                        .exclude(number__icontains='злетіли')
+    pms = Employee.objects.filter(user__groups__name__in=['ГІПи'])
+    tasks = Task.objects.filter(exec_status=Task.Done)
+
     emails = []
 
-    for pm in pms:
+    for employee in pms:
+        otasks = tasks.filter(owner=employee)
 
-        if deals and pm.user.email:
+        message = '<html><body>Шановний(а) {}.<br><br>' \
+            .format(employee.user.first_name)
+
+        if otasks.exists():
             index = 0
-            message = '<html><body>\
-                               Шановна(ий) {}.<br><br>\
-                               Маємо такі протерміновані угоди:<br>\
-                               <table border="1">\
-                               <th>&#8470;</th><th>Номер договору</th><th>Замовник</th>\
-                               <th>Вартість робіт</th><th>Статус оплати</th>\
-                               <th>Акт виконаних робіт</th><th>Дата закінчення договору</th>\
-                               <th>Статус виконання</th>' \
-                .format(pm.user.first_name)
+            message += 'Не надіслані наступні проекти, в яких Ви відповідальна особа:<br>\
+                       <table border="1">\
+                       <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
+                       <th>Тип проекту</th><th>Статус</th><th>Планове закінчення</th><th>Попередження</th>'
 
-            for deal in deals:
+            for task in otasks:
                 index += 1
                 message += '<tr>\
-                                   <td>{}</td>\
-                                   <td><a href="http://erp.itel.rv.ua/deal/{}/change/">{}</a></td>\
-                                   <td>{}</td>\
-                                   <td>{}</td>\
-                                   <td>{!s}</td>\
-                                   <td>{!s}</td>\
-                                   <td>{!s}</td>\
-                                   <td>{}</td>\
-                                   </tr>' \
-                    .format(index, deal.pk, deal.number, deal.customer,
-                            deal.value, deal.get_pay_status_display(),
-                            deal.get_act_status_display(), deal.expire_date,
-                            deal.exec_status)
-
-            message += '</table></body></html><br>'
+                           <td>{}</td>\
+                           <td><a href="http://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
+                           <td>{:.80}</td>\
+                           <td>{}</td>\
+                           <td>{!s}</td>\
+                           <td>{}</td>\
+                           <td>{!s}</td>\
+                           </tr>' \
+                    .format(index, task.pk, task.object_code, task.object_address,
+                            task.project_type, task.get_exec_status_display(),
+                            task.planned_finish, task.overdue_status())
+            message += '</table><br>'
 
             emails.append(mail.EmailMessage(
-                'Протерміновані угоди',
+                'Не надіслані проекти',
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [pm.user.email],
+                [employee.user.email],
+                ['s.kozlyuk@itel.rv.ua', 'm.kozlyuk@itel.rv.ua'],
             ))
 
     for email in emails:
@@ -442,7 +500,7 @@ def send_overdue_deals_report():
     connection = mail.get_connection()
     connection.open()
     if connection.send_messages(emails) > 0:
-        logger.info("Sent notifications about overdue deals to PMs")
+        logger.info("Sent notifications about unsent tasks to owners")
     connection.close()
 
 
