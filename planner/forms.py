@@ -312,7 +312,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
-ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=1, formset=ExecutorsInlineFormset)
+ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=0, formset=ExecutorsInlineFormset)
 
 
 class OrderInlineForm(forms.ModelForm):
@@ -360,7 +360,7 @@ class CostsInlineFormset(BaseInlineFormSet):
                     raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
-CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=1, formset=CostsInlineFormset)
+CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=0, formset=CostsInlineFormset)
 
 
 class SendingInlineForm(forms.ModelForm):
