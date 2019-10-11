@@ -56,9 +56,9 @@ class DealCalc(TemplateView):
                     count = object_codes.count()
                     price = ptype['project_type__price'] / 6 * 5
                     value = price * count
-                    if deal.company.taxation == 'wovat':
-                        price = price / 6 * 5
-                        value = value / 6 * 5
+                    #if deal.company.taxation == 'wovat':
+                    #    price = price / 6 * 5
+                    #    value = value / 6 * 5
                     svalue += round(value, 2)
                 object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
                                     count, round(price, 2), round(value, 2)])
