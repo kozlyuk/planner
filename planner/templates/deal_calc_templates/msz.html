@@ -59,6 +59,7 @@
                     <td colspan="4">Загальна вартість без ПДВ:</td>
                     <td colspan="2"> {% calc_summary svalue 'with_currency' %} </td>
                 </tr>
+                {% if taxation == 'wvat' %}
                 <tr align="right">
                     <td colspan="4">ПДВ 20%:</td>
                     <td colspan="2"> {% calc_summary svalue 'vat_with_currency' %} </td>
@@ -67,6 +68,7 @@
                     <td class="bold" colspan="4">Всього з ПДВ:</td>
                     <td colspan="2"> {% calc_vat svalue 'with_currency' %} </td>
                 </tr>
+                {% endif %}
             </tbody>
         </table>
         <button type="button" id="copy" class="btn dark btn-sm btn-outline sbold uppercase ml-3">Копіювати в
