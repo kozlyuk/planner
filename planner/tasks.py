@@ -11,41 +11,48 @@ date_format = uk_formats.DATE_INPUT_FORMATS[0]
 logger = get_task_logger(__name__)
 
 
-def update_task_statuses(self):
-    if self.exec_status == self.Done:
-        send_status = self.sending_status()
-        if send_status != 'Надіслано':
-            return send_status
-    if self.exec_status in [self.Sent, self.Done] and self.actual_finish:
-        return 'Виконано %s' % self.actual_finish.strftime(date_format)
-    if self.execution_status() == 'Виконано':
-        return 'Очікує на перевірку'
-    if self.planned_finish:
-        if self.planned_finish < date.today():
-            return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
-        elif self.planned_finish - timedelta(days=7) <= date.today():
-            return 'Завершити до %s' % self.planned_finish.strftime(date_format)
-        else:
-            return 'Завершити до %s' % self.planned_finish.strftime(date_format)
-    if self.deal.expire_date < date.today():
-        return 'Протерміновано %s' % self.deal.expire_date.strftime(date_format)
-    if self.deal.expire_date - timedelta(days=7) <= date.today():
+@app.task
+def update_task_statuses():
+    """Update statuses for all last 1000 tasks"""
+    tasks = Task.objects.order_by('-id')  # todo limit qs to [:1000]
+    for task in tasks:
+        if task.exec_status == Task.Done:
+            send_status = task.sending_status()
+            if send_status != 'Надіслано':
+                task.warning = send_status
+        if self.exec_status in [self.Sent, self.Done] and self.actual_finish:
+            return 'Виконано %s' % self.actual_finish.strftime(date_format)
+        if self.execution_status() == 'Виконано':
+            return 'Очікує на перевірку'
+        if self.planned_finish:
+            if self.planned_finish < date.today():
+                return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
+            elif self.planned_finish - timedelta(days=7) <= date.today():
+                return 'Завершити до %s' % self.planned_finish.strftime(date_format)
+            else:
+                return 'Завершити до %s' % self.planned_finish.strftime(date_format)
+        if self.deal.expire_date < date.today():
+            return 'Протерміновано %s' % self.deal.expire_date.strftime(date_format)
+        if self.deal.expire_date - timedelta(days=7) <= date.today():
+            return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
         return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
-    return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
+
+        task.save(update_fields=['warning'], logging=False)
 
     logger.info("Updated statuses and warnings of all deals with unsent tasks")
 
 
 @app.task
-def update_deal_statuses():
-    """Update statuses and warnings of all deals with unsent tasks"""
-    deals = Deal.objects.all().order_by('-id')[:100]
+def update_deal_statuses(): # todo make tests
+    """Update statuses and warnings for last 100 deals"""
+    deals = Deal.objects.order_by('-id')[:100]
     for deal in deals:
-        if deal.task_set.filter(exec_status=Task.ToDo).exists():
+        tasks = deal.task_set.values_list('exec_status', flat=True)
+        if Task.ToDo in tasks:
             deal.exec_status = Deal.ToDo
-        elif deal.task_set.filter(exec_status=Task.InProgress).exists():
+        elif Task.InProgress in tasks:
             deal.exec_status = Deal.InProgress
-        elif deal.task_set.filter(exec_status=Task.Done).exists():
+        elif Task.Done in tasks:
             deal.exec_status = Deal.Done
         else:
             deal.exec_status = Deal.Sent
@@ -70,7 +77,8 @@ def update_deal_statuses():
             deal.warning = ''
 
         deal.save(update_fields=['exec_status', 'warning'], logging=False)
-        logger.info("Updated statuses and warnings of all deals with unsent tasks")
+
+    logger.info("Updated statuses and warnings of all deals with unsent tasks")
 
 
 @app.task

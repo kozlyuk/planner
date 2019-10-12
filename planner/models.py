@@ -548,6 +548,7 @@ class Task(models.Model):
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    warning = models.CharField('Попередження', max_length=30, blank=True)
     owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
@@ -602,6 +603,7 @@ class Task(models.Model):
         super(Task, self).delete(*args, **kwargs)
 
     def execution_status(self):
+        """Show task status by subtasks"""
         queryset = self.execution_set.values_list('exec_status', flat=True)
         if Execution.ToDo in queryset:
             return 'В черзі'
