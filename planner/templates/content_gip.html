@@ -23,6 +23,10 @@
                     <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3" role="tab"
                         aria-controls="pills-tab_1_3" aria-selected="false"> Виконано </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-tab_1_4-tab" data-toggle="pill" href="#tab_1_4" role="tab"
+                        aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано </a>
+                </li>
             </ul>
             <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
                 <div class="tab-pane fade" id="tab_1_1" role="tabpanel" aria-labelledby="pills-tab_1_1">
@@ -59,6 +63,22 @@
                 </div>
                 <div class="tab-pane fade" id="tab_1_3" role="tabpanel" aria-labelledby="pills-tab_1_3">
                     {% for task in hd_tasks %}
+                    <div class="widget-news margin-bottom-10">
+                        <div class="widget-news-right-body">
+                            <h3 class="widget-news-right-body-title">
+                                <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                    {{ task.object_address|slice:":75" }}</a>
+                                <span
+                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
+                                    {{ task.overdue_status }} </span>
+                            </h3>
+                            {{ task.project_type }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="tab-pane fade" id="tab_1_4" role="tabpanel" aria-labelledby="pills-tab_1_4">
+                    {% for task in sent_tasks %}
                     <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
