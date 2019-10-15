@@ -389,7 +389,7 @@ class SendingInlineFormset(BaseInlineFormSet):
                     raise ValidationError("Ви не можете закрити цей проект без відправки")
 
 
-SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=1, formset=SendingInlineFormset)
+SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=0, formset=SendingInlineFormset)
 
 
 class TaskExchangeForm(forms.Form):

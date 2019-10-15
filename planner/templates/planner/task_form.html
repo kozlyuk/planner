@@ -53,7 +53,7 @@
                                                     <div class="col-7">
                                                         {{ form.object_address|attr:"style: width:100%" }}
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -162,7 +162,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <div class="row">
-                                                    
+
                                                     <!--alert: pdf_copy-->
                                                     <div class="col-1">
                                                         <label
@@ -212,85 +212,95 @@
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if executors_formset|length %}
-                                    <div class="row">
-                                        <table class="table table-hover mb-0 table-responsive-xl" id="executor_formset_not_empty">
-                                            <thead>
-                                                <tr align="center">
-                                                    <th width="30%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                    <th scope="col">РОБОТИ</th>
-                                                    <th width="5%" scope="col">ЧАСТКА</th>
-                                                    <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                    <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
-                                                    <th width="2%">ДІЇ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for hidden_field in form.hidden_fields %}
-                                                {{ hidden_field }}
-                                                {% endfor %}
-                                                {% for form in executors_formset %}
-                                                <tr>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ form.executor|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ form.part_name|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ form.part|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ form.exec_status|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ form.finish_date|attr:"style: width:60%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1"> </th>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        {{ executors_formset.management_form }}
-                                    </div>
+                                <div class="row">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="executor_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="35%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                <th scope="col">РОБОТИ</th>
+                                                <th width="5%" scope="col">ЧАСТКА</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                <th width="2%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for dict in executors_formset.errors %}
+                                            {% for error in dict.values %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        {% endfor %}
+                                            {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
+                                            {% endfor %}
+                                            {% for form in executors_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.executor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.part_name|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.part|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.exec_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.finish_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th> </th>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {{ executors_formset.management_form }}
+                                </div>
                                 {% else %}
-                                    <div class="row">
-                                        <table class="table table-hover mb-0 table-responsive-xl" id="executor_formset_empty">
-                                            <thead>
-                                                <tr align="center">
-                                                    <th width="30%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                    <th scope="col">РОБОТИ</th>
-                                                    <th width="5%" scope="col">ЧАСТКА</th>
-                                                    <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                    <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
-                                                    <th width="2%">ДІЇ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for hidden_field in form.hidden_fields %}
-                                                {{ hidden_field }}
-                                                {% endfor %}
-                                                <tr>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ executors_formset.empty_form.executor|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ executors_formset.empty_form.part_name|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ executors_formset.empty_form.part|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1"> </th>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        {{ executors_formset.management_form }}
-                                    </div>
+                                <div class="row" style="display:none" id="executors_formset">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="executor_formset_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                <th scope="col">РОБОТИ</th>
+                                                <th width="5%" scope="col">ЧАСТКА</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                <th width="2%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for hidden_field in form.hidden_fields %}
+                                            {{ hidden_field }}
+                                            {% endfor %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.executor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part_name|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1"> </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {{ executors_formset.management_form }}
+                                </div>
+                                <button style="width: 100%" type="button"
+                                    class="add-formset add-executors-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                    виконавця</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -303,88 +313,92 @@
                             <div class="card-body pb-1">
                                 {% if costs_formset|length %}
                                 <div class="row">
-                                        <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_not_empty">
-                                            <thead>
-                                                <tr align="center">
-                                                    <th width="30%" scope="col">ПІДРЯДНИК</th>
-                                                    <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                    <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                    <th width="15%" scope="col">АВАНС, ГРН.</th>
-                                                    <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                    <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                    <th width="2%">ДІЇ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {{ costs_formset.non_form_errors }}
-                                                {% for form in costs_formset %}
-                                                <tr>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.contractor}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.deal_number}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.value}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.advance}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.pay_status}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.pay_date}}
-                                                    </th>
-                                                    <th></th>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        {{ costs_formset.management_form }}
-                                    </div>
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="costs_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                <th width="2%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{ costs_formset.non_form_errors }}
+                                            {% for form in costs_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.contractor|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.deal_number|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.value|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.advance|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.pay_status|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.pay_date|attr:"style: width:100%"}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {{ costs_formset.management_form }}
+                                </div>
                                 {% else %}
-                                <div class="row">
-                                        <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
-                                            <thead>
-                                                <tr align="center">
-                                                    <th width="30%" scope="col">ПІДРЯДНИК</th>
-                                                    <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                    <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                    <th width="15%" scope="col">АВАНС, ГРН.</th>
-                                                    <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                    <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                    <th width="2%">ДІЇ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {{ costs_formset.non_form_errors }}
-                                                <tr>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.contractor }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.deal_number }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.value }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.advance }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.pay_status }}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.pay_date }}
-                                                    </th>
-                                                    <th></th>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        {{ costs_formset.management_form }}
-                                    </div>
+                                <div class="row" style="display:none" id="costs_formset">
+                                    <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                <th width="2%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{ costs_formset.non_form_errors }}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.contractor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.deal_number|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.value|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.advance|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {{ costs_formset.management_form }}
+                                </div>
+                                <button style="width: 100%" type="button"
+                                    class="add-formset add-costs-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                    підрядника</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -395,53 +409,92 @@
                         <div class="card main-widget-tab">
                             <h6 class="task-header center-block text-center">Відправки</h6>
                             <div class="card-body pb-1">
+                                {% if sending_formset|length %}
                                 <div class="row">
-                                        <table class="table table-hover mb-0 table-responsive-xl" id="sending_formset_not_empty">
-                                            <thead>
-                                                <tr align="center">
-                                                    <th width="15%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
-                                                    <th width="8%" scope="col">ДАТА ВІДПРАВКИ</th>
-                                                    <th width="5%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
-                                                    <th width="15%" scope="col">РЕЄСТР</th>
-                                                    <th width="2%">ДІЇ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {{ sending_formset.non_form_errors }}
-                                                {% for form in sending_formset %}
-                                                <tr>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.receiver}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.receipt_date}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.copies_count}}
-                                                    </th>
-                                                    <th class="pl-1 pr-1">
-                                                        {{form.register_num}}
-                                                    </th>
-                                                    <th></th>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        {{ costs_formset.management_form }}
-                                    </div>
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="sending_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
+                                                <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
+                                                <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
+                                                <th width="30%" scope="col">РЕЄСТР</th>
+                                                <th width="2%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in sending_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.receiver|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.receipt_date|attr:"style: width:60%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.copies_count|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{form.register_num|attr:"style: width:100%"}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {{ sending_formset.management_form }}
                                 </div>
                             </div>
+                            {% else %}
+                            <div class="row" style="display:none" id="sending_formset">
+                                <table class="table table-hover mb-0 table-responsive-xl" id="sending_formset_empty">
+                                    <thead>
+                                        <tr align="center">
+                                            <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
+                                            <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
+                                            <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
+                                            <th width="30%" scope="col">РЕЄСТР</th>
+                                            <th width="2%">ДІЇ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{ sending_formset.non_form_errors }}
+                                        <tr>
+                                            <th class="pl-1 pr-1">
+                                                {{sending_formset.empty_form.receiver|attr:"style: width:100%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{sending_formset.empty_form.receipt_date|attr:"style: width:60%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{sending_formset.empty_form.copies_count|attr:"style: width:100%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{sending_formset.empty_form.register_num|attr:"style: width:100%"}}
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {{ sending_formset.management_form }}
+                            </div>
+                            <button style="width: 100%" type="button"
+                                class="add-formset add-sending-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                відправку</button>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
-            </form>
-            {% else %}
-            Ви не маєте доступу до редагування даного проекту<br><br>
-            {% endif %}
         </div>
-        <!-- END PAGE BASE CONTENT -->
     </div>
-    <!-- END CONTENT -->
+    </form>
+    {% else %}
+    Ви не маєте доступу до редагування даного проекту<br><br>
+    {% endif %}
+</div>
+<!-- END PAGE BASE CONTENT -->
+</div>
+<!-- END CONTENT -->
 </div>
 <!-- END CONTAINER -->
 {% endblock %}
@@ -460,6 +513,45 @@
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
+
+const addBtnExec = document.querySelector('.add-executors-formset');
+const addBtnCost = document.querySelector('.add-costs-formset');
+const addBtnSend = document.querySelector('.add-sending-formset');
+if (document.querySelector('#executors_formset')) {
+    addBtnExec.addEventListener('click', () => {
+        addInitialFormset('executors_formset', addBtnExec);
+        cliсk('executors_formset', 'dynamic-formset1');
+    })
+};
+
+if (document.querySelector('#costs_formset')) {
+    addBtnCost.addEventListener('click', () => {
+        addInitialFormset('costs_formset', addBtnCost);
+        cliсk('costs_formset', 'dynamic-formset2');
+    })
+};
+
+if (document.querySelector('#sending_formset')) {
+    addBtnSend.addEventListener('click', () => {
+        addInitialFormset('sending_formset', addBtnSend);
+        cliсk('sending_formset', 'dynamic-formset3');
+    })
+};
+
+function addInitialFormset(formsetId, btn) {
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    formsetTemplate.setAttribute('style', '');
+    btn.setAttribute('style', 'display:none');
+};
+
+function cliсk(formsetId, dynamicFormset) {
+    const initialBtn = document.querySelector('.add-row-' + formsetId);
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    initialBtn.click();
+    const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
+    dynamicFormsetFirst.setAttribute('style', 'display:none');
+};
+
     $(function () {
         setTimeout(function () {
             $('span.select2-container.select2-container--bootstrap').width('auto');
@@ -488,7 +580,7 @@
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Виконавця',
             deleteText: ' - ',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row-executors_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 //find the fields with the calendar widget
@@ -515,14 +607,29 @@
                     DateTimeShortcuts.addCalendar(this);
                 });
                 $(row).find('.django-select2').djangoSelect2();
-                $('span.select2-container.select2-container--bootstrap').width('auto');
             }
         });
-        
+
         $('#costs_formset_empty tbody tr').formset({
             prefix: '{{ costs_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
+            deleteText: ' - ',
+            addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#sending_formset_not_empty tbody tr').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
             deleteText: ' - ',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
@@ -532,17 +639,15 @@
                     DateTimeShortcuts.addCalendar(this);
                 });
                 $(row).find('.django-select2').djangoSelect2();
-                $('span.select2-container.select2-container--bootstrap').width('auto');
             }
         });
 
-
-        $('#sending_formset_not_empty tbody tr').formset({
+        $('#sending_formset_empty tbody tr').formset({
             prefix: '{{ sending_formset.prefix }}',
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
             deleteText: ' - ',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row-sending_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
