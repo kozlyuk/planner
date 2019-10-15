@@ -35,7 +35,7 @@ def avatar_directory_path(instance, filename):
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
-    name = models.CharField('ПІБ', max_length=50, unique=True)
+    c = models.CharField('ПІБ', max_length=50, unique=True)
     position = models.CharField('Посада', max_length=50)
     head = models.ForeignKey('self', verbose_name='Кервіник', blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
