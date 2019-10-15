@@ -548,6 +548,7 @@ class Task(models.Model):
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    warning = models.CharField('Попередження', max_length=30, blank=True)
     owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
@@ -602,50 +603,27 @@ class Task(models.Model):
         super(Task, self).delete(*args, **kwargs)
 
     def execution_status(self):
-        queryset = self.execution_set.all()
-        for execution in queryset:
-            if execution.exec_status == Execution.ToDo:
-                return 'В черзі'
-        for execution in queryset:
-            if execution.exec_status == Execution.InProgress:
-                return 'Виконується'
-        for execution in queryset:
-            if execution.exec_status == Execution.Done:
-                return 'Виконано'
+        """Show task status by subtasks"""
+        queryset = self.execution_set.values_list('exec_status', flat=True)
+        if Execution.ToDo in queryset:
+            return 'В черзі'
+        if Execution.InProgress in queryset:
+            return 'Виконується'
+        if Execution.Done in queryset:
+            return 'Виконано'
         return 'Відсутні виконавці'
     execution_status.short_description = 'Статус виконання частин проекту'
 
     def sending_status(self):
-        if self.receivers.all():
+        try:
             if self.receivers.all().aggregate(Sum('sending__copies_count')).get('sending__copies_count__sum') \
-                    < self.project_type.copies_count:
+                        < self.project_type.copies_count:
                 return 'Не всі відправки'
-        elif self.project_type.copies_count > 0:
-            return 'Не надіслано'
+        except TypeError:
+            if self.project_type.copies_count > 0:
+                return 'Не надіслано'
         return 'Надіслано'
-    # displays task sending warnings
-
-    def overdue_status(self):
-        if self.exec_status == self.Done:
-            if self.sending_status() != 'Надіслано':
-                return self.sending_status()
-        if self.exec_status in [self.Sent, self.Done] and self.actual_finish:
-            return 'Виконано %s' % self.actual_finish.strftime(date_format)
-        if self.execution_status() == 'Виконано':
-            return 'Очікує на перевірку'
-        if self.planned_finish:
-            if self.planned_finish < date.today():
-                return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
-            elif self.planned_finish - timedelta(days=7) <= date.today():
-                return 'Завершити до %s' % self.planned_finish.strftime(date_format)
-            else:
-                return 'Завершити до %s' % self.planned_finish.strftime(date_format)
-        if self.deal.expire_date < date.today():
-            return 'Протерміновано %s' % self.deal.expire_date.strftime(date_format)
-        if self.deal.expire_date - timedelta(days=7) <= date.today():
-            return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
-        return 'Завершити до %s' % self.deal.expire_date.strftime(date_format)
-    # displays task overdue status
+    sending_status.short_description = 'Статус відправки'
 
     def is_active(self):
         if not self.actual_finish:
