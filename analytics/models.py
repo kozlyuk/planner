@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
 
-from planner.models import Employee, Task
+from planner.models import Employee
 
 
 class Bonus(models.Model):
@@ -31,13 +31,15 @@ class KpiName(models.Model):
 
 
 class Kpi(models.Model):
-    name = models.ForeignKey(KpiName, verbose_name='Показник', on_delete=models.CASCADE)
-    value = models.PositiveSmallIntegerField('Значення', validators=[MaxValueValidator(100)])
+    employee = models.ForeignKey(Employee, verbose_name='Працівник', on_delete=models.CASCADE)
+    indicator = models.ForeignKey(KpiName, verbose_name='Показник', on_delete=models.CASCADE)
+    value = models.PositiveSmallIntegerField('', validators=[MaxValueValidator(100)])
     created = models.DateField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'КПЕ'
+        ordering = ['-created']
 
     def __str__(self):
-        return self.name
+        return self.employee.name + ' ' + self.indicator.name
