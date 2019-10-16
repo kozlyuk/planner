@@ -226,29 +226,26 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {% for dict in executors_formset.errors %}
-                                            {% for error in dict.values %}
-                                                {{ error }}
-                                            {% endfor %}
-                                        {% endfor %}
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
-                                            {% endfor %}
                                             {% for form in executors_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.executor.errors }}
                                                     {{ form.executor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.part_name.errors }}
                                                     {{ form.part_name|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.part.errors }}
                                                     {{ form.part|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.exec_status.errors }}
                                                     {{ form.exec_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.finish_date.errors }}
                                                     {{ form.finish_date|attr:"style: width:60%" }}
                                                 </th>
                                                 <th>{{ form.DELETE }}{{ form.id }} </th>
@@ -278,18 +275,23 @@
                                             {% endfor %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.executor.errors }}
                                                     {{ executors_formset.empty_form.executor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part_name.errors }}
                                                     {{ executors_formset.empty_form.part_name|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part.errors }}
                                                     {{ executors_formset.empty_form.part|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.exec_status.errors }}
                                                     {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.finish_date.errors }}
                                                     {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
                                                 </th>
                                                 <th>{{ form.DELETE }}</th>
@@ -331,22 +333,28 @@
                                             {% for form in costs_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.contractor.errors }}
                                                     {{form.contractor|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.deal_number.errors }}
                                                     {{form.deal_number|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.value.errors }}
                                                     {{form.value|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.advance.errors }}
                                                     {{form.advance|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.pay_status.errors }}
                                                     {{form.pay_status|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{form.pay_date|attr:"style: width:100%"}}
+                                                    {{ form.pay_date.errors }}
+                                                    {{form.pay_date|attr:"style: width:60%"}}
                                                 </th>
                                                 <th>{{ form.DELETE }}</th>
                                             </tr>
@@ -373,21 +381,27 @@
                                             {{ costs_formset.non_form_errors }}
                                             <tr>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.contractor.errors }}
                                                     {{ costs_formset.empty_form.contractor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.deal_number.errors }}
                                                     {{ costs_formset.empty_form.deal_number|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.value.errors }}
                                                     {{ costs_formset.empty_form.value|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.advance.errors }}
                                                     {{ costs_formset.empty_form.advance|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_status.errors }}
                                                     {{ costs_formset.empty_form.pay_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_date.errors }}
                                                     {{ costs_formset.empty_form.pay_date|attr:"style: width:60%" }}
                                                 </th>
                                                 <th>{{ form.DELETE }}</th>
@@ -426,15 +440,19 @@
                                             {% for form in sending_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.receiver.errors }}
                                                     {{form.receiver|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.receipt_date.errors }}
                                                     {{form.receipt_date|attr:"style: width:60%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.copies_count.errors }}
                                                     {{form.copies_count|attr:"style: width:100%"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.register_num.errors }}
                                                     {{form.register_num|attr:"style: width:100%"}}
                                                 </th>
                                                 <th>{{ form.DELETE }}</th>
@@ -461,15 +479,19 @@
                                         {{ sending_formset.non_form_errors }}
                                         <tr>
                                             <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.receiver.errors }}
                                                 {{sending_formset.empty_form.receiver|attr:"style: width:100%"}}
                                             </th>
                                             <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.receipt_date.errors }}
                                                 {{sending_formset.empty_form.receipt_date|attr:"style: width:60%"}}
                                             </th>
                                             <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.copies_count.errors }}
                                                 {{sending_formset.empty_form.copies_count|attr:"style: width:100%"}}
                                             </th>
                                             <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.register_num.errors }}
                                                 {{sending_formset.empty_form.register_num|attr:"style: width:100%"}}
                                             </th>
                                             <th>{{ form.DELETE }}</th>
