@@ -13,19 +13,19 @@
             <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
-                        aria-controls="pills-tab_1_1" aria-selected="false"> В черзі </a>
+                        aria-controls="pills-tab_1_1" aria-selected="false"> В черзі <!--<span class="badge badge-pill badge-warning"> {{ ip_tasks }}  </span> --> </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2" role="tab"
-                        aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються </a>
+                        aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються <!--<span class="badge badge-pill badge-info">  {{ active_tasks_count }} --> </span> </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3" role="tab"
-                        aria-controls="pills-tab_1_3" aria-selected="false"> Виконано </a>
+                        aria-controls="pills-tab_1_3" aria-selected="false"> Виконано <!--<span class="badge badge-pill badge-success"> {{ sent_tasks_count }} --> </span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_4-tab" data-toggle="pill" href="#tab_1_4" role="tab"
-                        aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано </a>
+                        aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано <!--<span class="badge badge-pill badge-primary"> {{ sent_tasks_count }} --> </span></a>
                 </li>
             </ul>
             <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
@@ -34,7 +34,11 @@
                     <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
+                            {% if task.is_editable %}
+                                <a href="{% url 'task_update' task.pk %}">{{ task.object_code }}
+                            {% else %}
                                 <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                            {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
                                     class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
@@ -50,7 +54,11 @@
                     <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
-                                <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% if task.is_editable %}
+                                    <a href="{% url 'task_update' task.pk %}">{{ task.object_code }}
+                                {% else %}
+                                    <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
                                     class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
@@ -66,7 +74,11 @@
                     <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
-                                <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% if task.is_editable %}
+                                    <a href="{% url 'task_update' task.pk %}">{{ task.object_code }}
+                                {% else %}
+                                    <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
                                     class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
@@ -82,7 +94,11 @@
                     <div class="widget-news margin-bottom-10">
                         <div class="widget-news-right-body">
                             <h3 class="widget-news-right-body-title">
-                                <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% if task.is_editable %}
+                                    <a href="{% url 'task_update' task.pk %}">{{ task.object_code }}
+                                {% else %}
+                                    <a href="{% url 'task_detail' task.pk %}">{{ task.object_code }}
+                                {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
                                     class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
@@ -192,7 +208,7 @@
             <div class="widget-progress">
                 <div class="widget-progress-element widget-bg-color-blue mb-4">
                     <span class="widget-progress-title">Виконано проектів
-                        <span class="pull-right">{{ hd_tasks_count }}/{{ active_tasks_count }}</span>
+                        <span class="pull-right">{{ sent_tasks_count }}/{{ active_tasks_count }}</span>
                     </span>
                     <div class="progress">
                         <div class="progress-bar bg-light" role="progressbar" style="width: {{ tasks_div }}%;"> </div>
