@@ -20,9 +20,13 @@ app.autodiscover_tasks()
 
 
 app.conf.beat_schedule = {
+    'task_statuses': {
+        'task': 'planner.tasks.update_task_statuses',
+        'schedule': crontab(day_of_week="1-5", hour="8-19", minute="0,15,30,45"),  # workdays 4 times per hour (8-19)
+    },
     'deal_statuses': {
         'task': 'planner.tasks.update_deal_statuses',
-        'schedule': crontab(day_of_week="1-5", hour="8-18", minute=0),  # workdays hourly from 8 to 18
+        'schedule': crontab(day_of_week="1-5", hour="8-18", minute=1),  # workdays hourly from 8 to 18
     },
     'event_next_date': {
         'task': 'planner.tasks.event_next_date_calculate',
@@ -30,27 +34,27 @@ app.conf.beat_schedule = {
     },
     'actneed_report': {
         'task': 'planner.tasks.send_actneed_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=0),   # workdays at 8-00
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=10),   # workdays at 8-10
     },
     'debtors_report': {
         'task': 'planner.tasks.send_debtors_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=5),   # workdays at 8-05
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=11),   # workdays at 8-11
     },
     'overdue_deals_report': {
         'task': 'planner.tasks.send_overdue_deals_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=10),  # workdays at 8-10
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=12),  # workdays at 8-12
     },
     'overdue_tasks_report': {
         'task': 'planner.tasks.send_overdue_tasks_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=15),  # workdays at 8-15
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=20),  # workdays at 8-20
     },
     'urgent_tasks_report': {
         'task': 'planner.tasks.send_urgent_tasks_report',
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=20),  # workdays at 8-20
+        'schedule': crontab(day_of_week="1-5", hour=8, minute=21),  # workdays at 8-21
     },
     'unsent_tasks_report': {
         'task': 'planner.tasks.send_unsent_tasks_report',
-        'schedule': crontab(day_of_week=1, hour=8, minute=25),    # monday at 8-25
+        'schedule': crontab(day_of_week=1, hour=8, minute=22),    # monday at 8-22
     },
     'monthly_report': {
         'task': 'planner.tasks.send_monthly_report',

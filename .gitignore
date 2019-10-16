@@ -1,10 +1,9 @@
 __pycache__
-migrations/
+#migrations/
 media/
 .idea/
 settings_local.py
 venv/
-myvenv/
 /celerybeat-schedule
 /dump.rdb
 /celerybeat.pid
