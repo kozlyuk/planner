@@ -13,8 +13,8 @@ logger = get_task_logger(__name__)
 
 @app.task
 def update_task_statuses():
-    """Update statuses for last 1000 tasks"""
-    tasks = Task.objects.order_by('-id')  # todo limit qs to [:1000]
+    """Update statuses for last 500 tasks"""
+    tasks = Task.objects.order_by('-id')[:500]
     for task in tasks:
         if task.exec_status == Task.Done:
             send_status = task.sending_status()

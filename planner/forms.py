@@ -219,7 +219,7 @@ class TaskForm(forms.ModelForm):
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
         else:
             self.fields['project_type'].widget.attrs['disabled'] = True
-            self.fields['deal'].required = False
+            self.fields['project_type'].required = False
 
     def clean_deal(self):
         if self.cleaned_data['deal']:
