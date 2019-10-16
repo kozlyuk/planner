@@ -647,6 +647,8 @@ class Task(models.Model):
             return True
         elif user.groups.filter(name='Бухгалтери').exists():
             return True
+        elif user.groups.filter(name='Секретарі').exists():
+            return True
         else:
             return False
     # try if user has a permitting to view the task
