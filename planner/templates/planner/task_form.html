@@ -455,7 +455,7 @@
                                                     {{ form.register_num.errors }}
                                                     {{form.register_num|attr:"style: width:100%"}}
                                                 </th>
-                                                <th>{{ form.DELETE }}</th>
+                                                <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -494,7 +494,7 @@
                                                 {{ sending_formset.empty_form.register_num.errors }}
                                                 {{sending_formset.empty_form.register_num|attr:"style: width:100%"}}
                                             </th>
-                                            <th>{{ form.DELETE }}</th>
+                                            <th>{{ sending_formset.empty_form.DELETE }} {{ sending_formset.empty_form.id }}</th>
                                         </tr>
                                     </tbody>
                                 </table>
