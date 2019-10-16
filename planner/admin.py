@@ -189,6 +189,7 @@ class DealForm(forms.ModelForm):
             if not pdf_copy:
                 raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
 
+
 class TasksInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
@@ -203,6 +204,7 @@ class TasksInlineFormSet(BaseInlineFormSet):
                     raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
             if planned_finish and planned_finish > self.instance.__expire_date__:
                 raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
+
 
 class TasksInline(admin.TabularInline):
 
@@ -224,9 +226,24 @@ class TasksInline(admin.TabularInline):
 
 class DealAdmin(admin.ModelAdmin):
 
+    def warning_mark(self, obj):
+        status = obj.warning
+        if 'Протерміновано' in status:
+            return format_html('<div style="color:red;">%s</div>' % status)
+        elif 'Закінчується' in status:
+            return format_html('<div style="color:orange;">%s</div>' % status)
+        elif status == 'Очікує закриття акту' or 'Оплата' in status:
+            return format_html('<div style="color:blue;">%s</div>' % status)
+        elif 'Вартість' in status:
+            return format_html('<div style="color:purple;">%s</div>' % status)
+        return status
+
+    warning_mark.allow_tags = True
+    warning_mark.short_description = 'Попередження'
+
     form = DealForm
     list_display = ['number', 'customer', 'svalue', 'pay_status',
-                    'act_status', 'exec_status', 'warning']
+                    'act_status', 'exec_status', 'warning_mark']
     list_per_page = 50
     search_fields = ['number', 'value']
     ordering = ['-creation_date', 'customer', '-number']
@@ -285,6 +302,7 @@ class TaskForm(forms.ModelForm):
         if planned_finish and planned_finish > deal.expire_date:
             raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
 
+
 class ExecutersInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
@@ -318,6 +336,7 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
             if percent > bonuses_max:
                 raise ValidationError(_('Сума часток виконавців не має перевищувати %(bonuses_max).0f%%. '
                                         'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
+
 
 class OrdersInlineFormSet(BaseInlineFormSet):
 
@@ -353,12 +372,14 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
                 raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
 
+
 class SendingsInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super(SendingsInlineFormSet, self).clean()
         if self.instance.__exec_status__ == Task.Sent and not self.forms and self.instance.project_type.copies_count > 0:
             raise forms.ValidationError("Ви не можете закрити цей проект без відправки")
+
 
 class ExecutersInline(admin.TabularInline):
     model = Execution
@@ -382,6 +403,7 @@ class ExecutersInline(admin.TabularInline):
         self.max_num = 0
         return fields
 
+
 class SendingsInline(admin.TabularInline):
     model = Sending
     formset = SendingsInlineFormSet
@@ -403,6 +425,7 @@ class SendingsInline(admin.TabularInline):
         self.can_delete = False
         self.max_num = 0
         return fields
+
 
 class OrdersInline(admin.TabularInline):
     model = Order
@@ -431,12 +454,13 @@ class OrdersInline(admin.TabularInline):
             kwargs["queryset"] = Contractor.objects.filter(active=True)
         return super(OrdersInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class TaskAdmin(admin.ModelAdmin):
 
     form = TaskForm
 
-    def overdue_mark(self, obj):
-        status = obj.overdue_status()
+    def warning_mark(self, obj):
+        status = obj.warning
         if 'Протерміновано' in status:
             return format_html('<div style="color:red;">%s</div>' % status)
         elif 'Завершується' in status:
@@ -444,8 +468,8 @@ class TaskAdmin(admin.ModelAdmin):
         elif 'Завершити' in status:
             return format_html('<div style="color:blue;">%s</div>' % status)
         return status
-    overdue_mark.allow_tags = True
-    overdue_mark.short_description = 'Попередження'
+    warning_mark.allow_tags = True
+    warning_mark.short_description = 'Попередження'
 
     fieldsets = [
         ('Опис', {'fields': [('object_code', 'object_address'),
@@ -457,7 +481,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': ['project_code', 'comment'], 'classes': ['collapse']})
     ]
-    list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'overdue_mark']
+    list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'warning_mark']
     list_per_page = 50
     date_hierarchy = 'actual_finish'
     list_filter = ['exec_status',

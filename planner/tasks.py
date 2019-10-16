@@ -12,15 +12,48 @@ logger = get_task_logger(__name__)
 
 
 @app.task
+def update_task_statuses():
+    """Update statuses for last 1000 tasks"""
+    tasks = Task.objects.order_by('-id')  # todo limit qs to [:1000]
+    for task in tasks:
+        if task.exec_status == Task.Done:
+            send_status = task.sending_status()
+            if send_status != 'Надіслано':
+                task.warning = send_status
+        elif task.exec_status in [Task.Sent, Task.Done] and task.actual_finish:
+            task.warning = 'Виконано %s' % task.actual_finish.strftime(date_format)
+        elif task.execution_status() == 'Виконано':
+            task.warning = 'Очікує на перевірку'
+        elif task.planned_finish:
+            if task.planned_finish < date.today():
+                task.warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
+            elif task.planned_finish - timedelta(days=7) <= date.today():
+                task.warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+            else:
+                task.warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+        elif task.deal.expire_date < date.today():
+            task.warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
+        elif task.deal.expire_date - timedelta(days=7) <= date.today():
+            task.warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+        else:
+            task.warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+
+        task.save(update_fields=['warning'], logging=False)
+
+    logger.info("Updated statuses and warnings of all deals with unsent tasks")
+
+
+@app.task
 def update_deal_statuses():
-    """Update statuses and warnings of all deals with unsent tasks"""
-    deals = Deal.objects.all().order_by('-id')[:100]
+    """Update statuses and warnings for last 100 deals"""
+    deals = Deal.objects.order_by('-id')[:100]
     for deal in deals:
-        if deal.task_set.filter(exec_status=Task.ToDo).count() > 0:
+        tasks = deal.task_set.values_list('exec_status', flat=True)
+        if Task.ToDo in tasks:
             deal.exec_status = Deal.ToDo
-        elif deal.task_set.filter(exec_status=Task.InProgress).count() > 0:
+        elif Task.InProgress in tasks:
             deal.exec_status = Deal.InProgress
-        elif deal.task_set.filter(exec_status=Task.Done).count() > 0:
+        elif Task.Done in tasks:
             deal.exec_status = Deal.Done
         else:
             deal.exec_status = Deal.Sent
@@ -46,6 +79,8 @@ def update_deal_statuses():
 
         deal.save(update_fields=['exec_status', 'warning'], logging=False)
 
+    logger.info("Updated statuses and warnings of all deals with unsent tasks")
+
 
 @app.task
 def event_next_date_calculate():
@@ -53,6 +88,7 @@ def event_next_date_calculate():
     for event in Event.objects.all():
         event.next_date = event.next_repeat()
         event.save(update_fields=['next_date'], logging=False)
+    logger.info("Calculated next_date fields for Events")
 
 
 @app.task

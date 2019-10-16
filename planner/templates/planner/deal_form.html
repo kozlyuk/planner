@@ -221,9 +221,9 @@
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if tasks_formset|length %}
-                                {% for hidden_field in form.hidden_fields %}
-                                {{ hidden_field }}
-                                {% endfor %}
+                                    {% for hidden_field in form.hidden_fields %}
+                                    {{ hidden_field }}
+                                    {% endfor %}
                                 <div class="row">
                                     <table class="table table-hover mb-0 table-responsive-xl" id="tasks_formset_not_empty">
                                         <thead>

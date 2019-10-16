@@ -20,122 +20,503 @@
             {% if not task.pk or task.is_editable %}
             <form id="TaskForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
+                <!--alert: inline layout-->
                 <div class="row">
-                    <div class="col-md-7">
+                    <div class="col-md-12">
                         <!-- BEGIN WIDGET TAB -->
-                        <div class="portlet light tasks-widget">
-                            <div class="portlet-title">
-                                <div class="caption caption-md font-red-sunglo">
-                                    <span class="caption-subject theme-font bold uppercase">
-                                        {% if task.pk %}Редагувати проект
-                                        {% else %}Додати проект
-                                        {% endif %}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="portlet-body">
-                                <div class="widget-bg-color-white">
-                                    <table class="table table-hover">
-                                        <col width="25%">
-                                        {{ executors_formset.non_form_errors }}
-                                        {{ costs_formset.non_form_errors }}
-                                        {{ sending_formset.non_form_errors }}
-                                        {{ form }}
-                                    </table>
-                                    <div class="form-actions">
-                                        {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
-                                            class="btn task-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                        {% else %}<a href="{% url 'task_list' %}?{{ filters }}"
-                                            class="btn task-cancel red btn-sm btn-outline sbold uppercase">Відмінити</a>
-                                        {% endif %}
-                                        <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                            style="float: right;">Зберегти</button>
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">
+                                {% if task.pk %}Редагувати проект
+                                {% else %}Додати проект
+                                {% endif %}
+                            </h6>
+                            <div class="card-body">
+                                <div class="tab-content" data-handle-color="#D7DCE2" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
+                                        aria-labelledby="pills-tab_1_1">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: object_code-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.object_code.name }}">{{ form.object_code.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.object_code }}
+                                                    </div>
+                                                    <!--alert: object_address-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.object_address.name }}">{{ form.object_address.label }}:</label>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        {{ form.object_address|attr:"style: width:100%" }}
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: project_type-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.project_type.name }}">{{ form.project_type.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.project_type }}
+                                                    </div>
+                                                    <!--alert: deal-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.deal|attr:"style: width:100%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: exec_status-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.exec_status|attr:"style: width:100%" }}
+                                                    </div>
+                                                    <!--alert: owner-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.owner|attr:"style: width:100%" }}
+                                                    </div>
+                                                    <!--alert: project_code-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.project_code|attr:"style: width:100%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: planned_start-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.planned_start|attr:"style: width:10%" }}
+                                                    </div>
+                                                    <!--alert: actual_start-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.actual_start|attr:"style: width:10%" }}
+                                                    </div>
+                                                    <!--alert: tc_received-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.tc_received|attr:"style: width:10%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: planned_finish-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.planned_finish.name }}">{{ form.planned_finish.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.planned_finish|attr:"style: width:10%" }}
+                                                    </div>
+                                                    <!--alert: actual_finish-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.actual_finish.name }}">{{ form.actual_finish.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.actual_finish|attr:"style: width:10%" }}
+                                                    </div>
+                                                    <!--alert: tc_upload-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.tc_upload|attr:"style: width:100%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+
+                                                    <!--alert: pdf_copy-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.pdf_copy|attr:"style: width:100%" }}
+                                                    </div>
+                                                    <!--alert: comment-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        {{ form.comment }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
+                                                class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
+                                            {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
+                                                class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                                            {% endif %}
+                                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Зберегти</button>
+                                            {% if deal.pk %}
+                                            <a href="{% url 'calculation' deal.pk %}"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Калькуляція по договору</a>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- END WIDGET -->
                     </div>
-                    <div class="col-md-5 col-sm-6 col-xs-12">
-                        <!-- BEGIN WIDGET TAB -->
-                        <div style="min-height: max-content!important" class="widget-bg-color-white widget-tab">
-                            <ul class="nav nav-pills mb-3 nav-tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
-                                        role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
-                                        role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
-                                        role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Відправки </a>
-                                </li>
-                            </ul>
-                            <div class="tab-content padding-top-0" data-handle-color="#D7DCE2" id="pills-tabContent">
-                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpanel"
-                                    aria-labelledby="pills-tab_1_1">
-                                    <table id="ExecutorsTable" class="table table-hover">
-                                        <col width="25%">
-                                        {{ executors_formset.non_form_errors }}
-                                        {% for form in executors_formset %}
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">Виконавці</h6>
+                            <div class="card-body pb-1">
+                                {{ executors_formset.non_form_errors }}
+                                <!--check the length of the formset-->
+                                <!--if formset is not empty-->
+                                {% if executors_formset|length %}
+                                <div class="row">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="executor_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="35%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                <th scope="col">РОБОТИ</th>
+                                                <th width="5%" scope="col">ЧАСТКА</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                <th width="1%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
+                                            {% for form in executors_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.executor.errors }}
+                                                    {{ form.executor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.part_name.errors }}
+                                                    {{ form.part_name|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.part.errors }}
+                                                    {{ form.part|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.exec_status.errors }}
+                                                    {{ form.exec_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.finish_date.errors }}
+                                                    {{ form.finish_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th>{{ form.DELETE }}{{ form.id }} </th>
+                                            </tr>
                                             {% endfor %}
-                                            {{ form }}
                                         </tbody>
-                                        {% endfor %}
                                     </table>
                                     {{ executors_formset.management_form }}
                                 </div>
-                                <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
-                                    aria-labelledby="pills-tab_2_2">
-                                    <table id="CostsTable" class="table table-hover">
-                                        <col width="25%">
-                                        {{ costs_formset.non_form_errors }}
-                                        {% for form in costs_formset %}
+                                {% else %}
+                                <div class="row" style="display:none" id="executors_formset">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="executor_formset_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                <th scope="col">РОБОТИ</th>
+                                                <th width="5%" scope="col">ЧАСТКА</th>
+                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                <th width="1%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             {% for hidden_field in form.hidden_fields %}
                                             {{ hidden_field }}
                                             {% endfor %}
-                                            {{ form }}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.executor.errors }}
+                                                    {{ executors_formset.empty_form.executor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part_name.errors }}
+                                                    {{ executors_formset.empty_form.part_name|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.part.errors }}
+                                                    {{ executors_formset.empty_form.part|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.exec_status.errors }}
+                                                    {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.finish_date.errors }}
+                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th>{{ form.DELETE }}</th>
+                                            </tr>
                                         </tbody>
-                                        {% endfor %}
+                                    </table>
+                                    {{ executors_formset.management_form }}
+                                </div>
+                                <button style="width: 100%" type="button"
+                                    class="add-formset add-executors-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                    виконавця</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">Витрати</h6>
+                            <div class="card-body pb-1">
+                                {% if costs_formset|length %}
+                                <div class="row">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="costs_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                <th width="1%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{ costs_formset.non_form_errors }}
+                                            {% for form in costs_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.contractor.errors }}
+                                                    {{form.contractor|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.deal_number.errors }}
+                                                    {{form.deal_number|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.value.errors }}
+                                                    {{form.value|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.advance.errors }}
+                                                    {{form.advance|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.pay_status.errors }}
+                                                    {{form.pay_status|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.pay_date.errors }}
+                                                    {{form.pay_date|attr:"style: width:60%"}}
+                                                </th>
+                                                <th>{{ form.DELETE }}</th>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
                                     </table>
                                     {{ costs_formset.management_form }}
                                 </div>
-                                <div class="tab-pane fade show" id="tab_2_3" role="tabpane3"
-                                    aria-labelledby="pills-tab_2_3">
-                                    <table id="SendingTable" class="table table-hover">
-                                        <col width="25%">
-                                        {{ sending_formset.non_form_errors }}
-                                        {% for form in sending_formset %}
+                                {% else %}
+                                <div class="row" style="display:none" id="costs_formset">
+                                    <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                <th width="1%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
-                                            {% endfor %}
-                                            {{ form }}
+                                            {{ costs_formset.non_form_errors }}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.contractor.errors }}
+                                                    {{ costs_formset.empty_form.contractor|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.deal_number.errors }}
+                                                    {{ costs_formset.empty_form.deal_number|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.value.errors }}
+                                                    {{ costs_formset.empty_form.value|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.advance.errors }}
+                                                    {{ costs_formset.empty_form.advance|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_status.errors }}
+                                                    {{ costs_formset.empty_form.pay_status|attr:"style: width:100%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_date.errors }}
+                                                    {{ costs_formset.empty_form.pay_date|attr:"style: width:60%" }}
+                                                </th>
+                                                <th>{{ form.DELETE }}</th>
+                                            </tr>
                                         </tbody>
-                                        {% endfor %}
+                                    </table>
+                                    {{ costs_formset.management_form }}
+                                </div>
+                                <button style="width: 100%" type="button"
+                                    class="add-formset add-costs-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                    підрядника</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">Відправки</h6>
+                            <div class="card-body pb-1">
+                                {% if sending_formset|length %}
+                                <div class="row">
+                                    <table class="table table-hover mb-0 table-responsive-xl"
+                                        id="sending_formset_not_empty">
+                                        <thead>
+                                            <tr align="center">
+                                                <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
+                                                <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
+                                                <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
+                                                <th width="30%" scope="col">РЕЄСТР</th>
+                                                <th width="1%">ДІЇ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in sending_formset %}
+                                            <tr>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.receiver.errors }}
+                                                    {{form.receiver|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.receipt_date.errors }}
+                                                    {{form.receipt_date|attr:"style: width:60%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.copies_count.errors }}
+                                                    {{form.copies_count|attr:"style: width:100%"}}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.register_num.errors }}
+                                                    {{form.register_num|attr:"style: width:100%"}}
+                                                </th>
+                                                <th>{{ form.DELETE }}</th>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
                                     </table>
                                     {{ sending_formset.management_form }}
                                 </div>
-
                             </div>
+                            {% else %}
+                            <div class="row" style="display:none" id="sending_formset">
+                                <table class="table table-hover mb-0 table-responsive-xl" id="sending_formset_empty">
+                                    <thead>
+                                        <tr align="center">
+                                            <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
+                                            <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
+                                            <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
+                                            <th width="30%" scope="col">РЕЄСТР</th>
+                                            <th width="1%">ДІЇ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{ sending_formset.non_form_errors }}
+                                        <tr>
+                                            <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.receiver.errors }}
+                                                {{sending_formset.empty_form.receiver|attr:"style: width:100%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.receipt_date.errors }}
+                                                {{sending_formset.empty_form.receipt_date|attr:"style: width:60%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.copies_count.errors }}
+                                                {{sending_formset.empty_form.copies_count|attr:"style: width:100%"}}
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ sending_formset.empty_form.register_num.errors }}
+                                                {{sending_formset.empty_form.register_num|attr:"style: width:100%"}}
+                                            </th>
+                                            <th>{{ form.DELETE }}</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {{ sending_formset.management_form }}
+                            </div>
+                            <button style="width: 100%" type="button"
+                                class="add-formset add-sending-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                відправку</button>
                         </div>
-                        <!-- END PORTLET-->
+                        {% endif %}
                     </div>
                 </div>
-            </form>
-            {% else %}
-            Ви не маєте доступу до редагування даного проекту<br><br>
-            {% endif %}
         </div>
-        <!-- END PAGE BASE CONTENT -->
     </div>
-    <!-- END CONTENT -->
+    </form>
+    {% else %}
+    Ви не маєте доступу до редагування даного проекту<br><br>
+    {% endif %}
+</div>
+<!-- END PAGE BASE CONTENT -->
+</div>
+<!-- END CONTENT -->
 </div>
 <!-- END CONTAINER -->
 {% endblock %}
@@ -154,17 +535,56 @@
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
+
+const addBtnExec = document.querySelector('.add-executors-formset');
+const addBtnCost = document.querySelector('.add-costs-formset');
+const addBtnSend = document.querySelector('.add-sending-formset');
+if (document.querySelector('#executors_formset')) {
+    addBtnExec.addEventListener('click', () => {
+        addInitialFormset('executors_formset', addBtnExec);
+        cliсk('executors_formset', 'dynamic-formset1');
+    })
+};
+
+if (document.querySelector('#costs_formset')) {
+    addBtnCost.addEventListener('click', () => {
+        addInitialFormset('costs_formset', addBtnCost);
+        cliсk('costs_formset', 'dynamic-formset2');
+    })
+};
+
+if (document.querySelector('#sending_formset')) {
+    addBtnSend.addEventListener('click', () => {
+        addInitialFormset('sending_formset', addBtnSend);
+        cliсk('sending_formset', 'dynamic-formset3');
+    })
+};
+
+function addInitialFormset(formsetId, btn) {
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    formsetTemplate.setAttribute('style', '');
+    btn.setAttribute('style', 'display:none');
+};
+
+function cliсk(formsetId, dynamicFormset) {
+    const initialBtn = document.querySelector('.add-row-' + formsetId);
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    initialBtn.click();
+    const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
+    dynamicFormsetFirst.setAttribute('style', 'display:none');
+};
+
     $(function () {
         setTimeout(function () {
             $('span.select2-container.select2-container--bootstrap').width('auto');
         }, 100);
-        $('#ExecutorsTable tbody').formset({
+        $('#executor_formset_not_empty tbody tr').formset({
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Виконавця',
-            deleteText: 'Видалити Виконавця',
-            addCssClass: 'add-row btn dark btn-sm btn-outline margin-bottom-10',
-            deleteCssClass: 'delete-row btn red btn-sm btn-outline margin-bottom-10',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 //find the fields with the calendar widget
                 $(row).find('.vDateField').each(function (i) {
@@ -176,13 +596,33 @@
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
-        $('#CostsTable tbody').formset({
+
+        $('#executor_formset_empty tbody tr').formset({
+            prefix: '{{ executors_formset.prefix }}',
+            formCssClass: 'dynamic-formset1',
+            addText: 'Додати Виконавця',
+            deleteText: ' - ',
+            addCssClass: 'add-row-executors_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                //find the fields with the calendar widget
+                $(row).find('.vDateField').each(function (i) {
+                    //remove the cloned spam element: it links to an incorrect calendar
+                    $(this).parent().find('span').remove();
+                    //DateTimeShortcuts is in the django admin widgets
+                    DateTimeShortcuts.addCalendar(this);
+                })
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#costs_formset_not_empty tbody tr').formset({
             prefix: '{{ costs_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
-            deleteText: 'Видалити Підрядника',
-            addCssClass: 'add-row btn dark btn-sm btn-outline margin-bottom-10',
-            deleteCssClass: 'delete-row btn red btn-sm btn-outline margin-bottom-10',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
@@ -191,13 +631,46 @@
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
-        $('#SendingTable tbody').formset({
+
+        $('#costs_formset_empty tbody tr').formset({
+            prefix: '{{ costs_formset.prefix }}',
+            formCssClass: 'dynamic-formset2',
+            addText: 'Додати Підрядника',
+            deleteText: ' - ',
+            addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#sending_formset_not_empty tbody tr').formset({
             prefix: '{{ sending_formset.prefix }}',
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
-            deleteText: 'Видалити Відправку',
-            addCssClass: 'add-row btn dark btn-sm btn-outline margin-bottom-10',
-            deleteCssClass: 'delete-row btn red btn-sm btn-outline margin-bottom-10',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#sending_formset_empty tbody tr').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
+            deleteText: ' - ',
+            addCssClass: 'add-row-sending_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
