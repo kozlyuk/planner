@@ -13,19 +13,19 @@
             <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
-                        aria-controls="pills-tab_1_1" aria-selected="false"> В черзі <!--<span class="badge badge-pill badge-warning"> {{ ip_tasks }}  </span> --> </a>
+                        aria-controls="pills-tab_1_1" aria-selected="false"> В черзі <span class="badge badge-pill badge-warning"> {{ td_tasks_count }}  </span> </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2" role="tab"
-                        aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються <!--<span class="badge badge-pill badge-info">  {{ active_tasks_count }} --> </span> </a>
+                        aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються <span class="badge badge-pill badge-info">  {{ ip_tasks_count }} </span> </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_3-tab" data-toggle="pill" href="#tab_1_3" role="tab"
-                        aria-controls="pills-tab_1_3" aria-selected="false"> Виконано <!--<span class="badge badge-pill badge-success"> {{ sent_tasks_count }} --> </span></a>
+                        aria-controls="pills-tab_1_3" aria-selected="false"> Виконано <span class="badge badge-pill badge-success"> {{ hd_tasks_count }} </span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_4-tab" data-toggle="pill" href="#tab_1_4" role="tab"
-                        aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано <!--<span class="badge badge-pill badge-primary"> {{ sent_tasks_count }} --> </span></a>
+                        aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано <span class="badge badge-pill badge-primary"> {{ sent_tasks_count }} </span></a>
                 </li>
             </ul>
             <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
@@ -41,8 +41,8 @@
                             {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
-                                    {{ task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right">
+                                    {{ task.warning }} </span>
                             </h3>
                             {{ task.project_type }}
                         </div>
@@ -61,8 +61,8 @@
                                 {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
-                                    {{ task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right">
+                                    {{ task.warning }} </span>
                             </h3>
                             {{ task.project_type }}
                         </div>
@@ -81,8 +81,8 @@
                                 {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
-                                    {{ task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right">
+                                    {{ task.warning }} </span>
                             </h3>
                             {{ task.project_type }}
                         </div>
@@ -101,8 +101,8 @@
                                 {% endif %}
                                     {{ task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
-                                    {{ task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right">
+                                    {{ task.warning }} </span>
                             </h3>
                             {{ task.project_type }}
                         </div>

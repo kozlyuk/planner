@@ -32,8 +32,8 @@
                                 <a href="{% url 'subtask_form' execution.pk %}">{{ execution.task.object_code }}
                                     {{ execution.task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right">
-                                    {{ execution.task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color execution.task.warning %} float-right">
+                                    {{ execution.task.warning }} </span>
                             </h3>
                             <span class="badge badge-pill badge-secondary">{{ execution.part_name }}</span>
                             {{ execution.task.project_type }}
@@ -49,8 +49,8 @@
                                 <a href="{% url 'subtask_form' execution.pk %}">{{ execution.task.object_code }}
                                     {{ execution.task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color execution.task.overdue_status %} float-right">
-                                    {{ execution.task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color execution.task.warning %} float-right">
+                                    {{ execution.task.warning }} </span>
                             </h3>
                             <span class="badge badge-pill badge-secondary">{{ execution.part_name }}</span>
                             {{ execution.task.project_type }}
@@ -66,8 +66,8 @@
                                 <a href="{% url 'subtask_form' execution.pk %}">{{ execution.task.object_code }}
                                     {{ execution.task.object_address|slice:":75" }}</a>
                                 <span
-                                    class="badge badge-pill badge-{% task_overdue_color execution.task.overdue_status %} float-right">
-                                    {{ execution.task.overdue_status }} </span>
+                                    class="badge badge-pill badge-{% task_overdue_color execution.task.warning %} float-right">
+                                    {{ execution.task.warning }} </span>
                             </h3>
                             <span class="badge badge-pill badge-secondary">{{ execution.part_name }}</span>
                             {{ execution.task.project_type }}
