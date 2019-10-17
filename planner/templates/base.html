@@ -81,7 +81,9 @@
             <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
             <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
             <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
-            <a class="link uppercase" href="#">Аналітика і звіти</a>
+            {% if request.user.is_superuser %}
+            <a class="link uppercase" href="{% url 'admin:index' %}">Адміністрування</a>
+            {% endif %}
         </nav>
                 <!-- BEGIN LOGO -->
                 <div class="page-logo">
