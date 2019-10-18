@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from .models import IntTask
-from django.http import HttpResponse
+from planner.models import Task, Deal, Employee, Execution, Receiver, Sending, Order, IntTask, News, Event
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import *
+from planner import forms
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
@@ -150,7 +149,7 @@ def login_page(request):
     if request.user.is_authenticated:
         return redirect('home_page')
     if request.method == 'POST':
-        login_form = UserLoginForm(request.POST)
+        login_form = forms.UserLoginForm(request.POST)
         if login_form.is_valid():
             user = authenticate(username=login_form.cleaned_data['username'],
                                 password=login_form.cleaned_data['password'])
@@ -162,7 +161,7 @@ def login_page(request):
         else:
             return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
     else:
-        login_form = UserLoginForm()
+        login_form = forms.UserLoginForm()
     return render(request, 'auth.html', {'form': login_form})
 
 
@@ -496,16 +495,16 @@ class DealList(ListView):
         context['deals_filtered'] = self.get_queryset().count()
         self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
-            context['filter_form'] = DealFilterForm(self.request.POST)
+            context['filter_form'] = forms.DealFilterForm(self.request.POST)
         else:
-            context['filter_form'] = DealFilterForm(self.request.GET)
+            context['filter_form'] = forms.DealFilterForm(self.request.GET)
         return context
 
 
 @method_decorator(login_required, name='dispatch')
 class DealUpdate(UpdateView):
     model = Deal
-    form_class = DealForm
+    form_class = forms.DealForm
     context_object_name = 'deal'
 
     def get_success_url(self):
@@ -515,9 +514,9 @@ class DealUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
         else:
-            context['tasks_formset'] = TasksFormSet(instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -536,7 +535,7 @@ class DealUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class DealCreate(CreateView):
     model = Deal
-    form_class = DealForm
+    form_class = forms.DealForm
     context_object_name = 'deal'
 
     def get_success_url(self):
@@ -546,9 +545,9 @@ class DealCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = TasksFormSet(self.request.POST)
+            context['tasks_formset'] = forms.TasksFormSet(self.request.POST)
         else:
-            context['tasks_formset'] = TasksFormSet()
+            context['tasks_formset'] = forms.TasksFormSet()
         return context
 
     def form_valid(self, form):
@@ -618,9 +617,9 @@ class TaskList(ListView):
         context['tasks_filtered'] = self.get_queryset().count()
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
-            context['filter_form'] = TaskFilterForm(self.request.POST)
+            context['filter_form'] = forms.TaskFilterForm(self.request.POST)
         else:
-            context['filter_form'] = TaskFilterForm(self.request.GET)
+            context['filter_form'] = forms.TaskFilterForm(self.request.GET)
         return context
 
 
@@ -640,7 +639,7 @@ class TaskDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class TaskUpdate(UpdateView):
     model = Task
-    form_class = TaskForm
+    form_class = forms.TaskForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -649,13 +648,13 @@ class TaskUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_formset'] = SendingFormSet(self.request.POST, instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
         else:
-            context['executors_formset'] = ExecutorsFormSet(instance=self.object)
-            context['costs_formset'] = CostsFormSet(instance=self.object)
-            context['sending_formset'] = SendingFormSet(instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -681,7 +680,7 @@ class TaskUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class TaskCreate(CreateView):
     model = Task
-    form_class = TaskForm
+    form_class = forms.TaskForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -690,13 +689,13 @@ class TaskCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST)
-            context['costs_formset'] = CostsFormSet(self.request.POST)
-            context['sending_formset'] = SendingFormSet(self.request.POST)
+            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST)
+            context['sending_formset'] = forms.SendingFormSet(self.request.POST)
         else:
-            context['executors_formset'] = ExecutorsFormSet()
-            context['costs_formset'] = CostsFormSet()
-            context['sending_formset'] = SendingFormSet()
+            context['executors_formset'] = forms.ExecutorsFormSet()
+            context['costs_formset'] = forms.CostsFormSet()
+            context['sending_formset'] = forms.SendingFormSet()
         return context
 
     def form_valid(self, form):
@@ -731,7 +730,7 @@ class TaskDelete(DeleteView):
 @method_decorator(login_required, name='dispatch')
 class TaskExchange(FormView):
     template_name = 'planner/task_exchange.html'
-    form_class = TaskExchangeForm
+    form_class = forms.TaskExchangeForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -774,6 +773,54 @@ class TaskExchange(FormView):
             deal_new.value = deal_new.value_calc()
             deal_new.save()
         return super(TaskExchange, self).form_valid(form)
+
+
+# @method_decorator(login_required, name='dispatch')
+# class TaskRegistry(FormView):
+#     template_name = 'planner/task_registry.html'
+#     form_class = TaskRegistryForm
+#
+#     def get_success_url(self):
+#         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+#         return self.success_url
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_superuser or request.user.groups.filter(name='Секретарі').exists():
+#             self.tasks_ids = self.request.GET.getlist('ids', '')
+#             return super(TaskExchange, self).dispatch(request, *args, **kwargs)
+#         else:
+#             raise PermissionDenied
+#
+#     def get_form_kwargs(self):
+#         kwargs = super(TaskExchange, self).get_form_kwargs()
+#         kwargs['tasks_ids'] = self.tasks_ids
+#         return kwargs
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(TaskExchange, self).get_context_data(**kwargs)
+#         tasks = Task.objects.filter(id__in=self.tasks_ids)
+#         context["tasks_ids"] = self.tasks_ids
+#         context["tasks"] = tasks
+#         context["query_string"] = self.request.session.get('task_query_string', '')
+#         return context
+#
+#     def form_valid(self, form):
+#         deal_id = form.cleaned_data['deal']
+#         if deal_id:
+#             deal_new = Deal.objects.get(pk=deal_id)
+#             tasks = Task.objects.filter(id__in=self.tasks_ids)
+#             deals_old = set()
+#             for task in tasks:
+#                 deal_old = Deal.objects.get(id=task.deal.pk)
+#                 task.deal = deal_new
+#                 task.save()
+#                 deals_old.add(deal_old)
+#             for deal in deals_old:
+#                 deal.value = deal.value_calc()
+#                 deal.save()
+#             deal_new.value = deal_new.value_calc()
+#             deal_new.save()
+#         return super(TaskExchange, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -826,14 +873,14 @@ class NewsDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class NewsCreate(CreateView):
     model = News
-    form_class = NewsForm
+    form_class = forms.NewsForm
     success_url = reverse_lazy('news_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class NewsUpdate(UpdateView):
     model = News
-    form_class = NewsForm
+    form_class = forms.NewsForm
     success_url = reverse_lazy('news_list')
 
 
@@ -857,14 +904,14 @@ class EventDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class EventCreate(CreateView):
     model = Event
-    form_class = EventForm
+    form_class = forms.EventForm
     success_url = reverse_lazy('event_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class EventUpdate(UpdateView):
     model = Event
-    form_class = EventForm
+    form_class = forms.EventForm
     success_url = reverse_lazy('event_list')
 
 
@@ -877,8 +924,14 @@ class EventDelete(DeleteView):
 @method_decorator(login_required, name='dispatch')
 class EmployeeUpdate(UpdateView):
     model = Employee
-    form_class = EmployeeForm
+    form_class = forms.EmployeeForm
     success_url = reverse_lazy('home_page')
 
     def get_object(self):
         return Employee.objects.get(user=get_current_user())
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverList(ListView):
+    model = Receiver
+    success_url = reverse_lazy('home_page')

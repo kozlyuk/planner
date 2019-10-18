@@ -395,14 +395,14 @@ SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, ex
 class TaskExchangeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.tasks_ids = kwargs.pop('tasks_ids')
-        super(TaskExchangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         deal = [(deal.id, deal.number) for deal in Deal.objects.filter(act_status=Deal.NotIssued)]
         self.fields['deal'].choices = deal
 
     deal = forms.ChoiceField(label='Оберіть договір', widget=Select2Widget())
 
     def clean(self):
-        super(TaskExchangeForm, self).clean()
+        super().clean()
         deal_id = self.cleaned_data.get("deal")
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         if not self.tasks_ids:
@@ -414,6 +414,19 @@ class TaskExchangeForm(forms.Form):
                     self.add_error('deal', "{} - тип проекту не відповідає Замовнику Договору".format(task))
                 if task.deal.act_status != Deal.NotIssued:
                     self.add_error('deal', "{} - договір закрито, зверніться до керівника".format(task))
+
+
+# class TaskRegistryForm(forms.Form):
+#     def __init__(self, *args, **kwargs):
+#         self.tasks_ids = kwargs.pop('tasks_ids')
+#         super().__init__(*args, **kwargs)
+#         deal = [(deal.id, deal.number) for deal in .objects.filter(act_status=Deal.NotIssued)]
+#         self.fields['deal'].choices = deal
+#
+#     receiver = forms.ChoiceField(label='Оберіть отримувача', widget=Select2Widget())
+#     receipt_date = forms.DateField(label='Дата реєстру', widget=AdminDateWidget())
+#     copies_count = forms.CharField(label='Кількість примірників')
+#     register_num = forms.CharField(label='Номер реєстру')
 
 
 class NewsForm(forms.ModelForm):
