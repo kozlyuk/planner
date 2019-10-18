@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django import forms
-from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company, News, Event
+from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee,\
+                           Project, Company, News, Event, Receiver
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
@@ -462,3 +463,6 @@ class EmployeeForm(forms.ModelForm):
             'avatar': AvatarInput,
         }
 
+
+class ReceiverFilterForm(forms.ModelForm):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
