@@ -941,5 +941,5 @@ class ReceiverList(ListView):
                               ['contact_person', 'Контактна особа', 0],
                               ['phone', 'Телефон', 0]]
         context['search'] = 'name'
-        context['filter'] = ''
+        context['filter'] = []
         return context
