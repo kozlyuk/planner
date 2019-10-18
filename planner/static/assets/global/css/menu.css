@@ -1,3 +1,44 @@
+body {
+  margin: 0px;
+}
+nav {
+  position: absolute;
+  padding: 24px;
+  text-align: center;
+}
+#nav {
+  background: transparent;
+}
+
+.link {
+  transition: 0.3s ease;
+  background: transparent;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 20px 0;
+  margin: 0 20px;
+}
+.link:hover {
+  border-top: 4px solid #5b9bd1;
+  border-bottom: 4px solid #5b9bd1;
+  padding: 6px 0; 
+}
+
+nav > .active {
+  border-top: 4px solid #5b9bd1;
+  border-bottom: 4px solid #5b9bd1;
+  padding: 6px 0; 
+}
+
+nav > a {
+  text-decoration: none!important;
+}
+
+
+
+
 
 ul {
   list-style: none;
@@ -370,7 +411,6 @@ label.hamburger {
 /*}*/
 .logo-default {
   position: absolute;
-  left: 80px;
   top: 5px;
 }
 .dropdown-user {
@@ -383,4 +423,31 @@ label.hamburger {
   width: 60px;
   height: 69px;
   border-right: 1px solid #dce0ec;
+}
+
+
+@media (max-width: 1024px) {
+  .desktop-menu {
+    display: none;
+  };
+}
+
+@media (max-width: 1024px) {
+  .logo-default {
+    position: absolute;
+    left: 80px!important;
+  };
+}
+
+@media (min-width: 1024px) {
+  .mobile-menu {
+    display: none;
+  };
+}
+
+@media (min-width: 1024px) {
+  .logo-default {
+    position: absolute;
+    left: 15px;
+  };
 }

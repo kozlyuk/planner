@@ -60,26 +60,37 @@
 <!-- BEGIN HEADER -->
 <div class="page-header navbar-fixed-top">
     <!-- BEGIN HEADER INNER -->
-    <div>
-        <div class="menu-container">
-          <div class="border-menu">
-          <input id="hamburger" class="hamburger" type="checkbox" />
-          <label class="hamburger" for="hamburger"> <i></i> </label>
-          <section class="drawer-list">
-            <ul>
-              <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'home_page' %}">Головна</a></li>
-              <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'task_list' %}">Проекти</a></li>
-              <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'deal_list' %}">Договори</a></li>
-              <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="#">Аналітика та звіти</a></li>
-            </ul>
-          </section>
-        <!-- BEGIN LOGO -->
-        <div class="page-logo">
-            <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo" class="logo-default" /> </a>
+    <div class="menu-container">
+        <div class="border-menu mobile-menu">
+            <input id="hamburger" class="hamburger" type="checkbox" />
+            <label class="hamburger" for="hamburger"> <i></i> </label>
+            <section class="drawer-list">
+                <ul>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'home_page' %}">Головна</a></li>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'task_list' %}">Проекти</a></li>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'deal_list' %}">Договори</a></li>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="#">Аналітика
+                            та звіти</a></li>
+                </ul>
+            </section>
         </div>
-        <!-- END LOGO -->
-        </div>
-        </div>
+        <nav class="container-fluid desktop-menu">
+            <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
+            <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
+            <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
+            {% if request.user.is_superuser %}
+            <a class="link uppercase" href="{% url 'admin:index' %}">Адміністрування</a>
+            {% endif %}
+        </nav>
+                <!-- BEGIN LOGO -->
+                <div class="page-logo">
+                    <a href="/"><img src="{% static 'assets/global/img/logo-top.png' %}" alt="logo"
+                            class="logo-default" /> </a>
+                </div>
+                <!-- END LOGO -->
         <!-- END NAV TRIGGER -->
 
         <!-- BEGIN TOP NAVIGATION MENU -->
@@ -89,10 +100,10 @@
                 <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
                 <li class="dropdown dropdown-user">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
-                       data-close-others="true">
+                        data-close-others="true">
                         <div class="dropdown-user-inner">
                             <span class="username username-hide-on-mobile">{{ user.username }}</span>
-                            <img class="userpic" alt="" src="{{ user.employee.avatar.thumbnail.url }}"/></div>
+                            <img class="userpic" alt="" src="{{ user.employee.avatar.thumbnail.url }}" /></div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
