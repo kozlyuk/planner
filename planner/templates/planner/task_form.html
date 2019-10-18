@@ -51,6 +51,9 @@
                                                             for="id_{{ form.object_address.name }}">{{ form.object_address.label }}:</label>
                                                     </div>
                                                     <div class="col-7">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.object_address.errors}}
+                                                        </small>
                                                         {{ form.object_address|attr:"style: width:100%" }}
                                                     </div>
 
@@ -64,6 +67,9 @@
                                                             for="id_{{ form.project_type.name }}">{{ form.project_type.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.project_type.errors}}
+                                                        </small>
                                                         {{ form.project_type }}
                                                     </div>
                                                     <!--alert: deal-->
@@ -72,6 +78,9 @@
                                                             for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.deal.errors}}
+                                                        </small>
                                                         {{ form.deal|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -84,6 +93,9 @@
                                                             for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.exec_status.errors}}
+                                                        </small>
                                                         {{ form.exec_status|attr:"style: width:100%" }}
                                                     </div>
                                                     <!--alert: owner-->
@@ -92,6 +104,9 @@
                                                             for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.owner.errors}}
+                                                        </small>
                                                         {{ form.owner|attr:"style: width:100%" }}
                                                     </div>
                                                     <!--alert: project_code-->
@@ -100,6 +115,9 @@
                                                             for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.project_code.errors}}
+                                                        </small>
                                                         {{ form.project_code|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -112,6 +130,9 @@
                                                             for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.planned_start.errors}}
+                                                        </small>
                                                         {{ form.planned_start|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: actual_start-->
@@ -120,6 +141,9 @@
                                                             for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.actual_start.errors}}
+                                                        </small>
                                                         {{ form.actual_start|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: tc_received-->
@@ -128,6 +152,9 @@
                                                             for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.tc_received.errors}}
+                                                        </small>
                                                         {{ form.tc_received|attr:"style: width:10%" }}
                                                     </div>
                                                 </div>
@@ -140,6 +167,9 @@
                                                             for="id_{{ form.planned_finish.name }}">{{ form.planned_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.planned_finish.errors}}
+                                                        </small>
                                                         {{ form.planned_finish|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: actual_finish-->
@@ -148,6 +178,9 @@
                                                             for="id_{{ form.actual_finish.name }}">{{ form.actual_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.actual_finish.errors}}
+                                                        </small>
                                                         {{ form.actual_finish|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: tc_upload-->
@@ -156,6 +189,9 @@
                                                             for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.tc_upload.errors}}
+                                                        </small>
                                                         {{ form.tc_upload|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -169,6 +205,9 @@
                                                             for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.pdf_copy.errors}}
+                                                        </small>
                                                         {{ form.pdf_copy|attr:"style: width:100%" }}
                                                     </div>
                                                     <!--alert: comment-->
@@ -177,6 +216,9 @@
                                                             for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
                                                     <div class="col-7">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.comment.errors}}
+                                                        </small>
                                                         {{ form.comment }}
                                                     </div>
                                                 </div>
