@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from planner.models import Task, Deal, Employee, Execution, Receiver, Sending, Order, IntTask, News, Event
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from planner import forms
@@ -18,6 +17,7 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
+from planner.models import Task, Deal, Employee, Execution, Receiver, Sending, Order, IntTask, News, Event
 
 
 @method_decorator(login_required, name='dispatch')
@@ -28,8 +28,7 @@ class DealCalc(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
             return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,8 +87,7 @@ class BonusesCalc(TemplateView):
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
         if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user:
             return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -156,12 +154,9 @@ def login_page(request):
             if user is not None:
                 login(request, user)
                 return redirect('home_page')
-            else:
-                return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
-        else:
-            return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
-    else:
-        login_form = forms.UserLoginForm()
+            return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
+        return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
+    login_form = forms.UserLoginForm()
     return render(request, 'auth.html', {'form': login_form})
 
 
@@ -934,4 +929,5 @@ class EmployeeUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class ReceiverList(ListView):
     model = Receiver
+    template_name = "generic_list.html"
     success_url = reverse_lazy('home_page')

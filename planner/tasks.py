@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 @app.task
 def update_task_statuses():
     """Update statuses for last 500 tasks"""
-    tasks = Task.objects.order_by('-id')[:500]
+    tasks = Task.objects.order_by('-id')[:1000]
     for task in tasks:
         if task.exec_status == Task.Done:
             send_status = task.sending_status()
@@ -46,7 +46,7 @@ def update_task_statuses():
 @app.task
 def update_deal_statuses():
     """Update statuses and warnings for last 100 deals"""
-    deals = Deal.objects.order_by('-id')[:100]
+    deals = Deal.objects.order_by('-id')[:200]
     for deal in deals:
         tasks = deal.task_set.values_list('exec_status', flat=True)
         if Task.ToDo in tasks:
@@ -58,9 +58,7 @@ def update_deal_statuses():
         else:
             deal.exec_status = Deal.Sent
 
-        if 'загальний' in deal.number:
-            deal.warning = ''
-        elif deal.task_set.all().count() == 0:
+        if deal.task_set.all().count() == 0:
             deal.warning = 'Відсутні проекти'
         elif deal.exec_status == Deal.Sent:
             value_calc = deal.value_calc() + deal.value_correction
