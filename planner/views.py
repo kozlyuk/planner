@@ -934,12 +934,24 @@ class ReceiverList(ListView):
     template_name = "generic_list.html"
     success_url = reverse_lazy('home_page')
     
+    def get_queryset(self):
+        receivers = Receiver.objects.all()
+        search_string = self.request.GET.get('filter', '').split()
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            tasks = tasks.filter(Q(customer__name__icontains=word) |
+                                 Q(name__icontains=word) |
+                                 Q(contact_person__icontains=word))
+        if order != '0':
+            receivers = receivers.order_by(order)
+        return receivers
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Отримувач', 1],
                               ['address', 'Адреса', 0],
                               ['contact_person', 'Контактна особа', 0],
                               ['phone', 'Телефон', 0]]
-        context['search'] = 'name'
+        context['search'] = True
         context['filter'] = []
         return context
