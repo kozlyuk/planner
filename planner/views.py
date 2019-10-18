@@ -936,6 +936,10 @@ class ReceiverList(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['headers'] = [['name', 'Отримувач', 1, 1, 0], ['address', 'Адреса', 0, 0, 0],
-                              ['contact_person', 'Контактна особа', 0, 0, 0], ['phone', 'Телефон', 0, 0, 0]]
+        context['headers'] = [['name', 'Отримувач', 1],
+                              ['address', 'Адреса', 0],
+                              ['contact_person', 'Контактна особа', 0],
+                              ['phone', 'Телефон', 0]]
+        context['search'] = 'name'
+        context['filter'] = ''
         return context
