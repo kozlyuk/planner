@@ -5,7 +5,7 @@ from planner import forms
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from datetime import datetime, date
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from django.views.generic.list import ListView
@@ -940,8 +940,8 @@ class ReceiverList(ListView):
         order = self.request.GET.get('o', '0')
         for word in search_string:
             receivers = receivers.filter(Q(customer__name__icontains=word) |
-                                 Q(name__icontains=word) |
-                                 Q(contact_person__icontains=word))
+                                         Q(name__icontains=word) |
+                                         Q(contact_person__icontains=word))
         if order != '0':
             receivers = receivers.order_by(order)
         return receivers
@@ -954,9 +954,31 @@ class ReceiverList(ListView):
                               ['phone', 'Телефон', 0]]
         context['search'] = True
         context['filter'] = []
+        context['add_url'] = reverse('receiver_add')
+        context['add_help_text'] = 'Додати адресата'
         if self.request.POST:
             context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
         else:
             context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
 
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverCreate(CreateView):
+    model = Receiver
+    form_class = forms.ReceiverForm
+    success_url = reverse_lazy('receiver_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverUpdate(UpdateView):
+    model = Receiver
+    form_class = forms.ReceiverForm
+    success_url = reverse_lazy('receiver_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverDelete(DeleteView):
+    model = Receiver
+    success_url = reverse_lazy('receiver_list')

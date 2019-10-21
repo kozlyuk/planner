@@ -466,3 +466,9 @@ class EmployeeForm(forms.ModelForm):
 
 class ReceiverFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ReceiverForm(forms.ModelForm):
+    class Meta:
+        model = Receiver
+        fields = ['name', 'address', 'contact_person', 'phone']
