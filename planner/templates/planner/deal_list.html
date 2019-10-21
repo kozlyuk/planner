@@ -103,36 +103,7 @@
                         <div class="text-center">
                             {{ deals_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ deals_count }} всього)
                             </a><br>
-                            {% if is_paginated %}
-                            <div class="btn-group">
-                                <a href="?{% url_replace request 'page' 1 %}"
-                                    class="btn btn-default{% if page_obj.number == 1 %} disabled{% endif %}">
-                                    <i class="fa fa-angle-double-left"></i></a>
-                                {% if page_obj.has_previous %}
-                                <a href="?{% url_replace request 'page' page_obj.previous_page_number %}"
-                                    class="btn btn-default"><i class="fa fa-angle-left"></i></a>
-                                {% else %}
-                                <a href="?{% url_replace request 'page' 1 %}" class="btn btn-default disabled"><i
-                                        class="fa fa-angle-left"></i></a>
-                                {% endif %}
-
-                                {% for index in paginator|proper_paginate:page_obj.number %}
-                                <a href="?{% url_replace request 'page' index %}"
-                                    class="btn {% if index == page_obj.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
-                                {% endfor %}
-
-                                {% if page_obj.has_next %}
-                                <a href="?{% url_replace request 'page' page_obj.next_page_number %}"
-                                    class="btn btn-default"><i class="fa fa-angle-right"></i></a>
-                                {% else %}
-                                <a href="?{% url_replace request 'page' paginator.num_pages %}"
-                                    class="btn btn-default disabled"><i class="fa fa-angle-right"></i></a>
-                                {% endif %}
-                                <a href="?{% url_replace request 'page' paginator.num_pages %}"
-                                    class="btn btn-default{% if page_obj.number == paginator.num_pages %} disabled{% endif %}"><i
-                                        class="fa fa-angle-double-right"></i></a>
-                            </div>
-                            {% endif %}
+                            {% include 'pagination.html' %}
                         </div>
                     </div>
                 </div>
