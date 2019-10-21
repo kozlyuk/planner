@@ -12,7 +12,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Q
+from django.db.models import Q, CharField, Value
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
@@ -935,7 +935,7 @@ class ReceiverList(ListView):
     success_url = reverse_lazy('home_page')
     
     def get_queryset(self):
-        receivers = Receiver.objects.all()
+        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField()))
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
