@@ -250,7 +250,9 @@
                         <div class="card main-widget-tab">
                             <h6 class="task-header center-block text-center">Виконавці</h6>
                             <div class="card-body pb-1">
+                                <small class="text-danger">
                                 {{ executors_formset.non_form_errors }}
+                                </small>
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if executors_formset|length %}
@@ -371,34 +373,36 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {{ costs_formset.non_form_errors }}
+                                            <small class="text-danger">
+                                                {{ costs_formset.non_form_errors }}
+                                            </small>
                                             {% for form in costs_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.contractor.errors }}
-                                                    {{form.contractor|attr:"style: width:100%"}}
+                                                    {{ form.contractor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.deal_number.errors }}
-                                                    {{form.deal_number|attr:"style: width:100%"}}
+                                                    {{ form.deal_number|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.value.errors }}
-                                                    {{form.value|attr:"style: width:100%"}}
+                                                    {{ form.value|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.advance.errors }}
-                                                    {{form.advance|attr:"style: width:100%"}}
+                                                    {{ form.advance|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.pay_status.errors }}
-                                                    {{form.pay_status|attr:"style: width:100%"}}
+                                                    {{ form.pay_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.pay_date.errors }}
-                                                    {{form.pay_date|attr:"style: width:60%"}}
+                                                    {{ form.pay_date|attr:"style: width:60%" }}
                                                 </th>
-                                                <th>{{ form.DELETE }}</th>
+                                                <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -420,7 +424,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <small class="text-danger">
                                             {{ costs_formset.non_form_errors }}
+                                            </small>
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ costs_formset.empty_form.contractor.errors }}
@@ -479,6 +485,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <small class="text-danger">
+                                            {{ sending_formset.non_form_errors }}
+                                            </small>
                                             {% for form in sending_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
@@ -518,7 +527,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <small class="text-danger">
                                         {{ sending_formset.non_form_errors }}
+                                        </small>
                                         <tr>
                                             <th class="pl-1 pr-1">
                                                 {{ sending_formset.empty_form.receiver.errors }}
@@ -549,9 +560,10 @@
                         {% endif %}
                     </div>
                 </div>
+            </form>
         </div>
     </div>
-    </form>
+    
     {% else %}
     Ви не маєте доступу до редагування даного проекту<br><br>
     {% endif %}
