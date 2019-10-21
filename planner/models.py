@@ -21,13 +21,13 @@ from decimal import Decimal
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
-def user_directory_path(filename):
+def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/projects/user_<id>/Year/Month/<filename>
     return 'projects/user_{0}/{1}/{2}/{3}'\
         .format(get_current_user().id, datetime.now().year, datetime.now().month, filename)
 
 
-def avatar_directory_path(filename):
+def avatar_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
     return 'avatars/user_{0}/{1}'\
         .format(get_current_user().id, filename)
