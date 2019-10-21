@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load static %}
+
+{% block context %}
+{% with title='test' %}
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <br><!-- BEGIN CONTENT -->
+    <div class="container-fluid">
+        <div class="portlet-body">
+
+            <!--filter panel-->
+            <div class="accordion" id="filter">
+                <div class="card">
+                    <div class="card-header" id="filter">
+                        <h2 class="mb-0">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <button class="btn text-muted bold btn-block" type="button"
+                                            data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
+                                            aria-controls="filterBody">
+                                            {{title}}
+                                        </button>
+                                    </div>
+                                    {% if perms.planner.add_task %}
+                                    <button onclick="window.location.href = '{% url 'task_add' %}'"
+                                        class="btn dark btn-sm btn-outline sbold uppercase"
+                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
+                                        <i class="fa fa-plus"></i> Додати проект </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </h2>
+                    </div>
+                    <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
+                        <div class="card-body">
+                            <div class="container-fluid " style="display:block">
+                            {% if search == True %}
+                                <form action="{% url 'task_list' %}" method="get">
+                                    {% for hidden_field in filter_form.hidden_fields %}
+                                    {{ hidden_field }}
+                                    {% endfor %}
+
+                                    {% for field in filter_form.visible_fields %}
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if field.help_text %}
+                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                        <i class="fa fa-search"></i>Пошук </button>
+                                </form>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--filter panel-->
+
+            <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
+                <div class="table-scrollable">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                            <tr>
+                                {% for key, header, number in headers %}
+                                    <th>{{header}}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for field in object_list %}
+                                <tr>
+                                    <td>{{ field }}</td>
+                                    <td>{{ field.address }}</td>
+                                    <td>{{ field.contact_person }}</td>
+                                    <td>{{ field.phone }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
+                            </a><br>
+                            {% if is_paginated %}
+                            <div class="btn-group">
+                                <a href="?{% url_replace request 'page' 1 %}"
+                                    class="btn btn-default{% if page_obj.number == 1 %} disabled{% endif %}">
+                                    <i class="fa fa-angle-double-left"></i></a>
+                                {% if page_obj.has_previous %}
+                                <a href="?{% url_replace request 'page' page_obj.previous_page_number %}"
+                                    class="btn btn-default"><i class="fa fa-angle-left"></i></a>
+                                {% else %}
+                                <a href="?{% url_replace request 'page' 1 %}" class="btn btn-default disabled"><i
+                                        class="fa fa-angle-left"></i></a>
+                                {% endif %}
+
+                                {% for index in paginator|proper_paginate:page_obj.number %}
+                                <a href="?{% url_replace request 'page' index %}"
+                                    class="btn {% if index == page_obj.number %}green disabled{% else %}btn-default{% endif %}">{{ index }}</a>
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                <a href="?{% url_replace request 'page' page_obj.next_page_number %}"
+                                    class="btn btn-default"><i class="fa fa-angle-right"></i></a>
+                                {% else %}
+                                <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                    class="btn btn-default disabled"><i class="fa fa-angle-right"></i></a>
+                                {% endif %}
+                                <a href="?{% url_replace request 'page' paginator.num_pages %}"
+                                    class="btn btn-default{% if page_obj.number == paginator.num_pages %} disabled{% endif %}"><i
+                                        class="fa fa-angle-double-right"></i></a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if perms.planner.change_deal %}
+                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
+                    договір</button>
+                {% endif %}
+            </form>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+</div>
+    <!-- END CONTAINER -->
+    {% endwith %}
+{% endblock %}
