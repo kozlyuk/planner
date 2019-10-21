@@ -230,3 +230,17 @@ hidden {
 .last-row:hover {
     background-color: white!important;
 }
+
+.toast {
+    opacity: 1;
+}
+
+.alert {
+    padding: 0;
+    border: none;
+}
+
+.alert-header {
+    background-color: #ed6b75!important;
+    color: #fff !important;
+}

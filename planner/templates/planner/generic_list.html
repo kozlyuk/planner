@@ -29,6 +29,12 @@
                                             {{ header_main }}
                                         </button>
                                     </div>
+                                    {% comment %} {% if perms.planner.add_task %} {% endcomment %}
+                                <button onclick="window.location.href = '{{ add_url }}'"
+                                    class="btn dark btn-sm btn-outline sbold uppercase"
+                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
+                                    <i class="fa fa-plus"></i> {{add_help_text}} </button>
+                            {% comment %} {% endif %} {% endcomment %}
                                 </div>
                             </div>
                         </h2>
