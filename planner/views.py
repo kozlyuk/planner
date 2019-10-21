@@ -931,7 +931,6 @@ class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Receiver
-    form_class = forms.ReceiverFilterForm
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     
@@ -955,4 +954,9 @@ class ReceiverList(ListView):
                               ['phone', 'Телефон', 0]]
         context['search'] = True
         context['filter'] = []
+        if self.request.POST:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
+
         return context
