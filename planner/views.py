@@ -939,7 +939,7 @@ class ReceiverList(ListView):
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
-            tasks = tasks.filter(Q(customer__name__icontains=word) |
+            receivers = receivers.filter(Q(customer__name__icontains=word) |
                                  Q(name__icontains=word) |
                                  Q(contact_person__icontains=word))
         if order != '0':
