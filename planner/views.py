@@ -931,6 +931,7 @@ class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Receiver
+    form_class = forms.ReceiverFilterForm
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     
