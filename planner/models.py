@@ -61,7 +61,7 @@ class Employee(models.Model):
         overdue = 0
         for task in self.task_set.exclude(exec_status=Task.Sent):
             active += 1
-            if task.overdue_status().startswith('Протерміновано'):
+            if task.warning.startswith('Протерміновано'):
                 overdue += 1
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     owner_count.short_description = 'Керівник проектів'
@@ -71,7 +71,7 @@ class Employee(models.Model):
         overdue = 0
         for task in self.tasks.exclude(exec_status=Task.Sent):
             active += 1
-            if task.overdue_status().startswith('Протерміновано'):
+            if task.warning.startswith('Протерміновано'):
                 overdue += 1
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     task_count.short_description = 'Виконавець в проектах'
