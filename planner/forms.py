@@ -464,5 +464,5 @@ class EmployeeForm(forms.ModelForm):
         }
 
 
-class ReceiverFilterForm(forms.ModelForm):
+class ReceiverFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
