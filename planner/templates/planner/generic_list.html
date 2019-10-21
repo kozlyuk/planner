@@ -5,7 +5,6 @@
 {% load static %}
 
 {% block context %}
-{% with title='test' %}
 
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -27,15 +26,9 @@
                                         <button class="btn text-muted bold btn-block" type="button"
                                             data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
                                             aria-controls="filterBody">
-                                            {{title}}
+                                            {{ header_main }}
                                         </button>
                                     </div>
-                                    {% if perms.planner.add_task %}
-                                    <button onclick="window.location.href = '{% url 'task_add' %}'"
-                                        class="btn dark btn-sm btn-outline sbold uppercase"
-                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
-                                        <i class="fa fa-plus"></i> Додати проект </button>
-                                    {% endif %}
                                 </div>
                             </div>
                         </h2>
@@ -44,7 +37,7 @@
                         <div class="card-body">
                             <div class="container-fluid " style="display:block">
                             {% if search == True %}
-                                <form action="{% url 'task_list' %}" method="get">
+                                <form action="{% url 'receiver_list' %}" method="get">
                                     {% for hidden_field in filter_form.hidden_fields %}
                                     {{ hidden_field }}
                                     {% endfor %}
@@ -76,8 +69,12 @@
                     <table class="table table-striped table-advance table-hover">
                         <thead>
                             <tr>
-                                {% for key, header, number in headers %}
-                                    <th>{{header}}</th>
+                                {% for key, header, isFiltered in headers %}
+                                    {% if isFiltered == 1 %}
+                                        <th class="text-left"><a href="?{% url_replace request 'o' key %}">{{header}}</a></th>
+                                    {% else %}
+                                        <th class="text-left">{{header}}</th>
+                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         </thead>
@@ -97,8 +94,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="text-center">
-                            {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
-                            </a><br>
+                            {{ tasks_filtered }} знайдено ({{ objects_count }} всього)
+                            <br>
                             {% if is_paginated %}
                             <div class="btn-group">
                                 <a href="?{% url_replace request 'page' 1 %}"
@@ -129,13 +126,14 @@
                                         class="fa fa-angle-double-right"></i></a>
                             </div>
                             {% endif %}
+                            {% include 'pagination.html' %}
                         </div>
                     </div>
                 </div>
-                {% if perms.planner.change_deal %}
+                {% comment %} {% if perms.planner.change_deal %}
                 <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
                     договір</button>
-                {% endif %}
+                {% endif %} {% endcomment %}
             </form>
             <!-- END PAGE BASE CONTENT -->
         </div>
@@ -143,5 +141,4 @@
     </div>
 </div>
     <!-- END CONTAINER -->
-    {% endwith %}
 {% endblock %}
