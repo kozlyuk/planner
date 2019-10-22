@@ -44,6 +44,10 @@ urlpatterns = [
     url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),
     url(r'^receiver/(?P<pk>\d+)/change/$', views.ReceiverUpdate.as_view(), name='receiver_update'),
     url(r'^receiver/(?P<pk>\d+)/delete/$', views.ReceiverDelete.as_view(), name='receiver_delete'),
+    url(r'^project/types/$', views.ProjectList.as_view(), name='project_type_list'),
+    url(r'^project/types/add$', views.ProjectCreate.as_view(), name='project_type_add'),
+    url(r'^project/types/(?P<pk>\d+)/change/$', views.ProjectUpdate.as_view(), name='project_type_update'),
+    url(r'^project/types/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project_type_delete'),
         # url(r'^project/registry/$', views.TaskRegistry.as_view(), name='task_registry'),
 
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),

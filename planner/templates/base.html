@@ -85,6 +85,7 @@
             <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
             <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
             <a class="link {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
+            <a class="link {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
             {% if request.user.is_superuser %}
             <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-users-cog"></i></a>
             {% endif %}
