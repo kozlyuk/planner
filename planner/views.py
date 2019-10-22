@@ -1005,6 +1005,7 @@ class ReceiverDelete(DeleteView):
         obj = self.get_object()
         receiver = context['receiver']
         context['go_back_url'] = reverse('receiver_update', kwargs={'pk':receiver.pk})
+        context['main_header'] = 'Видалити адресат?'
         context['header'] = 'Видалення адресату "' + str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.task_set.exists():
             context['objects'] = obj.sending_set.all()
