@@ -16,8 +16,6 @@
     <div class="container container-lf-space">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div class="widget-row margin-top-20">
-            <!-- PERMISSION CHECK -->
-            {% if not task.pk or task.is_editable %}
             <form id="GenericForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
                 <!--alert: inline layout-->
@@ -37,7 +35,11 @@
                                     </div>
                                 </div>                                   
                                 {% endfor %}
-                            <button onclick="window.location.href = '{% url 'receiver_list' %}'" class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                            {% if receiver.pk %}<a href="{% url 'receiver_delete' receiver.pk %}"
+                                class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
+                            {% else %}<button onclick="window.location.href = '{% url 'receiver_list' %}'"
+                                class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                            {% endif %}
                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                 style="float: right;">Зберегти</button>
                             </div>
@@ -49,9 +51,6 @@
         </div>
     </div>
     </form>
-    {% else %}
-    Ви не маєте доступу до редагування даного проекту<br><br>
-    {% endif %}
 </div>
 <!-- END PAGE BASE CONTENT -->
 </div>
