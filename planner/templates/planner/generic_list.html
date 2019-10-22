@@ -18,7 +18,7 @@
             <!--filter panel-->
             <div class="accordion" id="filter">
                 <div class="card">
-                    <div class="card-header" id="filter">
+                    <div class="card-header">
                         <h2 class="mb-0">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -70,7 +70,7 @@
             </div>
             <!--filter panel-->
 
-            <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
+            <form id="genericList" action="" method="get">
                 <div class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
                         <thead>
@@ -87,7 +87,7 @@
                         <tbody>
                             {% for field in object_list %}
                                 <tr>
-                                    <td>{{ field }}</td>
+                                    <td><a href="{{ field.url }}">{{ field }}</a></td>
                                     <td>{{ field.address }}</td>
                                     <td>{{ field.contact_person }}</td>
                                     <td>{{ field.phone }}</td>
