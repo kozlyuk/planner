@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+
+    <!-- BEGIN CONTENT -->
+    <div class="container container-lf-space">
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="widget-row margin-top-20">
+            <!-- PERMISSION CHECK -->
+            {% if not task.pk or task.is_editable %}
+            <form id="GenericForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <!--alert: inline layout-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">
+                                {{header_main}}
+                            </h6>
+                            <div class="card-body">
+                                {% for field in form %}
+                                <div class="form-group row">
+                                    <label for="id_{{ field.name }}" class="col-sm-2 col-form-label">{{ field.label }}</label>
+                                    <div class="col-sm-10">
+                                    {{ field|add_class:"form-control" }}
+                                    </div>
+                                </div>                                   
+                                {% endfor %}
+                            <button onclick="window.location.href = '{% url 'receiver_list' %}'" class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                                style="float: right;">Зберегти</button>
+                            </div>
+                        </div>
+                        <!-- END WIDGET -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </form>
+    {% else %}
+    Ви не маєте доступу до редагування даного проекту<br><br>
+    {% endif %}
+</div>
+<!-- END PAGE BASE CONTENT -->
+</div>
+<!-- END CONTENT -->
+</div>
+<!-- END CONTAINER -->
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+{% endblock css %}
+
+{% block extrahead %}
+<script type="text/javascript">
+    window.onerror = function (msg) {
+        $("body").attr("JSError", msg);
+    }
+</script>
+<script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript">
+
+const addBtnExec = document.querySelector('.add-executors-formset');
+const addBtnCost = document.querySelector('.add-costs-formset');
+const addBtnSend = document.querySelector('.add-sending-formset');
+if (document.querySelector('#executors_formset')) {
+    addBtnExec.addEventListener('click', () => {
+        addInitialFormset('executors_formset', addBtnExec);
+        cliсk('executors_formset', 'dynamic-formset1');
+    })
+};
+
+if (document.querySelector('#costs_formset')) {
+    addBtnCost.addEventListener('click', () => {
+        addInitialFormset('costs_formset', addBtnCost);
+        cliсk('costs_formset', 'dynamic-formset2');
+    })
+};
+
+if (document.querySelector('#sending_formset')) {
+    addBtnSend.addEventListener('click', () => {
+        addInitialFormset('sending_formset', addBtnSend);
+        cliсk('sending_formset', 'dynamic-formset3');
+    })
+};
+
+function addInitialFormset(formsetId, btn) {
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    formsetTemplate.setAttribute('style', '');
+    btn.setAttribute('style', 'display:none');
+};
+
+function cliсk(formsetId, dynamicFormset) {
+    const initialBtn = document.querySelector('.add-row-' + formsetId);
+    const formsetTemplate = document.querySelector('#' + formsetId);
+    initialBtn.click();
+    const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
+    dynamicFormsetFirst.setAttribute('style', 'display:none');
+};
+
+    $(function () {
+        setTimeout(function () {
+            $('span.select2-container.select2-container--bootstrap').width('auto');
+        }, 100);
+        $('#executor_formset_not_empty tbody tr').formset({
+            prefix: '{{ executors_formset.prefix }}',
+            formCssClass: 'dynamic-formset1',
+            addText: 'Додати Виконавця',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                //find the fields with the calendar widget
+                $(row).find('.vDateField').each(function (i) {
+                    //remove the cloned spam element: it links to an incorrect calendar
+                    $(this).parent().find('span').remove();
+                    //DateTimeShortcuts is in the django admin widgets
+                    DateTimeShortcuts.addCalendar(this);
+                })
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#executor_formset_empty tbody tr').formset({
+            prefix: '{{ executors_formset.prefix }}',
+            formCssClass: 'dynamic-formset1',
+            addText: 'Додати Виконавця',
+            deleteText: ' - ',
+            addCssClass: 'add-row-executors_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                //find the fields with the calendar widget
+                $(row).find('.vDateField').each(function (i) {
+                    //remove the cloned spam element: it links to an incorrect calendar
+                    $(this).parent().find('span').remove();
+                    //DateTimeShortcuts is in the django admin widgets
+                    DateTimeShortcuts.addCalendar(this);
+                })
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#costs_formset_not_empty tbody tr').formset({
+            prefix: '{{ costs_formset.prefix }}',
+            formCssClass: 'dynamic-formset2',
+            addText: 'Додати Підрядника',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#costs_formset_empty tbody tr').formset({
+            prefix: '{{ costs_formset.prefix }}',
+            formCssClass: 'dynamic-formset2',
+            addText: 'Додати Підрядника',
+            deleteText: ' - ',
+            addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#sending_formset_not_empty tbody tr').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
+            deleteText: ' - ',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+
+        $('#sending_formset_empty tbody tr').formset({
+            prefix: '{{ sending_formset.prefix }}',
+            formCssClass: 'dynamic-formset3',
+            addText: 'Додати Відправку',
+            deleteText: ' - ',
+            addCssClass: 'add-row-sending_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            'added': function (row) {
+                $(row).find('.vDateField').each(function (i) {
+                    $(this).parent().find('span').remove();
+                    DateTimeShortcuts.addCalendar(this);
+                });
+                $(row).find('.django-select2').djangoSelect2();
+            }
+        });
+    })
+</script>
+
+{% endblock %}
