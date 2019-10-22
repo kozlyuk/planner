@@ -471,4 +471,4 @@ class ReceiverFilterForm(forms.Form):
 class ReceiverForm(forms.ModelForm):
     class Meta:
         model = Receiver
-        fields = ['name', 'address', 'contact_person', 'phone']
+        fields = ['customer', 'name', 'address', 'contact_person', 'phone']

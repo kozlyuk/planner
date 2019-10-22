@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^deal/$', views.DealList.as_view(), name='deal_list'),
     url(r'^deal/(?P<pk>\d+)/change/$', views.DealUpdate.as_view(), name='deal_update'),
     url(r'^deal/add/$', views.DealCreate.as_view(), name='deal_add'),
-    url(r'^deal/(?P<pk>[0-9]+)/delete/$', views.DealDelete.as_view(), name='deal_delete'),
+    url(r'^deal/(?P<pk>\d+)/delete/$', views.DealDelete.as_view(), name='deal_delete'),
     url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.DealCalc.as_view(), name='calculation'),
 
     url(r'^project/$', views.TaskList.as_view(), name='task_list'),
@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^receiver/$', views.ReceiverList.as_view(), name='receiver_list'),
     url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),
     url(r'^receiver/(?P<pk>\d+)/change/$', views.ReceiverUpdate.as_view(), name='receiver_update'),
-    url(r'^receiver/(?P<pk>[0-9]+)/delete/$', views.ReceiverDelete.as_view(), name='receiver_delete'),
+    url(r'^receiver/(?P<pk>\d+)/delete/$', views.ReceiverDelete.as_view(), name='receiver_delete'),
         # url(r'^project/registry/$', views.TaskRegistry.as_view(), name='task_registry'),
 
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),
