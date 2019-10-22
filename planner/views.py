@@ -933,10 +933,10 @@ class ReceiverList(ListView):
     model = Receiver
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 10
+    paginate_by = 15
     
     def get_queryset(self):
-        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[OuterRef('pk')]), output_field=CharField()))
+        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField()))
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
@@ -997,13 +997,17 @@ class ReceiverUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class ReceiverDelete(DeleteView):
     model = Receiver
+    template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('receiver_list')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
+        receiver = context['receiver']
+        context['go_back_url'] = reverse('receiver_update', kwargs={'pk':receiver.pk})
+        context['header'] = 'Видалення адресату "' + str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.task_set.exists():
-            context['objects'] = obj.sendings_set.all()
+            context['objects'] = obj.sending_set.all()
         return context
 
 

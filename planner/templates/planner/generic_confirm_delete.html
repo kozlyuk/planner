@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <!-- BEGIN BREADCRUMBS -->
+    <div class="breadcrumbs">
+        <div class="container-fluid">
+            <h2 class="breadcrumbs-title">
+                Видалити адресат?
+            </h2>
+        </div>
+    </div>
+    <!-- END BREADCRUMBS -->
+
+    <!-- BEGIN CONTENT -->
+    <div class="container container-lf-space">
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="row widget-row">
+            <div class="col">
+
+                <form action="" method="post">{% csrf_token %}
+                    <div class="list-group mb-2">
+                        <p href="#" class="list-group-item list-group-item-danger">
+                            {{header}}
+                        </p>
+                        {% for object in objects %}
+                        <p href="#" class="list-group-item list-group-item-action">{{ object }}</p>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ go_back_url }}" class="btn dark btn-sm btn-outline sbold uppercase"
+                        style="float: left;">Відмінити</a>
+                    <button class="btn red btn-sm btn-outline sbold uppercase" style="float: right;"
+                        type="submit">Видалити</button>
+                </form>
+            </div>
+        </div>
+        <!-- END PAGE BASE CONTENT -->
+    </div>
+    <!-- END CONTENT -->
+</div>
+<!-- END CONTAINER -->
+{% endblock %}
