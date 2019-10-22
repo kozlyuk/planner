@@ -12,12 +12,12 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Q, F, CharField, Value
+from django.db.models import Q, F, CharField, Value, OuterRef, Subquery
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
-from planner.models import Task, Deal, Employee, Execution, Receiver, Sending, Order, IntTask, News, Event
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event
 
 
 @method_decorator(login_required, name='dispatch')
@@ -933,9 +933,10 @@ class ReceiverList(ListView):
     model = Receiver
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
+    paginate_by = 10
     
     def get_queryset(self):
-        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField()))
+        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[OuterRef('pk')]), output_field=CharField()))
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
@@ -989,4 +990,79 @@ class ReceiverUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class ReceiverDelete(DeleteView):
     model = Receiver
+    success_url = reverse_lazy('receiver_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        if obj.task_set.exists():
+            context['objects'] = obj.sendings_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectList(ListView):
+    """ ListView for Receivers.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Project
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 10
+    
+    def get_queryset(self):
+        receivers = Receiver.objects.annotate(
+            url=Value(reverse('receiver_update', args=[OuterRef('pk')]), output_field=CharField()))
+        search_string = self.request.GET.get('filter', '').split()
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            receivers = receivers.filter(Q(customer__name__icontains=word) |
+                                         Q(name__icontains=word) |
+                                         Q(contact_person__icontains=word))
+        if order != '0':
+            receivers = receivers.order_by(order)
+        return receivers
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Отримувач', 1],
+                              ['address', 'Адреса', 0],
+                              ['contact_person', 'Контактна особа', 0],
+                              ['phone', 'Телефон', 0]]
+        context['search'] = True
+        context['filter'] = []
+        context['add_url'] = reverse('receiver_add')
+        context['add_help_text'] = 'Додати адресата'
+        context['header_main'] = 'Адресати'
+        context['objects_count'] = Receiver.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
+        
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectCreate(CreateView):
+    model = Project
+    form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('receiver_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати адресат'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectUpdate(UpdateView):
+    model = Project
+    form_class = forms.ProjectForm
+    success_url = reverse_lazy('receiver_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectDelete(DeleteView):
+    model = Project
     success_url = reverse_lazy('receiver_list')

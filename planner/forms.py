@@ -472,3 +472,13 @@ class ReceiverForm(forms.ModelForm):
     class Meta:
         model = Receiver
         fields = ['customer', 'name', 'address', 'contact_person', 'phone']
+
+
+class ProjectFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Receiver
+        fields = ['customer', 'name', 'address', 'contact_person', 'phone']
