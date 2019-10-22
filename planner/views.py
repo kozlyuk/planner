@@ -1014,42 +1014,44 @@ class ReceiverDelete(DeleteView):
 
 @method_decorator(login_required, name='dispatch')
 class ProjectList(ListView):
-    """ ListView for Receivers.
+    """ ListView for ProjectList.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Project
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 10
+    paginate_by = 15
     
     def get_queryset(self):
-        receivers = Receiver.objects.annotate(
-            url=Value(reverse('receiver_update', args=[OuterRef('pk')]), output_field=CharField()))
+        project_types = Project.objects.annotate(
+            url=Value(reverse('project_type_update', args=[2]), output_field=CharField()))
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
-            receivers = receivers.filter(Q(customer__name__icontains=word) |
+            project_types = project_types.filter(Q(customer__name__icontains=word) |
                                          Q(name__icontains=word) |
                                          Q(contact_person__icontains=word))
         if order != '0':
-            receivers = receivers.order_by(order)
-        return receivers
+            project_types = project_types.order_by(order)
+        return project_types
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['headers'] = [['name', 'Отримувач', 1],
-                              ['address', 'Адреса', 0],
-                              ['contact_person', 'Контактна особа', 0],
-                              ['phone', 'Телефон', 0]]
+        context['headers'] = [['project_type', 'Вид робіт', 1],
+                              ['customer', 'Замовник', 0],
+                              ['price_code', 'Пункт кошторису', 0],
+                              ['net_price_rate', 'Вартість після вхідних витрат', 0],
+                              ['copies_count', 'Кількість примірників', 0],
+                              ['active', 'Активний', 0]]
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('receiver_add')
-        context['add_help_text'] = 'Додати адресата'
-        context['header_main'] = 'Адресати'
-        context['objects_count'] = Receiver.objects.all().count()
+        context['add_url'] = reverse('project_type_add')
+        context['add_help_text'] = 'Додати вид робіт'
+        context['header_main'] = 'Види робіт'
+        context['objects_count'] = Project.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
+            context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
         else:
-            context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
+            context['filter_form'] = forms.ProjectFilterForm(self.request.GET)
         
         return context
 
@@ -1059,11 +1061,11 @@ class ProjectCreate(CreateView):
     model = Project
     form_class = forms.ProjectForm
     template_name = "planner/generic_form.html"
-    success_url = reverse_lazy('receiver_list')
+    success_url = reverse_lazy('project_type_list')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['header_main'] = 'Додати адресат'
+        context['header_main'] = 'Додати вид робіт'
         return context
 
 
@@ -1071,10 +1073,10 @@ class ProjectCreate(CreateView):
 class ProjectUpdate(UpdateView):
     model = Project
     form_class = forms.ProjectForm
-    success_url = reverse_lazy('receiver_list')
+    success_url = reverse_lazy('project_type_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class ProjectDelete(DeleteView):
     model = Project
-    success_url = reverse_lazy('receiver_list')
+    success_url = reverse_lazy('project_type_list')
