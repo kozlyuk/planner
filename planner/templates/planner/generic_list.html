@@ -85,10 +85,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for fields in objects_lists %}
+                            {% for fields in object_list %}
                                 <tr>
                                 {% for field in fields %}
-                                    <td><a href="{{ fields.url }}">{{ field }}</a></td>
+                                    {% if forloop.first %}
+                                        <td><a href="{{ fields|last }}">{{ field }}</a></td>
+                                    {% elif not forloop.last %}
+                                        <td>{{ field }}</td>
+                                    {% endif %}
                                 {% endfor %}
                                 </tr>
                             {% endfor %}

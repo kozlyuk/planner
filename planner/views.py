@@ -960,8 +960,6 @@ class ReceiverList(ListView):
         context['add_help_text'] = 'Додати адресата'
         context['header_main'] = 'Адресати'
         context['objects_count'] = Receiver.objects.all().count()
-        receivers = Receiver.objects.all()
-        context['objects_lists'] = objects_lists
         if self.request.POST:
             context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
         else:
