@@ -244,3 +244,11 @@ hidden {
     background-color: #ed6b75!important;
     color: #fff !important;
 }
+
+.active-success:before {
+    color: green;
+}
+
+.active-danger:before {
+    color: red;
+}

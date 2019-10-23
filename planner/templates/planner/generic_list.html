@@ -90,6 +90,8 @@
                                 {% for field in fields %}
                                     {% if forloop.first %}
                                         <td><a href="{{ fields|last }}">{{ field }}</a></td>
+                                    {% elif field is True or field is False %}
+                                        <td>{% boolean_to_icon field 'far fa-check-circle' 'far fa-times-circle' %}</td>
                                     {% elif not forloop.last %}
                                         <td>{{ field }}</td>
                                     {% endif %}

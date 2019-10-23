@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 from datetime import datetime, date
+from django.utils.html import format_html
 from planner.settings import MEDIA_URL
 
 register = template.Library()
@@ -168,4 +169,20 @@ def month_url( request_url, direction = 'next_month' ):
     request_url[4] = str(year)
     url_str = '/'.join(request_url)
     return url_str
+
+@register.simple_tag()
+def boolean_to_icon( incoming_value, true_icon, false_icon ):
+    '''
+    required font awesome icons
+    sample boolean_to_icon( value, 'far fa-check-circle', 'far fa-times-circle' )
+    return: true value with green icon, false value with red icon
+    '''
+    if incoming_value == True:
+        icon = '<i class="' + true_icon + ' active-success"></i>'
+        return format_html(icon)
+    elif incoming_value == False:
+        icon = '<i class="' + false_icon + ' active-danger"></i>'
+        return format_html(icon)
+    else:
+        return
 
