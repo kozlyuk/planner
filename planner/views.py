@@ -1023,8 +1023,8 @@ class ProjectList(ListView):
     paginate_by = 15
     
     def get_queryset(self):
-        project_types = Project.objects.annotate(
-            url=Value(reverse('project_type_update', args=[2]), output_field=CharField()))
+        project_types = Project.objects.annotate(url=Value(reverse('project_type_update', args=[2]), output_field=CharField())).\
+            values_list('project_type', 'customer__name', 'price_code', 'net_price_rate', 'copies_count', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
