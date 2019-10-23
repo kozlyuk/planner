@@ -936,7 +936,8 @@ class ReceiverList(ListView):
     paginate_by = 15
     
     def get_queryset(self):
-        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField()))
+        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField())).\
+            values_list('name', 'address', 'contact_person', 'phone', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
@@ -960,7 +961,6 @@ class ReceiverList(ListView):
         context['header_main'] = 'Адресати'
         context['objects_count'] = Receiver.objects.all().count()
         receivers = Receiver.objects.all()
-        objects_lists = receivers.values_list('name', 'address', 'contact_person', 'phone')
         context['objects_lists'] = objects_lists
         if self.request.POST:
             context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)

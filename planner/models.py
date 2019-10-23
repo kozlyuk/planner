@@ -772,7 +772,7 @@ class Order(models.Model):
 
 
 class Sending(models.Model):
-    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.PROTECT)
+    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.CASCADE)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     receipt_date = models.DateField('Дата відправки')
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', validators=[MaxValueValidator(10)])
