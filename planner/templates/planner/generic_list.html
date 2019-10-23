@@ -85,12 +85,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for field in object_list %}
+                            {% for fields in objects_lists %}
                                 <tr>
-                                    <td><a href="{{ field.url }}">{{ field }}</a></td>
-                                    <td>{{ field.address }}</td>
-                                    <td>{{ field.contact_person }}</td>
-                                    <td>{{ field.phone }}</td>
+                                {% for field in fields %}
+                                    <td><a href="{{ fields.url }}">{{ field }}</a></td>
+                                {% endfor %}
                                 </tr>
                             {% endfor %}
                         </tbody>
