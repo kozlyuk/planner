@@ -516,6 +516,13 @@ class Deal(models.Model):
     pay_date_calc.short_description = 'Дата оплати'
 
 
+@receiver(post_save, sender=Deal, dispatch_uid="update_deal_status")
+def update_deal(sender, instance, **kwargs):
+    """ Update Deals status after save Deal """
+    from planner.tasks import update_deal_statuses
+    update_deal_statuses(instance.pk)
+
+
 class Receiver(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     name = models.CharField('Отримувач', max_length=50, unique=True)
@@ -722,13 +729,15 @@ class Task(models.Model):
 
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
+    """ Change Subtasks status to Done if Task is Done after save Task. Update Tasks status after save Task"""
     if instance.exec_status in [Task.Done, Task.Sent]:
         for execution in instance.execution_set.all():
             if execution.exec_status != Execution.Done:
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
-#Change Subtasks status to Done if Task is Done after save Task
+    from planner.tasks import update_task_statuses
+    update_task_statuses(instance.pk)
 
 
 class Order(models.Model):
