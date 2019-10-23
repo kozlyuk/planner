@@ -258,7 +258,8 @@ class DealAdmin(admin.ModelAdmin):
                                                ('act_status', 'act_date', 'act_value'),
                                                ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
-                                             'costs_calc', 'pay_date_calc', 'comment'], 'classes': ['collapse']})
+                                             'costs_calc', 'pay_date_calc', 'manual_warning', 'comment'],
+                                  'classes': ['collapse']})
         ]
 
     def get_form(self, request, obj=None, **kwargs):
@@ -479,7 +480,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('planned_start', 'planned_finish'),
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
-        ('Додаткова інформіція', {'fields': ['project_code', 'comment'], 'classes': ['collapse']})
+        ('Додаткова інформіція', {'fields': ['project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'warning_mark']
     list_per_page = 50
@@ -625,7 +626,7 @@ admin.site.register(Contractor, ContractorAdmin)
 admin.site.register(Receiver, ReceiverAdmin)
 admin.site.register(Sending, SendingAdmin)
 #admin.site.register(Deal, DealAdmin)
-#admin.site.register(Task, TaskAdmin)
+admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Event, EventAdmin)

@@ -16,7 +16,9 @@ def update_task_statuses():
     """Update statuses for last 500 tasks"""
     tasks = Task.objects.order_by('-id')[:500]
     for task in tasks:
-        if task.exec_status == Task.Done:
+        if task.manual_warning:
+            task.warning = task.manual_warning
+        elif task.exec_status == Task.Done:
             send_status = task.sending_status()
             if send_status != 'Надіслано':
                 task.warning = send_status
@@ -58,8 +60,8 @@ def update_deal_statuses():
         else:
             deal.exec_status = Deal.Sent
 
-        if 'загальний' in deal.number:
-            deal.warning = ''
+        if deal.manual_warning:
+            deal.warning = deal.manual_warning
         elif deal.task_set.all().count() == 0:
             deal.warning = 'Відсутні проекти'
         elif deal.exec_status == Deal.Sent:
