@@ -1030,11 +1030,12 @@ class ProjectList(ListView):
         project_types = Project.objects.annotate(url=Value(reverse('project_type_update', args=[2]), output_field=CharField())).\
             values_list('project_type', 'customer__name', 'price_code', 'net_price_rate', 'copies_count', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
+        customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
-            project_types = project_types.filter(Q(customer__name__icontains=word) |
-                                                 Q(name__icontains=word)           |
-                                                 Q(contact_person__icontains=word))
+            project_types = project_types.filter(project_type__icontains=word)
+        if customer != '0':
+            project_types = project_types.filter(customer=customer)
         if order != '0':
             project_types = project_types.order_by(order)
         return project_types
