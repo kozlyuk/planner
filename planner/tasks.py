@@ -12,74 +12,82 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def update_task_statuses():
-    """Update statuses for last 500 tasks"""
-    tasks = Task.objects.order_by('-id')[:500]
+def update_task_statuses(task_id=None):
+    """ Update statuses. If task_id given updates for task_id else updates for last 500 tasks """
+    if task_id:
+        tasks = Task.objects.filter(pk=task_id)
+    else:
+        tasks = Task.objects.order_by('-id')[:500]
     for task in tasks:
-        if task.exec_status == Task.Done:
+        if task.manual_warning:
+            warning = task.manual_warning
+        elif task.exec_status == Task.Done:
             send_status = task.sending_status()
             if send_status != 'Надіслано':
-                task.warning = send_status
+                warning = send_status
         elif task.exec_status in [Task.Sent, Task.Done] and task.actual_finish:
-            task.warning = 'Виконано %s' % task.actual_finish.strftime(date_format)
+            warning = 'Виконано %s' % task.actual_finish.strftime(date_format)
         elif task.execution_status() == 'Виконано':
-            task.warning = 'Очікує на перевірку'
+            warning = 'Очікує на перевірку'
         elif task.planned_finish:
             if task.planned_finish < date.today():
-                task.warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
+                warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
             elif task.planned_finish - timedelta(days=7) <= date.today():
-                task.warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
             else:
-                task.warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
         elif task.deal.expire_date < date.today():
-            task.warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
         elif task.deal.expire_date - timedelta(days=7) <= date.today():
-            task.warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
         else:
-            task.warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
 
-        task.save(update_fields=['warning'], logging=False)
+        Task.objects.filter(id=task.id).update(warning=warning)
 
-    logger.info("Updated statuses and warnings of all deals with unsent tasks")
+    logger.info("Updated task {} warnings".format(task_id))
 
 
 @app.task
-def update_deal_statuses():
-    """Update statuses and warnings for last 100 deals"""
-    deals = Deal.objects.order_by('-id')[:100]
+def update_deal_statuses(deal_id=None):
+    """ Update statuses and warnings. If deal_id given updates for deal_id else updates for last 100 deals """
+    if deal_id:
+        deals = Deal.objects.filter(pk=deal_id)
+    else:
+        deals = Deal.objects.order_by('-id')[:100]
     for deal in deals:
         tasks = deal.task_set.values_list('exec_status', flat=True)
         if Task.ToDo in tasks:
-            deal.exec_status = Deal.ToDo
+            exec_status = Deal.ToDo
         elif Task.InProgress in tasks:
-            deal.exec_status = Deal.InProgress
+            exec_status = Deal.InProgress
         elif Task.Done in tasks:
-            deal.exec_status = Deal.Done
+            exec_status = Deal.Done
         else:
-            deal.exec_status = Deal.Sent
+            exec_status = Deal.Sent
 
-        if 'загальний' in deal.number:
-            deal.warning = ''
+        if deal.manual_warning:
+            warning = deal.manual_warning
         elif deal.task_set.all().count() == 0:
-            deal.warning = 'Відсутні проекти'
-        elif deal.exec_status == Deal.Sent:
+            warning = 'Відсутні проекти'
+        elif exec_status == Deal.Sent:
             value_calc = deal.value_calc() + deal.value_correction
             if deal.value > 0 and deal.value != value_calc:
-                deal.warning = 'Вартість по роботам %s' % value_calc
+                warning = 'Вартість по роботам %s' % value_calc
             if deal.act_status == deal.NotIssued or deal.act_status == deal.PartlyIssued:
-                deal.warning = 'Очікує закриття акту'
+                warning = 'Очікує закриття акту'
             if deal.pay_status != deal.PaidUp and deal.pay_date:
-                deal.warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
+                warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
         elif deal.expire_date < date.today():
-            deal.warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
+            warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
         elif deal.expire_date - timedelta(days=7) <= date.today():
-            deal.warning = 'Закінчується %s' % deal.expire_date.strftime(date_format)
+            warning = 'Закінчується %s' % deal.expire_date.strftime(date_format)
         else:
-            deal.warning = ''
+            warning = ''
 
-        deal.save(update_fields=['exec_status', 'warning'], logging=False)
+        Deal.objects.filter(id=deal.id).update(exec_status=exec_status, warning=warning)
 
-    logger.info("Updated statuses and warnings of all deals with unsent tasks")
+    logger.info("Updated deal {} statuses and warnings".format(deal_id))
 
 
 @app.task
