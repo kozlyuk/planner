@@ -978,6 +978,8 @@ class ReceiverCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати адресат'
+        context['back_btn_url'] = reverse('receiver_list')
+        context['back_btn_text'] = 'Відміна'
         return context
 
 
@@ -992,6 +994,8 @@ class ReceiverUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['receiver']
         context['header_main'] = 'Редагування ' + str(name)
+        context['back_btn_url'] = reverse('receiver_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
         return context
 
 
@@ -1067,6 +1071,8 @@ class ProjectCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати вид робіт'
+        context['back_btn_url'] = reverse('project_type_list')
+        context['back_btn_text'] = 'Відміна'
         return context
 
 
@@ -1081,10 +1087,24 @@ class ProjectUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['project']
         context['header_main'] = 'Вид робіт'
+        context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
         return context
 
 
 @method_decorator(login_required, name='dispatch')
 class ProjectDelete(DeleteView):
     model = Project
+    template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        project = context['project']
+        context['go_back_url'] = reverse('project_type_update', kwargs={'pk':project.pk})
+        context['main_header'] = 'Видалити вид робіт?'
+        context['header'] = 'Видалення "' + str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.task_set.exists():
+            context['objects'] = obj.task_set.all()
+        return context

@@ -74,6 +74,10 @@
                             href="{% url 'deal_list' %}">Договори</a></li>
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'receiver_list' %}">Адресати</a></li>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'project_type_list' %}">Види робіт</a></li>
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'project_type_list' %}">Відправки</a></li>
                     {% if request.user.is_superuser %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
                     {% endif %}

@@ -35,11 +35,8 @@
                                     </div>
                                 </div>                                   
                                 {% endfor %}
-                            {% if receiver.pk %}<a href="{% url 'receiver_delete' receiver.pk %}"
-                                class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
-                            {% else %}<button onclick="window.location.href = '{% url 'receiver_list' %}'"
-                                class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
-                            {% endif %}
+                            <a href="{{ back_btn_url }}"
+                                class="btn deal-delete red btn-sm btn-outline sbold uppercase">{{ back_btn_text }}</a>
                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                 style="float: right;">Зберегти</button>
                             </div>
