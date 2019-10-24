@@ -83,69 +83,6 @@
                                                         </small>
                                                         {{ form.deal|attr:"style: width:100%" }}
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <!--alert: exec_status-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.exec_status.errors}}
-                                                        </small>
-                                                        {{ form.exec_status|attr:"style: width:100%" }}
-                                                    </div>
-                                                    <!--alert: owner-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.owner.errors}}
-                                                        </small>
-                                                        {{ form.owner|attr:"style: width:100%" }}
-                                                    </div>
-                                                    <!--alert: project_code-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.project_code.errors}}
-                                                        </small>
-                                                        {{ form.project_code|attr:"style: width:100%" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <!--alert: planned_start-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.planned_start.errors}}
-                                                        </small>
-                                                        {{ form.planned_start|attr:"style: width:10%" }}
-                                                    </div>
-                                                    <!--alert: actual_start-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.actual_start.errors}}
-                                                        </small>
-                                                        {{ form.actual_start|attr:"style: width:10%" }}
-                                                    </div>
                                                     <!--alert: tc_received-->
                                                     <div class="col-1">
                                                         <label
@@ -156,6 +93,71 @@
                                                             {{form.tc_received.errors}}
                                                         </small>
                                                         {{ form.tc_received|attr:"style: width:10%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: exec_status-->
+                                                    <div class="col-8">
+                                                        <div class="row">
+                                                            <div style="flex: 0 0 12.666667%" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.exec_status.errors}}
+                                                                </small>
+                                                                {{ form.exec_status|attr:"style: width:100%" }}
+                                                            </div>
+                                                            <!--alert: owner-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.owner.errors}}
+                                                                </small>
+                                                                {{ form.owner|attr:"style: width:100%" }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-4">
+                                                            <!--alert: planned_start-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.planned_start.errors}}
+                                                                </small>
+                                                                {{ form.planned_start|attr:"style: width:10%" }}
+                                                            </div>
+                                                            <!--alert: actual_start-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.actual_start.errors}}
+                                                                </small>
+                                                                {{ form.actual_start|attr:"style: width:10%" }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--alert: tc_upload-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.tc_upload.errors}}
+                                                        </small>
+                                                        {{ form.tc_upload|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -183,22 +185,6 @@
                                                         </small>
                                                         {{ form.actual_finish|attr:"style: width:10%" }}
                                                     </div>
-                                                    <!--alert: tc_upload-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.tc_upload.errors}}
-                                                        </small>
-                                                        {{ form.tc_upload|attr:"style: width:100%" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-
                                                     <!--alert: pdf_copy-->
                                                     <div class="col-1">
                                                         <label
@@ -210,12 +196,38 @@
                                                         </small>
                                                         {{ form.pdf_copy|attr:"style: width:100%" }}
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: project_code-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.project_code.errors}}
+                                                        </small>
+                                                        {{ form.project_code|attr:"style: width:100%" }}
+                                                    </div>
+                                                    <!--alert: manual_warning-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.manual_warning.errors}}
+                                                        </small>
+                                                        {{ form.manual_warning|attr:"style: width:100%" }}
+                                                    </div>
                                                     <!--alert: comment-->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
-                                                    <div class="col-7">
+                                                    <div class="col-3">
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.comment.errors}}
                                                         </small>

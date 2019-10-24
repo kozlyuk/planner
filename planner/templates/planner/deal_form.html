@@ -208,11 +208,21 @@
                                                         <label
                                                             for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
-                                                    <div class="col-10">
+                                                    <div class="col-4">
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.comment.errors}}
                                                         </small>
                                                         {{ form.comment }}
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label
+                                                            for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.manual_warning.errors}}
+                                                        </small>
+                                                        {{ form.manual_warning|attr:"style: width:100%"}}
                                                     </div>
                                                 </div>
                                             </div>
