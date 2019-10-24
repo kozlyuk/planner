@@ -480,5 +480,10 @@ class ProjectFilterForm(forms.Form):
 
 class ProjectForm(forms.ModelForm):
     class Meta:
-        model = Receiver
-        fields = ['customer', 'name', 'address', 'contact_person', 'phone']
+        model = Project
+        fields = ['project_type', 'price_code', 'customer', 'price', 'net_price_rate', 'owner_bonus', 'executors_bonus', 'copies_count', 'description', 'active']
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget.attrs.update({'style': 'height:50px;'})
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})

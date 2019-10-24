@@ -1074,7 +1074,14 @@ class ProjectCreate(CreateView):
 class ProjectUpdate(UpdateView):
     model = Project
     form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
     success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['project']
+        context['header_main'] = 'Вид робіт'
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
