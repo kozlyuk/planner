@@ -40,15 +40,22 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
+
     url(r'^receiver/$', views.ReceiverList.as_view(), name='receiver_list'),
     url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),
     url(r'^receiver/(?P<pk>\d+)/change/$', views.ReceiverUpdate.as_view(), name='receiver_update'),
     url(r'^receiver/(?P<pk>\d+)/delete/$', views.ReceiverDelete.as_view(), name='receiver_delete'),
+
     url(r'^project/types/$', views.ProjectList.as_view(), name='project_type_list'),
     url(r'^project/types/add$', views.ProjectCreate.as_view(), name='project_type_add'),
     url(r'^project/types/(?P<pk>\d+)/change/$', views.ProjectUpdate.as_view(), name='project_type_update'),
     url(r'^project/types/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project_type_delete'),
         # url(r'^project/registry/$', views.TaskRegistry.as_view(), name='task_registry'),
+
+    url(r'^customer/$', views.CustomerList.as_view(), name='customer_list'),
+    url(r'^customer/add$', views.CustomerCreate.as_view(), name='customer_add'),
+    url(r'^customer/(?P<pk>\d+)/change/$', views.CustomerUpdate.as_view(), name='customer_update'),
+    url(r'^customer/(?P<pk>\d+)/delete/$', views.CustomerDelete.as_view(), name='customer_delete'),
 
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', views.InttaskDetail.as_view(), name='inttask_detail'),

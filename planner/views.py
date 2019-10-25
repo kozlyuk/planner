@@ -19,7 +19,7 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
-from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer
 
 
 class Round(Func):
@@ -1103,6 +1103,98 @@ class ProjectUpdate(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class ProjectDelete(DeleteView):
+    model = Project
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        project = context['project']
+        context['go_back_url'] = reverse('project_type_update', kwargs={'pk':project.pk})
+        context['main_header'] = 'Видалити вид робіт?'
+        context['header'] = 'Видалення "' + str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.task_set.exists():
+            context['objects'] = obj.task_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerList(ListView):
+    """ ListView for CustomerList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Customer
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+    
+    def get_queryset(self):
+        customer = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .values_list('name')
+        search_string = self.request.GET.get('filter', '').split()
+        # customer = self.request.GET.get('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            customer = customer.filter(project_type__icontains=word)
+        # if customer != '0':
+        #     project_types = project_types.filter(customer=customer)
+        # if order != '0':
+        #     project_types = project_types.order_by(order)
+        return customer
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['credit_calc', 'Авансові платежі', 0],
+                              ['debit_calc', 'Дебітрська заборгованість', 0],
+                              ['expect_calc', 'Не виконано та не оплачено', 0],
+                              ['completed_calc', 'Виконано та оплачено', 0]]
+        context['search'] = True
+        context['filter'] = []
+        context['add_url'] = reverse('customer_add')
+        context['add_help_text'] = 'Додати замовника'
+        context['header_main'] = 'Замовники'
+        context['objects_count'] = Customer.objects.all().count()
+        # if self.request.POST:
+        #     context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
+        # else:
+        #     context['filter_form'] = forms.ProjectFilterForm(self.request.GET)
+        
+        return context
+
+@method_decorator(login_required, name='dispatch')
+class CustomerCreate(CreateView):
+    model = Project
+    form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('project_type_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати вид робіт'
+        context['back_btn_url'] = reverse('project_type_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerUpdate(UpdateView):
+    model = Project
+    form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['project']
+        context['header_main'] = 'Вид робіт'
+        context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerDelete(DeleteView):
     model = Project
     template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('project_type_list')

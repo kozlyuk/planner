@@ -88,8 +88,12 @@
             <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
             <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
             <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
-            <a class="link {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
-            <a class="link {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
+            <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %} uppercase" href="{% url 'customer_list' %}">Замовники</a>
+            </div>
             {% if request.user.is_superuser %}
             <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-users-cog"></i></a>
             {% endif %}

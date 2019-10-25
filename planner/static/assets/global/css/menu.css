@@ -451,3 +451,8 @@ label.hamburger {
     left: 15px;
   };
 }
+
+.dropdown-item.active, .dropdown-item:active {
+  color: white!important;
+  background-color: #5b9bd1!important;
+}
