@@ -12,7 +12,8 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Q, F, CharField, Value, OuterRef, Subquery
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField
+from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
@@ -935,8 +936,8 @@ class ReceiverList(ListView):
     success_url = reverse_lazy('home_page')
     paginate_by = 15
     
-    def get_queryset(self):
-        receivers = Receiver.objects.annotate(url=Value(reverse('receiver_update', args=[2]), output_field=CharField())).\
+    def get_queryset(self):  # todo args url
+        receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
             values_list('name', 'address', 'contact_person', 'phone', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
@@ -1027,8 +1028,9 @@ class ProjectList(ListView):
     paginate_by = 15
     
     def get_queryset(self):
-        project_types = Project.objects.annotate(url=Value(reverse('project_type_update', args=[2]), output_field=CharField())).\
-            values_list('project_type', 'customer__name', 'price_code', 'net_price_rate', 'copies_count', 'active', 'url')
+        project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .annotate(net_price=ExpressionWrapper(F('price')*F('net_price_rate'), output_field=DecimalField())).\
+            values_list('project_type', 'customer__name', 'price_code', 'copies_count', 'active', 'url', 'net_price')
         search_string = self.request.GET.get('filter', '').split()
         customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
