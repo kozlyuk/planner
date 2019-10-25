@@ -12,13 +12,19 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField
+from django.db.models import Func
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, FloatField
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event
+
+
+class Round(Func):
+    function = 'ROUND'
+    template = '%(function)s(%(expressions)s, 2)'
 
 
 @method_decorator(login_required, name='dispatch')
@@ -1029,8 +1035,8 @@ class ProjectList(ListView):
     
     def get_queryset(self):
         project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
-            .annotate(net_price=ExpressionWrapper(F('price')*F('net_price_rate'), output_field=DecimalField())).\
-            values_list('project_type', 'customer__name', 'price_code', 'copies_count', 'active', 'url', 'net_price')
+            .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100), output_field=DecimalField())).\
+            values_list('project_type', 'customer__name', 'price_code', 'net_price', 'copies_count', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
         customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
