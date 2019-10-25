@@ -43,7 +43,7 @@
                         <div class="card-body">
                             <div class="container-fluid " style="display:block">
                             {% if search == True %}
-                                <form action="{% url 'receiver_list' %}" method="get">
+                                <form action="{{ success_url }}" method="get">
                                     {% for hidden_field in filter_form.hidden_fields %}
                                     {{ hidden_field }}
                                     {% endfor %}
