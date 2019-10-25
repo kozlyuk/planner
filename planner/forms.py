@@ -475,6 +475,14 @@ class ReceiverForm(forms.ModelForm):
 
 
 class ProjectFilterForm(forms.Form):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customers.insert(0, (0, "Всі"))
+        self.fields['customer'].choices = customers
+    
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
 
 
