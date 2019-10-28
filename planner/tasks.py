@@ -307,7 +307,7 @@ def send_overdue_tasks_report():
                            </tr>'. \
                     format(index, task.pk, task.object_code, task.object_address,
                            task.project_type, task.get_exec_status_display(),
-                           task.planned_finish, task.overdue_status())
+                           task.planned_finish, task.warning)
 
             message += '</table><br>'
 
@@ -331,7 +331,7 @@ def send_overdue_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
 
             message += '</table></body></html><br>'
 
@@ -419,7 +419,7 @@ def send_urgent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table><br>'
 
         if etasks.exists():
@@ -442,7 +442,7 @@ def send_urgent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table></body></html><br>'
 
         if einttasks.exists():
@@ -517,7 +517,7 @@ def send_unsent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table><br>'
 
             emails.append(mail.EmailMessage(

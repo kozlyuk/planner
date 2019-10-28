@@ -12,8 +12,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Func
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, FloatField
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
@@ -1001,7 +1000,7 @@ class ReceiverUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['receiver']
         context['header_main'] = 'Редагування ' + str(name)
-        context['back_btn_url'] = reverse('receiver_delete', kwargs={'pk':name.pk})
+        context['back_btn_url'] = reverse('receiver_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1035,7 +1034,8 @@ class ProjectList(ListView):
     
     def get_queryset(self):
         project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
-            .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100), output_field=DecimalField())).\
+            .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100),
+                                                  output_field=DecimalField())).\
             values_list('project_type', 'customer__name', 'price_code', 'net_price', 'copies_count', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
         customer = self.request.GET.get('customer', '0')
@@ -1159,6 +1159,7 @@ class CustomerList(ListView):
             context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
         
         return context
+
 
 @method_decorator(login_required, name='dispatch')
 class CustomerCreate(CreateView):
