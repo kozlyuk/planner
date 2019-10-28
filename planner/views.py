@@ -87,7 +87,8 @@ class BonusesCalc(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
-        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user:
+        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user\
+                or request.user.groups.filter(name='Бухгалтери').exists():
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -190,38 +191,42 @@ def home_page(request):
                                     .exclude(expire_date__gte=date.today()) \
                                     .exclude(number__icontains='загальний')
 
-        actneed_deals_count = actneed_deals.count()
         active_deals_count = active_deals.count()
-        deals_div = int(actneed_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
+        actneed_deals_count = actneed_deals.count()
         debtor_deals_count = debtor_deals.count()
         unpaid_deals_count = unpaid_deals.count()
+        deals_div = int(actneed_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
         debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
         overdue_deals_count = len(overdue_deals)
         overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
     elif request.user.groups.filter(name='ГІПи').exists():
         td_tasks = Task.objects.filter(exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
-        ip_tasks = Task.objects.filter(Q(exec_status=Task.Done) | Q(exec_status=Task.InProgress),
-                                       owner__user=request.user).order_by('creation_date')
-        hd_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
-                                       actual_finish__month=datetime.now().month,
-                                       actual_finish__year=datetime.now().year)\
-                               .order_by('-actual_finish')
+        ip_tasks = Task.objects.filter(exec_status=Task.InProgress, owner__user=request.user).order_by('creation_date')
+        hd_tasks = Task.objects.filter(exec_status=Task.Done, owner__user=request.user).order_by('creation_date')
+        sent_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
+                                         actual_finish__month=datetime.now().month,
+                                         actual_finish__year=datetime.now().year)\
+                                 .order_by('-actual_finish')
+        td_tasks_count = td_tasks.count()
+        ip_tasks_count = ip_tasks.count()
         hd_tasks_count = hd_tasks.count()
-        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent).count() + hd_tasks_count
-        tasks_div = int(hd_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        sent_tasks_count = sent_tasks.count()
+        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent).count() + sent_tasks_count
+        tasks_div = int(sent_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
         overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent)\
-                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
-                                      .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
-                                      .count()
+                                          .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
+                                          .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
+                                          .count()
         overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
         owner_productivity = request.user.employee.owner_productivity()
     else:
         td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
         ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
-        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done).order_by('-finish_date')[:20]
-        hd_executions_count = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
-                                                       finish_date__month=datetime.now().month,
-                                                       finish_date__year=datetime.now().year).count()
+        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
+                               finish_date__month=datetime.now().month, finish_date__year=datetime.now().year)
+        td_executions_count = td_executions.count()
+        ip_executions_count = ip_executions.count()
+        hd_executions_count = hd_executions.count()
         active_executions_count = Execution.objects.filter(executor__user=request.user)\
                                                    .exclude(exec_status=Execution.Done)\
                                                    .count() + hd_executions_count
@@ -365,11 +370,15 @@ def home_page(request):
                                       'td_tasks': td_tasks,
                                       'ip_tasks': ip_tasks,
                                       'hd_tasks': hd_tasks,
+                                      'sent_tasks': sent_tasks,
                                       'inttasks': inttasks,
                                       #'td_inttasks': td_inttasks,
                                       #'ip_inttasks': ip_inttasks,
                                       #'hd_inttasks': hd_inttasks,
+                                      'td_tasks_count': td_tasks_count,
+                                      'ip_tasks_count': ip_tasks_count,
                                       'hd_tasks_count': hd_tasks_count,
+                                      'sent_tasks_count': sent_tasks_count,
                                       'active_tasks_count': active_tasks_count,
                                       'tasks_div': tasks_div,
                                       'overdue_tasks_count': overdue_tasks_count,
@@ -411,6 +420,8 @@ def home_page(request):
                                       #'td_inttasks': td_inttasks,
                                       #'ip_inttasks': ip_inttasks,
                                       #'hd_inttasks': hd_inttasks,
+                                      'td_executions_count': td_executions_count,
+                                      'ip_executions_count': ip_executions_count,
                                       'hd_executions_count': hd_executions_count,
                                       'active_executions_count': active_executions_count,
                                       'executions_div': executions_div,

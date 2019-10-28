@@ -5,14 +5,15 @@
 {% load ita_template_tags %}
 
 {% block context %}
-    <div class="page-container page-content-inner page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
         <!-- BEGIN BREADCRUMBS -->
         <div class="breadcrumbs">
             <div class="container-fluid">
-                <a href="{% url 'task_list' %}">
-                    <h2 class="breadcrumbs-title">Проекти</h2>
-                </a>
+                <h2 class="breadcrumbs-title">Завдання</h2>
             </div>
         </div>
         <!-- END BREADCRUMBS -->
@@ -20,66 +21,68 @@
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
-            <div class="row widget-row">
-                <div class="col-md-8 col-md-offset-2 margin-bottom-20">
-                    <!-- BEGIN WIDGET -->
-                    <div class="portlet light tasks-widget">
-                        <div class="portlet-title">
-                            <div class="caption caption-md font-red-sunglo">
-                                <span class="caption-subject theme-font bold uppercase">{{ inttask.task_name }}</span>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col margin-bottom-20">
+                        <!-- BEGIN WIDGET -->
+                        <div class="portlet light tasks-widget">
+                            <div class="portlet-title">
+                                <div class="caption caption-md font-red-sunglo">
+                                    <span class="caption-subject theme-font bold uppercase">{{ inttask.task_name }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="portlet-body">
-                            <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                <div class="widget-news margin-bottom-20">
-                                    <div class="widget-news-right-body">
-                                        <table class="table table-hover">
-                                            <col width="30%">
-                                            <tr>
-                                                <th> Виконавець: </th>
-                                                <td> {{ inttask.executor }} </td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <th> Статус виконання: </th>
-                                                <td> {{ inttask.get_exec_status_display }} </td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td></td>
-                                                <th> Початок робіт</th>
-                                                <th> Закінчення робіт</th>
-                                            </tr>
-                                            <tr>
-                                                <th> Планові дати виконання</th>
-                                                <td> {% if inttask.planned_start %}{{ inttask.planned_start }}{% endif %} </td>
-                                                <td> {% if inttask.planned_finish %}{{ inttask.planned_finish }}{% endif %} </td>
-                                            </tr>
-                                            <tr>
-                                                <th> Фактичні дати виконання</th>
-                                                <td> {% if inttask.actual_start %}{{ inttask.actual_start }}{% endif %} </td>
-                                                <td> {% if inttask.actual_finish %}{{ inttask.actual_finish }}{% endif %}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th> Бонус: </th>
-                                                <td> {{ inttask.bonus }} грн. </td>
-                                                <td></td>
-                                            </tr>
-                                            {% if cost.comment %}
+                            <div class="portlet-body">
+                                <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                    <div class="widget-news margin-bottom-20">
+                                        <div class="widget-news-right-body">
+                                            <table class="table table-hover">
+                                                <col width="30%">
                                                 <tr>
-                                                    <th> Коментар: </th>
-                                                    <td> {{ cost.comment }} </td>
+                                                    <th> Виконавець: </th>
+                                                    <td> {{ inttask.executor }} </td>
                                                     <td></td>
                                                 </tr>
-                                            {% endif %}
-                                        </table>
+                                                <tr>
+                                                    <th> Статус виконання: </th>
+                                                    <td> {{ inttask.get_exec_status_display }} </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <th> Початок робіт</th>
+                                                    <th> Закінчення робіт</th>
+                                                </tr>
+                                                <tr>
+                                                    <th> Планові дати виконання</th>
+                                                    <td> {% if inttask.planned_start %}{{ inttask.planned_start }}{% endif %} </td>
+                                                    <td> {% if inttask.planned_finish %}{{ inttask.planned_finish }}{% endif %} </td>
+                                                </tr>
+                                                <tr>
+                                                    <th> Фактичні дати виконання</th>
+                                                    <td> {% if inttask.actual_start %}{{ inttask.actual_start }}{% endif %} </td>
+                                                    <td> {% if inttask.actual_finish %}{{ inttask.actual_finish }}{% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th> Бонус: </th>
+                                                    <td> {{ inttask.bonus }} грн. </td>
+                                                    <td></td>
+                                                </tr>
+                                                {% if cost.comment %}
+                                                    <tr>
+                                                        <th> Коментар: </th>
+                                                        <td> {{ cost.comment }} </td>
+                                                        <td></td>
+                                                    </tr>
+                                                {% endif %}
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- END WIDGET -->
                     </div>
-                    <!-- END WIDGET -->
                 </div>
             </div>
             <!-- END PAGE BASE CONTENT -->

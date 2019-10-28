@@ -41,6 +41,9 @@
                                                             for="id_{{ form.number.name }}">{{ form.number.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.number.errors}}
+                                                        </small>
                                                         {{ form.number }}
                                                     </div>
                                                     <div class="col-2">
@@ -48,6 +51,9 @@
                                                             for="id_{{ form.date.name }}">{{ form.date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.date.errors}}
+                                                        </small>
                                                         {{ form.date|attr:"style: width:60%" }}
                                                     </div>
                                                 </div>
@@ -59,6 +65,9 @@
                                                             for="id_{{ form.customer.name }}">{{ form.customer.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.customer.errors}}
+                                                        </small>
                                                         {{ form.customer }}
                                                     </div>
                                                     <div class="col-2">
@@ -66,6 +75,9 @@
                                                             for="id_{{ form.company.name }}">{{ form.company.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.company.errors}}
+                                                        </small>
                                                         {{ form.company|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -77,6 +89,9 @@
                                                             for="id_{{ form.value.name }}">{{ form.value.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.value.errors}}
+                                                        </small>
                                                         {{ form.value|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
@@ -84,6 +99,9 @@
                                                             for="id_{{ form.advance.name }}">{{ form.advance.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.advance.errors}}
+                                                        </small>
                                                         {{ form.advance|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -95,6 +113,9 @@
                                                             for="id_{{ form.pay_status.name }}">{{ form.pay_status.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.pay_status.errors}}
+                                                        </small>
                                                         {{ form.pay_status|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
@@ -102,6 +123,9 @@
                                                             for="id_{{ form.pay_date.name }}">{{ form.pay_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.pay_date.errors}}
+                                                        </small>
                                                         {{ form.pay_date|attr:"style: width:60%" }}
                                                     </div>
                                                 </div>
@@ -113,6 +137,9 @@
                                                             for="id_{{ form.act_status.name }}">{{ form.act_status.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.act_status.errors}}
+                                                        </small>
                                                         {{ form.act_status|attr:"style: width:100%" }}
                                                     </div>
                                                     <div class="col-2">
@@ -120,6 +147,9 @@
                                                             for="id_{{ form.act_date.name }}">{{ form.act_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.act_date.errors}}
+                                                        </small>
                                                         {{ form.act_date|attr:"style: width:60%" }}
                                                     </div>
                                                 </div>
@@ -131,6 +161,9 @@
                                                             for="id_{{ form.expire_date.name }}">{{ form.expire_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.expire_date.errors}}
+                                                        </small>
                                                         {{ form.expire_date|attr:"style: width:60%" }}
                                                     </div>
                                                     <div class="col-2">
@@ -138,6 +171,9 @@
                                                             for="id_{{ form.act_value.name }}">{{ form.act_value.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.act_value.errors}}
+                                                        </small>
                                                         {{ form.act_value|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -149,6 +185,9 @@
                                                             for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.pdf_copy.errors}}
+                                                        </small>
                                                         {{ form.pdf_copy }}
                                                     </div>
                                                     <div class="col-2">
@@ -156,6 +195,9 @@
                                                             for="id_{{ form.value_correction.name }}">{{ form.value_correction.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.value_correction.errors}}
+                                                        </small>
                                                         {{ form.value_correction|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
@@ -166,8 +208,21 @@
                                                         <label
                                                             for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
-                                                    <div class="col-10">
+                                                    <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.comment.errors}}
+                                                        </small>
                                                         {{ form.comment }}
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label
+                                                            for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.manual_warning.errors}}
+                                                        </small>
+                                                        {{ form.manual_warning|attr:"style: width:100%"}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -221,9 +276,9 @@
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if tasks_formset|length %}
-                                {% for hidden_field in form.hidden_fields %}
-                                {{ hidden_field }}
-                                {% endfor %}
+                                    {% for hidden_field in form.hidden_fields %}
+                                    {{ hidden_field }}
+                                    {% endfor %}
                                 <div class="row">
                                     <table class="table table-hover mb-0 table-responsive-xl" id="tasks_formset_not_empty">
                                         <thead>
@@ -262,6 +317,7 @@
                                                 <th>
                                                     {{form.deal}}
                                                     {{form.id}}
+                                                    {{form.DELETE}}
                                                 </th>
                                                 {% endfor %}
                                                 <button type="button"
@@ -383,7 +439,7 @@ $(function () {
         prefix: '{{ tasks_formset.prefix }}',
         formCssClass: 'dynamic-formset1',
         addText: 'Додати Проект',
-        deleteText: ' - ',
+        deleteText: '<i class="far fa-trash-alt"></i>',
         addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
         deleteCssClass: 'delete-row badge badge-pill badge-danger',
         'added': function (row) {
@@ -425,7 +481,7 @@ $(function () {
         prefix: '{{ tasks_formset.prefix }}',
         formCssClass: 'dynamic-formset1',
         addText: 'Додати Проект',
-        deleteText: '-',
+        deleteText: '<i class="far fa-trash-alt"></i>',
         addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
         deleteCssClass: 'delete-row badge badge-pill badge-danger',
         'added': function (row) {

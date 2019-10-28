@@ -70,7 +70,7 @@ class DealForm(forms.ModelForm):
         model = Deal
         fields = ['number', 'date', 'customer', 'company', 'value', 'advance',
                   'pay_status', 'pay_date', 'expire_date', 'act_status',
-                  'act_date', 'act_value', 'pdf_copy', 'value_correction', 'comment']
+                  'act_date', 'act_value', 'pdf_copy', 'value_correction', 'comment', 'manual_warning']
         widgets = {
             'date': AdminDateWidget,
             'customer': Select2Widget,
@@ -186,7 +186,7 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner',
                   'planned_start', 'planned_finish', 'actual_start', 'actual_finish',
-                  'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment']
+                  'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment', 'manual_warning']
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
@@ -219,7 +219,7 @@ class TaskForm(forms.ModelForm):
             self.fields['project_type'].queryset = Project.objects.filter(active=True)
         else:
             self.fields['project_type'].widget.attrs['disabled'] = True
-            self.fields['deal'].required = False
+            self.fields['project_type'].required = False
 
     def clean_deal(self):
         if self.cleaned_data['deal']:
@@ -312,7 +312,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
-ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=1, formset=ExecutorsInlineFormset)
+ExecutorsFormSet = inlineformset_factory(Task, Execution, form=ExecutorInlineForm, extra=0, formset=ExecutorsInlineFormset)
 
 
 class OrderInlineForm(forms.ModelForm):
@@ -360,7 +360,7 @@ class CostsInlineFormset(BaseInlineFormSet):
                     raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
-CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=1, formset=CostsInlineFormset)
+CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=0, formset=CostsInlineFormset)
 
 
 class SendingInlineForm(forms.ModelForm):
@@ -389,7 +389,7 @@ class SendingInlineFormset(BaseInlineFormSet):
                     raise ValidationError("Ви не можете закрити цей проект без відправки")
 
 
-SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=1, formset=SendingInlineFormset)
+SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, extra=0, formset=SendingInlineFormset)
 
 
 class TaskExchangeForm(forms.Form):

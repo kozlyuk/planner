@@ -63,7 +63,7 @@ class Employee(models.Model):
         overdue = 0
         for task in self.task_set.exclude(exec_status=Task.Sent):
             active += 1
-            if task.overdue_status().startswith('Протерміновано'):
+            if task.warning.startswith('Протерміновано'):
                 overdue += 1
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     owner_count.short_description = 'Керівник проектів'
@@ -73,7 +73,7 @@ class Employee(models.Model):
         overdue = 0
         for task in self.tasks.exclude(exec_status=Task.Sent):
             active += 1
-            if task.overdue_status().startswith('Протерміновано'):
+            if task.warning.startswith('Протерміновано'):
                 overdue += 1
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     task_count.short_description = 'Виконавець в проектах'
@@ -433,6 +433,7 @@ class Deal(models.Model):
     act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
+    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
     act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
@@ -515,6 +516,13 @@ class Deal(models.Model):
     pay_date_calc.short_description = 'Дата оплати'
 
 
+@receiver(post_save, sender=Deal, dispatch_uid="update_deal_status")
+def update_deal(sender, instance, **kwargs):
+    """ Update Deals status after save Deal """
+    from planner.tasks import update_deal_statuses
+    update_deal_statuses(instance.pk)
+
+
 class Receiver(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     name = models.CharField('Отримувач', max_length=50, unique=True)
@@ -549,6 +557,7 @@ class Task(models.Model):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
+    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
     owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
@@ -647,6 +656,8 @@ class Task(models.Model):
             return True
         elif user.groups.filter(name='Бухгалтери').exists():
             return True
+        elif user.groups.filter(name='Секретарі').exists():
+            return True
         else:
             return False
     # try if user has a permitting to view the task
@@ -718,13 +729,15 @@ class Task(models.Model):
 
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
+    """ Change Subtasks status to Done if Task is Done after save Task. Update Tasks status after save Task"""
     if instance.exec_status in [Task.Done, Task.Sent]:
         for execution in instance.execution_set.all():
             if execution.exec_status != Execution.Done:
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
-#Change Subtasks status to Done if Task is Done after save Task
+    from planner.tasks import update_task_statuses
+    update_task_statuses(instance.pk)
 
 
 class Order(models.Model):
@@ -769,7 +782,7 @@ class Order(models.Model):
 
 
 class Sending(models.Model):
-    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.PROTECT)
+    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.CASCADE)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     receipt_date = models.DateField('Дата відправки')
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', validators=[MaxValueValidator(10)])
@@ -816,7 +829,8 @@ class Execution(models.Model):
     part_name = models.CharField('Роботи', max_length=100)
     part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    finish_date = models.DateField('Дата виконання', blank=True, null=True)
+    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
+    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
