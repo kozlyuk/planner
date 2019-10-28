@@ -505,3 +505,12 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['name', 'contact_person', 'phone', 'email', 'debtor_term', 'act_template', 'requisites']
+
+class CompanyFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ['name', 'chief', 'taxation', 'requisites']

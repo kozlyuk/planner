@@ -18,7 +18,7 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
-from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer, Company
 
 
 class Round(Func):
@@ -1203,8 +1203,97 @@ class CustomerDelete(DeleteView):
         obj = self.get_object()
         customer = context['customer']
         context['go_back_url'] = reverse('customer_update', kwargs={'pk':customer.pk})
-        context['main_header'] = 'Видалити вид робіт?'
+        context['main_header'] = 'Видалити замовника?'
         context['header'] = 'Видалення "' + str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.project_set.exists():
             context['objects'] = obj.project_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyList(ListView):
+    """ ListView for CompanyList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Company
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+    
+    def get_queryset(self):
+        companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .values_list('name', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        company = self.request.GET.get('company', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            companies = companies.filter(Q(name__icontains=word))
+        if order != '0':
+            companies = companies.order_by(order)
+        return companies
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['turnover_calc', 'Оборот', 0],
+                              ['costs_calc', 'Витрати', 0],
+                              ['bonuses_calc', 'Бонуси', 0]]
+        context['search'] = True
+        context['filter'] = []
+        context['add_url'] = reverse('company_add')
+        context['add_help_text'] = 'Додати компанію'
+        context['header_main'] = 'Компанії'
+        context['objects_count'] = Company.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.CompanyFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.CompanyFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyCreate(CreateView):
+    model = Company
+    form_class = forms.CompanyForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('company_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати команію'
+        context['back_btn_url'] = reverse('company_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyUpdate(UpdateView):
+    model = Company
+    form_class = forms.CompanyForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('company_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['company']
+        context['header_main'] = 'Компанія: ' + str(name)
+        context['back_btn_url'] = reverse('company_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyDelete(DeleteView):
+    model = Company
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('company_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        company = context['company']
+        context['go_back_url'] = reverse('company_update', kwargs={'pk':company.pk})
+        context['main_header'] = 'Видалити компанію?'
+        context['header'] = 'Видалення "' + str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.deal_set.exists():
+            context['objects'] = obj.deal_set.all()
         return context
