@@ -933,11 +933,22 @@ class EmployeeUpdate(UpdateView):
         return Employee.objects.get(user=get_current_user())
 
 
+
+class GenericList(ListView):
+
+    def __init__(self, model_name):
+        super().__init__(model_name)
+        self.model_name = model_name
+
+        template_name = "planner/generic_list.html"
+        paginate_by = 15
+        model = model_name
+
+
 @method_decorator(login_required, name='dispatch')
-class ReceiverList(ListView):
+class ReceiverList(GenericList):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
-    model = Receiver
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
