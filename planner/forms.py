@@ -506,6 +506,7 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = ['name', 'contact_person', 'phone', 'email', 'debtor_term', 'act_template', 'requisites']
 
+
 class CompanyFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
 
@@ -514,3 +515,18 @@ class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = ['name', 'chief', 'taxation', 'requisites']
+
+
+class EmployeeFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['user', 'name', 'position', 'head', 'phone', 'mobile_phone', 'vacation_count', 'vacation_date', 'salary', 'birthday', 'avatar']
+
+    def __init__(self, *args, **kwargs):
+        super(EmployeeForm, self).__init__(*args, **kwargs)
+        self.fields['vacation_date'].widget = AdminDateWidget()
+        self.fields['birthday'].widget = AdminDateWidget()

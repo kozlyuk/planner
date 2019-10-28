@@ -1297,3 +1297,77 @@ class CompanyDelete(DeleteView):
         if obj.deal_set.exists():
             context['objects'] = obj.deal_set.all()
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeList(ListView):
+    """ ListView for CompanyList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Employee
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+    
+    def get_queryset(self):
+        employees = Employee.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .values_list('name', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        employee = self.request.GET.get('employee', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            employees = employees.filter(Q(name__icontains=word))
+        if order != '0':
+            employees = employees.order_by(order)
+        return employees
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['owner_count', 'Керівник проектів', 0],
+                              ['task_count', 'Виконавець в проектах', 0],
+                              ['inttask_count', 'Завдання', 0],
+                              ['productivity', 'Продуктивність', 0]]
+        context['search'] = True
+        context['filter'] = []
+        context['add_url'] = reverse('employee_add')
+        context['add_help_text'] = 'Додати працівника'
+        context['header_main'] = 'Працівники'
+        context['objects_count'] = Employee.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeCreate(CreateView):
+    model = Employee
+    form_class = forms.EmployeeForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('employee_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати працівника'
+        context['back_btn_url'] = reverse('employee_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeDelete(DeleteView):
+    model = Employee
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('emmmmmployee_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        employee = context['employee']
+        context['go_back_url'] = reverse('employee_update', kwargs={'pk':employee.pk})
+        context['main_header'] = 'Видалити користувача?'
+        context['header'] = 'Видалення "' + str(employee) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.task_set.exists():
+            context['objects'] = obj.task_set.all()
+        return context
