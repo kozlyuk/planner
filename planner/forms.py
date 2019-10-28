@@ -495,3 +495,7 @@ class ProjectForm(forms.ModelForm):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['description'].widget.attrs.update({'style': 'height:50px;'})
         self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
+
+
+class CustomerFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)

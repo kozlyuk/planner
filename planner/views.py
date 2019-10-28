@@ -933,22 +933,11 @@ class EmployeeUpdate(UpdateView):
         return Employee.objects.get(user=get_current_user())
 
 
-
-class GenericList(ListView):
-
-    def __init__(self, model_name):
-        super().__init__(model_name)
-        self.model_name = model_name
-
-        template_name = "planner/generic_list.html"
-        paginate_by = 15
-        model = model_name
-
-
 @method_decorator(login_required, name='dispatch')
-class ReceiverList(GenericList):
+class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Receiver
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
@@ -1140,18 +1129,16 @@ class CustomerList(ListView):
     paginate_by = 15
     
     def get_queryset(self):
-        customer = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+        customers = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .values_list('name')
         search_string = self.request.GET.get('filter', '').split()
-        # customer = self.request.GET.get('customer', '0')
+        customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
-            customer = customer.filter(project_type__icontains=word)
-        # if customer != '0':
-        #     project_types = project_types.filter(customer=customer)
-        # if order != '0':
-        #     project_types = project_types.order_by(order)
-        return customer
+            customers = customers.filter(Q(name__icontains=word))
+        if order != '0':
+            customers = customers.order_by(order)
+        return customers
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1166,10 +1153,10 @@ class CustomerList(ListView):
         context['add_help_text'] = 'Додати замовника'
         context['header_main'] = 'Замовники'
         context['objects_count'] = Customer.objects.all().count()
-        # if self.request.POST:
-        #     context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
-        # else:
-        #     context['filter_form'] = forms.ProjectFilterForm(self.request.GET)
+        if self.request.POST:
+            context['filter_form'] = forms.CustomerFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
         
         return context
 
