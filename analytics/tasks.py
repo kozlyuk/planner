@@ -1,19 +1,20 @@
-from planner.celery import app
-from celery.utils.log import get_task_logger
+""" Tasks for analytics app """
 from datetime import datetime
+from celery.utils.log import get_task_logger
 from django.db.models import Q, Sum
 
-from analytics.models import Bonus
+from planner.celery import app
 from planner.models import Employee, Task, IntTask
+from analytics.models import Bonus
 
-logger = get_task_logger(__name__)
+LOGGER = get_task_logger(__name__)
 
 
 @app.task
 def save_bonus():
     """ Save daily bonuses of Employees """
     employees = Employee.objects.all()
-    
+
     for employee in employees:
         bonuses = 0
 
@@ -25,7 +26,7 @@ def save_bonus():
                                                    task__actual_finish__year=datetime.now().year)
         for query in executions:
             bonuses += query.task.exec_bonus(query.part)
-    
+
         # owner bonuses
         tasks = employee.task_set.filter(exec_status=Task.Sent,
                                          actual_finish__month=datetime.now().month,
@@ -42,5 +43,5 @@ def save_bonus():
         # save bonuses
         bonus = Bonus(employee=employee, value=bonuses)
         bonus.save()
-        
-    logger.info("Employee bonuses for {}.{} saved".format(datetime.now().month, datetime.now().year))
+
+    LOGGER.info("Employee bonuses for %d.%d saved", datetime.now().month, datetime.now().year)
