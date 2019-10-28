@@ -499,3 +499,9 @@ class ProjectForm(forms.ModelForm):
 
 class CustomerFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'contact_person', 'phone', 'email', 'debtor_term', 'act_template', 'requisites']
