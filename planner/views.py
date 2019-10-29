@@ -18,7 +18,7 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
-from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer, Company
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer, Company, Contractor
 
 
 class Round(Func):
@@ -1423,4 +1423,97 @@ class EmployeeDelete(DeleteView):
         context['header'] = 'Видалення "' + str(employee) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.tasks.exists():
             context['objects'] = obj.tasks.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorList(ListView):
+    """ ListView for Contractor.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Contractor
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+    
+    def get_queryset(self):  # todo args url
+        contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
+            values_list('name', 'active', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            contractors = contractors.filter(Q(name__icontains=word))
+        if order != '0':
+            contractors = contractors.order_by(order)
+        return contractors
+    
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['advance_calc', 'Авансові платежі', 0],
+                              ['credit_calc', 'Кредиторська заборгованість', 0],
+                              ['expect_calc', 'Не виконано та не оплачено', 0],
+                              ['completed_calc', 'Виконано та оплачено', 0],
+                              ['active', 'Активний', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_contractor'):
+            context['add_url'] = reverse('contractor_add')
+            context['add_help_text'] = 'Додати підрядника'
+        context['header_main'] = 'Підрядники'
+        context['objects_count'] = Contractor.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.ContractorFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ContractorFilterForm(self.request.GET)
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorCreate(CreateView):
+    model = Contractor
+    form_class = forms.ContractorForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('contractor_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати підрядника'
+        context['back_btn_url'] = reverse('contractor_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorUpdate(UpdateView):
+    model = Contractor
+    form_class = forms.ContractorForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('contractor_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['contractor']
+        context['header_main'] = 'Редагування ' + str(name)
+        context['back_btn_url'] = reverse('contractor_delete', kwargs={'pk': name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorDelete(DeleteView):
+    model = Contractor
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('contractor_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        contractor = context['contractor']
+        context['go_back_url'] = reverse('contractor_update', kwargs={'pk':contractor.pk})
+        context['main_header'] = 'Видалити адресат?'
+        context['header'] = 'Видалення підрядника "' + str(contractor) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.order_set.exists():
+            context['objects'] = obj.order_set.all()
         return context

@@ -90,6 +90,10 @@
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'company_list' %}">Компанії</a></li>
                     {% endif %}
+                    {% if perms.planner.view_contractor %}
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'contractor_list' %}">Підрядники</a></li>
+                    {% endif %}
 
                     {% if request.user.is_superuser %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
@@ -116,6 +120,9 @@
                 {% endif %}
                 {% if perms.planner.view_company %}
                 <a class="dropdown-item {% if request.resolver_match.url_name == 'company_list' %}active{% endif %} uppercase" href="{% url 'company_list' %}">Компанії</a>
+                {% endif %}
+                {% if perms.planner.view_contractor %}
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Підрядники</a>
                 {% endif %}
             </div>
             {% endif %}

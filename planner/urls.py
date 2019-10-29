@@ -62,6 +62,11 @@ urlpatterns = [
     url(r'^company/(?P<pk>\d+)/change/$', views.CompanyUpdate.as_view(), name='company_update'),
     url(r'^company/(?P<pk>\d+)/delete/$', views.CompanyDelete.as_view(), name='company_delete'),
 
+    url(r'^contractor/$', views.ContractorList.as_view(), name='contractor_list'),
+    url(r'^contractor/add$', views.ContractorCreate.as_view(), name='contractor_add'),
+    url(r'^contractor/(?P<pk>\d+)/change/$', views.ContractorUpdate.as_view(), name='contractor_update'),
+    url(r'^contractor/(?P<pk>\d+)/delete/$', views.ContractorDelete.as_view(), name='contractor_delete'),
+
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', views.InttaskDetail.as_view(), name='inttask_detail'),
     url(r'^login/$', views.login_page, name='login_page'),
