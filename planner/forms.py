@@ -611,12 +611,14 @@ class EmployeeForm(forms.ModelForm):
     password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
     password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
                                        widget=forms.PasswordInput)
-    email = forms.EmailField(label='Електронна пошта', max_length=255, required=True)
+    email = forms.EmailField(label='Email', max_length=255, required=True)
     groups = forms.ChoiceField(label='Група', required=False)
+    is_active = forms.BooleanField(label='Активний', initial=True)
 
     class Meta:
         model = Employee
-        fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
+        fields = ['username', 'password', 'password_confirm', 'email', 'groups',
+                  'name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
                   'birthday', 'salary', 'vacation_count', 'vacation_date']
 
     def clean(self):
@@ -628,13 +630,13 @@ class EmployeeForm(forms.ModelForm):
         email = cleaned_data.get('email')
 
         if password != password_confirm:
-            self.add_error('password_confirm', 'Password does not match')
+            self.add_error('password_confirm', 'Паролі не співпадають')
         if User.objects.filter(username=username).exists():
-            self.add_error('username', 'User with such username already exist')
+            self.add_error('username', 'Такий логін уже існує')
         if User.objects.filter(email=email).exists():
-            self.add_error('email', 'User with such email already exist')
+            self.add_error('email', 'Працівник з таким Email уже існує')
         if len(pib_name) < 2:
-            self.add_error('name', 'Please write full name of employee')
+            self.add_error('name', "Введіть повне ім'я працівника")
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -644,16 +646,20 @@ class EmployeeForm(forms.ModelForm):
         password = self.cleaned_data.get('password')
         email = self.cleaned_data.get('email')
         groups = self.cleaned_data.get('groups')
+        is_active = self.cleaned_data.get('is_active')
 
-        user = User(username=username, email=email, is_staff=True,
+#        obj, created = User.objects.get_or_create(username=username,
+#                                                  defaults={'email': email, 'is_staff': True, 'is_active': is_active,
+#                                                            'first_name': pib_name[0], 'last_name': pib_name[1]})
+        user = User(username=username, email=email, is_staff=True, is_active=is_active,
                     first_name=pib_name[0], last_name=pib_name[1])
         user.set_password(password)
 
         if commit:
             user.save()
-            for group_name in groups:
-                group = Group.objects.get(name=group_name)
-                group.user_set.add(user)
+#            for group_name in groups:
+            group = Group.objects.get(name=groups)
+            group.user_set.add(user)
             instance.user = user
             instance.save()
         return instance

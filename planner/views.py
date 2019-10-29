@@ -1304,22 +1304,22 @@ class EmployeeList(ListView):
     model = Employee
     template_name = "planner/employee_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 12
+    paginate_by = 18
     
     def get_queryset(self):
         request = self.request
         if request.user.is_superuser:
-            employees = Employee.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
-                .values_list('avatar', 'name', 'url', 'position')
+            employees = Employee.objects.order_by('-user__is_active', 'name')\
+                                        .annotate(url=Concat(F('pk'), Value('/change/')))\
+                                        .values_list('avatar', 'name', 'url', 'position')
         else:
-            employees = Employee.objects.filter(user__is_active=True).annotate(url=Concat(F('pk'), Value('/detail/')))\
-                .values_list('avatar', 'name', 'url', 'position')
+            employees = Employee.objects.filter(user__is_active=True)\
+                                        .order_by('name')\
+                                        .annotate(url=Concat(F('pk'), Value('/detail/')))\
+                                        .values_list('avatar', 'name', 'url', 'position')
         search_string = self.request.GET.get('filter', '').split()
-        order = self.request.GET.get('o', '0')
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))
-        if order != '0':
-            employees = employees.order_by(order)
         return employees
     
     def get_context_data(self, **kwargs):
