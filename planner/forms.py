@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django import forms
+from django.contrib.auth.models import User, Group
 from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee,\
                            Project, Company, News, Event, Receiver
 from django.forms import inlineformset_factory
@@ -28,6 +29,67 @@ class UserLoginForm(forms.ModelForm):
             return True
         except:
             return False
+
+
+class EmployeeForm(forms.ModelForm):
+    """ EmployeeForm - form for employees creating or updating """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['vacation_date'].widget = AdminDateWidget()
+        self.fields['birthday'].widget = AdminDateWidget()
+        groups = [(group.id, group.name) for group in Group.objects.all()]
+        self.fields['groups'].choices = groups
+
+    username = forms.CharField(label='Логін', max_length=255, required=True)
+    password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
+                                       widget=forms.PasswordInput)
+    email = forms.EmailField(label='Електронна пошта', max_length=255, required=True)
+    groups = forms.ChoiceField(label='Група', required=False)
+
+    class Meta:
+        model = Employee
+        fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
+                  'birthday', 'salary', 'vacation_count', 'vacation_date']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        username = cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        email = cleaned_data.get('email')
+
+        if password != password_confirm:
+            self.add_error('password_confirm', 'Password does not match')
+        if User.objects.filter(username=username).exists():
+            self.add_error('username', 'User with such username already exist')
+        if User.objects.filter(email=email).exists():
+            self.add_error('email', 'User with such email already exist')
+        if len(pib_name) < 2:
+            self.add_error('name', 'Please write full name of employee')
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        username = self.cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        password = self.cleaned_data.get('password')
+        email = self.cleaned_data.get('email')
+        groups = self.cleaned_data.get('groups')
+
+        user = User(username=username, email=email, is_staff=True,
+                    first_name=pib_name[0], last_name=pib_name[1])
+        user.set_password(password)
+
+        if commit:
+            user.save()
+            for group_name in groups:
+                group = Group.objects.get(name=group_name)
+                group.user_set.add(user)
+            instance.user = user
+            instance.save()
+        return instance
 
 
 class DealFilterForm(forms.Form):
@@ -522,11 +584,61 @@ class EmployeeFilterForm(forms.Form):
 
 
 class EmployeeForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = ['user', 'name', 'position', 'head', 'phone', 'mobile_phone', 'vacation_count', 'vacation_date', 'salary', 'birthday', 'avatar']
-
+    """ EmployeeForm - form for employees creating or updating """
     def __init__(self, *args, **kwargs):
-        super(EmployeeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['vacation_date'].widget = AdminDateWidget()
         self.fields['birthday'].widget = AdminDateWidget()
+        groups = [(group.id, group.name) for group in Group.objects.all()]
+        self.fields['groups'].choices = groups
+
+    username = forms.CharField(label='Логін', max_length=255, required=True)
+    password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
+                                       widget=forms.PasswordInput)
+    email = forms.EmailField(label='Електронна пошта', max_length=255, required=True)
+    groups = forms.ChoiceField(label='Група', required=False)
+
+    class Meta:
+        model = Employee
+        fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
+                  'birthday', 'salary', 'vacation_count', 'vacation_date']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        username = cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        email = cleaned_data.get('email')
+
+        if password != password_confirm:
+            self.add_error('password_confirm', 'Password does not match')
+        if User.objects.filter(username=username).exists():
+            self.add_error('username', 'User with such username already exist')
+        if User.objects.filter(email=email).exists():
+            self.add_error('email', 'User with such email already exist')
+        if len(pib_name) < 2:
+            self.add_error('name', 'Please write full name of employee')
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        username = self.cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        password = self.cleaned_data.get('password')
+        email = self.cleaned_data.get('email')
+        groups = self.cleaned_data.get('groups')
+
+        user = User(username=username, email=email, is_staff=True,
+                    first_name=pib_name[0], last_name=pib_name[1])
+        user.set_password(password)
+
+        if commit:
+            user.save()
+            for group_name in groups:
+                group = Group.objects.get(name=group_name)
+                group.user_set.add(user)
+            instance.user = user
+            instance.save()
+        return instance
