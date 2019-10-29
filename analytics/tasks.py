@@ -35,13 +35,15 @@ def save_bonus():
             bonuses += query.owner_bonus()
 
         # inttask bonuses
-        bonuses += employee.inttask_set.filter(exec_status=IntTask.Done,
-                                               actual_finish__month=datetime.now().month,
-                                               actual_finish__year=datetime.now().year)\
-                                       .aggregate(Sum('bonus'))
+        inttask_bonus = employee.inttask_set.filter(exec_status=IntTask.Done,
+                                                    actual_finish__month=datetime.now().month,
+                                                    actual_finish__year=datetime.now().year)\
+                                            .aggregate(Sum('bonus'))['bonus__sum']
+        if inttask_bonus:
+            bonuses += inttask_bonus
 
         # save bonuses
         bonus = Bonus(employee=employee, value=bonuses)
         bonus.save()
 
-    LOGGER.info("Employee bonuses for %d.%d saved", datetime.now().month, datetime.now().year)
+    LOGGER.info("Employee bonuses for %s saved", datetime.now())

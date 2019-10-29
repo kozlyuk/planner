@@ -19,12 +19,11 @@ def update_task_statuses(task_id=None):
     else:
         tasks = Task.objects.order_by('-id')[:500]
     for task in tasks:
+        sending_status = task.sending_status()
         if task.manual_warning:
             warning = task.manual_warning
-        elif task.exec_status == Task.Done:
-            send_status = task.sending_status()
-            if send_status != 'Надіслано':
-                warning = send_status
+        elif task.exec_status == Task.Done and sending_status != 'Надіслано':
+            warning = sending_status
         elif task.exec_status in [Task.Sent, Task.Done] and task.actual_finish:
             warning = 'Виконано %s' % task.actual_finish.strftime(date_format)
         elif task.execution_status() == 'Виконано':

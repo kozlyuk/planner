@@ -63,6 +63,6 @@ app.conf.beat_schedule = {
     
     'save_bonus': {
         'task': 'analytics.tasks.save_bonus',
-        'schedule': crontab(hour=23, minute=59),  # everyday at 23-59
+        'schedule': crontab(hour=23, minute=50),  # everyday at 23-50
     },
 }
