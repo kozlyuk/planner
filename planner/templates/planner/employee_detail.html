@@ -57,60 +57,15 @@ div.fakefile {
                                     alt="avatar">
                             </picture>
                         </div>
-                        <div class="md-5 text-center mt-2" role="group"
-                            aria-label="Basic">
-
-                            <button form="avatar_submit" type="submit"
-                                class="btn dark btn-sm news-cancel btn-outline sbold uppercase" data-toggle="modal"
-                                data-target="#foto_upload" style="font-size: 14px!important">Редагувати профіль</button>
-
-                            <!-- Modal upload foto -->
-                            <div class="modal fade" id="foto_upload" tabindex="-1" role="dialog"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h6 class="center-block text-center mb-0">Оновити профіль</h6>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div style="text-align:center" class="modal-body">
-                                            <div class="custom-file">
-                                                <form action="" id="avatar_submit" method="post"
-                                                    enctype="multipart/form-data">{% csrf_token %}
-                                                    <div>
-                                                        <p>Мобільний телефон: {{  form.mobile_phone  }}</p>
-                                                    </div>
-                                                    <div> {{  form.avatar  }} </div>
-                                                    <button type="upload"
-                                                        style="position: relative; top: -86px; right: 83px; width: 125px; z-index: 1;"
-                                                        class="btn dark btn-sm btn-outline sbold uppercase"
-                                                        data-dismiss="modal"> Обрати фото </button>
-                                                    <div class="fakefile">
-                                                        <input id="filename" />
-                                                        <img src="" />
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- modal upload foto end -->
-                        </div>
                         <!-- Content -->
                         <div class="card-body">
                             <!-- Name -->
                             <h4 class="card-title text-center"><b>{{ employee.name }}</b></h4>
                             <hr>
-                            <p><i class="far fa-user"> </i> login: <b>{{  employee.user  }}</b></p>
                             <p><i class="far fa-envelope"></i> email: <b>{{  employee.user.email  }}</b></p>
                             <p><i class="fas fa-phone"> </i> Мобільний телефон: <b>{{  employee.mobile_phone  }}</b></p>
                             <p><i class="fas fa-phone"> </i> Внутрішній номер: <b>{{  employee.phone  }}</b></p>
-                            <!-- <p><i class="fas fa-scroll">  </i> Основні засоби закріплені за мною: </p> -->
                         </div>
-
                     </div>
                     <!-- Card -->
                 </div>
@@ -119,16 +74,12 @@ div.fakefile {
                 <div class="widget-bg-color-white mt-4 mb-4 hoverable shadow">
                     <div class="card testimonial-card">
                         <ul class="list-group list-group-flush">
-                            <h4 class="text-center text-uppercase">Про мене</h4>
+                            <h4 class="text-center text-uppercase">Про користувача</h4>
                             <li class="list-group-item">ПІБ: <b>{{  employee.name }}</b></li>
                             <li class="list-group-item">Посада: <b>{{  employee.position  }}</b></li>
                             <li class="list-group-item">Керівник: <b>{{  employee.head  }}</b> </li>
-                            <li class="list-group-item">Заробітня плата: <b>{{  employee.salary  }}</b></li>
                             <li class="list-group-item">День народження: <b>{{  employee.birthday  }}</b></li>
-                            <li class="list-group-item">Кількість днів відпустки: <b>{{  employee.vacation_count  }}</b>
                             </li>
-                            <li class="list-group-item">Дата нарахування відпустки:
-                                <b>{{  employee.vacation_date  }}</b></li>
                         </ul>
                     </div>
                 </div>
@@ -152,14 +103,6 @@ div.fakefile {
 {% endblock %}
 
 {% block extrahead %}
-<script>
-$(document).ready( function() {
-$(".custom-file input[type=file]").change(function(){
-var filename = $(this).val().replace(/.*\\/, "");
-$("#filename").val(filename);
-});
-});
-        </script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 {% endblock %}

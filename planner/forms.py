@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.models import User, Group
 from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee,\
-                           Project, Company, News, Event, Receiver
+                           Project, Company, News, Event, Receiver, Contractor
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
@@ -577,6 +577,21 @@ class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = ['name', 'chief', 'taxation', 'requisites']
+
+
+class ContractorFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ContractorForm(forms.ModelForm):
+    class Meta:
+        model = Contractor
+        fields = ['name', 'contact_person', 'phone', 'email', 'requisites', 'active']
+
+    def __init__(self, *args, **kwargs):
+        super(ContractorForm, self).__init__(*args, **kwargs)
+        self.fields['requisites'].widget.attrs.update({'style': 'height:50px;'})
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
 
 
 class EmployeeFilterForm(forms.Form):
