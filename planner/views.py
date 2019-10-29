@@ -945,6 +945,7 @@ class ReceiverList(ListView):
         return receivers
     
     def get_context_data(self, **kwargs):
+        request = self.request
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Отримувач', 1],
                               ['address', 'Адреса', 0],
@@ -952,8 +953,9 @@ class ReceiverList(ListView):
                               ['phone', 'Телефон', 0]]
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('receiver_add')
-        context['add_help_text'] = 'Додати адресата'
+        if request.user.has_perm('planner.add_receiver'):
+            context['add_url'] = reverse('receiver_add')
+            context['add_help_text'] = 'Додати адресата'
         context['header_main'] = 'Адресати'
         context['objects_count'] = Receiver.objects.all().count()
         if self.request.POST:
@@ -1039,6 +1041,7 @@ class ProjectList(ListView):
         return project_types
     
     def get_context_data(self, **kwargs):
+        request = self.request
         context = super().get_context_data(**kwargs)
         context['headers'] = [['project_type', 'Вид робіт', 1],
                               ['customer', 'Замовник', 0],
@@ -1048,8 +1051,9 @@ class ProjectList(ListView):
                               ['active', 'Активний', 0]]
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('project_type_add')
-        context['add_help_text'] = 'Додати вид робіт'
+        if request.user.has_perm('planner.add_project'):
+            context['add_url'] = reverse('project_type_add')
+            context['add_help_text'] = 'Додати вид робіт'
         context['header_main'] = 'Види робіт'
         context['objects_count'] = Project.objects.all().count()
         if self.request.POST:
@@ -1131,6 +1135,7 @@ class CustomerList(ListView):
         return customers
     
     def get_context_data(self, **kwargs):
+        request = self.request
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Назва', 1],
                               ['credit_calc', 'Авансові платежі', 0],
@@ -1139,8 +1144,9 @@ class CustomerList(ListView):
                               ['completed_calc', 'Виконано та оплачено', 0]]
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('customer_add')
-        context['add_help_text'] = 'Додати замовника'
+        if request.user.has_perm('planner.add_customer'):
+            context['add_url'] = reverse('customer_add')
+            context['add_help_text'] = 'Додати замовника'
         context['header_main'] = 'Замовники'
         context['objects_count'] = Customer.objects.all().count()
         if self.request.POST:
@@ -1222,6 +1228,7 @@ class CompanyList(ListView):
         return companies
     
     def get_context_data(self, **kwargs):
+        request = self.request
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Назва', 1],
                               ['turnover_calc', 'Оборот', 0],
@@ -1229,8 +1236,9 @@ class CompanyList(ListView):
                               ['bonuses_calc', 'Бонуси', 0]]
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('company_add')
-        context['add_help_text'] = 'Додати компанію'
+        if request.user.has_perm('planner.add_company'):
+            context['add_url'] = reverse('company_add')
+            context['add_help_text'] = 'Додати компанію'
         context['header_main'] = 'Компанії'
         context['objects_count'] = Company.objects.all().count()
         if self.request.POST:
@@ -1315,11 +1323,13 @@ class EmployeeList(ListView):
         return employees
     
     def get_context_data(self, **kwargs):
+        request = self.request
         context = super().get_context_data(**kwargs)
         context['search'] = True
         context['filter'] = []
-        context['add_url'] = reverse('employee_add')
-        context['add_help_text'] = 'Додати працівника'
+        if request.user.has_perm('planner.add_employee'):
+            context['add_url'] = reverse('employee_add')
+            context['add_help_text'] = 'Додати працівника'
         context['header_main'] = 'Працівники'
         context['objects_count'] = Employee.objects.all().count()
         if self.request.POST:
@@ -1341,6 +1351,12 @@ class EmployeeDetail(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class EmployeeUpdate(UpdateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists() or request.user.groups.filter(name='Секретарі').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     model = Employee
     form_class = forms.EmployeeForm
     template_name = "planner/generic_form.html"
@@ -1367,6 +1383,12 @@ class EmployeeSelfUpdate(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class EmployeeCreate(CreateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     model = Employee
     form_class = forms.EmployeeForm
     template_name = "planner/employee_create.html"
@@ -1382,6 +1404,12 @@ class EmployeeCreate(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class EmployeeDelete(DeleteView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     model = Employee
     template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('emloyee_list')
