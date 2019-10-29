@@ -1291,7 +1291,7 @@ class CompanyDelete(DeleteView):
 
 @method_decorator(login_required, name='dispatch')
 class EmployeeList(ListView):
-    """ ListView for CompanyList.
+    """ ListView for EmployeeList.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Employee
     template_name = "planner/employee_list.html"
@@ -1304,7 +1304,7 @@ class EmployeeList(ListView):
             employees = Employee.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
                 .values_list('avatar', 'name', 'url', 'position')
         else:
-            employees = Employee.objects.filter(user__is_active=True).annotate(url=Concat(F('pk'), Value('/change/')))\
+            employees = Employee.objects.filter(user__is_active=True).annotate(url=Concat(F('pk'), Value('/detail/')))\
                 .values_list('avatar', 'name', 'url', 'position')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
@@ -1330,7 +1330,33 @@ class EmployeeList(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
+class EmployeeDetail(DetailView):
+    model = Employee
+    context_object_name = 'employee'
+
+    def get_context_data(self, **kwargs):
+        context = super(EmployeeDetail, self).get_context_data(**kwargs)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
 class EmployeeUpdate(UpdateView):
+    model = Employee
+    form_class = forms.EmployeeForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('employee_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['employee']
+        context['header_main'] = 'Користувач: ' + str(name)
+        context['back_btn_url'] = reverse('employee_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeSelfUpdate(UpdateView):
     model = Employee
     form_class = forms.EmployeeForm
     success_url = reverse_lazy('home_page')
@@ -1367,6 +1393,6 @@ class EmployeeDelete(DeleteView):
         context['go_back_url'] = reverse('employee_update', kwargs={'pk':employee.pk})
         context['main_header'] = 'Видалити користувача?'
         context['header'] = 'Видалення "' + str(employee) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.task_set.exists():
-            context['objects'] = obj.task_set.all()
+        if obj.tasks.exists():
+            context['objects'] = obj.tasks.all()
         return context

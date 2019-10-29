@@ -62,19 +62,19 @@ urlpatterns = [
     url(r'^company/(?P<pk>\d+)/change/$', views.CompanyUpdate.as_view(), name='company_update'),
     url(r'^company/(?P<pk>\d+)/delete/$', views.CompanyDelete.as_view(), name='company_delete'),
 
-    url(r'^employee/$', views.EmployeeList.as_view(), name='employee_list'),
-    url(r'^employee/add$', views.EmployeeCreate.as_view(), name='employee_add'),
-    # url(r'^employee/(?P<pk>\d+)/change/$', views.CompanyUpdate.as_view(), name='company_update'),
-    url(r'^employee/(?P<pk>\d+)/delete/$', views.EmployeeDelete.as_view(), name='employee_delete'),
-
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', views.InttaskDetail.as_view(), name='inttask_detail'),
     url(r'^login/$', views.login_page, name='login_page'),
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
+    url(r'^employee/$', views.EmployeeList.as_view(), name='employee_list'),
+    url(r'^employee/add$', views.EmployeeCreate.as_view(), name='employee_add'),
+    url(r'^employee/(?P<pk>\d+)/delete/$', views.EmployeeDelete.as_view(), name='employee_delete'),
+    url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
+    url(r'^employee/(?P<pk>\d+)/detail/$', views.EmployeeDetail.as_view(), name='employee_detail'),
+    url(r'^employee/change/$', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.BonusesCalc.as_view(), name='bonus_calc'),
-    url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
 
     url(r'^news/$', views.NewsList.as_view(), name='news_list'),
     url(r'^news/(?P<pk>\d+)/detail/$', views.NewsDetail.as_view(), name='news_detail'),
