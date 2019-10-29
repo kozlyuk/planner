@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load static %}
+
+{% block context %}
+<style>
+/*Profile Card 5*/
+.profile-card-5{
+    margin-top:20px;
+}
+.profile-card-5 .btn{
+    border-radius:2px;
+    text-transform:uppercase;
+    font-size:12px;
+    padding:7px 20px;
+}
+.profile-card-5 .card-img-block {
+    width: 91%;
+    margin: 0 auto;
+    position: relative;
+    top: -20px;
+    
+}
+.profile-card-5 .card-img-block img{
+    border-radius:5px;
+    box-shadow:0 0 10px rgba(0,0,0,0.63);
+}
+.profile-card-5 h5{
+    color:#4E5E30;
+    font-weight:600;
+}
+.profile-card-5 p{
+    font-size:14px;
+    font-weight:300;
+}
+.profile-card-5 .btn-primary{
+    background-color:#4E5E30;
+    border-color:#4E5E30;
+}
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <br><!-- BEGIN CONTENT -->
+    <div class="container-fluid">
+        <div class="portlet-body">
+
+            <!--filter panel-->
+            <div class="accordion" id="filter">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <button class="btn text-muted bold btn-block" type="button"
+                                            data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
+                                            aria-controls="filterBody">
+                                            {{ header_main }}
+                                        </button>
+                                    </div>
+                                {% if add_url %}
+                                <button onclick="window.location.href = '{{ add_url }}'"
+                                    class="btn dark btn-sm btn-outline sbold uppercase"
+                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
+                                    <i class="fa fa-plus"></i> {{add_help_text}} </button>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </h2>
+                    </div>
+                    <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
+                        <div class="card-body">
+                            <div class="container-fluid " style="display:block">
+                            {% if search == True %}
+                                <form action="{{ success_url }}" method="get">
+                                    {% for hidden_field in filter_form.hidden_fields %}
+                                    {{ hidden_field }}
+                                    {% endfor %}
+
+                                    {% for field in filter_form.visible_fields %}
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if field.help_text %}
+                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                        <i class="fa fa-search"></i>Пошук </button>
+                                </form>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--filter panel-->
+
+            <form id="genericList" action="" method="get">
+            <div class="row">
+            {% for avatar, name, url, position in object_list %}
+                    <div class="col-sm-6 col-md-4 col-lg-2 mb-2 mt-4">
+                        <div class="card profile-card-5">
+                            <div class="card-img-block">
+                                <img class="card-img-top"
+                                    src="/media/{{avatar}}"
+                                    alt="Card image cap">
+                            </div>
+                            <div class="card-body pt-0">
+                            <a href="{{ url }}">
+                                <h5 class="card-title">{{ name }}</h5>
+                            </a>
+                                <p class="card-text">{{ position }}</p>
+
+                            </div>
+                        </div>
+    		        </div>
+
+            {% endfor %}
+            </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            {{ tasks_filtered }} знайдено ({{ objects_count }} всього)
+                            <br>
+                            {% include 'pagination.html' %}
+                        </div>
+                    </div>
+                </div>
+                {% comment %} {% if perms.planner.change_deal %}
+                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
+                    договір</button>
+                {% endif %} {% endcomment %}
+            </form>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+</div>
+    <!-- END CONTAINER -->
+{% endblock %}

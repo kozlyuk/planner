@@ -74,7 +74,7 @@ urlpatterns = [
 
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.BonusesCalc.as_view(), name='bonus_calc'),
-    url(r'^employee/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
+    url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
 
     url(r'^news/$', views.NewsList.as_view(), name='news_list'),
     url(r'^news/(?P<pk>\d+)/detail/$', views.NewsDetail.as_view(), name='news_detail'),

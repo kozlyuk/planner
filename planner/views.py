@@ -923,16 +923,6 @@ class EventDelete(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EmployeeUpdate(UpdateView):
-    model = Employee
-    form_class = forms.EmployeeForm
-    success_url = reverse_lazy('home_page')
-
-    def get_object(self):
-        return Employee.objects.get(user=get_current_user())
-
-
-@method_decorator(login_required, name='dispatch')
 class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1304,15 +1294,19 @@ class EmployeeList(ListView):
     """ ListView for CompanyList.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Employee
-    template_name = "planner/generic_list.html"
+    template_name = "planner/employee_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 12
     
     def get_queryset(self):
-        employees = Employee.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
-            .values_list('name', 'url')
+        request = self.request
+        if request.user.is_superuser:
+            employees = Employee.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+                .values_list('avatar', 'name', 'url', 'position')
+        else:
+            employees = Employee.objects.filter(user__is_active=True).annotate(url=Concat(F('pk'), Value('/change/')))\
+                .values_list('avatar', 'name', 'url', 'position')
         search_string = self.request.GET.get('filter', '').split()
-        employee = self.request.GET.get('employee', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))
@@ -1322,11 +1316,6 @@ class EmployeeList(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['headers'] = [['name', 'Назва', 1],
-                              ['owner_count', 'Керівник проектів', 0],
-                              ['task_count', 'Виконавець в проектах', 0],
-                              ['inttask_count', 'Завдання', 0],
-                              ['productivity', 'Продуктивність', 0]]
         context['search'] = True
         context['filter'] = []
         context['add_url'] = reverse('employee_add')
@@ -1341,10 +1330,20 @@ class EmployeeList(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
+class EmployeeUpdate(UpdateView):
+    model = Employee
+    form_class = forms.EmployeeForm
+    success_url = reverse_lazy('home_page')
+
+    def get_object(self):
+        return Employee.objects.get(user=get_current_user())
+
+
+@method_decorator(login_required, name='dispatch')
 class EmployeeCreate(CreateView):
     model = Employee
     form_class = forms.EmployeeForm
-    template_name = "planner/generic_form.html"
+    template_name = "planner/employee_create.html"
     success_url = reverse_lazy('employee_list')
     
     def get_context_data(self, **kwargs):
