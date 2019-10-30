@@ -1307,16 +1307,10 @@ class EmployeeList(ListView):
     paginate_by = 18
     
     def get_queryset(self):
-        request = self.request
-        if request.user.is_superuser:
-            employees = Employee.objects.order_by('-user__is_active', 'name')\
-                                        .annotate(url=Concat(F('pk'), Value('/change/')))\
-                                        .values_list('avatar', 'name', 'url', 'position')
-        else:
-            employees = Employee.objects.filter(user__is_active=True)\
-                                        .order_by('name')\
-                                        .annotate(url=Concat(F('pk'), Value('/detail/')))\
-                                        .values_list('avatar', 'name', 'url', 'position')
+        employees = Employee.objects.filter(user__is_active=True)\
+                                    .order_by('name')\
+                                    .annotate(url=Concat(F('pk'), Value('/detail/')))\
+                                    .values_list('avatar', 'name', 'url', 'position')
         search_string = self.request.GET.get('filter', '').split()
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))

@@ -78,7 +78,7 @@
                             {% if search == True %}
                                 <form action="{{ success_url }}" method="get">
                                     {% for hidden_field in filter_form.hidden_fields %}
-                                    {{ hidden_field }}
+                                        {{ hidden_field }}
                                     {% endfor %}
 
                                     {% for field in filter_form.visible_fields %}
