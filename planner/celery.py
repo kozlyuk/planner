@@ -7,7 +7,7 @@ from celery.schedules import crontab
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'planner.settings')
 
-app = Celery('planner')
+app = Celery('planner', include=['analytics.tasks'])
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
@@ -59,5 +59,10 @@ app.conf.beat_schedule = {
     'monthly_report': {
         'task': 'planner.tasks.send_monthly_report',
         'schedule': crontab(day_of_month=10, hour=17, minute=00),   # on 10th of month at 17-00
+    },
+    
+    'save_bonus': {
+        'task': 'analytics.tasks.save_bonus',
+        'schedule': crontab(hour=23, minute=50),  # everyday at 23-50
     },
 }
