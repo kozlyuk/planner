@@ -74,10 +74,12 @@ def update_deal_statuses(deal_id=None):
             value_calc = deal.value_calc() + deal.value_correction
             if deal.value > 0 and deal.value != value_calc:
                 warning = 'Вартість по роботам %s' % value_calc
-            if deal.act_status == deal.NotIssued or deal.act_status == deal.PartlyIssued:
+            elif deal.act_status == deal.NotIssued or deal.act_status == deal.PartlyIssued:
                 warning = 'Очікує закриття акту'
-            if deal.pay_status != deal.PaidUp and deal.pay_date:
+            elif deal.pay_status != deal.PaidUp and deal.pay_date:
                 warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
+            else:
+                warning = ''
         elif deal.expire_date < date.today():
             warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
         elif deal.expire_date - timedelta(days=7) <= date.today():
