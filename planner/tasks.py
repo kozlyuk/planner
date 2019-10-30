@@ -32,13 +32,13 @@ def update_task_statuses(task_id=None):
             if task.planned_finish < date.today():
                 warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
             elif task.planned_finish - timedelta(days=7) <= date.today():
-                warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершується %s' % task.planned_finish.strftime(date_format)
             else:
                 warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
         elif task.deal.expire_date < date.today():
             warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
         elif task.deal.expire_date - timedelta(days=7) <= date.today():
-            warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершується %s' % task.deal.expire_date.strftime(date_format)
         else:
             warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
 
