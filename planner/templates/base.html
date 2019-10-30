@@ -73,7 +73,7 @@
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'deal_list' %}">Договори</a></li>
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'employee_list' %}">Колеги</a></li>
+                            href="{% url 'colleagues_list' %}">Колеги</a></li>
                     {% if perms.planner.view_receiver %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'receiver_list' %}">Адресати</a></li>
@@ -105,7 +105,7 @@
             <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
             <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
             <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
-            <a class="link {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Колеги</a>
+            <a class="link {% if request.resolver_match.url_name == 'colleagues_list' %}active{% endif %} uppercase" href="{% url 'colleagues_list' %}">Колеги</a>
             {% if perms.planner.view_receiver or perms.planner.view_project or perms.planner.view_customer or perms.planner.view_company %}
             <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -124,6 +124,7 @@
                 {% if perms.planner.view_contractor %}
                 <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Підрядники</a>
                 {% endif %}
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
             </div>
             {% endif %}
             {% if request.user.is_superuser %}

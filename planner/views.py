@@ -1298,11 +1298,11 @@ class CompanyDelete(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EmployeeList(ListView):
-    """ ListView for EmployeeList.
+class СolleaguesList(ListView):
+    """ ListView for Сolleagues.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Employee
-    template_name = "planner/employee_list.html"
+    template_name = "planner/colleagues_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 18
     
@@ -1334,12 +1334,53 @@ class EmployeeList(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EmployeeDetail(DetailView):
+class EmployeeList(ListView):
+    """ ListView for Employee.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Employee
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 18
+    
+    def get_queryset(self):
+        employees = Employee.objects.filter(user__is_active=True)\
+                                    .order_by('name')\
+                                    .annotate(url=Concat(F('pk'), Value('/change/')))\
+                                    .values_list('name',  'url')
+        search_string = self.request.GET.get('filter', '').split()
+        for word in search_string:
+            employees = employees.filter(Q(name__icontains=word))
+        return employees
+    
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'ПІБ', 1],
+                              ['owner_count', 'Керівник проектів', 0],
+                              ['task_count', 'Виконавець в проектах', 0],
+                              ['inttask_count', 'Завдання', 0],
+                              ['total_bonuses', 'Бонуси', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_employee'):
+            context['add_url'] = reverse('employee_add')
+            context['add_help_text'] = 'Додати працівника'
+        context['header_main'] = 'Працівники'
+        context['objects_count'] = Employee.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class СolleaguesDetail(DetailView):
     model = Employee
     context_object_name = 'employee'
 
     def get_context_data(self, **kwargs):
-        context = super(EmployeeDetail, self).get_context_data(**kwargs)
+        context = super(СolleaguesDetail, self).get_context_data(**kwargs)
         return context
 
 

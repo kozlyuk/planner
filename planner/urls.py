@@ -72,11 +72,13 @@ urlpatterns = [
     url(r'^login/$', views.login_page, name='login_page'),
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
+    url(r'^colleagues/$', views.СolleaguesList.as_view(), name='colleagues_list'),
+    url(r'^colleagues/(?P<pk>\d+)/detail/$', views.СolleaguesDetail.as_view(), name='colleagues_detail'),
+
     url(r'^employee/$', views.EmployeeList.as_view(), name='employee_list'),
     url(r'^employee/add$', views.EmployeeCreate.as_view(), name='employee_add'),
     url(r'^employee/(?P<pk>\d+)/delete/$', views.EmployeeDelete.as_view(), name='employee_delete'),
     url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
-    url(r'^employee/(?P<pk>\d+)/detail/$', views.EmployeeDetail.as_view(), name='employee_detail'),
     url(r'^employee/change/$', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.BonusesCalc.as_view(), name='bonus_calc'),
