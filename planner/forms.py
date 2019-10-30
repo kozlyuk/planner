@@ -606,6 +606,7 @@ class EmployeeForm(forms.ModelForm):
         self.fields['birthday'].widget = AdminDateWidget()
         groups = [(group.id, group.name) for group in Group.objects.all()]
         self.fields['groups'].choices = groups
+        self.fields['is_active'].widget.attrs.update({'style': 'height:15px;'})
 
     username = forms.CharField(label='Логін', max_length=255, required=True)
     password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
