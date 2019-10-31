@@ -632,8 +632,8 @@ class EmployeeForm(forms.ModelForm):
                                        widget=forms.PasswordInput)
     email = forms.EmailField(label='Email', max_length=255, required=True)
     groups = forms.MultipleChoiceField(label='Група', required=True, widget=Select2MultipleWidget)
-    is_active = forms.BooleanField(label='Активний', initial=True)
-    is_staff = forms.BooleanField(label='Штатний працівник', initial=True)
+    is_active = forms.BooleanField(label='Активний', initial=True, required=False)
+    is_staff = forms.BooleanField(label='Штатний працівник', initial=True, required=False)
 
     def clean(self):
         cleaned_data = super().clean()
