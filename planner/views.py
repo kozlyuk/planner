@@ -1400,8 +1400,6 @@ class EmployeeUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Користувач: ' + str(self.object.name)
-        context['back_btn_url'] = reverse('employee_delete', kwargs={'pk': self.object.pk})
-        context['back_btn_text'] = 'Видалити'
         return context
 
 
