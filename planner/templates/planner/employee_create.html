@@ -63,9 +63,11 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.11/css/select2.min.css" rel="stylesheet" />
 {% endblock css %}
 
 {% block extrahead %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.11/js/select2.min.js"></script>
 <script type="text/javascript">
     window.onerror = function (msg) {
         $("body").attr("JSError", msg);

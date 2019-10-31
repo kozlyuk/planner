@@ -6,7 +6,7 @@ from planner.models import User, Task, Customer, Execution, Order, Sending, Deal
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
-from django_select2.forms import Select2Widget
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.contrib.admin.widgets import AdminDateWidget
 from crum import get_current_user
 from .formatChecker import NotClearableFileInput
@@ -613,7 +613,7 @@ class EmployeeForm(forms.ModelForm):
     password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
                                        widget=forms.PasswordInput)
     email = forms.EmailField(label='Email', max_length=255, required=True)
-    groups = forms.ChoiceField(label='Група', required=False)
+    groups = forms.ChoiceField(label='Група', required=False, widget=Select2MultipleWidget)
     is_active = forms.BooleanField(label='Активний', initial=True)
 
     class Meta:

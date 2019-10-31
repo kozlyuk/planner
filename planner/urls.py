@@ -94,6 +94,9 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/change/$', views.EventUpdate.as_view(), name='event_update'),
     url(r'^event/add/$', views.EventCreate.as_view(), name='event_add'),
     url(r'^event/(?P<pk>[0-9]+)/delete/$', views.EventDelete.as_view(), name='event_delete'),
+
+
+    url(r'^select2/', include('django_select2.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
