@@ -1344,8 +1344,7 @@ class EmployeeList(ListView):
     paginate_by = 18
     
     def get_queryset(self):
-        employees = Employee.objects.filter(user__is_active=True) \
-                                    .order_by('name')\
+        employees = Employee.objects.order_by('name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
                                     .values_list('name',  'url')
         search_string = self.request.GET.get('filter', '').split()
@@ -1400,9 +1399,8 @@ class EmployeeUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        name = context['employee']
-        context['header_main'] = 'Користувач: ' + str(name)
-        context['back_btn_url'] = reverse('employee_delete', kwargs={'pk':name.pk})
+        context['header_main'] = 'Користувач: ' + str(self.object.name)
+        context['back_btn_url'] = reverse('employee_delete', kwargs={'pk': self.object.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
