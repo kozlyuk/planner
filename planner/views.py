@@ -1437,30 +1437,6 @@ class EmployeeCreate(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EmployeeDelete(DeleteView):
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
-    model = Employee
-    template_name = "planner/generic_confirm_delete.html"
-    success_url = reverse_lazy('emloyee_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        employee = context['employee']
-        context['go_back_url'] = reverse('employee_update', kwargs={'pk':employee.pk})
-        context['main_header'] = 'Видалити користувача?'
-        context['header'] = 'Видалення "' + str(employee) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.tasks.exists():
-            context['objects'] = obj.tasks.all()
-        return context
-
-
-@method_decorator(login_required, name='dispatch')
 class ContractorList(ListView):
     """ ListView for Contractor.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
