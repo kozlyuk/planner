@@ -62,12 +62,12 @@
                                             {{ header_main }}
                                         </button>
                                     </div>
-                                {% if add_url %}
+                                {% comment %} {% if add_url %}
                                 <button onclick="window.location.href = '{{ add_url }}'"
                                     class="btn dark btn-sm btn-outline sbold uppercase"
                                     style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
                                     <i class="fa fa-plus"></i> {{add_help_text}} </button>
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                                 </div>
                             </div>
                         </h2>

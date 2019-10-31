@@ -74,26 +74,6 @@
                             href="{% url 'deal_list' %}">Договори</a></li>
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'colleagues_list' %}">Колеги</a></li>
-                    {% if perms.planner.view_receiver %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'receiver_list' %}">Адресати</a></li>
-                    {% endif %}
-                    {% if perms.planner.view_project %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'project_type_list' %}">Види робіт</a></li>
-                    {% endif %}
-                    {% if perms.planner.view_customer %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'customer_list' %}">Замовники</a></li>
-                    {% endif %}
-                    {% if perms.planner.view_company %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'company_list' %}">Компанії</a></li>
-                    {% endif %}
-                    {% if perms.planner.view_contractor %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'contractor_list' %}">Підрядники</a></li>
-                    {% endif %}
 
                     {% if request.user.is_superuser %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
