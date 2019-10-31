@@ -1308,6 +1308,7 @@ class СolleaguesList(ListView):
     
     def get_queryset(self):
         employees = Employee.objects.filter(user__is_active=True)\
+                                    .exclude(name__startswith='Аутсорсинг') \
                                     .order_by('name')\
                                     .annotate(url=Concat(F('pk'), Value('/detail/')))\
                                     .values_list('avatar', 'name', 'url', 'position')
@@ -1343,7 +1344,7 @@ class EmployeeList(ListView):
     paginate_by = 18
     
     def get_queryset(self):
-        employees = Employee.objects.filter(user__is_active=True)\
+        employees = Employee.objects.filter(user__is_active=True) \
                                     .order_by('name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
                                     .values_list('name',  'url')
