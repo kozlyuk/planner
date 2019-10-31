@@ -29,7 +29,9 @@
                             <div class="card-body">
                             {{ form.non_form_errors }}
                                 {% for field in form %}
+                                <p>
                                 {{field.errors}}
+                                </p>
                                 <div class="form-group row">
                                     <label for="id_{{ field.name }}" class="col-sm-2 col-form-label">{{ field.label }}</label>
                                     <div class="col-sm-10">
