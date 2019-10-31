@@ -77,7 +77,6 @@ urlpatterns = [
 
     url(r'^employee/$', views.EmployeeList.as_view(), name='employee_list'),
     url(r'^employee/add$', views.EmployeeCreate.as_view(), name='employee_add'),
-    # url(r'^employee/(?P<pk>\d+)/delete/$', views.EmployeeDelete.as_view(), name='employee_delete'),
     url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
     url(r'^employee/change/$', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
