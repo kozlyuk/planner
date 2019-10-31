@@ -611,6 +611,7 @@ class EmployeeForm(forms.ModelForm):
         self.fields['vacation_date'].widget = AdminDateWidget()
         self.fields['birthday'].widget = AdminDateWidget()
         self.fields['is_active'].widget.attrs.update({'style': 'height:15px;'})
+        self.fields['is_staff'].widget.attrs.update({'style': 'height:15px;'})
         groups = Group.objects.all().order_by('pk').values_list('pk', 'name')
         self.fields['groups'].choices = groups
         if self.instance.pk:
@@ -623,6 +624,7 @@ class EmployeeForm(forms.ModelForm):
             self.fields['groups'].choices = groups
             self.fields['groups'].initial = list(self.instance.user.groups.values_list('pk', flat=True))
             self.fields['is_active'].initial = self.instance.user.is_active
+            self.fields['is_staff'].initial = self.instance.user.is_staff
 
     username = forms.CharField(label='Логін', max_length=255, required=True)
     password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
@@ -631,6 +633,7 @@ class EmployeeForm(forms.ModelForm):
     email = forms.EmailField(label='Email', max_length=255, required=True)
     groups = forms.MultipleChoiceField(label='Група', required=True, widget=Select2MultipleWidget)
     is_active = forms.BooleanField(label='Активний', initial=True)
+    is_staff = forms.BooleanField(label='Штатний працівник', initial=True)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -654,22 +657,29 @@ class EmployeeForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-
-        username = self.cleaned_data.get('username')
         pib_name = self.cleaned_data.get('name').split()
         password = self.cleaned_data.get('password')
         email = self.cleaned_data.get('email')
         groups = self.cleaned_data.get('groups')
         is_active = self.cleaned_data.get('is_active')
+        is_staff = self.cleaned_data.get('is_staff')
 
         if commit:
-            user, created = User.objects.update_or_create(username=username,
-                                                          defaults={'email': email, 'is_staff': True,
-                                                                    'is_active': is_active,
-                                                                    'first_name': pib_name[0], 'last_name': pib_name[1]})
-            user.set_password(password)
-
-            user.groups.clear()
+            if self.instance.pk:
+                user = User.objects.filter(pk=self.instance.pk)
+            else:
+                username = self.cleaned_data.get('username')
+                user = User(username=username)
+            user.email = email
+            user.is_active = is_active
+            user.is_staff = is_staff
+            user.first_name = pib_name[0]
+            user.last_name = pib_name[1]
+            user.save()
+            if not self.instance.pk or password:
+                user.set_password(password)
+            if self.instance.pk:
+                user.groups.clear()
             for group_pk in groups:
                 group = Group.objects.get(pk=group_pk)
                 group.user_set.add(user)
