@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
+    url(r'^project/sprint/$', views.SprintTaskList.as_view(), name='sprint_list'),
 
     url(r'^receiver/$', views.ReceiverList.as_view(), name='receiver_list'),
     url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),

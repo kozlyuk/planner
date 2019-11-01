@@ -1,13 +1,14 @@
 # -*- encoding: utf-8 -*-
 from django import forms
 from django.contrib.auth.models import User, Group
-from planner.models import User, Task, Customer, Execution, Order, Sending, Deal, Employee,\
+from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
                            Project, Company, News, Event, Receiver, Contractor
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.contrib.admin.widgets import AdminDateWidget
+from datetime import timedelta, date
 from crum import get_current_user
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
@@ -96,10 +97,10 @@ class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DealFilterForm, self).__init__(*args, **kwargs)
 
-        customer = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customer = list(Customer.objects.all().values_list('pk', 'name'))
         customer.insert(0, (0, "Всі"))
 
-        company = [(company.id, company.name) for company in Company.objects.all()]
+        company = list(Company.objects.all().values_list('pk', 'name'))
         company.insert(0, (0, "Всі"))
 
         act_status = []
@@ -229,9 +230,11 @@ class TaskFilterForm(forms.Form):
         exec_status.insert(3, ('HD', "Виконано"))
         exec_status.insert(4, ('ST', "Надіслано"))
 
-        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').order_by().distinct()]
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
         owners.insert(0, (0, "Всі"))
-        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
@@ -242,6 +245,37 @@ class TaskFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class SprintFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(TaskFilterForm, self).__init__(*args, **kwargs)
+        exec_status = []
+        exec_status.insert(0, (0, "Всі"))
+        exec_status.insert(1, ('IW', "В черзі"))
+        exec_status.insert(2, ('IP', "Виконується"))
+        exec_status.insert(3, ('HD', "Виконано"))
+        exec_status.insert(4, ('ST', "Надіслано"))
+        self.fields['exec_status'].initial = [1, 2]
+
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
+        owners.insert(0, (0, "Всі"))
+
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
+        customers.insert(0, (0, "Всі"))
+
+        self.fields['exec_status'].choices = exec_status
+        self.fields['owner'].choices = owners
+        self.fields['customer'].choices = customers
+
+    exec_status = forms.MultipleChoiceField(label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()'}))
+    owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(),
+                                 initial=date.today() + timedelta((0-date.today().weekday()) % 7))
+    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget(),
+                                  initial=date.today() + timedelta((0-date.today().weekday()) % 7))
 
 
 class TaskForm(forms.ModelForm):
@@ -540,7 +574,7 @@ class ProjectFilterForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
         self.fields['customer'].choices = customers
     

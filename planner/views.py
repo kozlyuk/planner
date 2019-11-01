@@ -18,7 +18,8 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
-from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order, IntTask, News, Event, Customer, Company, Contractor
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
+                           IntTask, News, Event, Customer, Company, Contractor
 
 
 class Round(Func):
@@ -776,6 +777,50 @@ class TaskExchange(FormView):
         return super(TaskExchange, self).form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
+class SprintTaskList(ListView):
+    model = Task
+    context_object_name = 'tasks'  # Default: object_list
+    paginate_by = 50
+    success_url = reverse_lazy('home_page')
+
+    def get_queryset(self):
+        tasks = Task.objects.all()
+        exec_status = self.request.GET.get('exec_status', '0')
+        owner = self.request.GET.get('owner', '0')
+        customer = self.request.GET.get('customer', '0')
+        start_date = self.request.GET.get('start_date', '0')
+        finish_date = self.request.GET.get('finish_date', '0')
+        order = self.request.GET.get('o', '0')
+
+        if exec_status != '0':
+            tasks = tasks.filter(exec_status=exec_status)
+        if owner != '0':
+            tasks = tasks.filter(owner=owner)
+        if customer != '0':
+            tasks = tasks.filter(deal__customer=customer)
+        if start_date != '0':
+            tasks = tasks.filter(planned_start__gte=start_date)
+        if finish_date != '0':
+            tasks = tasks.filter(planned_finish__lte=finish_date)
+        if order != '0':
+            tasks = tasks.order_by(order)
+        else:
+            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        return tasks
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskList, self).get_context_data(**kwargs)
+        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_filtered'] = self.get_queryset().count()
+        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['filter_form'] = forms.SprintFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.SprintFilterForm(self.request.GET)
+        return context
+
+
 # @method_decorator(login_required, name='dispatch')
 # class TaskRegistry(FormView):
 #     template_name = 'planner/task_registry.html'
@@ -1344,7 +1389,7 @@ class EmployeeList(ListView):
     paginate_by = 18
     
     def get_queryset(self):
-        employees = Employee.objects.order_by('name')\
+        employees = Employee.objects.order_by('-user__is_active', 'name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
                                     .values_list('name',  'url')
         search_string = self.request.GET.get('filter', '').split()

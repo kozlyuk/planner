@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
