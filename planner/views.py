@@ -810,7 +810,7 @@ class SprintTaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-        context = super(TaskList, self).get_context_data(**kwargs)
+        context = super(SprintTaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.get_queryset().count()
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']

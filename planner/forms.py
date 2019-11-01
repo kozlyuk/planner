@@ -249,7 +249,7 @@ class TaskFilterForm(forms.Form):
 
 class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(TaskFilterForm, self).__init__(*args, **kwargs)
+        super(SprintFilterForm, self).__init__(*args, **kwargs)
         exec_status = []
         exec_status.insert(0, (0, "Всі"))
         exec_status.insert(1, ('IW', "В черзі"))
