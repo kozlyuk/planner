@@ -269,7 +269,7 @@ class SprintFilterForm(forms.Form):
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
 
-    exec_status = forms.MultipleChoiceField(label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()'}))
+    exec_status = forms.MultipleChoiceField(label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', 'style': 'width: 120px '}))
     owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(),

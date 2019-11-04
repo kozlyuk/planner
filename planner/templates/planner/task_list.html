@@ -5,143 +5,157 @@
 {% load static %}
 
 {% block context %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
-    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
-         xmlns="http://www.w3.org/1999/html">
-        <br><!-- BEGIN CONTENT -->
-        <div class="container-fluid">
-                <div class="portlet-body">
-                    <!-----------------------filter panel-------------------------->
-                <div class="accordion" id="filter">
-                    <div class="card">
-                        <div class="card-header" id="filter">
-                            <h2 class="mb-0">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="panel-title">
-                                            <button class="btn text-muted bold btn-block" type="button"
-                                                data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
-                                                aria-controls="filterBody">
-                                                Проекти
-                                            </button>
-                                        </div>
-                                        {% if perms.planner.add_task %}
-                                        <button onclick="window.location.href = '{% url 'task_add' %}'"
-                                            class="btn dark btn-sm btn-outline sbold uppercase"
-                                            style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
-                                            <i class="fa fa-plus"></i> Додати проект </button>
-                                        {% endif %}
+<style>
+    .select2-container--bootstrap {
+        display: inline-table
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <br><!-- BEGIN CONTENT -->
+    <div class="container-fluid">
+        <div class="portlet-body">
+            <!-----------------------filter panel-------------------------->
+            <div class="accordion" id="filter">
+                <div class="card">
+                    <div class="card-header" id="filter">
+                        <h2 class="mb-0">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="panel-title">
+                                        <button class="btn text-muted bold btn-block" type="button"
+                                            data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
+                                            aria-controls="filterBody">
+                                            Проекти
+                                        </button>
                                     </div>
+                                    {% if perms.planner.add_task %}
+                                    <button onclick="window.location.href = '{% url 'task_add' %}'"
+                                        class="btn dark btn-sm btn-outline sbold uppercase"
+                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
+                                        <i class="fa fa-plus"></i> Додати проект </button>
+                                    {% endif %}
                                 </div>
-                            </h2>
-                        </div>
+                            </div>
+                        </h2>
+                    </div>
 
-                        <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
+                    <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
                         <div class="card-body">
                             <div class="container-fluid " style="display:block">
-                                        <form action="{% url 'task_list' %}" method="get">
-                                            {% for hidden_field in filter_form.hidden_fields %}
-                                                {{ hidden_field }}
-                                            {% endfor %}
+                                <form action="{% url 'task_list' %}" method="get">
+                                    {% for hidden_field in filter_form.hidden_fields %}
+                                    {{ hidden_field }}
+                                    {% endfor %}
 
-                                            {% for field in filter_form.visible_fields %}
-                                                {{ field.label_tag }}
-                                                {{ field }}
-                                                {% if field.help_text %}
-                                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                {% endif %}
-                                            {% endfor %}
-                                                {% if field.help_text %}
-                                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                {% endif %}
-                                                <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                                <i class="fa fa-search"></i>Пошук </button>
-                                        </form>
-                                    </div>
-                        </div>
+                                    {% for field in filter_form.visible_fields %}
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% if field.help_text %}
+                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                        <i class="fa fa-search"></i>Пошук </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-                    <!-----------------------filter panel-------------------------->
-                    
-                    <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
-                        <div class="table-scrollable">
-                            <table class="table table-striped table-advance table-hover">
-                                <thead>
-                                <tr>
-                                    <th></th>
-                                    <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
-                                    <th class="hidden-xs"><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА ОБ'ЄКТУ </a></th>
-                                    <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ </a></th>
-                                    <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
-                                    <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
-                                    <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
-                                    <th> ПОПЕРЕДЖЕННЯ </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for task in tasks %}
-                                    <tr>
-                                        <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
-                                        {% if task.is_editable %}
-                                            <td><a href="{% url 'task_update' task.id %}"> {{ task.object_code }} </a></td>
-                                        {% elif task.is_viewable %}
-                                            <td><a href="{% url 'task_detail' task.id %}"> {{ task.object_code }} </a></td>
-                                        {% else %}
-                                            <td> {{ task.object_code }} </td>
-                                        {% endif %}
-                                        <td class="hidden-xs">
-                                            {% if task.pdf_copy %}
-                                                <a href="{% media_url task.pdf_copy %}"> {{ task.object_address }} </a>
-                                            {% else %}
-                                                {{ task.object_address }}
-                                            {% endif %}
-                                        </td>
-                                        <td> {{ task.project_type }}</td>
-                                        <td class="hidden-xs">
-                                            {% if perms.planner.change_deal %}
-                                            <a href="{% url 'deal_update' task.deal.id %}"> {{ task.deal }} </a>
-                                            {% else %}
-                                            {{ task.deal }}
-                                            {% endif %}
-                                        </td>
-                                        <td> {{ task.get_exec_status_display }} </td>
-                                        <td> {{ task.owner.name }} </td>
-                                        <td><span class="badge badge-pill badge-{% task_overdue_color task.warning %} label-mini">
-                                            {{ task.warning }}
-                                        </span></td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+            </div>
+            <!-----------------------filter panel-------------------------->
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="text-center">
-                                    {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього) </a><br>
-                                    {% include 'pagination.html' %}
-                                </div>
-                            </div>
-                        </div>
-                        {% if perms.planner.change_deal %}
-                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                    style="float: right;">Змінити договір</button>
-                        {% endif %}
-                    </form>
-                    <!-- END PAGE BASE CONTENT -->
+            <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
+                <div class="table-scrollable">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
+                                <th class="hidden-xs"><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА
+                                        ОБ'ЄКТУ </a></th>
+                                <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ
+                                    </a></th>
+                                <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}">
+                                        ДОГОВІР </a></th>
+                                <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
+                                <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
+                                <th> ПОПЕРЕДЖЕННЯ </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
+                                {% if task.is_editable %}
+                                <td><a href="{% url 'task_update' task.id %}"> {{ task.object_code }} </a></td>
+                                {% elif task.is_viewable %}
+                                <td><a href="{% url 'task_detail' task.id %}"> {{ task.object_code }} </a></td>
+                                {% else %}
+                                <td> {{ task.object_code }} </td>
+                                {% endif %}
+                                <td class="hidden-xs">
+                                    {% if task.pdf_copy %}
+                                    <a href="{% media_url task.pdf_copy %}"> {{ task.object_address }} </a>
+                                    {% else %}
+                                    {{ task.object_address }}
+                                    {% endif %}
+                                </td>
+                                <td> {{ task.project_type }}</td>
+                                <td class="hidden-xs">
+                                    {% if perms.planner.change_deal %}
+                                    <a href="{% url 'deal_update' task.deal.id %}"> {{ task.deal }} </a>
+                                    {% else %}
+                                    {{ task.deal }}
+                                    {% endif %}
+                                </td>
+                                <td> {{ task.get_exec_status_display }} </td>
+                                <td> {{ task.owner.name }} </td>
+                                <td><span
+                                        class="badge badge-pill badge-{% task_overdue_color task.warning %} label-mini">
+                                        {{ task.warning }}
+                                    </span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
+                            </a><br>
+                            {% include 'pagination.html' %}
+                        </div>
+                    </div>
+                </div>
+                {% if perms.planner.change_deal %}
+                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
+                    договір</button>
+                {% endif %}
+            </form>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
         <!-- END CONTENT -->
     </div>
     <!-- END CONTAINER -->
+</div>
 {% endblock %}
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 {% endblock css %}
 
 {% block extrahead %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
 {% endblock extrahead %}

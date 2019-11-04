@@ -104,6 +104,9 @@
                 {% if perms.planner.view_contractor %}
                 <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Підрядники</a>
                 {% endif %}
+                {% if perms.planner.view_task %}
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
+                {% endif %}
                 <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
             </div>
             {% endif %}
@@ -213,6 +216,7 @@
 <!-- END THEME LAYOUT SCRIPTS -->
 <!-- MEDIA JS -->
 {{ form.media.js }}
+{{ filter_form.media.js }}
 <!-- MEDIA JS -->
 </body>
 
