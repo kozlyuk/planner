@@ -18,6 +18,7 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
+from django.utils.html import format_html
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                            IntTask, News, Event, Customer, Company, Contractor
 
@@ -617,6 +618,8 @@ class TaskList(ListView):
         context = super(TaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.get_queryset().count()
+        context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
+        context['submit_button_text'] = 'Пошук'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = forms.TaskFilterForm(self.request.POST)
@@ -813,6 +816,8 @@ class SprintTaskList(ListView):
         context = super(SprintTaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.get_queryset().count()
+        context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
+        context['submit_button_text'] = 'Застосувати фільтр'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = forms.SprintFilterForm(self.request.POST)

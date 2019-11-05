@@ -61,9 +61,11 @@
                                     {% if field.help_text %}
                                     <small class="form-text text-secondary">{{ field.help_text }}</small>
                                     {% endif %}
-                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                        <i class="fa fa-search"></i>Пошук </button>
+                                    {% if submit_button_text %}
+                                        <button type="submit" class="btn btn-sm btn-primary uppercase"
+                                            style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
+                                            {{ submit_icon }} {{ submit_button_text }} </button>
+                                    {% endif %}
                                 </form>
                             </div>
                         </div>
