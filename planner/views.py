@@ -618,6 +618,7 @@ class TaskList(ListView):
         context = super(TaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.get_queryset().count()
+        context['form_action'] = reverse('task_list')
         context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
         context['submit_button_text'] = 'Пошук'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
@@ -815,6 +816,7 @@ class SprintTaskList(ListView):
     def get_context_data(self, **kwargs):
         context = super(SprintTaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
+        context['form_action'] = reverse('sprint_list')
         context['tasks_filtered'] = self.get_queryset().count()
         context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
         context['submit_button_text'] = 'Застосувати фільтр'

@@ -46,7 +46,7 @@
                     <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
                         <div class="card-body">
                             <div class="container-fluid " style="display:block">
-                                <form action="{% url 'task_list' %}" method="get">
+                                <form action="{{ form_action }}" method="get">
                                     {% for hidden_field in filter_form.hidden_fields %}
                                     {{ hidden_field }}
                                     {% endfor %}
