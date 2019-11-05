@@ -273,8 +273,9 @@ class SprintFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     start_date = forms.DateField(label='Період', widget=forms.DateInput(attrs={"class" : "air-datepicker",
-                                                                                     "data-range" : "true",
-                                                                                     "data-multiple-dates-separator" : " - "}))
+                                                                               "data-range" : "true",
+                                                                               "data-multiple-dates-separator" : " - ",
+                                                                               "autocomplete" : "off"}))
 
 
 class TaskForm(forms.ModelForm):
