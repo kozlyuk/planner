@@ -597,6 +597,8 @@ class Task(models.Model):
         title = self.object_code + ' ' + self.project_type.price_code
         if not self.pk:
             self.creator = get_current_user()
+        if self.exec_status == Task.Done and self.project_type.copies_count == 0:
+            self.exec_status == Task.Sent
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Доданий проект', extra={"title": title})
@@ -734,9 +736,6 @@ def update_subtasks(sender, instance, **kwargs):
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
-    if instance.exec_status == Task.Done and instance.project_type.copies_count == 0:
-        instance.exec_status == Task.Sent
-        instance.save()
     from planner.tasks import update_task_statuses
     update_task_statuses(instance.pk)
 
