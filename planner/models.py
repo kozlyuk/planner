@@ -598,7 +598,7 @@ class Task(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if self.exec_status == Task.Done and self.project_type.copies_count == 0:
-            self.exec_status == Task.Sent
+            self.exec_status = Task.Sent
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Доданий проект', extra={"title": title})
