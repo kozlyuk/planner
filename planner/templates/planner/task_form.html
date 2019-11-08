@@ -237,18 +237,18 @@
                                             </div>
                                         </div>
                                         <div class="form-actions">
-                                            {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
+                                            {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
                                                 class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                            {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
+                                            {% else %}<button href="{% url 'task_list' %}?{{ filters }}"
                                                 class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
                                             {% endif %}
                                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                                 style="float: right;">Зберегти</button>
-                                            {% if deal.pk %}
+                                            {% comment %} {% if task.pk %}
                                             <a href="{% url 'calculation' deal.pk %}"
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Калькуляція по договору</a>
-                                            {% endif %}
+                                            {% endif %} {% endcomment %}
                                         </div>
                                     </div>
                                 </div>
