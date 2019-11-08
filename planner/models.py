@@ -734,6 +734,9 @@ def update_subtasks(sender, instance, **kwargs):
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
+    if instance.exec_status == Task.Done and instance.project_type.copies_count == 0:
+        instance.exec_status == Task.Sent
+        instance.save()
     from planner.tasks import update_task_statuses
     update_task_statuses(instance.pk)
 
