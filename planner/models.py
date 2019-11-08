@@ -123,16 +123,14 @@ class Employee(models.Model):
         # owner bonuses
 
     def inttask_bonuses(self, delta):
-        bonuses = 0
         month, year = self.date_delta(delta)
 
-        inttasks = self.inttask_set.filter(exec_status=IntTask.Done,
-                                           actual_finish__month=month,
-                                           actual_finish__year=year)
-        for query in inttasks:
-            bonuses += query.bonus
+        bonuses = self.inttask_set.filter(exec_status=IntTask.Done,
+                                          actual_finish__month=month,
+                                          actual_finish__year=year)\
+                                  .aggregate(Sum('bonus'))['bonus__sum']
 
-        return round(bonuses, 2)
+        return round(bonuses, 2) if bonuses else 0
         # inttask bonuses
 
     def total_bonuses(self, delta):
@@ -736,6 +734,9 @@ def update_subtasks(sender, instance, **kwargs):
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
+    if instance.exec_status == Task.Done and instance.project_type.copies_count == 0:
+        instance.exec_status == Task.Sent
+        instance.save()
     from planner.tasks import update_task_statuses
     update_task_statuses(instance.pk)
 

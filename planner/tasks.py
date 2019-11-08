@@ -19,12 +19,11 @@ def update_task_statuses(task_id=None):
     else:
         tasks = Task.objects.order_by('-id')[:500]
     for task in tasks:
+        sending_status = task.sending_status()
         if task.manual_warning:
             warning = task.manual_warning
-        elif task.exec_status == Task.Done:
-            send_status = task.sending_status()
-            if send_status != 'Надіслано':
-                warning = send_status
+        elif task.exec_status == Task.Done and sending_status != 'Надіслано':
+            warning = sending_status
         elif task.exec_status in [Task.Sent, Task.Done] and task.actual_finish:
             warning = 'Виконано %s' % task.actual_finish.strftime(date_format)
         elif task.execution_status() == 'Виконано':
@@ -33,13 +32,13 @@ def update_task_statuses(task_id=None):
             if task.planned_finish < date.today():
                 warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
             elif task.planned_finish - timedelta(days=7) <= date.today():
-                warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершується %s' % task.planned_finish.strftime(date_format)
             else:
                 warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
         elif task.deal.expire_date < date.today():
             warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
         elif task.deal.expire_date - timedelta(days=7) <= date.today():
-            warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершується %s' % task.deal.expire_date.strftime(date_format)
         else:
             warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
 
@@ -74,10 +73,12 @@ def update_deal_statuses(deal_id=None):
             value_calc = deal.value_calc() + deal.value_correction
             if deal.value > 0 and deal.value != value_calc:
                 warning = 'Вартість по роботам %s' % value_calc
-            if deal.act_status == deal.NotIssued or deal.act_status == deal.PartlyIssued:
+            elif deal.act_status == deal.NotIssued or deal.act_status == deal.PartlyIssued:
                 warning = 'Очікує закриття акту'
-            if deal.pay_status != deal.PaidUp and deal.pay_date:
+            elif deal.pay_status != deal.PaidUp and deal.pay_date:
                 warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
+            else:
+                warning = ''
         elif deal.expire_date < date.today():
             warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
         elif deal.expire_date - timedelta(days=7) <= date.today():
@@ -317,7 +318,7 @@ def send_overdue_tasks_report():
                            </tr>'. \
                     format(index, task.pk, task.object_code, task.object_address,
                            task.project_type, task.get_exec_status_display(),
-                           task.planned_finish, task.overdue_status())
+                           task.planned_finish, task.warning)
 
             message += '</table><br>'
 
@@ -341,7 +342,7 @@ def send_overdue_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
 
             message += '</table></body></html><br>'
 
@@ -429,7 +430,7 @@ def send_urgent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table><br>'
 
         if etasks.exists():
@@ -452,7 +453,7 @@ def send_urgent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table></body></html><br>'
 
         if einttasks.exists():
@@ -527,7 +528,7 @@ def send_unsent_tasks_report():
                            </tr>' \
                     .format(index, task.pk, task.object_code, task.object_address,
                             task.project_type, task.get_exec_status_display(),
-                            task.planned_finish, task.overdue_status())
+                            task.planned_finish, task.warning)
             message += '</table><br>'
 
             emails.append(mail.EmailMessage(
