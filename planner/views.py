@@ -793,8 +793,7 @@ class SprintTaskList(ListView):
         exec_status = self.request.GET.get('exec_status', '0')
         owner = self.request.GET.get('owner', '0')
         customer = self.request.GET.get('customer', '0')
-        start_date = self.request.GET.get('start_date', '0')
-        finish_date = self.request.GET.get('finish_date', '0')
+        data_range = self.request.GET.get('data_range')
         order = self.request.GET.get('o', '0')
 
         if exec_status != '0':
@@ -803,10 +802,10 @@ class SprintTaskList(ListView):
             tasks = tasks.filter(owner=owner)
         if customer != '0':
             tasks = tasks.filter(deal__customer=customer)
-        if start_date != '0':
-            tasks = tasks.filter(planned_start__gte=start_date)
-        if finish_date != '0':
-            tasks = tasks.filter(planned_finish__lte=finish_date)
+        if data_range:
+            start_date = datetime.strptime(data_range[:10], '%d.%m.%Y')
+            end_date = datetime.strptime(data_range[13:], '%d.%m.%Y')
+            tasks = tasks.filter(planned_start__gte=start_date, planned_finish__lte=end_date)
         if order != '0':
             tasks = tasks.order_by(order)
         else:
