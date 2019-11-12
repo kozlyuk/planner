@@ -8,7 +8,6 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.contrib.admin.widgets import AdminDateWidget
-from datetime import timedelta, date
 from crum import get_current_user
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
@@ -268,14 +267,14 @@ class SprintFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
                               widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(),
-                                 initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 7))
-    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget(),
-                                  initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 2))
-#    data_range = forms.DateField(label='Період', widget=forms.DateInput(attrs={"class": "air-datepicker",
-#                                                                               "data-range": "true",
-#                                                                               "data-multiple-dates-separator": " - ",
-#                                                                               "autocomplete": "off"}))
+#    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(),
+#                                 initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 7))
+#    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget(),
+#                                  initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 2))
+    data_range = forms.DateField(label='Період', widget=forms.DateInput(attrs={"class": "air-datepicker",
+                                                                               "data-range": "true",
+                                                                               "data-multiple-dates-separator": " - ",
+                                                                               "autocomplete": "off"}))
 
 
 class TaskForm(forms.ModelForm):
