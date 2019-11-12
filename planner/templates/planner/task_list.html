@@ -166,7 +166,7 @@
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
     const startDate = new Date('{{ start_date }}');
     const finishDate = new Date(startDate);
-    finishDate.setDate(finishDate.getDate() + 4)
+    finishDate.setDate(finishDate.getDate() + {{ sprint_length }})
     let datepickerStart = $('.air-datepicker-start').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(startDate));
     let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate));
     </script>
