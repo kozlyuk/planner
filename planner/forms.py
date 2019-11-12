@@ -8,6 +8,7 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.contrib.admin.widgets import AdminDateWidget
+from datetime import timedelta, date
 from crum import get_current_user
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
@@ -249,6 +250,9 @@ class TaskFilterForm(forms.Form):
 class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SprintFilterForm, self).__init__(*args, **kwargs)
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
+        exec_status.insert(0, (0, "Всі"))
+
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
         owners.insert(0, (0, "Всі"))
@@ -256,20 +260,22 @@ class SprintFilterForm(forms.Form):
         customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
 
-        self.fields['exec_status'].choices = Task.EXEC_STATUS_CHOICES
-        self.fields['exec_status'].initial = [Task.InProgress]
+        self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
 
-    exec_status = forms.MultipleChoiceField(label='Статус', required=False, widget=Select2MultipleWidget(
-                                            attrs={"onChange": 'submit()', 'style': 'width: 120px '}))
+    exec_status = forms.ChoiceField(label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
                               widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    data_range = forms.DateField(label='Період', widget=forms.DateInput(attrs={"class": "air-datepicker",
-                                                                               "data-range": "true",
-                                                                               "data-multiple-dates-separator": " - ",
-                                                                               "autocomplete": "off"}))
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(),
+                                 initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 7))
+    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget(),
+                                  initial=date.today() + timedelta((0-date.today().weekday()) % 7 - 2))
+#    data_range = forms.DateField(label='Період', widget=forms.DateInput(attrs={"class": "air-datepicker",
+#                                                                               "data-range": "true",
+#                                                                               "data-multiple-dates-separator": " - ",
+#                                                                               "autocomplete": "off"}))
 
 
 class TaskForm(forms.ModelForm):
