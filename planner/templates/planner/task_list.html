@@ -163,6 +163,11 @@
     {% comment %} <script type="text/javascript" src="/static/admin/js/core.js"></script> {% endcomment %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
     <script>
-    $('.air-datepicker').datepicker()
+    {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
+    const startDate = new Date('{{ start_date }}');
+    const finishDate = new Date(startDate);
+    finishDate.setDate(finishDate.getDate() + 4)
+    let datepickerStart = $('.air-datepicker-start').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(startDate));
+    let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate));
     </script>
 {% endblock extrahead %}
