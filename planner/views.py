@@ -495,7 +495,7 @@ class DealList(ListView):
     def get_context_data(self, **kwargs):
         context = super(DealList, self).get_context_data(**kwargs)
         context['deals_count'] = Deal.objects.all().count()
-        context['deals_filtered'] = self.get_queryset().count()
+        context['deals_filtered'] = self.object_list.count()
         self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = forms.DealFilterForm(self.request.POST)
@@ -617,7 +617,7 @@ class TaskList(ListView):
     def get_context_data(self, **kwargs):
         context = super(TaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
-        context['tasks_filtered'] = self.get_queryset().count()
+        context['tasks_filtered'] = self.object_list.count()
         context['form_action'] = reverse('task_list')
         context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
         context['submit_button_text'] = 'Пошук'
@@ -826,7 +826,7 @@ class SprintTaskList(ListView):
         context['sprint_length'] = 4
         context['tasks_count'] = Task.objects.all().count()
         context['form_action'] = reverse('sprint_list')
-        context['tasks_filtered'] = self.get_queryset().count()
+        context['tasks_filtered'] = self.object_list.count()
         context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
         context['submit_button_text'] = 'Застосувати фільтр'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
