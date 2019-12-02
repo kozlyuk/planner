@@ -821,7 +821,7 @@ class SprintTaskList(ListView):
     def get_context_data(self, **kwargs):
         start_date = date.today() + timedelta((0-date.today().weekday()) % 7 - 7)
         context = super(SprintTaskList, self).get_context_data(**kwargs)
-        context['start_date'] = start_date.strftime('%d.%m.%Y')
+        context['start_date'] = start_date.strftime('%Y-%m-%d')
         context['sprint_length'] = 4
         context['tasks_count'] = Task.objects.all().count()
         context['form_action'] = reverse('sprint_list')
@@ -990,7 +990,7 @@ class ReceiverList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
-    
+
     def get_queryset(self):  # todo args url
         receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
             values_list('name', 'address', 'contact_person', 'phone', 'url')
@@ -1003,7 +1003,7 @@ class ReceiverList(ListView):
         if order != '0':
             receivers = receivers.order_by(order)
         return receivers
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1062,7 +1062,7 @@ class ReceiverDelete(DeleteView):
     model = Receiver
     template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('receiver_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
@@ -1083,7 +1083,7 @@ class ProjectList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
-    
+
     def get_queryset(self):
         project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100),
@@ -1099,7 +1099,7 @@ class ProjectList(ListView):
         if order != '0':
             project_types = project_types.order_by(order)
         return project_types
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1120,7 +1120,7 @@ class ProjectList(ListView):
             context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
         else:
             context['filter_form'] = forms.ProjectFilterForm(self.request.GET)
-        
+
         return context
 
 
@@ -1130,7 +1130,7 @@ class ProjectCreate(CreateView):
     form_class = forms.ProjectForm
     template_name = "planner/generic_form.html"
     success_url = reverse_lazy('project_type_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати вид робіт'
@@ -1181,7 +1181,7 @@ class CustomerList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
-    
+
     def get_queryset(self):
         customers = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .values_list('name', 'url')
@@ -1193,7 +1193,7 @@ class CustomerList(ListView):
         if order != '0':
             customers = customers.order_by(order)
         return customers
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1213,7 +1213,7 @@ class CustomerList(ListView):
             context['filter_form'] = forms.CustomerFilterForm(self.request.POST)
         else:
             context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
-        
+
         return context
 
 
@@ -1223,7 +1223,7 @@ class CustomerCreate(CreateView):
     form_class = forms.CustomerForm
     template_name = "planner/generic_form.html"
     success_url = reverse_lazy('customer_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати замовника'
@@ -1274,7 +1274,7 @@ class CompanyList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
-    
+
     def get_queryset(self):
         companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .values_list('name', 'url')
@@ -1286,7 +1286,7 @@ class CompanyList(ListView):
         if order != '0':
             companies = companies.order_by(order)
         return companies
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1314,7 +1314,7 @@ class CompanyCreate(CreateView):
     form_class = forms.CompanyForm
     template_name = "planner/generic_form.html"
     success_url = reverse_lazy('company_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати команію'
@@ -1365,7 +1365,7 @@ class СolleaguesList(ListView):
     template_name = "planner/colleagues_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 18
-    
+
     def get_queryset(self):
         employees = Employee.objects.filter(user__is_active=True)\
                                     .exclude(name__startswith='Аутсорсинг') \
@@ -1376,7 +1376,7 @@ class СolleaguesList(ListView):
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))
         return employees
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1402,7 +1402,7 @@ class EmployeeList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 18
-    
+
     def get_queryset(self):
         employees = Employee.objects.order_by('-user__is_active', 'name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
@@ -1411,7 +1411,7 @@ class EmployeeList(ListView):
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))
         return employees
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1485,7 +1485,7 @@ class EmployeeCreate(CreateView):
     form_class = forms.EmployeeForm
     template_name = "planner/employee_create.html"
     success_url = reverse_lazy('employee_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Додати працівника'
@@ -1502,7 +1502,7 @@ class ContractorList(ListView):
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 15
-    
+
     def get_queryset(self):  # todo args url
         contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
             values_list('name', 'active', 'url')
@@ -1513,7 +1513,7 @@ class ContractorList(ListView):
         if order != '0':
             contractors = contractors.order_by(order)
         return contractors
-    
+
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
@@ -1574,7 +1574,7 @@ class ContractorDelete(DeleteView):
     model = Contractor
     template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('contractor_list')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
