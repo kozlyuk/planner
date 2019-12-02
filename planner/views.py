@@ -809,10 +809,10 @@ class SprintTaskList(ListView):
         else:
             start = date.today() + timedelta((0-date.today().weekday()) % 7)
         if finish_date:
-            finish = datetime.strptime(start_date, '%d.%m.%Y')
+            finish = datetime.strptime(finish_date, '%d.%m.%Y')
         else:
             finish = date.today() + timedelta((0-date.today().weekday()) % 7 + 4)
-        tasks = tasks.filter(planned_start__gte=start, planned_finish__lte=finish)
+        tasks = tasks.filter(planned_finish__gte=start, planned_finish__lte=finish)
         if order != '0':
             tasks = tasks.order_by(order)
         else:
@@ -821,7 +821,7 @@ class SprintTaskList(ListView):
 
     def get_context_data(self, **kwargs):
         start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
-        context = super(SprintTaskList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['start_date'] = start_date.strftime('%Y-%m-%d')
         context['sprint_length'] = 4
         context['tasks_count'] = Task.objects.all().count()
