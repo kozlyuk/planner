@@ -1,7 +1,7 @@
 amqp
 billiard
 celery
-Django
+Django==2.2.8
 django-admin-list-filter-dropdown
 django-appconf
 django-crum
