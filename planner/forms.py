@@ -544,7 +544,7 @@ class EventForm(forms.ModelForm):
         self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeSelfUpdateForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['mobile_phone', 'avatar']
@@ -564,13 +564,13 @@ class ReceiverForm(forms.ModelForm):
 
 
 class ProjectFilterForm(forms.Form):
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
         self.fields['customer'].choices = customers
-    
+
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
 
@@ -623,93 +623,3 @@ class ContractorForm(forms.ModelForm):
 
 class EmployeeFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
-
-
-class EmployeeForm(forms.ModelForm):
-    """ EmployeeForm - form for employees creating or updating """
-    class Meta:
-        model = Employee
-        fields = ['username', 'password', 'password_confirm', 'email', 'groups',
-                  'name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
-                  'birthday', 'salary', 'vacation_count', 'vacation_date']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['vacation_date'].widget = AdminDateWidget()
-        self.fields['birthday'].widget = AdminDateWidget()
-        self.fields['is_active'].widget.attrs.update({'style': 'height:15px;'})
-        self.fields['is_staff'].widget.attrs.update({'style': 'height:15px;'})
-        groups = Group.objects.all().order_by('pk').values_list('pk', 'name')
-        self.fields['groups'].choices = groups
-        if self.instance.pk:
-            self.fields['username'].initial = self.instance.user.username
-            self.fields['username'].widget.attrs['disabled'] = True
-            self.fields['username'].required = False
-            self.fields['password'].required = False
-            self.fields['password_confirm'].required = False
-            self.fields['email'].initial = self.instance.user.email
-            self.fields['groups'].choices = groups
-            self.fields['groups'].initial = list(self.instance.user.groups.values_list('pk', flat=True))
-            self.fields['is_active'].initial = self.instance.user.is_active
-            self.fields['is_staff'].initial = self.instance.user.is_staff
-
-    username = forms.CharField(label='Логін', max_length=255, required=True)
-    password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
-    password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
-                                       widget=forms.PasswordInput)
-    email = forms.EmailField(label='Email', max_length=255, required=True)
-    groups = forms.MultipleChoiceField(label='Група', required=True, widget=Select2MultipleWidget)
-    is_active = forms.BooleanField(label='Активний', initial=True, required=False)
-    is_staff = forms.BooleanField(label='Штатний працівник', initial=True, required=False)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        password_confirm = cleaned_data.get('password_confirm')
-        username = cleaned_data.get('username')
-        pib_name = self.cleaned_data.get('name').split()
-        email = cleaned_data.get('email')
-
-        if self.instance.pk is None:
-            if not password:
-                self.add_error('password', 'Вкажіть будь ласка пароль')
-            if User.objects.filter(username=username).exists():
-                self.add_error('username', 'Такий логін уже існує')
-            if User.objects.filter(email=email).exists():
-                self.add_error('email', 'Працівник з таким Email уже існує')
-        if password != password_confirm:
-            self.add_error('password_confirm', 'Паролі не співпадають')
-        if len(pib_name) < 2:
-            self.add_error('name', "Введіть повне ім'я працівника")
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        pib_name = self.cleaned_data.get('name').split()
-        password = self.cleaned_data.get('password')
-        email = self.cleaned_data.get('email')
-        groups = self.cleaned_data.get('groups')
-        is_active = self.cleaned_data.get('is_active')
-        is_staff = self.cleaned_data.get('is_staff')
-
-        if commit:
-            if self.instance.pk:
-                user = User.objects.filter(pk=self.instance.pk)
-            else:
-                username = self.cleaned_data.get('username')
-                user = User(username=username)
-            user.email = email
-            user.is_active = is_active
-            user.is_staff = is_staff
-            user.first_name = pib_name[0]
-            user.last_name = pib_name[1]
-            user.save()
-            if not self.instance.pk or password:
-                user.set_password(password)
-            if self.instance.pk:
-                user.groups.clear()
-            for group_pk in groups:
-                group = Group.objects.get(pk=group_pk)
-                group.user_set.add(user)
-            instance.user = user
-            instance.save()
-        return instance

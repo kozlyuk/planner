@@ -805,13 +805,14 @@ class SprintTaskList(ListView):
         if customer != '0':
             tasks = tasks.filter(deal__customer=customer)
         if start_date:
-            tasks = tasks.filter(planned_start__gte=start_date)
+            start = datetime.strptime(start_date, '%d.%m.%Y')
+        else:
+            start = date.today() + timedelta((0-date.today().weekday()) % 7)
         if finish_date:
-            tasks = tasks.filter(planned_finish__lte=finish_date)
-        if data_range:
-            start_date = datetime.strftime(data_range[:10], '%d.%m.%Y')
-            finish_date = datetime.strftime(data_range[13:], '%d.%m.%Y')
-            tasks = tasks.filter(planned_start__gte=start_date, planned_finish__lte=finish_date)
+            finish = datetime.strptime(start_date, '%d.%m.%Y')
+        else:
+            finish = date.today() + timedelta((0-date.today().weekday()) % 7 + 4)
+        tasks = tasks.filter(planned_start__gte=start, planned_finish__lte=finish)
         if order != '0':
             tasks = tasks.order_by(order)
         else:
@@ -819,7 +820,7 @@ class SprintTaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-        start_date = date.today() + timedelta((0-date.today().weekday()) % 7 - 7)
+        start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
         context = super(SprintTaskList, self).get_context_data(**kwargs)
         context['start_date'] = start_date.strftime('%Y-%m-%d')
         context['sprint_length'] = 4
@@ -1466,7 +1467,7 @@ class EmployeeUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class EmployeeSelfUpdate(UpdateView):
     model = Employee
-    form_class = forms.EmployeeForm
+    form_class = forms.EmployeeSelfUpdateForm
     success_url = reverse_lazy('home_page')
 
     def get_object(self):
