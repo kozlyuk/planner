@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-from django import template
-from datetime import datetime, date
 import re
+from django import template
+from django.utils.html import format_html
 from planner.settings import MEDIA_URL
 
 register = template.Library()
@@ -51,8 +50,7 @@ def task_overdue_color(status):
         return 'danger'
     if re.match(r'^\w', status):
         return 'secondary'
-    else:
-        return
+    return
 
 @register.simple_tag
 def task_status_color(status):
@@ -66,8 +64,7 @@ def task_status_color(status):
         return 'primary'
     if re.match(r'^\w', status):
         return 'secondary'
-    else:
-        return
+    return
 
 
 @register.simple_tag
@@ -82,8 +79,7 @@ def deal_status_color(status):
         return 'danger'
     if re.match(r'^\w', status):
         return 'secondary'
-    else:
-        return
+    return
 
 
 @register.simple_tag
@@ -98,8 +94,7 @@ def task_secondary_overdue_color(status):
         return 'danger'
     if re.match(r'^\w', status):
         return 'secondary'
-    else:
-        return
+    return
 
 
 @register.simple_tag
@@ -118,12 +113,12 @@ def calc_summary(summary_value, option='without_currency'):
             return '0 грн. 0 коп.'
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
-    elif option == 'without_currency':
+    if option == 'without_currency':
         if summary_value is None or summary_value is 0:
             return '0.00'
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ',' + summary_value[1]
-    elif option == 'vat_with_currency':
+    if option == 'vat_with_currency':
         if summary_value is None or summary_value is 0:
             return '0.00'
         summary_value = round(summary_value / 5, 2)
@@ -137,25 +132,26 @@ def calc_vat(value, option='without_currency'):
     without_currency return *.**.
     where * is the value
     '''
-    if type(value) == str:
+    if isinstance(value, str):
         return value
-    if type(value) == int:
+    if isinstance(value, int):
         return value
     if option == 'with_currency':
         if value is None or value is 0:
             return '0 грн. 00 коп.'
-        vat = round( value + value / 5 , 2 )
+        vat = round(value + value / 5, 2)
         vat = str(vat).split('.')
         return vat[0] + ' грн. ' + vat[1] + ' коп.'
-    elif option == 'without_currency':
+    if option == 'without_currency':
         if value is None or value is 0:
             return '0.00'
-        vat = round( value + value / 5 , 2 )
+        vat = round(value + value / 5, 2)
         vat = str(vat).split('.')
         return vat[0] + ',' + vat[1]
+    return value
 
 @register.simple_tag()
-def month_url( request_url, direction = 'next_month' ):
+def month_url(request_url, direction='next_month'):
     '''
     next_month return +1 month.
     prev_month return -1 month.
@@ -169,7 +165,7 @@ def month_url( request_url, direction = 'next_month' ):
             month = 1
             year += 1
     elif direction == 'prev_month':
-        month -= 1 
+        month -= 1
         if month < 1:
             month = 12
             year -= 1
@@ -179,18 +175,15 @@ def month_url( request_url, direction = 'next_month' ):
     return url_str
 
 @register.simple_tag()
-def boolean_to_icon( incoming_value, true_icon, false_icon ):
+def boolean_to_icon(incoming_value, true_icon, false_icon):
     '''
     required font awesome icons
     sample boolean_to_icon( value, 'far fa-check-circle', 'far fa-times-circle' )
     return: true value with green icon, false value with red icon
     '''
-    if incoming_value == True:
+    if incoming_value:
         icon = '<i class="' + true_icon + ' active-success"></i>'
         return format_html(icon)
-    elif incoming_value == False:
+    else:
         icon = '<i class="' + false_icon + ' active-danger"></i>'
         return format_html(icon)
-    else:
-        return
-
