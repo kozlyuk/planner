@@ -107,6 +107,7 @@ USE_I18N = True
 USE_TZ = True
 
 USE_L10N = True
+
 from django.conf.locale.uk import formats as uk_formats
 uk_formats.DATE_FORMAT = 'd.m.Y'
 uk_formats.DATE_INPUT_FORMATS = ('%d.%m.%Y',)

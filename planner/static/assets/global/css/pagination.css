@@ -1,0 +1,23 @@
+.btn.green:not(.btn-outline).disabled,
+.btn.green:not(.btn-outline).disabled.active,
+.btn.green:not(.btn-outline).disabled.focus,
+.btn.green:not(.btn-outline).disabled:active,
+.btn.green:not(.btn-outline).disabled:focus,
+.btn.green:not(.btn-outline).disabled:hover,
+.btn.green:not(.btn-outline)[disabled],
+.btn.green:not(.btn-outline)[disabled].active,
+.btn.green:not(.btn-outline)[disabled].focus,
+.btn.green:not(.btn-outline)[disabled]:active,
+.btn.green:not(.btn-outline)[disabled]:focus,
+.btn.green:not(.btn-outline)[disabled]:hover,
+fieldset[disabled] .btn.green:not(.btn-outline),
+fieldset[disabled] .btn.green:not(.btn-outline).active,
+fieldset[disabled] .btn.green:not(.btn-outline).focus,
+fieldset[disabled] .btn.green:not(.btn-outline):active,
+fieldset[disabled] .btn.green:not(.btn-outline):focus,
+fieldset[disabled] .btn.green:not(.btn-outline):hover {
+    background-color: #5b9bd1;
+    border-color: #5b9bd1;
+    border-radius: 20px;
+    color: white!important;
+}

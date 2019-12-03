@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('planner', '0016_auto_20191023_2024'),
+        ('planner', '0015_task_warning'),
     ]
 
     operations = [

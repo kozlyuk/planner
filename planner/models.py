@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
@@ -40,10 +40,8 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник', blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
-    avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg', variations={
-                           'large': (400, 400, True),
-                           'thumbnail': (100, 100, True),
-                           })
+    avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
+                           variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
@@ -423,7 +421,8 @@ class Deal(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
-    value_correction = models.DecimalField('Коригування вартості робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    value_correction = models.DecimalField('Коригування вартості робіт, грн.',
+                                           max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
@@ -436,8 +435,10 @@ class Deal(models.Model):
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
-                                                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                                                             'application/vnd.openxmlformats-officedocument.'
+                                                             'spreadsheetml.sheet',
+                                                             'application/vnd.openxmlformats-officedocument.'
+                                                             'wordprocessingml.document'],
                                               max_upload_size=26214400,
                                               blank=True, null=True)
     comment = models.TextField('Коментар', blank=True)
@@ -507,7 +508,7 @@ class Deal(models.Model):
             if self.act_date:
                 pay_date = self.act_date + BDay(self.customer.debtor_term)
                 return pay_date.strftime(date_format)
-            elif self.expire_date:
+            if self.expire_date:
                 pay_date = self.expire_date + BDay(self.customer.debtor_term)
                 return pay_date.strftime(date_format)
         return
@@ -759,9 +760,9 @@ class Order(models.Model):
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
 
     class Meta:
-       unique_together = ('contractor', 'task', 'order_name')
-       verbose_name = 'Підрядники'
-       verbose_name_plural = 'Підрядник'
+        unique_together = ('contractor', 'task', 'order_name')
+        verbose_name = 'Підрядники'
+        verbose_name_plural = 'Підрядник'
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
@@ -907,10 +908,7 @@ class IntTask(models.Model):
 
     def is_editable(self):
         user = get_current_user()
-        if user.is_superuser or user == self.creator:
-            return True
-        else:
-            return False
+        return user.is_superuser or user == self.creator
 
     @staticmethod
     def get_accessable(user):

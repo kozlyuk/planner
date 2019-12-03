@@ -1,24 +1,31 @@
 # -*- coding: utf-8 -*-
-from .models import IntTask
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import *
+from planner import forms
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
-from datetime import datetime, date
-from django.urls import reverse_lazy
+from datetime import datetime, date, timedelta
+from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from eventlog.models import Log
-from django.db.models import Q
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
+from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from crum import get_current_user
+from django.utils.html import format_html
+from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
+                           IntTask, News, Event, Customer, Company, Contractor
+
+
+class Round(Func):
+    function = 'ROUND'
+    template = '%(function)s(%(expressions)s, 2)'
 
 
 @method_decorator(login_required, name='dispatch')
@@ -29,8 +36,7 @@ class DealCalc(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
             return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,8 +96,7 @@ class BonusesCalc(TemplateView):
         if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user\
                 or request.user.groups.filter(name='Бухгалтери').exists():
             return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,19 +156,16 @@ def login_page(request):
     if request.user.is_authenticated:
         return redirect('home_page')
     if request.method == 'POST':
-        login_form = UserLoginForm(request.POST)
+        login_form = forms.UserLoginForm(request.POST)
         if login_form.is_valid():
             user = authenticate(username=login_form.cleaned_data['username'],
                                 password=login_form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
                 return redirect('home_page')
-            else:
-                return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
-        else:
-            return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
-    else:
-        login_form = UserLoginForm()
+            return render(request, 'auth.html', {'form': login_form, 'not_valid_user': True})
+        return render(request, 'auth.html', {'form': login_form, 'not_valid': True})
+    login_form = forms.UserLoginForm()
     return render(request, 'auth.html', {'form': login_form})
 
 
@@ -494,19 +496,19 @@ class DealList(ListView):
     def get_context_data(self, **kwargs):
         context = super(DealList, self).get_context_data(**kwargs)
         context['deals_count'] = Deal.objects.all().count()
-        context['deals_filtered'] = self.get_queryset().count()
+        context['deals_filtered'] = self.object_list.count()
         self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
-            context['filter_form'] = DealFilterForm(self.request.POST)
+            context['filter_form'] = forms.DealFilterForm(self.request.POST)
         else:
-            context['filter_form'] = DealFilterForm(self.request.GET)
+            context['filter_form'] = forms.DealFilterForm(self.request.GET)
         return context
 
 
 @method_decorator(login_required, name='dispatch')
 class DealUpdate(UpdateView):
     model = Deal
-    form_class = DealForm
+    form_class = forms.DealForm
     context_object_name = 'deal'
 
     def get_success_url(self):
@@ -516,9 +518,9 @@ class DealUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = TasksFormSet(self.request.POST, instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
         else:
-            context['tasks_formset'] = TasksFormSet(instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -537,7 +539,7 @@ class DealUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class DealCreate(CreateView):
     model = Deal
-    form_class = DealForm
+    form_class = forms.DealForm
     context_object_name = 'deal'
 
     def get_success_url(self):
@@ -547,9 +549,9 @@ class DealCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = TasksFormSet(self.request.POST)
+            context['tasks_formset'] = forms.TasksFormSet(self.request.POST)
         else:
-            context['tasks_formset'] = TasksFormSet()
+            context['tasks_formset'] = forms.TasksFormSet()
         return context
 
     def form_valid(self, form):
@@ -616,12 +618,15 @@ class TaskList(ListView):
     def get_context_data(self, **kwargs):
         context = super(TaskList, self).get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
-        context['tasks_filtered'] = self.get_queryset().count()
+        context['tasks_filtered'] = self.object_list.count()
+        context['form_action'] = reverse('task_list')
+        context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
+        context['submit_button_text'] = 'Пошук'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
-            context['filter_form'] = TaskFilterForm(self.request.POST)
+            context['filter_form'] = forms.TaskFilterForm(self.request.POST)
         else:
-            context['filter_form'] = TaskFilterForm(self.request.GET)
+            context['filter_form'] = forms.TaskFilterForm(self.request.GET)
         return context
 
 
@@ -641,7 +646,7 @@ class TaskDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class TaskUpdate(UpdateView):
     model = Task
-    form_class = TaskForm
+    form_class = forms.TaskForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -650,13 +655,13 @@ class TaskUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_formset'] = CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_formset'] = SendingFormSet(self.request.POST, instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
         else:
-            context['executors_formset'] = ExecutorsFormSet(instance=self.object)
-            context['costs_formset'] = CostsFormSet(instance=self.object)
-            context['sending_formset'] = SendingFormSet(instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -682,7 +687,7 @@ class TaskUpdate(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class TaskCreate(CreateView):
     model = Task
-    form_class = TaskForm
+    form_class = forms.TaskForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -691,13 +696,13 @@ class TaskCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = ExecutorsFormSet(self.request.POST)
-            context['costs_formset'] = CostsFormSet(self.request.POST)
-            context['sending_formset'] = SendingFormSet(self.request.POST)
+            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST)
+            context['sending_formset'] = forms.SendingFormSet(self.request.POST)
         else:
-            context['executors_formset'] = ExecutorsFormSet()
-            context['costs_formset'] = CostsFormSet()
-            context['sending_formset'] = SendingFormSet()
+            context['executors_formset'] = forms.ExecutorsFormSet()
+            context['costs_formset'] = forms.CostsFormSet()
+            context['sending_formset'] = forms.SendingFormSet()
         return context
 
     def form_valid(self, form):
@@ -732,7 +737,7 @@ class TaskDelete(DeleteView):
 @method_decorator(login_required, name='dispatch')
 class TaskExchange(FormView):
     template_name = 'planner/task_exchange.html'
-    form_class = TaskExchangeForm
+    form_class = forms.TaskExchangeForm
 
     def get_success_url(self):
         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
@@ -775,6 +780,109 @@ class TaskExchange(FormView):
             deal_new.value = deal_new.value_calc()
             deal_new.save()
         return super(TaskExchange, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class SprintTaskList(ListView):
+    model = Task
+    context_object_name = 'tasks'  # Default: object_list
+    paginate_by = 50
+    success_url = reverse_lazy('home_page')
+
+    def get_queryset(self):
+        tasks = Task.objects.all()
+        exec_status = self.request.GET.get('exec_status', '0')
+        owner = self.request.GET.get('owner', '0')
+        customer = self.request.GET.get('customer', '0')
+        start_date = self.request.GET.get('start_date')
+        finish_date = self.request.GET.get('finish_date')
+        order = self.request.GET.get('o', '0')
+
+        if exec_status != '0':
+            tasks = tasks.filter(exec_status=exec_status)
+        if owner != '0':
+            tasks = tasks.filter(owner=owner)
+        if customer != '0':
+            tasks = tasks.filter(deal__customer=customer)
+        if start_date:
+            start = datetime.strptime(start_date, '%d.%m.%Y')
+        else:
+            start = date.today() + timedelta((0-date.today().weekday()) % 7)
+        if finish_date:
+            finish = datetime.strptime(finish_date, '%d.%m.%Y')
+        else:
+            finish = date.today() + timedelta((0-date.today().weekday()) % 7 + 4)
+        tasks = tasks.filter(planned_finish__gte=start, planned_finish__lte=finish)
+        if order != '0':
+            tasks = tasks.order_by(order)
+        else:
+            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        return tasks
+
+    def get_context_data(self, **kwargs):
+#        start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
+        context = super().get_context_data(**kwargs)
+#        context['start_date'] = start_date.strftime('%Y-%m-%d')
+#        context['sprint_length'] = 4
+        context['tasks_count'] = Task.objects.all().count()
+        context['form_action'] = reverse('sprint_list')
+        context['tasks_filtered'] = self.object_list.count()
+        context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
+        context['submit_button_text'] = 'Застосувати фільтр'
+        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['filter_form'] = forms.SprintFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.SprintFilterForm(self.request.GET)
+        return context
+
+
+# @method_decorator(login_required, name='dispatch')
+# class TaskRegistry(FormView):
+#     template_name = 'planner/task_registry.html'
+#     form_class = TaskRegistryForm
+#
+#     def get_success_url(self):
+#         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+#         return self.success_url
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_superuser or request.user.groups.filter(name='Секретарі').exists():
+#             self.tasks_ids = self.request.GET.getlist('ids', '')
+#             return super(TaskExchange, self).dispatch(request, *args, **kwargs)
+#         else:
+#             raise PermissionDenied
+#
+#     def get_form_kwargs(self):
+#         kwargs = super(TaskExchange, self).get_form_kwargs()
+#         kwargs['tasks_ids'] = self.tasks_ids
+#         return kwargs
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(TaskExchange, self).get_context_data(**kwargs)
+#         tasks = Task.objects.filter(id__in=self.tasks_ids)
+#         context["tasks_ids"] = self.tasks_ids
+#         context["tasks"] = tasks
+#         context["query_string"] = self.request.session.get('task_query_string', '')
+#         return context
+#
+#     def form_valid(self, form):
+#         deal_id = form.cleaned_data['deal']
+#         if deal_id:
+#             deal_new = Deal.objects.get(pk=deal_id)
+#             tasks = Task.objects.filter(id__in=self.tasks_ids)
+#             deals_old = set()
+#             for task in tasks:
+#                 deal_old = Deal.objects.get(id=task.deal.pk)
+#                 task.deal = deal_new
+#                 task.save()
+#                 deals_old.add(deal_old)
+#             for deal in deals_old:
+#                 deal.value = deal.value_calc()
+#                 deal.save()
+#             deal_new.value = deal_new.value_calc()
+#             deal_new.save()
+#         return super(TaskExchange, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -827,14 +935,14 @@ class NewsDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class NewsCreate(CreateView):
     model = News
-    form_class = NewsForm
+    form_class = forms.NewsForm
     success_url = reverse_lazy('news_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class NewsUpdate(UpdateView):
     model = News
-    form_class = NewsForm
+    form_class = forms.NewsForm
     success_url = reverse_lazy('news_list')
 
 
@@ -858,14 +966,14 @@ class EventDetail(DetailView):
 @method_decorator(login_required, name='dispatch')
 class EventCreate(CreateView):
     model = Event
-    form_class = EventForm
+    form_class = forms.EventForm
     success_url = reverse_lazy('event_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class EventUpdate(UpdateView):
     model = Event
-    form_class = EventForm
+    form_class = forms.EventForm
     success_url = reverse_lazy('event_list')
 
 
@@ -876,10 +984,605 @@ class EventDelete(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EmployeeUpdate(UpdateView):
+class ReceiverList(ListView):
+    """ ListView for Receivers.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Receiver
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+
+    def get_queryset(self):  # todo args url
+        receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
+            values_list('name', 'address', 'contact_person', 'phone', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            receivers = receivers.filter(Q(customer__name__icontains=word) |
+                                         Q(name__icontains=word) |
+                                         Q(contact_person__icontains=word))
+        if order != '0':
+            receivers = receivers.order_by(order)
+        return receivers
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Отримувач', 1],
+                              ['address', 'Адреса', 0],
+                              ['contact_person', 'Контактна особа', 0],
+                              ['phone', 'Телефон', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_receiver'):
+            context['add_url'] = reverse('receiver_add')
+            context['add_help_text'] = 'Додати адресата'
+        context['header_main'] = 'Адресати'
+        context['objects_count'] = Receiver.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverCreate(CreateView):
+    model = Receiver
+    form_class = forms.ReceiverForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('receiver_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати адресат'
+        context['back_btn_url'] = reverse('receiver_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverUpdate(UpdateView):
+    model = Receiver
+    form_class = forms.ReceiverForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('receiver_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['receiver']
+        context['header_main'] = 'Редагування ' + str(name)
+        context['back_btn_url'] = reverse('receiver_delete', kwargs={'pk': name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ReceiverDelete(DeleteView):
+    model = Receiver
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('receiver_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        receiver = context['receiver']
+        context['go_back_url'] = reverse('receiver_update', kwargs={'pk':receiver.pk})
+        context['main_header'] = 'Видалити адресат?'
+        context['header'] = 'Видалення адресату "' + str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.task_set.exists():
+            context['objects'] = obj.sending_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectList(ListView):
+    """ ListView for ProjectList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Project
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+
+    def get_queryset(self):
+        project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100),
+                                                  output_field=DecimalField())).\
+            values_list('project_type', 'customer__name', 'price_code', 'net_price', 'copies_count', 'active', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        customer = self.request.GET.get('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            project_types = project_types.filter(project_type__icontains=word)
+        if customer != '0':
+            project_types = project_types.filter(customer=customer)
+        if order != '0':
+            project_types = project_types.order_by(order)
+        return project_types
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['project_type', 'Вид робіт', 1],
+                              ['customer', 'Замовник', 0],
+                              ['price_code', 'Пункт кошторису', 0],
+                              ['net_price_rate', 'Вартість після вхідних витрат', 0],
+                              ['copies_count', 'Кількість примірників', 0],
+                              ['active', 'Активний', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_project'):
+            context['add_url'] = reverse('project_type_add')
+            context['add_help_text'] = 'Додати вид робіт'
+        context['header_main'] = 'Види робіт'
+        context['objects_count'] = Project.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ProjectFilterForm(self.request.GET)
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectCreate(CreateView):
+    model = Project
+    form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати вид робіт'
+        context['back_btn_url'] = reverse('project_type_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectUpdate(UpdateView):
+    model = Project
+    form_class = forms.ProjectForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['project']
+        context['header_main'] = 'Вид робіт'
+        context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectDelete(DeleteView):
+    model = Project
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('project_type_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        project = context['project']
+        context['go_back_url'] = reverse('project_type_update', kwargs={'pk':project.pk})
+        context['main_header'] = 'Видалити вид робіт?'
+        context['header'] = 'Видалення "' + str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.task_set.exists():
+            context['objects'] = obj.task_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerList(ListView):
+    """ ListView for CustomerList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Customer
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+
+    def get_queryset(self):
+        customers = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .values_list('name', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        customer = self.request.GET.get('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            customers = customers.filter(Q(name__icontains=word))
+        if order != '0':
+            customers = customers.order_by(order)
+        return customers
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['credit_calc', 'Авансові платежі', 0],
+                              ['debit_calc', 'Дебітрська заборгованість', 0],
+                              ['expect_calc', 'Не виконано та не оплачено', 0],
+                              ['completed_calc', 'Виконано та оплачено', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_customer'):
+            context['add_url'] = reverse('customer_add')
+            context['add_help_text'] = 'Додати замовника'
+        context['header_main'] = 'Замовники'
+        context['objects_count'] = Customer.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.CustomerFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerCreate(CreateView):
+    model = Customer
+    form_class = forms.CustomerForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('customer_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати замовника'
+        context['back_btn_url'] = reverse('customer_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerUpdate(UpdateView):
+    model = Customer
+    form_class = forms.CustomerForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('customer_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['customer']
+        context['header_main'] = 'Замовник: ' + str(name)
+        context['back_btn_url'] = reverse('customer_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomerDelete(DeleteView):
+    model = Customer
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('customer_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        customer = context['customer']
+        context['go_back_url'] = reverse('customer_update', kwargs={'pk':customer.pk})
+        context['main_header'] = 'Видалити замовника?'
+        context['header'] = 'Видалення "' + str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.project_set.exists():
+            context['objects'] = obj.project_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyList(ListView):
+    """ ListView for CompanyList.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Company
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+
+    def get_queryset(self):
+        companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+            .values_list('name', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        company = self.request.GET.get('company', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            companies = companies.filter(Q(name__icontains=word))
+        if order != '0':
+            companies = companies.order_by(order)
+        return companies
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['turnover_calc', 'Оборот', 0],
+                              ['costs_calc', 'Витрати', 0],
+                              ['bonuses_calc', 'Бонуси', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_company'):
+            context['add_url'] = reverse('company_add')
+            context['add_help_text'] = 'Додати компанію'
+        context['header_main'] = 'Компанії'
+        context['objects_count'] = Company.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.CompanyFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.CompanyFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyCreate(CreateView):
+    model = Company
+    form_class = forms.CompanyForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('company_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати команію'
+        context['back_btn_url'] = reverse('company_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyUpdate(UpdateView):
+    model = Company
+    form_class = forms.CompanyForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('company_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['company']
+        context['header_main'] = 'Компанія: ' + str(name)
+        context['back_btn_url'] = reverse('company_delete', kwargs={'pk':name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class CompanyDelete(DeleteView):
+    model = Company
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('company_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        company = context['company']
+        context['go_back_url'] = reverse('company_update', kwargs={'pk':company.pk})
+        context['main_header'] = 'Видалити компанію?'
+        context['header'] = 'Видалення "' + str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.deal_set.exists():
+            context['objects'] = obj.deal_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class СolleaguesList(ListView):
+    """ ListView for Сolleagues.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Employee
-    form_class = EmployeeForm
+    template_name = "planner/colleagues_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 18
+
+    def get_queryset(self):
+        employees = Employee.objects.filter(user__is_active=True)\
+                                    .exclude(name__startswith='Аутсорсинг') \
+                                    .order_by('name')\
+                                    .annotate(url=Concat(F('pk'), Value('/detail/')))\
+                                    .values_list('avatar', 'name', 'url', 'position')
+        search_string = self.request.GET.get('filter', '').split()
+        for word in search_string:
+            employees = employees.filter(Q(name__icontains=word))
+        return employees
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_employee'):
+            context['add_url'] = reverse('employee_add')
+            context['add_help_text'] = 'Додати працівника'
+        context['header_main'] = 'Колеги'
+        context['objects_count'] = Employee.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeList(ListView):
+    """ ListView for Employee.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Employee
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 18
+
+    def get_queryset(self):
+        employees = Employee.objects.order_by('-user__is_active', 'name')\
+                                    .annotate(url=Concat(F('pk'), Value('/change/')))\
+                                    .values_list('name',  'url')
+        search_string = self.request.GET.get('filter', '').split()
+        for word in search_string:
+            employees = employees.filter(Q(name__icontains=word))
+        return employees
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'ПІБ', 1],
+                              ['owner_count', 'Керівник проектів', 0],
+                              ['task_count', 'Виконавець в проектах', 0],
+                              ['inttask_count', 'Завдання', 0],
+                              ['total_bonuses', 'Бонуси', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_employee'):
+            context['add_url'] = reverse('employee_add')
+            context['add_help_text'] = 'Додати працівника'
+        context['header_main'] = 'Працівники'
+        context['objects_count'] = Employee.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class СolleaguesDetail(DetailView):
+    model = Employee
+    context_object_name = 'employee'
+
+    def get_context_data(self, **kwargs):
+        context = super(СolleaguesDetail, self).get_context_data(**kwargs)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeUpdate(UpdateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists() or request.user.groups.filter(name='Секретарі').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    model = Employee
+    form_class = forms.EmployeeForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('employee_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Користувач: ' + str(self.object.name)
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeSelfUpdate(UpdateView):
+    model = Employee
+    form_class = forms.EmployeeSelfUpdateForm
     success_url = reverse_lazy('home_page')
 
     def get_object(self):
         return Employee.objects.get(user=get_current_user())
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeCreate(CreateView):
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    model = Employee
+    form_class = forms.EmployeeForm
+    template_name = "planner/employee_create.html"
+    success_url = reverse_lazy('employee_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати працівника'
+        context['back_btn_url'] = reverse('employee_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorList(ListView):
+    """ ListView for Contractor.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Contractor
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 15
+
+    def get_queryset(self):  # todo args url
+        contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
+            values_list('name', 'active', 'url')
+        search_string = self.request.GET.get('filter', '').split()
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            contractors = contractors.filter(Q(name__icontains=word))
+        if order != '0':
+            contractors = contractors.order_by(order)
+        return contractors
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['name', 'Назва', 1],
+                              ['advance_calc', 'Авансові платежі', 0],
+                              ['credit_calc', 'Кредиторська заборгованість', 0],
+                              ['expect_calc', 'Не виконано та не оплачено', 0],
+                              ['completed_calc', 'Виконано та оплачено', 0],
+                              ['active', 'Активний', 0]]
+        context['search'] = True
+        context['filter'] = []
+        if request.user.has_perm('planner.add_contractor'):
+            context['add_url'] = reverse('contractor_add')
+            context['add_help_text'] = 'Додати підрядника'
+        context['header_main'] = 'Підрядники'
+        context['objects_count'] = Contractor.objects.all().count()
+        if self.request.POST:
+            context['filter_form'] = forms.ContractorFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.ContractorFilterForm(self.request.GET)
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorCreate(CreateView):
+    model = Contractor
+    form_class = forms.ContractorForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('contractor_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Додати підрядника'
+        context['back_btn_url'] = reverse('contractor_list')
+        context['back_btn_text'] = 'Відміна'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorUpdate(UpdateView):
+    model = Contractor
+    form_class = forms.ContractorForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('contractor_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = context['contractor']
+        context['header_main'] = 'Редагування ' + str(name)
+        context['back_btn_url'] = reverse('contractor_delete', kwargs={'pk': name.pk})
+        context['back_btn_text'] = 'Видалити'
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ContractorDelete(DeleteView):
+    model = Contractor
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('contractor_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        contractor = context['contractor']
+        context['go_back_url'] = reverse('contractor_update', kwargs={'pk':contractor.pk})
+        context['main_header'] = 'Видалити адресат?'
+        context['header'] = 'Видалення підрядника "' + str(contractor) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if obj.order_set.exists():
+            context['objects'] = obj.order_set.all()
+        return context

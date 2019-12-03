@@ -12,6 +12,7 @@ logger = get_task_logger(__name__)
 
 
 @app.task
+
 def update_task_statuses(task_id=None):
     """ Update statuses. If task_id given updates for task_id else updates for last 500 tasks """
     if task_id:

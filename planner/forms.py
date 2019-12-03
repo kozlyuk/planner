@@ -1,12 +1,15 @@
-# -*- encoding: utf-8 -*-
+from datetime import date, timedelta
 from django import forms
-from .models import User, Task, Customer, Execution, Order, Sending, Deal, Employee, Project, Company, News, Event
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
-from django_select2.forms import Select2Widget
 from django.contrib.admin.widgets import AdminDateWidget
+from django.contrib.auth.models import User, Group
+from django_select2.forms import Select2Widget
 from crum import get_current_user
+
+from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
+                           Project, Company, News, Event, Receiver, Contractor
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
 from .btnWidget import BtnWidget
@@ -29,14 +32,75 @@ class UserLoginForm(forms.ModelForm):
             return False
 
 
+class EmployeeForm(forms.ModelForm):
+    """ EmployeeForm - form for employees creating or updating """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['vacation_date'].widget = AdminDateWidget()
+        self.fields['birthday'].widget = AdminDateWidget()
+        groups = [(group.id, group.name) for group in Group.objects.all()]
+        self.fields['groups'].choices = groups
+
+    username = forms.CharField(label='Логін', max_length=255, required=True)
+    password = forms.CharField(label='Пароль', max_length=255, required=True, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(label='Підтвердити пароль', max_length=255, required=True,
+                                       widget=forms.PasswordInput)
+    email = forms.EmailField(label='Електронна пошта', max_length=255, required=True)
+    groups = forms.ChoiceField(label='Група', required=False)
+
+    class Meta:
+        model = Employee
+        fields = ['name', 'position', 'head', 'phone', 'mobile_phone', 'avatar',
+                  'birthday', 'salary', 'vacation_count', 'vacation_date']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        username = cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        email = cleaned_data.get('email')
+
+        if password != password_confirm:
+            self.add_error('password_confirm', 'Password does not match')
+        if User.objects.filter(username=username).exists():
+            self.add_error('username', 'User with such username already exist')
+        if User.objects.filter(email=email).exists():
+            self.add_error('email', 'User with such email already exist')
+        if len(pib_name) < 2:
+            self.add_error('name', 'Please write full name of employee')
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        username = self.cleaned_data.get('username')
+        pib_name = self.cleaned_data.get('name').split()
+        password = self.cleaned_data.get('password')
+        email = self.cleaned_data.get('email')
+        groups = self.cleaned_data.get('groups')
+
+        user = User(username=username, email=email, is_staff=True,
+                    first_name=pib_name[0], last_name=pib_name[1])
+        user.set_password(password)
+
+        if commit:
+            user.save()
+            for group_name in groups:
+                group = Group.objects.get(name=group_name)
+                group.user_set.add(user)
+            instance.user = user
+            instance.save()
+        return instance
+
+
 class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DealFilterForm, self).__init__(*args, **kwargs)
 
-        customer = [(customer.id, customer.name) for customer in Customer.objects.all()]
+        customer = list(Customer.objects.all().values_list('pk', 'name'))
         customer.insert(0, (0, "Всі"))
 
-        company = [(company.id, company.name) for company in Company.objects.all()]
+        company = list(Company.objects.all().values_list('pk', 'name'))
         company.insert(0, (0, "Всі"))
 
         act_status = []
@@ -166,9 +230,11 @@ class TaskFilterForm(forms.Form):
         exec_status.insert(3, ('HD', "Виконано"))
         exec_status.insert(4, ('ST', "Надіслано"))
 
-        owners = [(owner[0], owner[1]) for owner in Task.objects.values_list('owner__id', 'owner__name').order_by().distinct()]
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
         owners.insert(0, (0, "Всі"))
-        customers = [(customer.id, customer.name) for customer in Customer.objects.all()]
+
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
@@ -179,6 +245,34 @@ class TaskFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class SprintFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(SprintFilterForm, self).__init__(*args, **kwargs)
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
+        exec_status.insert(0, (0, "Всі"))
+
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
+        owners.insert(0, (0, "Всі"))
+
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
+        customers.insert(0, (0, "Всі"))
+
+        self.fields['exec_status'].choices = exec_status
+        self.fields['owner'].choices = owners
+        self.fields['customer'].choices = customers
+
+    exec_status = forms.ChoiceField(label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    owner = forms.ChoiceField(label='Керівник проекту', required=False,
+                              widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+
+    start_date_value = date.today() - timedelta(days=date.today().weekday())
+    finish_date_value = start_date_value + timedelta(days=4)
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
+    finish_date = forms.DateField(label='Дата завершення', widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
 
 
 class TaskForm(forms.ModelForm):
@@ -395,14 +489,14 @@ SendingFormSet = inlineformset_factory(Task, Sending, form=SendingInlineForm, ex
 class TaskExchangeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.tasks_ids = kwargs.pop('tasks_ids')
-        super(TaskExchangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         deal = [(deal.id, deal.number) for deal in Deal.objects.filter(act_status=Deal.NotIssued)]
         self.fields['deal'].choices = deal
 
     deal = forms.ChoiceField(label='Оберіть договір', widget=Select2Widget())
 
     def clean(self):
-        super(TaskExchangeForm, self).clean()
+        super().clean()
         deal_id = self.cleaned_data.get("deal")
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         if not self.tasks_ids:
@@ -414,6 +508,19 @@ class TaskExchangeForm(forms.Form):
                     self.add_error('deal', "{} - тип проекту не відповідає Замовнику Договору".format(task))
                 if task.deal.act_status != Deal.NotIssued:
                     self.add_error('deal', "{} - договір закрито, зверніться до керівника".format(task))
+
+
+# class TaskRegistryForm(forms.Form):
+#     def __init__(self, *args, **kwargs):
+#         self.tasks_ids = kwargs.pop('tasks_ids')
+#         super().__init__(*args, **kwargs)
+#         deal = [(deal.id, deal.number) for deal in .objects.filter(act_status=Deal.NotIssued)]
+#         self.fields['deal'].choices = deal
+#
+#     receiver = forms.ChoiceField(label='Оберіть отримувача', widget=Select2Widget())
+#     receipt_date = forms.DateField(label='Дата реєстру', widget=AdminDateWidget())
+#     copies_count = forms.CharField(label='Кількість примірників')
+#     register_num = forms.CharField(label='Номер реєстру')
 
 
 class NewsForm(forms.ModelForm):
@@ -441,7 +548,7 @@ class EventForm(forms.ModelForm):
         self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeSelfUpdateForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['mobile_phone', 'avatar']
@@ -449,3 +556,74 @@ class EmployeeForm(forms.ModelForm):
             'avatar': AvatarInput,
         }
 
+
+class ReceiverFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ReceiverForm(forms.ModelForm):
+    class Meta:
+        model = Receiver
+        fields = ['customer', 'name', 'address', 'contact_person', 'phone']
+
+
+class ProjectFilterForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        customers = list(Customer.objects.all().values_list('pk', 'name'))
+        customers.insert(0, (0, "Всі"))
+        self.fields['customer'].choices = customers
+
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ['project_type', 'price_code', 'customer', 'price', 'net_price_rate', 'owner_bonus', 'executors_bonus', 'copies_count', 'description', 'active']
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        self.fields['description'].widget.attrs.update({'style': 'height:50px;'})
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
+
+
+class CustomerFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'contact_person', 'phone', 'email', 'debtor_term', 'act_template', 'requisites']
+
+
+class CompanyFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ['name', 'chief', 'taxation', 'requisites']
+
+
+class ContractorFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)
+
+
+class ContractorForm(forms.ModelForm):
+    class Meta:
+        model = Contractor
+        fields = ['name', 'contact_person', 'phone', 'email', 'requisites', 'active']
+
+    def __init__(self, *args, **kwargs):
+        super(ContractorForm, self).__init__(*args, **kwargs)
+        self.fields['requisites'].widget.attrs.update({'style': 'height:50px;'})
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
+
+
+class EmployeeFilterForm(forms.Form):
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False)

@@ -2,7 +2,7 @@ body {
   margin: 0px;
 }
 nav {
-  position: absolute;
+  /* position: absolute; */
   padding: 24px;
   text-align: center;
 }
@@ -450,4 +450,9 @@ label.hamburger {
     position: absolute;
     left: 15px;
   };
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: white!important;
+  background-color: #5b9bd1!important;
 }

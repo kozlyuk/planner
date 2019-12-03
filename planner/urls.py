@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^deal/$', views.DealList.as_view(), name='deal_list'),
     url(r'^deal/(?P<pk>\d+)/change/$', views.DealUpdate.as_view(), name='deal_update'),
     url(r'^deal/add/$', views.DealCreate.as_view(), name='deal_add'),
-    url(r'^deal/(?P<pk>[0-9]+)/delete/$', views.DealDelete.as_view(), name='deal_delete'),
+    url(r'^deal/(?P<pk>\d+)/delete/$', views.DealDelete.as_view(), name='deal_delete'),
     url(r'^deal/(?P<deal_id>\d+)/calculation/$', views.DealCalc.as_view(), name='calculation'),
 
     url(r'^project/$', views.TaskList.as_view(), name='task_list'),
@@ -40,15 +40,48 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/delete/$', views.TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
+    url(r'^project/sprint/$', views.SprintTaskList.as_view(), name='sprint_list'),
+
+    url(r'^receiver/$', views.ReceiverList.as_view(), name='receiver_list'),
+    url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),
+    url(r'^receiver/(?P<pk>\d+)/change/$', views.ReceiverUpdate.as_view(), name='receiver_update'),
+    url(r'^receiver/(?P<pk>\d+)/delete/$', views.ReceiverDelete.as_view(), name='receiver_delete'),
+
+    url(r'^project/types/$', views.ProjectList.as_view(), name='project_type_list'),
+    url(r'^project/types/add$', views.ProjectCreate.as_view(), name='project_type_add'),
+    url(r'^project/types/(?P<pk>\d+)/change/$', views.ProjectUpdate.as_view(), name='project_type_update'),
+    url(r'^project/types/(?P<pk>\d+)/delete/$', views.ProjectDelete.as_view(), name='project_type_delete'),
+        # url(r'^project/registry/$', views.TaskRegistry.as_view(), name='task_registry'),
+
+    url(r'^customer/$', views.CustomerList.as_view(), name='customer_list'),
+    url(r'^customer/add$', views.CustomerCreate.as_view(), name='customer_add'),
+    url(r'^customer/(?P<pk>\d+)/change/$', views.CustomerUpdate.as_view(), name='customer_update'),
+    url(r'^customer/(?P<pk>\d+)/delete/$', views.CustomerDelete.as_view(), name='customer_delete'),
+
+    url(r'^company/$', views.CompanyList.as_view(), name='company_list'),
+    url(r'^company/add$', views.CompanyCreate.as_view(), name='company_add'),
+    url(r'^company/(?P<pk>\d+)/change/$', views.CompanyUpdate.as_view(), name='company_update'),
+    url(r'^company/(?P<pk>\d+)/delete/$', views.CompanyDelete.as_view(), name='company_delete'),
+
+    url(r'^contractor/$', views.ContractorList.as_view(), name='contractor_list'),
+    url(r'^contractor/add$', views.ContractorCreate.as_view(), name='contractor_add'),
+    url(r'^contractor/(?P<pk>\d+)/change/$', views.ContractorUpdate.as_view(), name='contractor_update'),
+    url(r'^contractor/(?P<pk>\d+)/delete/$', views.ContractorDelete.as_view(), name='contractor_delete'),
 
     url(r'^subtask/(?P<pk>\d+)/$', views.SubtaskUpdate.as_view(), name='subtask_form'),
     url(r'^inttask/(?P<pk>\d+)/$', views.InttaskDetail.as_view(), name='inttask_detail'),
     url(r'^login/$', views.login_page, name='login_page'),
     url(r'^logout/$', views.logout_page, name='logout_page'),
 
+    url(r'^colleagues/$', views.СolleaguesList.as_view(), name='colleagues_list'),
+    url(r'^colleagues/(?P<pk>\d+)/detail/$', views.СolleaguesDetail.as_view(), name='colleagues_detail'),
+
+    url(r'^employee/$', views.EmployeeList.as_view(), name='employee_list'),
+    url(r'^employee/add$', views.EmployeeCreate.as_view(), name='employee_add'),
+    url(r'^employee/(?P<pk>\d+)/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
+    url(r'^employee/change/$', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
     url(r'^employee/(?P<employee_id>\d+)/bonus/(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         views.BonusesCalc.as_view(), name='bonus_calc'),
-    url(r'^employee/change/$', views.EmployeeUpdate.as_view(), name='employee_update'),
 
     url(r'^news/$', views.NewsList.as_view(), name='news_list'),
     url(r'^news/(?P<pk>\d+)/detail/$', views.NewsDetail.as_view(), name='news_detail'),
@@ -61,6 +94,9 @@ urlpatterns = [
     url(r'^event/(?P<pk>[0-9]+)/change/$', views.EventUpdate.as_view(), name='event_update'),
     url(r'^event/add/$', views.EventCreate.as_view(), name='event_add'),
     url(r'^event/(?P<pk>[0-9]+)/delete/$', views.EventDelete.as_view(), name='event_delete'),
+
+
+    url(r'^select2/', include('django_select2.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
