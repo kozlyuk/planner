@@ -795,7 +795,6 @@ class SprintTaskList(ListView):
         customer = self.request.GET.get('customer', '0')
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
-        data_range = self.request.GET.get('data_range')
         order = self.request.GET.get('o', '0')
 
         if exec_status != '0':
@@ -820,10 +819,10 @@ class SprintTaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-        start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
+#        start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
         context = super().get_context_data(**kwargs)
-        context['start_date'] = start_date.strftime('%Y-%m-%d')
-        context['sprint_length'] = 4
+#        context['start_date'] = start_date.strftime('%Y-%m-%d')
+#        context['sprint_length'] = 4
         context['tasks_count'] = Task.objects.all().count()
         context['form_action'] = reverse('sprint_list')
         context['tasks_filtered'] = self.object_list.count()

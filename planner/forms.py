@@ -12,6 +12,7 @@ from crum import get_current_user
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
 from .btnWidget import BtnWidget
+from datetime import datetime, date, timedelta
 
 
 class UserLoginForm(forms.ModelForm):
@@ -267,8 +268,8 @@ class SprintFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
                               widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget())
-    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget())
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(), initial=date.today)
+    finish_date = forms.DateField(initial=date.today)
 
 
 class TaskForm(forms.ModelForm):
