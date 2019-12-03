@@ -53,7 +53,7 @@
 
                                     {% for field in filter_form.visible_fields %}
                                     {{ field.label_tag }}
-                                    {{ field }}
+                                    {{ field|add_class:"mr-2" }}
                                     {% if field.help_text %}
                                     <small class="form-text text-secondary">{{ field.help_text }}</small>
                                     {% endif %}

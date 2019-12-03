@@ -267,8 +267,8 @@ class SprintFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
                               widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(attrs={"class": 'mr-2'}))
-    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget(attrs={"class": 'mr-2'}))
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget())
+    finish_date = forms.DateField(label='Дата закінчення', widget=AdminDateWidget())
 
 
 class TaskForm(forms.ModelForm):
