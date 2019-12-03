@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'stdimage',
     'planner.apps.PlannerConfig',
     'eventlog.apps.EventlogConfig',
+    'analytics.apps.AnalyticsConfig',
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',

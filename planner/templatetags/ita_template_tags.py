@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 from datetime import datetime, date
-from django.utils.html import format_html
+import re
 from planner.settings import MEDIA_URL
 
 register = template.Library()
@@ -49,6 +49,8 @@ def task_overdue_color(status):
         return 'info'
     elif status.startswith('Протерміновано'):
         return 'danger'
+    if re.match(r'^\w', status):
+        return 'secondary'
     else:
         return
 
@@ -62,6 +64,8 @@ def task_status_color(status):
         return 'info'
     elif status.startswith('Надіслано'):
         return 'primary'
+    if re.match(r'^\w', status):
+        return 'secondary'
     else:
         return
 
@@ -76,6 +80,8 @@ def deal_status_color(status):
         return 'info'
     elif status.startswith('Протерміновано'):
         return 'danger'
+    if re.match(r'^\w', status):
+        return 'secondary'
     else:
         return
 
@@ -90,6 +96,8 @@ def task_secondary_overdue_color(status):
         return 'info'
     elif status.startswith('Протерміновано'):
         return 'danger'
+    if re.match(r'^\w', status):
+        return 'secondary'
     else:
         return
 

@@ -51,6 +51,9 @@
                                                             for="id_{{ form.object_address.name }}">{{ form.object_address.label }}:</label>
                                                     </div>
                                                     <div class="col-7">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.object_address.errors}}
+                                                        </small>
                                                         {{ form.object_address|attr:"style: width:100%" }}
                                                     </div>
 
@@ -64,6 +67,9 @@
                                                             for="id_{{ form.project_type.name }}">{{ form.project_type.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.project_type.errors}}
+                                                        </small>
                                                         {{ form.project_type }}
                                                     </div>
                                                     <!--alert: deal-->
@@ -72,55 +78,10 @@
                                                             for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.deal.errors}}
+                                                        </small>
                                                         {{ form.deal|attr:"style: width:100%" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <!--alert: exec_status-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.exec_status|attr:"style: width:100%" }}
-                                                    </div>
-                                                    <!--alert: owner-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.owner|attr:"style: width:100%" }}
-                                                    </div>
-                                                    <!--alert: project_code-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.project_code|attr:"style: width:100%" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <!--alert: planned_start-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.planned_start|attr:"style: width:10%" }}
-                                                    </div>
-                                                    <!--alert: actual_start-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.actual_start|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: tc_received-->
                                                     <div class="col-1">
@@ -128,7 +89,75 @@
                                                             for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.tc_received.errors}}
+                                                        </small>
                                                         {{ form.tc_received|attr:"style: width:10%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: exec_status-->
+                                                    <div class="col-8">
+                                                        <div class="row">
+                                                            <div style="flex: 0 0 12.666667%" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.exec_status.errors}}
+                                                                </small>
+                                                                {{ form.exec_status|attr:"style: width:100%" }}
+                                                            </div>
+                                                            <!--alert: owner-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.owner.errors}}
+                                                                </small>
+                                                                {{ form.owner|attr:"style: width:100%" }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-4">
+                                                            <!--alert: planned_start-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.planned_start.name }}">{{ form.planned_start.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.planned_start.errors}}
+                                                                </small>
+                                                                {{ form.planned_start|attr:"style: width:10%" }}
+                                                            </div>
+                                                            <!--alert: actual_start-->
+                                                            <div style="flex: 0 0 12.666667%; max-width: 12.666667%;" class="col-2">
+                                                                <label
+                                                                    for="id_{{ form.actual_start.name }}">{{ form.actual_start.label }}:</label>
+                                                            </div>
+                                                            <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
+                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                    {{form.actual_start.errors}}
+                                                                </small>
+                                                                {{ form.actual_start|attr:"style: width:10%" }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--alert: tc_upload-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.tc_upload.errors}}
+                                                        </small>
+                                                        {{ form.tc_upload|attr:"style: width:100%" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -140,6 +169,9 @@
                                                             for="id_{{ form.planned_finish.name }}">{{ form.planned_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.planned_finish.errors}}
+                                                        </small>
                                                         {{ form.planned_finish|attr:"style: width:10%" }}
                                                     </div>
                                                     <!--alert: actual_finish-->
@@ -148,53 +180,75 @@
                                                             for="id_{{ form.actual_finish.name }}">{{ form.actual_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.actual_finish.errors}}
+                                                        </small>
                                                         {{ form.actual_finish|attr:"style: width:10%" }}
                                                     </div>
-                                                    <!--alert: tc_upload-->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.tc_upload.name }}">{{ form.tc_upload.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.tc_upload|attr:"style: width:100%" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-
                                                     <!--alert: pdf_copy-->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.pdf_copy.errors}}
+                                                        </small>
                                                         {{ form.pdf_copy|attr:"style: width:100%" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <!--alert: project_code-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.project_code.errors}}
+                                                        </small>
+                                                        {{ form.project_code|attr:"style: width:100%" }}
+                                                    </div>
+                                                    <!--alert: manual_warning-->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.manual_warning.errors}}
+                                                        </small>
+                                                        {{ form.manual_warning|attr:"style: width:100%" }}
                                                     </div>
                                                     <!--alert: comment-->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                     </div>
-                                                    <div class="col-7">
+                                                    <div class="col-3">
+                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                            {{form.comment.errors}}
+                                                        </small>
                                                         {{ form.comment }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-actions">
-                                            {% if deal.pk %}<a href="{% url 'deal_delete' deal.pk %}?{{ filters }}"
+                                            {% if task.pk %}<a href="{% url 'task_delete' task.pk %}?{{ filters }}"
                                                 class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
-                                            {% else %}<button href="{% url 'deal_list' %}?{{ filters }}"
+                                            {% else %}<button href="{% url 'task_list' %}?{{ filters }}"
                                                 class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
                                             {% endif %}
                                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                                 style="float: right;">Зберегти</button>
-                                            {% if deal.pk %}
+                                            {% comment %} {% if task.pk %}
                                             <a href="{% url 'calculation' deal.pk %}"
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Калькуляція по договору</a>
-                                            {% endif %}
+                                            {% endif %} {% endcomment %}
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +262,9 @@
                         <div class="card main-widget-tab">
                             <h6 class="task-header center-block text-center">Виконавці</h6>
                             <div class="card-body pb-1">
+                                <small class="text-danger">
                                 {{ executors_formset.non_form_errors }}
+                                </small>
                                 <!--check the length of the formset-->
                                 <!--if formset is not empty-->
                                 {% if executors_formset|length %}
@@ -329,34 +385,36 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {{ costs_formset.non_form_errors }}
+                                            <small class="text-danger">
+                                                {{ costs_formset.non_form_errors }}
+                                            </small>
                                             {% for form in costs_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.contractor.errors }}
-                                                    {{form.contractor|attr:"style: width:100%"}}
+                                                    {{ form.contractor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.deal_number.errors }}
-                                                    {{form.deal_number|attr:"style: width:100%"}}
+                                                    {{ form.deal_number|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.value.errors }}
-                                                    {{form.value|attr:"style: width:100%"}}
+                                                    {{ form.value|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.advance.errors }}
-                                                    {{form.advance|attr:"style: width:100%"}}
+                                                    {{ form.advance|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.pay_status.errors }}
-                                                    {{form.pay_status|attr:"style: width:100%"}}
+                                                    {{ form.pay_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.pay_date.errors }}
-                                                    {{form.pay_date|attr:"style: width:60%"}}
+                                                    {{ form.pay_date|attr:"style: width:60%" }}
                                                 </th>
-                                                <th>{{ form.DELETE }}</th>
+                                                <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -378,7 +436,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <small class="text-danger">
                                             {{ costs_formset.non_form_errors }}
+                                            </small>
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ costs_formset.empty_form.contractor.errors }}
@@ -404,7 +464,7 @@
                                                     {{ costs_formset.empty_form.pay_date.errors }}
                                                     {{ costs_formset.empty_form.pay_date|attr:"style: width:60%" }}
                                                 </th>
-                                                <th>{{ form.DELETE }}</th>
+                                                <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -437,6 +497,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <small class="text-danger">
+                                            {{ sending_formset.non_form_errors }}
+                                            </small>
                                             {% for form in sending_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
@@ -476,7 +539,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <small class="text-danger">
                                         {{ sending_formset.non_form_errors }}
+                                        </small>
                                         <tr>
                                             <th class="pl-1 pr-1">
                                                 {{ sending_formset.empty_form.receiver.errors }}
@@ -507,9 +572,10 @@
                         {% endif %}
                     </div>
                 </div>
+            </form>
         </div>
     </div>
-    </form>
+    
     {% else %}
     Ви не маєте доступу до редагування даного проекту<br><br>
     {% endif %}
@@ -635,7 +701,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Виконавця',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
@@ -654,7 +720,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ executors_formset.prefix }}',
             formCssClass: 'dynamic-formset1',
             addText: 'Додати Виконавця',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row-executors_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
@@ -673,7 +739,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ costs_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
@@ -689,7 +755,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ costs_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати Підрядника',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
@@ -705,7 +771,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ sending_formset.prefix }}',
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
@@ -721,7 +787,7 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ sending_formset.prefix }}',
             formCssClass: 'dynamic-formset3',
             addText: 'Додати Відправку',
-            deleteText: ' - ',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row-sending_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {

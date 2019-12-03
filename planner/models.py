@@ -121,16 +121,14 @@ class Employee(models.Model):
         # owner bonuses
 
     def inttask_bonuses(self, delta):
-        bonuses = 0
         month, year = self.date_delta(delta)
 
-        inttasks = self.inttask_set.filter(exec_status=IntTask.Done,
-                                           actual_finish__month=month,
-                                           actual_finish__year=year)
-        for query in inttasks:
-            bonuses += query.bonus
+        bonuses = self.inttask_set.filter(exec_status=IntTask.Done,
+                                          actual_finish__month=month,
+                                          actual_finish__year=year)\
+                                  .aggregate(Sum('bonus'))['bonus__sum']
 
-        return round(bonuses, 2)
+        return round(bonuses, 2) if bonuses else 0
         # inttask bonuses
 
     def total_bonuses(self, delta):
@@ -432,6 +430,7 @@ class Deal(models.Model):
     act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
+    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
     act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
     act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
@@ -516,6 +515,13 @@ class Deal(models.Model):
     pay_date_calc.short_description = 'Дата оплати'
 
 
+@receiver(post_save, sender=Deal, dispatch_uid="update_deal_status")
+def update_deal(sender, instance, **kwargs):
+    """ Update Deals status after save Deal """
+    from planner.tasks import update_deal_statuses
+    update_deal_statuses(instance.pk)
+
+
 class Receiver(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     name = models.CharField('Отримувач', max_length=50, unique=True)
@@ -550,6 +556,7 @@ class Task(models.Model):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
+    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
     owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
@@ -591,6 +598,8 @@ class Task(models.Model):
         title = self.object_code + ' ' + self.project_type.price_code
         if not self.pk:
             self.creator = get_current_user()
+        if self.exec_status == Task.Done and self.project_type.copies_count == 0:
+            self.exec_status = Task.Sent
         if logging:
             if not self.pk:
                 log(user=get_current_user(), action='Доданий проект', extra={"title": title})
@@ -721,13 +730,15 @@ class Task(models.Model):
 
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
+    """ Change Subtasks status to Done if Task is Done after save Task. Update Tasks status after save Task"""
     if instance.exec_status in [Task.Done, Task.Sent]:
         for execution in instance.execution_set.all():
             if execution.exec_status != Execution.Done:
                 execution.exec_status = Execution.Done
                 execution.finish_date = instance.actual_finish
                 execution.save()
-#Change Subtasks status to Done if Task is Done after save Task
+    from planner.tasks import update_task_statuses
+    update_task_statuses(instance.pk)
 
 
 class Order(models.Model):
@@ -819,7 +830,8 @@ class Execution(models.Model):
     part_name = models.CharField('Роботи', max_length=100)
     part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    finish_date = models.DateField('Дата виконання', blank=True, null=True)
+    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
+    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
