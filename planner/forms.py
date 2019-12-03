@@ -1,18 +1,18 @@
-# -*- encoding: utf-8 -*-
+from datetime import date, timedelta
 from django import forms
-from django.contrib.auth.models import User, Group
-from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
-                           Project, Company, News, Event, Receiver, Contractor
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
-from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.contrib.admin.widgets import AdminDateWidget
+from django.contrib.auth.models import User, Group
+from django_select2.forms import Select2Widget
 from crum import get_current_user
+
+from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
+                           Project, Company, News, Event, Receiver, Contractor
 from .formatChecker import NotClearableFileInput
 from .fotoUpload import AvatarInput
 from .btnWidget import BtnWidget
-from datetime import datetime, date, timedelta
 
 
 class UserLoginForm(forms.ModelForm):
@@ -268,8 +268,11 @@ class SprintFilterForm(forms.Form):
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
                               widget=forms.Select(attrs={"onChange": 'submit()'}))
     customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(), initial=date.today)
-    finish_date = forms.DateField(initial=date.today)
+
+    start_date_value = date.today() - timedelta(days=date.today().weekday())
+    finish_date_value = start_date_value + timedelta(days=4)
+    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
+    finish_date = forms.DateField(label='Дата завершення', widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
 
 
 class TaskForm(forms.ModelForm):
