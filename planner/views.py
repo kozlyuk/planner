@@ -1,24 +1,24 @@
-# -*- coding: utf-8 -*-
+from datetime import datetime, date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from planner import forms
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
-from datetime import datetime, date, timedelta
 from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from eventlog.models import Log
 from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
-from crum import get_current_user
 from django.utils.html import format_html
+from crum import get_current_user
+
+from eventlog.models import Log
+from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                            IntTask, News, Event, Customer, Company, Contractor
 
@@ -820,10 +820,7 @@ class SprintTaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-#        start_date = date.today() + timedelta((0-date.today().weekday()) % 7)
         context = super().get_context_data(**kwargs)
-#        context['start_date'] = start_date.strftime('%Y-%m-%d')
-#        context['sprint_length'] = 4
         context['tasks_count'] = Task.objects.all().count()
         context['form_action'] = reverse('sprint_list')
         context['tasks_filtered'] = self.object_list.count()
@@ -1187,7 +1184,6 @@ class CustomerList(ListView):
         customers = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
-        customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             customers = customers.filter(Q(name__icontains=word))
@@ -1280,7 +1276,6 @@ class CompanyList(ListView):
         companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
-        company = self.request.GET.get('company', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             companies = companies.filter(Q(name__icontains=word))
