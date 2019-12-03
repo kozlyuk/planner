@@ -152,22 +152,22 @@
 </div>
 {% endblock %}
 {% block css %}
-    {% comment %} <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/> {% endcomment %}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{% static 'air_datepicker/main.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+    {% comment %} <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'air_datepicker/main.min.css' %}"/> {% endcomment %}
 {% endblock css %}
 
 {% block extrahead %}
     <script type="text/javascript" src="{% static 'air_datepicker/main.min.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-    {% comment %} <script type="text/javascript" src="/static/admin/js/core.js"></script> {% endcomment %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script>
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
-    const startDate = new Date('{{ start_date }}');
+    {% comment %} const startDate = new Date('{{ start_date }}');
     const finishDate = new Date(startDate);
     finishDate.setDate(finishDate.getDate() + {{ sprint_length }})
     let datepickerStart = $('.air-datepicker-start').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(startDate));
-    let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate));
+    let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate)); {% endcomment %}
     </script>
 {% endblock extrahead %}
