@@ -805,14 +805,14 @@ class SprintTaskList(ListView):
         if customer != '0':
             tasks = tasks.filter(deal__customer=customer)
         if start_date:
-            start = datetime.strptime(start_date, '%d.%m.%Y')
+            start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
         else:
-            start = date.today() + timedelta((0-date.today().weekday()) % 7)
+            start_date_value = date.today() - timedelta(days=date.today().weekday())
         if finish_date:
-            finish = datetime.strptime(finish_date, '%d.%m.%Y')
+            finish_date_value = datetime.strptime(finish_date, '%d.%m.%Y')
         else:
-            finish = date.today() + timedelta((0-date.today().weekday()) % 7 + 4)
-        tasks = tasks.filter(planned_finish__gte=start, planned_finish__lte=finish)
+            finish_date_value = start_date_value + timedelta(days=4)
+        tasks = tasks.filter(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value)
         if order != '0':
             tasks = tasks.order_by(order)
         else:
