@@ -785,7 +785,7 @@ class TaskExchange(FormView):
 @method_decorator(login_required, name='dispatch')
 class SprintTaskList(ListView):
     model = Execution
-    template_name = "planner/task_list.html"
+    template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
     success_url = reverse_lazy('home_page')

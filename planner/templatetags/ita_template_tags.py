@@ -187,3 +187,11 @@ def boolean_to_icon(incoming_value, true_icon, false_icon):
     else:
         icon = '<i class="' + false_icon + ' active-danger"></i>'
         return format_html(icon)
+
+@register.simple_tag()
+def none_date_check(date):
+    if date:
+        date_string = str(date)
+        return date_string.split(maxsplit=1)[0]
+    else:
+        return 'Дата не вказана'
