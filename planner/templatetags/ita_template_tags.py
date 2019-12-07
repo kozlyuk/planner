@@ -6,6 +6,11 @@ from planner.settings import MEDIA_URL
 register = template.Library()
 
 
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    return user.groups.filter(name=group_name).exists()
+
+
 @register.simple_tag
 def url_replace(request, field, value):
     get_values = request.GET.copy()

@@ -92,13 +92,7 @@
                             <tr>
                                 <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
                                 <td><a href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
-                                <td>
-                                    {% if task.task.pdf_copy %}
-                                        <a href="{% media_url task.task.pdf_copy %}"> {{ task.task.object_address }} </a>
-                                    {% else %}
-                                        {{ task.task.object_address }}
-                                    {% endif %}
-                                </td>
+                                <td>{{ task.task.object_address }}</td>
                                 <td>{{ task.part_name }}</td>
                                 <td>{{ task.executor }}</td>
                                 <td>{% none_date_check task.planned_start %}</td>
@@ -126,10 +120,6 @@
                         </div>
                     </div>
                 </div>
-                {% if perms.planner.change_deal %}
-                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
-                    договір</button>
-                {% endif %}
             </form>
             <!-- END PAGE BASE CONTENT -->
         </div>
