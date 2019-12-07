@@ -790,6 +790,12 @@ class SprintTaskList(ListView):
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
+                request.user.groups.filter(name='Проектувальники').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_queryset(self):
         tasks = Execution.objects.all()
         exec_status = self.request.GET.get('exec_status', '0')
@@ -798,6 +804,13 @@ class SprintTaskList(ListView):
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
         order = self.request.GET.get('o', '0')
+
+        if self.request.user.is_superuser:
+            pass
+        elif self.request.user.groups.filter(name='ГІПи').exists():
+            tasks = tasks.filter(task__owner=self.request.user.employee)
+        elif self.request.user.groups.filter(name='Проектувальники').exists():
+            tasks = tasks.filter(executor=self.request.user.employee)
 
         if exec_status != '0':
             tasks = tasks.filter(exec_status=exec_status)
@@ -825,7 +838,7 @@ class SprintTaskList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_count'] = Execution.objects.all().count()
         context['form_action'] = reverse('sprint_list')
         context['tasks_filtered'] = self.object_list.count()
         context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')

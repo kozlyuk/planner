@@ -5,6 +5,7 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
+from django.db.models import Q
 from django_select2.forms import Select2Widget
 from crum import get_current_user
 
@@ -253,7 +254,14 @@ class SprintFilterForm(forms.Form):
         exec_status = list(Task.EXEC_STATUS_CHOICES)
         exec_status.insert(0, (0, "Всі"))
 
-        executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        user = get_current_user()
+        if user.is_superuser:
+            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        elif user.groups.filter(name='ГІПи').exists():
+            executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True) \
+                .values_list('pk', 'name'))
+        elif user.groups.filter(name='Проектувальники').exists():
+            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
         executors.insert(0, (0, "Всі"))
 
         customers = list(Customer.objects.all().values_list('pk', 'name'))
