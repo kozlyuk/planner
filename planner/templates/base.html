@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load mptt_tags %}
 {% load fontawesome_5 %}
+{% load ita_template_tags %}
 <!DOCTYPE html>
 <!--[if IE 8]><html lang="en" class="ie8 no-js"><![endif]-->
 <!--[if IE 9]><html lang="en" class="ie9 no-js"><![endif]-->
@@ -44,7 +45,7 @@
     <!-- BEGIN THEME LAYOUT STYLES -->
     <link href="{% static 'assets/layouts/layout7/css/layout.min.css' %}" rel="stylesheet" type="text/css"/>
     <link href="{% static 'assets/layouts/layout7/css/custom.min.css' %}" rel="stylesheet" type="text/css"/>
-    {% fontawesome_5_static %} 
+    {% fontawesome_5_static %}
     <!-- END THEME LAYOUT STYLES -->
     <link rel="shortcut icon" href="favicon.ico"/>
     <!-- MEDIA CSS -->
@@ -67,16 +68,17 @@
             <section class="drawer-list">
                 <ul>
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'home_page' %}">Головна</a></li>
+                    href="{% url 'home_page' %}">Головна</a></li>
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'task_list' %}">Проекти</a></li>
+                    href="{% url 'task_list' %}">Проекти</a></li>
+                    {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
+                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                        href="{% url 'deal_list' %}">Договори</a></li>
+                    {% endif %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'deal_list' %}">Договори</a></li>
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'colleagues_list' %}">Колеги</a></li>
-
+                    href="{% url 'colleagues_list' %}">Колеги</a></li>
                     {% if request.user.is_superuser %}
-                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
+                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
                     {% endif %}
                 </ul>
             </section>
@@ -84,34 +86,39 @@
         <nav class="container-fluid desktop-menu">
             <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
             <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
-            <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
+            {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
+                <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
+            {% endif %}
+            {% if request.user.is_superuser or request.user|has_group:"Проектувальники" or request.user|has_group:"ГІПи" %}
+                <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
+            {% endif %}
             <a class="link {% if request.resolver_match.url_name == 'colleagues_list' %}active{% endif %} uppercase" href="{% url 'colleagues_list' %}">Колеги</a>
-            {% if perms.planner.view_receiver or perms.planner.view_project or perms.planner.view_customer or perms.planner.view_company %}
-            <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                {% if perms.planner.view_receiver %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
-                {% endif %}
-                {% if perms.planner.view_project %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
-                {% endif %}
-                {% if perms.planner.view_customer %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %} uppercase" href="{% url 'customer_list' %}">Замовники</a>
-                {% endif %}
-                {% if perms.planner.view_company %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'company_list' %}active{% endif %} uppercase" href="{% url 'company_list' %}">Компанії</a>
-                {% endif %}
-                {% if perms.planner.view_contractor %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Підрядники</a>
-                {% endif %}
-                {% if perms.planner.view_task %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
-                {% endif %}
-                <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
+
+            {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
+                <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    {% if perms.planner.view_receiver %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
+                    {% endif %}
+                    {% if perms.planner.view_project %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
+                    {% endif %}
+                    {% if perms.planner.view_customer %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %} uppercase" href="{% url 'customer_list' %}">Замовники</a>
+                    {% endif %}
+                    {% if perms.planner.view_company %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'company_list' %}active{% endif %} uppercase" href="{% url 'company_list' %}">Компанії</a>
+                    {% endif %}
+                    {% if perms.planner.view_contractor %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Підрядники</a>
+                    {% endif %}
+                    {% if perms.planner.view_employee %}
+                        <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{%     endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
+                    {% endif %}
             </div>
             {% endif %}
             {% if request.user.is_superuser %}
-            <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-users-cog"></i></a>
+                <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-users-cog"></i></a>
             {% endif %}
         </nav>
                 <!-- BEGIN LOGO -->

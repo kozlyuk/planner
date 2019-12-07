@@ -830,6 +830,8 @@ class Execution(models.Model):
     part_name = models.CharField('Роботи', max_length=100)
     part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    planned_start = models.DateField('Плановий початок', blank=True, null=True)
+    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
     start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
     finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
     creation_date = models.DateField(auto_now_add=True)

@@ -5,6 +5,7 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
+from django.db.models import Q
 from django_select2.forms import Select2Widget
 from crum import get_current_user
 
@@ -253,26 +254,36 @@ class SprintFilterForm(forms.Form):
         exec_status = list(Task.EXEC_STATUS_CHOICES)
         exec_status.insert(0, (0, "Всі"))
 
-        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
-                                      .values_list('pk', 'name'))
-        owners.insert(0, (0, "Всі"))
+        user = get_current_user()
+        if user.is_superuser:
+            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        elif user.groups.filter(name='ГІПи').exists():
+            executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True) \
+                .values_list('pk', 'name'))
+        elif user.groups.filter(name='Проектувальники').exists():
+            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
+        executors.insert(0, (0, "Всі"))
 
         customers = list(Customer.objects.all().values_list('pk', 'name'))
         customers.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
-        self.fields['owner'].choices = owners
+        self.fields['executor'].choices = executors
         self.fields['customer'].choices = customers
 
-    exec_status = forms.ChoiceField(label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    owner = forms.ChoiceField(label='Керівник проекту', required=False,
-                              widget=forms.Select(attrs={"onChange": 'submit()'}))
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+    exec_status = forms.ChoiceField(label='Статус', required=False,
+                                    widget=forms.Select(attrs={"onChange": 'submit()'}))
+    executor = forms.ChoiceField(label='Виконавець', required=False,
+                                 widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.ChoiceField(label='Замовник', required=False,
+                                 widget=forms.Select(attrs={"onChange": 'submit()'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
-    start_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
-    finish_date = forms.DateField(label='Дата завершення', widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
+    start_date = forms.DateField(label='Дата початку',
+                                 widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
+    finish_date = forms.DateField(label='Дата завершення',
+                                  widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
 
 
 class TaskForm(forms.ModelForm):
@@ -360,12 +371,18 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
+        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date', 'planned_start', 'planned_finish']
         widgets = {
             'executor': Select2Widget(),
             'finish_date': AdminDateWidget(),
+            'planned_start': AdminDateWidget(),
+            'planned_finish': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['executor'].queryset = Employee.objects.filter(user__is_active=True)
 
     def clean(self):
         super(ExecutorInlineForm, self).clean()

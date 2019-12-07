@@ -784,26 +784,40 @@ class TaskExchange(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class SprintTaskList(ListView):
-    model = Task
+    model = Execution
+    template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
+                request.user.groups.filter(name='Проектувальники').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_queryset(self):
-        tasks = Task.objects.all()
+        tasks = Execution.objects.all()
         exec_status = self.request.GET.get('exec_status', '0')
-        owner = self.request.GET.get('owner', '0')
+        executor = self.request.GET.get('executor', '0')
         customer = self.request.GET.get('customer', '0')
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
         order = self.request.GET.get('o', '0')
 
+        if self.request.user.is_superuser:
+            pass
+        elif self.request.user.groups.filter(name='ГІПи').exists():
+            tasks = tasks.filter(task__owner=self.request.user.employee)
+        elif self.request.user.groups.filter(name='Проектувальники').exists():
+            tasks = tasks.filter(executor=self.request.user.employee)
+
         if exec_status != '0':
             tasks = tasks.filter(exec_status=exec_status)
-        if owner != '0':
-            tasks = tasks.filter(owner=owner)
+        if executor != '0':
+            tasks = tasks.filter(executor=executor)
         if customer != '0':
-            tasks = tasks.filter(deal__customer=customer)
+            tasks = tasks.filter(task__deal__customer=customer)
         if start_date:
             start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
         else:
@@ -812,16 +826,19 @@ class SprintTaskList(ListView):
             finish_date_value = datetime.strptime(finish_date, '%d.%m.%Y')
         else:
             finish_date_value = start_date_value + timedelta(days=4)
-        tasks = tasks.filter(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value)
+        tasks = tasks.filter(Q(task__planned_start__gte=start_date_value, task__planned_start__lte=finish_date_value) |
+                             Q(task__planned_finish__gte=start_date_value, task__planned_finish__lte=finish_date_value) |
+                             Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
+                             Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
         if order != '0':
             tasks = tasks.order_by(order)
-        else:
-            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        # else:
+        #     tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
         return tasks
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_count'] = Execution.objects.all().count()
         context['form_action'] = reverse('sprint_list')
         context['tasks_filtered'] = self.object_list.count()
         context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
