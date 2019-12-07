@@ -363,10 +363,12 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date']
+        fields = ['executor', 'part_name', 'part', 'exec_status', 'finish_date', 'planned_start', 'planned_finish']
         widgets = {
             'executor': Select2Widget(),
             'finish_date': AdminDateWidget(),
+            'planned_start': AdminDateWidget(),
+            'planned_finish': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 

@@ -785,6 +785,7 @@ class TaskExchange(FormView):
 @method_decorator(login_required, name='dispatch')
 class SprintTaskList(ListView):
     model = Execution
+    template_name = "planner/task_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
     success_url = reverse_lazy('home_page')
@@ -802,8 +803,8 @@ class SprintTaskList(ListView):
             tasks = tasks.filter(exec_status=exec_status)
         if executor != '0':
             tasks = tasks.filter(executor=executor)
-        if customer != '0':
-            tasks = tasks.filter(deal__customer=customer)
+        # if customer != '0':
+        #     tasks = tasks.filter(deal__customer=customer)
         if start_date:
             start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
         else:
@@ -818,8 +819,8 @@ class SprintTaskList(ListView):
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
         if order != '0':
             tasks = tasks.order_by(order)
-        else:
-            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        # else:
+        #     tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
         return tasks
 
     def get_context_data(self, **kwargs):
