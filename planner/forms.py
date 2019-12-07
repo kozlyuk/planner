@@ -372,6 +372,10 @@ class ExecutorInlineForm(forms.ModelForm):
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['executor'].queryset = Employee.objects.filter(user__is_active=True)
+
     def clean(self):
         super(ExecutorInlineForm, self).clean()
         exec_status = self.cleaned_data.get('exec_status')
