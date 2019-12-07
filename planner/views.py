@@ -803,8 +803,8 @@ class SprintTaskList(ListView):
             tasks = tasks.filter(exec_status=exec_status)
         if executor != '0':
             tasks = tasks.filter(executor=executor)
-        # if customer != '0':
-        #     tasks = tasks.filter(deal__customer=customer)
+        if customer != '0':
+            tasks = tasks.filter(task__deal__customer=customer)
         if start_date:
             start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
         else:
