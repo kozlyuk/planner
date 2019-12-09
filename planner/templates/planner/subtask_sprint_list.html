@@ -91,7 +91,13 @@
                             {% for task in tasks %}
                             <tr>
                                 <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
-                                <td><a href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                {% if task.task.is_editable %}
+                                    <td><a href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                {% elif task.task.is_viewable %}
+                                    <td><a href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                {% else %}
+                                    <td>{{ task.task.object_code }}</td>
+                                {% endif %}
                                 <td>{{ task.task.object_address }}</td>
                                 <td>{{ task.part_name }}</td>
                                 <td>{{ task.executor }}</td>
@@ -101,8 +107,9 @@
                                         {{ task.get_exec_status_display }}
                                 </td>
                                 <td>{% none_date_check task.finish_date %}</td>
-                                <td><span class="badge badge-pill badge-{% task_overdue_color task.task.warning %} label-mini">
-                                        {{ task.task.warning }}
+                                <td>
+                                    <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
+                                        {{task.warning_select}}
                                     </span>
                                 </td>
                             </tr>

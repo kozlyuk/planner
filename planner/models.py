@@ -35,7 +35,7 @@ def avatar_directory_path(instance, filename):
 
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
-    name = models.CharField('ПІБ', max_length=50, unique=True)
+    name = models.CharField('ПІБ', max_length=30, unique=True)
     position = models.CharField('Посада', max_length=50)
     head = models.ForeignKey('self', verbose_name='Кервіник',
                              blank=True, null=True, on_delete=models.PROTECT)
@@ -899,6 +899,7 @@ class Execution(models.Model):
         'Початок виконання', blank=True, null=True)
     finish_date = models.DateTimeField(
         'Кінець виконання', blank=True, null=True)
+    warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -931,6 +932,13 @@ class Execution(models.Model):
         log(user=get_current_user(),
             action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
+
+    def warning_select(self):
+        """Show subtask warning if it exist. Else show task warning"""
+        if self.warning:
+            return self.warning
+        return self.task.warning
+    warning_select.short_description = 'Попередження'
 
 
 class IntTask(models.Model):

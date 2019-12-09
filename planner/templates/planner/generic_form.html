@@ -35,10 +35,12 @@
                                     <div class="col-sm-10">
                                     {{ field|add_class:"form-control" }}
                                     </div>
-                                </div>                                   
+                                </div>
                                 {% endfor %}
-                            <a href="{{ back_btn_url }}"
-                                class="btn deal-delete red btn-sm btn-outline sbold uppercase">{{ back_btn_text }}</a>
+                            {% if back_btn_url %}
+                                <a href="{{ back_btn_url }}"
+                                    class="btn deal-delete red btn-sm btn-outline sbold uppercase">{{ back_btn_text }}</a>
+                            {% endif %}
                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                 style="float: right;">Зберегти</button>
                             </div>

@@ -404,7 +404,7 @@ class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
         fields = ['executor', 'part_name', 'part', 'exec_status',
-                  'finish_date', 'planned_start', 'planned_finish']
+                  'finish_date', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
             'finish_date': AdminDateWidget(),
