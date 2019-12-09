@@ -277,9 +277,9 @@
                                                 <th scope="col">РОБОТИ</th>
                                                 <th width="5%" scope="col">ЧАСТКА</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
                                                 <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
                                                 <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
                                                 <th width="15%" scope="col">ПОПЕРЕДЖЕННЯ</th>
                                                 <th width="1%">ДІЇ</th>
                                             </tr>
@@ -304,16 +304,16 @@
                                                     {{ form.exec_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{ form.finish_date.errors }}
-                                                    {{ form.finish_date|attr:"style: width:60%" }}
-                                                </th>
-                                                <th class="pl-1 pr-1">
                                                     {{ form.planned_start.errors }}
                                                     {{ form.planned_start|attr:"style: width:60%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.planned_finish.errors }}
                                                     {{ form.planned_finish|attr:"style: width:60%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.finish_date.errors }}
+                                                    {{ form.finish_date|attr:"style: width:60%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.warning.errors }}
@@ -336,9 +336,9 @@
                                                 <th scope="col">РОБОТИ</th>
                                                 <th width="5%" scope="col">ЧАСТКА</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
                                                 <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
                                                 <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
+                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
                                                 <th width="15%" scope="col">ПОПЕРЕДЖЕННЯ</th>
                                                 <th width="1%">ДІЇ</th>
                                             </tr>
@@ -365,16 +365,16 @@
                                                     {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.finish_date.errors }}
-                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
-                                                </th>
-                                                <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.planned_start.errors }}
                                                     {{ executors_formset.empty_form.planned_start|attr:"style: width:60%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.planned_finish.errors }}
                                                     {{ executors_formset.empty_form.planned_finish|attr:"style: width:60%" }}
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ executors_formset.empty_form.finish_date.errors }}
+                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.warning.errors }}
