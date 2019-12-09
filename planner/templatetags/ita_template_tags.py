@@ -1,9 +1,11 @@
 import re
 from django import template
 from django.utils.html import format_html
+from django.conf.locale.uk import formats as uk_formats
 from planner.settings import MEDIA_URL
 
 register = template.Library()
+date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
 @register.filter(name='has_group')
@@ -201,8 +203,7 @@ def boolean_to_icon(incoming_value, true_icon, false_icon):
 
 @register.simple_tag()
 def none_date_check(date):
+    ''' Return date in rigth format if it exist '''
     if date:
-        date_string = str(date)
-        return date_string.split(maxsplit=1)[0]
-    else:
-        return 'Дата не вказана'
+        return date.strftime(date_format)
+    return 'Дата не вказана'
