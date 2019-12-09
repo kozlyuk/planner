@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company, News, Event
 from django.db.models import Q
 from django import forms
 from django.forms.models import BaseInlineFormSet
@@ -11,9 +9,13 @@ from django.utils.translation import ugettext_lazy as _
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from django.utils.html import format_html
 
+from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
+from .models import IntTask, Contractor, Order, Company, News, Event
+
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['project_type', 'customer', 'price_code', 'net_price', 'copies_count', 'active']  # 'turnover_calc']
+    list_display = ['project_type', 'customer', 'price_code',
+                    'net_price', 'copies_count', 'active']  # 'turnover_calc']
     ordering = ['-price_code']
     list_filter = ['customer']
     fieldsets = [
@@ -24,8 +26,8 @@ class ProjectAdmin(admin.ModelAdmin):
                            ('copies_count'),
                            ('description'),
                            ('active')
-                          ]})
-        ]
+                           ]})
+    ]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -46,8 +48,8 @@ class EmployeeAdmin(admin.ModelAdmin):
                            ('salary'),
                            ('birthday'),
                            ('avatar')
-                          ]})
-        ]
+                           ]})
+    ]
 
     def get_queryset(self, request):
         qs = super(EmployeeAdmin, self).get_queryset(request)
@@ -62,15 +64,16 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'credit_calc', 'debit_calc', 'expect_calc', 'completed_calc']
+    list_display = ['name', 'credit_calc',
+                    'debit_calc', 'expect_calc', 'completed_calc']
     ordering = ['name']
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
                            ('debtor_term', 'act_template'),
                            ('requisites')
-                          ]})
-        ]
+                           ]})
+    ]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -85,8 +88,8 @@ class CompanyAdmin(admin.ModelAdmin):
         (None, {'fields': [('name', 'chief'),
                            ('taxation'),
                            ('requisites')
-                          ]})
-        ]
+                           ]})
+    ]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -95,7 +98,8 @@ class CompanyAdmin(admin.ModelAdmin):
 
 
 class ContractorAdmin(admin.ModelAdmin):
-    list_display = ['name', 'advance_calc', 'credit_calc', 'expect_calc', 'completed_calc', 'active']
+    list_display = ['name', 'advance_calc', 'credit_calc',
+                    'expect_calc', 'completed_calc', 'active']
     search_fields = ['name', 'contact_person']
     ordering = ['name']
     fieldsets = [
@@ -104,7 +108,7 @@ class ContractorAdmin(admin.ModelAdmin):
                            'requisites',
                            'active'
                            ]})
-        ]
+    ]
 
 
 class ReceiverAdmin(admin.ModelAdmin):
@@ -115,8 +119,8 @@ class ReceiverAdmin(admin.ModelAdmin):
                            ('name', 'address'),
                            ('contact_person', 'phone',),
                            ('comment')
-                          ]})
-        ]
+                           ]})
+    ]
 
 
 class SendingAdmin(admin.ModelAdmin):
@@ -130,8 +134,8 @@ class SendingAdmin(admin.ModelAdmin):
                            ('task'),
                            ('receipt_date', 'copies_count'),
                            ('comment')
-                          ]})
-        ]
+                           ]})
+    ]
     search_fields = ['task__object_code', 'task__object_address']
 
     def get_readonly_fields(self, request, obj=None):
@@ -183,11 +187,14 @@ class DealForm(forms.ModelForm):
             if not value or value == 0:
                 raise forms.ValidationError("Вкажіть Вартість робіт")
             if not act_date:
-                raise forms.ValidationError("Вкажіть Дату акту виконаних робіт")
+                raise forms.ValidationError(
+                    "Вкажіть Дату акту виконаних робіт")
             if not act_value or act_value == 0:
-                raise forms.ValidationError("Вкажіть Суму акту виконаних робіт")
+                raise forms.ValidationError(
+                    "Вкажіть Суму акту виконаних робіт")
             if not pdf_copy:
-                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
+                raise forms.ValidationError(
+                    "Підвантажте будь ласка електронний примірник")
 
 
 class TasksInlineFormSet(BaseInlineFormSet):
@@ -201,16 +208,19 @@ class TasksInlineFormSet(BaseInlineFormSet):
             planned_finish = form.cleaned_data.get("planned_finish")
             if project_type and self.instance.__customer__:
                 if self.instance.__customer__ != project_type.customer:
-                    raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
+                    raise forms.ValidationError(
+                        "Тип проекту не входить до можливих значень Замовника Договору")
             if planned_finish and planned_finish > self.instance.__expire_date__:
-                raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
+                raise forms.ValidationError(
+                    "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
 class TasksInline(admin.TabularInline):
 
     model = Task
     formset = TasksInlineFormSet
-    fields = ['object_code', 'object_address', 'project_type', 'owner', 'planned_finish', 'exec_status']
+    fields = ['object_code', 'object_address', 'project_type',
+              'owner', 'planned_finish', 'exec_status']
     readonly_fields = ['exec_status']
     extra = 0
     show_change_link = True
@@ -218,9 +228,11 @@ class TasksInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "owner":
-            kwargs["queryset"] = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
+            kwargs["queryset"] = Employee.objects.filter(
+                user__groups__name__contains="ГІПи", user__is_active=True)
         if request._obj_ is not None and db_field.name == "project_type":
-            kwargs["queryset"] = Project.objects.filter(customer=request._obj_.customer, active=True)
+            kwargs["queryset"] = Project.objects.filter(
+                customer=request._obj_.customer, active=True)
         return super(TasksInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -247,20 +259,23 @@ class DealAdmin(admin.ModelAdmin):
     list_per_page = 50
     search_fields = ['number', 'value']
     ordering = ['-creation_date', 'customer', '-number']
-    list_filter = [('customer', RelatedDropdownFilter), ('company', RelatedDropdownFilter), 'pay_status', 'act_status']
+    list_filter = [('customer', RelatedDropdownFilter), ('company',
+                                                         RelatedDropdownFilter), 'pay_status', 'act_status']
     date_hierarchy = 'expire_date'
-    readonly_fields = ['bonuses_calc', 'value_calc', 'costs_calc', 'pay_date_calc']
+    readonly_fields = ['bonuses_calc',
+                       'value_calc', 'costs_calc', 'pay_date_calc']
     fieldsets = [
         ('Інформація про договір', {'fields': [('number', 'date'),
                                                ('customer', 'company'),
                                                ('value', 'advance', 'pay_status'),
                                                ('pay_date', 'expire_date'),
-                                               ('act_status', 'act_date', 'act_value'),
+                                               ('act_status',
+                                                'act_date', 'act_value'),
                                                ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
                                              'costs_calc', 'pay_date_calc', 'manual_warning', 'comment'],
                                   'classes': ['collapse']})
-        ]
+    ]
 
     def get_form(self, request, obj=None, **kwargs):
         # just save obj reference for future processing in Inline
@@ -290,18 +305,24 @@ class TaskForm(forms.ModelForm):
 
         if project_type and deal:
             if deal.customer != project_type.customer:
-                raise forms.ValidationError("Тип проекту не входить до можливих значень Замовника Договору")
+                raise forms.ValidationError(
+                    "Тип проекту не входить до можливих значень Замовника Договору")
         if exec_status in [Task.Done, Task.Sent]:
             if not actual_finish:
-                raise forms.ValidationError("Вкажіть будь ласка Фактичне закінчення робіт")
+                raise forms.ValidationError(
+                    "Вкажіть будь ласка Фактичне закінчення робіт")
             elif not pdf_copy:
-                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
+                raise forms.ValidationError(
+                    "Підвантажте будь ласка електронний примірник")
             elif deal.act_status == Deal.Issued:
-                raise forms.ValidationError("Договір закрито, зверніться до керівника")
+                raise forms.ValidationError(
+                    "Договір закрито, зверніться до керівника")
         if actual_finish and exec_status not in [Task.Done, Task.Sent]:
-                raise forms.ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+            raise forms.ValidationError(
+                "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
-            raise forms.ValidationError("Планова дата закінчення повинна бути меншою дати закінчення договору")
+            raise forms.ValidationError(
+                "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
 class ExecutersInlineFormSet(BaseInlineFormSet):
@@ -322,16 +343,20 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
             exec_status = form.cleaned_data.get('exec_status')
             finish_date = form.cleaned_data.get('finish_date')
             if finish_date and exec_status != Execution.Done:
-                raise ValidationError("Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+                raise ValidationError(
+                    "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
             elif exec_status == Execution.Done and not finish_date:
-                raise ValidationError("Вкажіть будь ласка Дату виконання робіт")
+                raise ValidationError(
+                    "Вкажіть будь ласка Дату виконання робіт")
         self.instance.__outsourcing_part__ = outsourcing_part
         if self.instance.__exec_status__ == Task.Done and percent < 100:
-            raise ValidationError(_('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
+            raise ValidationError(
+                _('Вкажіть 100%% часток виконавців. Зараз : %(percent).0f%%') % {'percent': percent})
         if self.instance.__project_type__:
             if self.instance.__project_type__.executors_bonus > 0:
                 bonuses_max = 100 + 100 *\
-                          self.instance.__project_type__.owner_bonus / self.instance.__project_type__.executors_bonus
+                    self.instance.__project_type__.owner_bonus / \
+                    self.instance.__project_type__.executors_bonus
             else:
                 bonuses_max = 100
             if percent > bonuses_max:
@@ -357,21 +382,27 @@ class OrdersInlineFormSet(BaseInlineFormSet):
             value = form.cleaned_data.get("value")
             if pay_status and pay_status != Order.NotPaid:
                 if not pay_date:
-                    raise forms.ValidationError("Вкажіть будь ласка Дату оплати")
+                    raise forms.ValidationError(
+                        "Вкажіть будь ласка Дату оплати")
                 if not value or value == 0:
-                    raise forms.ValidationError("Вкажіть будь ласка Вартість робіт")
+                    raise forms.ValidationError(
+                        "Вкажіть будь ласка Вартість робіт")
             if pay_date and pay_status == Order.NotPaid:
-                    raise forms.ValidationError("Відмітьте Статус оплати або видаліть Дату оплати")
+                raise forms.ValidationError(
+                    "Відмітьте Статус оплати або видаліть Дату оплати")
 
         if self.instance.__exec_status__ == Task.Done:
             if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
                 costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
                 if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
-                    raise ValidationError('Добавте будь ласка витрати по аутсорсингу')
+                    raise ValidationError(
+                        'Добавте будь ласка витрати по аутсорсингу')
                 if self.instance.__outsourcing_part__ < costs_part:
-                    raise ValidationError('Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
+                    raise ValidationError(
+                        'Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом')
             elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
-                raise ValidationError('У проекту вартість якого дорівнює нулю не може бути витрат')
+                raise ValidationError(
+                    'У проекту вартість якого дорівнює нулю не може бути витрат')
 
 
 class SendingsInlineFormSet(BaseInlineFormSet):
@@ -379,7 +410,8 @@ class SendingsInlineFormSet(BaseInlineFormSet):
     def clean(self):
         super(SendingsInlineFormSet, self).clean()
         if self.instance.__exec_status__ == Task.Sent and not self.forms and self.instance.project_type.copies_count > 0:
-            raise forms.ValidationError("Ви не можете закрити цей проект без відправки")
+            raise forms.ValidationError(
+                "Ви не можете закрити цей проект без відправки")
 
 
 class ExecutersInline(admin.TabularInline):
@@ -477,32 +509,40 @@ class TaskAdmin(admin.ModelAdmin):
                              ('project_type', 'deal')]}),
         ('Інформація про виконання', {'fields': [('exec_status', 'owner'),
                                                  ('tc_received', 'tc_upload'),
-                                                 ('planned_start', 'planned_finish'),
+                                                 ('planned_start',
+                                                  'planned_finish'),
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
-        ('Додаткова інформіція', {'fields': ['project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
+        ('Додаткова інформіція', {'fields': [
+         'project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
     ]
-    list_display = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner', 'warning_mark']
+    list_display = ['object_code', 'object_address', 'project_type',
+                    'deal', 'exec_status', 'owner', 'warning_mark']
     list_per_page = 50
     date_hierarchy = 'actual_finish'
     list_filter = ['exec_status',
                    ('owner', admin.RelatedOnlyFieldListFilter),
                    ('deal__customer', RelatedDropdownFilter)]
-    search_fields = ['object_code', 'object_address', 'project_type__price_code', 'project_type__project_type', 'deal__number']
+    search_fields = ['object_code', 'object_address',
+                     'project_type__price_code', 'project_type__project_type', 'deal__number']
     ordering = ['-creation_date', '-deal', 'object_code']
 
     def get_form(self, request, obj=None, **kwargs):
         request._obj_ = obj
         form = super(TaskAdmin, self).get_form(request, obj, **kwargs)
         if request.user.is_superuser:
-            form.base_fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
+            form.base_fields['owner'].queryset = Employee.objects.filter(
+                user__groups__name__contains="ГІПи", user__is_active=True)
         elif obj is None or (obj.is_active() and obj.owner.user == request.user):
-            form.base_fields['owner'].queryset = Employee.objects.filter(user=request.user)
+            form.base_fields['owner'].queryset = Employee.objects.filter(
+                user=request.user)
         if obj is None or request.user.is_superuser or (obj.is_active() and obj.owner.user == request.user):
             if obj is None or obj.deal.act_status != Deal.Issued:
-                form.base_fields['deal'].queryset = Deal.objects.exclude(act_status=Deal.Issued).order_by('-creation_date')
+                form.base_fields['deal'].queryset = Deal.objects.exclude(
+                    act_status=Deal.Issued).order_by('-creation_date')
             if obj is not None:
-                form.base_fields['project_type'].queryset = Project.objects.filter(customer=obj.deal.customer, active=True)
+                form.base_fields['project_type'].queryset = Project.objects.filter(
+                    customer=obj.deal.customer, active=True)
         return form
 
     def get_queryset(self, request):
@@ -547,16 +587,19 @@ class IntTaskForm(forms.ModelForm):
 
         if exec_status == Task.Done:
             if not actual_finish:
-                raise forms.ValidationError("Вкажіть Фактичне закінчення робіт")
+                raise forms.ValidationError(
+                    "Вкажіть Фактичне закінчення робіт")
         if actual_finish:
             if exec_status != Task.Done:
                 raise forms.ValidationError("Відмітьте Статус виконання")
+
 
 class IntTaskAdmin(admin.ModelAdmin):
 
     form = IntTaskForm
 
-    list_display = ['task_name', 'exec_status', 'executor', 'planned_start', 'planned_finish']
+    list_display = ['task_name', 'exec_status',
+                    'executor', 'planned_start', 'planned_finish']
     fieldsets = [
         (None, {'fields': ['task_name',
                            ('exec_status', 'executor'),
@@ -564,8 +607,8 @@ class IntTaskAdmin(admin.ModelAdmin):
                            ('actual_start', 'actual_finish'),
                            'bonus',
                            'comment'
-                          ]})
-        ]
+                           ]})
+    ]
     list_per_page = 50
     date_hierarchy = 'actual_finish'
     list_filter = ['exec_status',
@@ -589,17 +632,20 @@ class IntTaskAdmin(admin.ModelAdmin):
             return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
 
+
 class NewsAdmin(admin.ModelAdmin):
 
-    list_display = ['creator', 'created', 'title', 'news_type', 'actual_from', 'actual_to']
+    list_display = ['creator', 'created', 'title',
+                    'news_type', 'actual_from', 'actual_to']
     ordering = ['created']
     list_filter = ['creator']
     fieldsets = [
         (None, {'fields': [('title', 'news_type'),
                            ('text',),
                            ('actual_from', 'actual_to')
-                          ]})
-        ]
+                           ]})
+    ]
+
 
 class EventAdmin(admin.ModelAdmin):
 
@@ -610,8 +656,8 @@ class EventAdmin(admin.ModelAdmin):
         (None, {'fields': [('title',),
                            ('date', 'repeat'),
                            ('description',),
-                          ]})
-        ]
+                           ]})
+    ]
 
 
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'

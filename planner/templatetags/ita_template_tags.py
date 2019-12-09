@@ -57,6 +57,7 @@ def task_overdue_color(status):
         return 'secondary'
     return
 
+
 @register.simple_tag
 def task_status_color(status):
     if status.startswith('Виконано'):
@@ -106,6 +107,7 @@ def task_secondary_overdue_color(status):
 def exec_bonus(task, part):
     return round(task.exec_bonus(part), 2)
 
+
 @register.simple_tag
 def calc_summary(summary_value, option='without_currency'):
     '''
@@ -129,6 +131,7 @@ def calc_summary(summary_value, option='without_currency'):
         summary_value = round(summary_value / 5, 2)
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
+
 
 @register.simple_tag
 def calc_vat(value, option='without_currency'):
@@ -155,6 +158,7 @@ def calc_vat(value, option='without_currency'):
         return vat[0] + ',' + vat[1]
     return value
 
+
 @register.simple_tag()
 def month_url(request_url, direction='next_month'):
     '''
@@ -179,6 +183,7 @@ def month_url(request_url, direction='next_month'):
     url_str = '/'.join(request_url)
     return url_str
 
+
 @register.simple_tag()
 def boolean_to_icon(incoming_value, true_icon, false_icon):
     '''
@@ -192,6 +197,7 @@ def boolean_to_icon(incoming_value, true_icon, false_icon):
     else:
         icon = '<i class="' + false_icon + ' active-danger"></i>'
         return format_html(icon)
+
 
 @register.simple_tag()
 def none_date_check(date):

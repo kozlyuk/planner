@@ -37,16 +37,20 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=50, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ForeignKey('self', verbose_name='Кервіник', blank=True, null=True, on_delete=models.PROTECT)
+    head = models.ForeignKey('self', verbose_name='Кервіник',
+                             blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
-    mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
+    mobile_phone = models.CharField(
+        'Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
                            variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
-    salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
+    salary = models.DecimalField(
+        'Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
-    vacation_date = models.DateField('Дата нарахування відпустки', blank=True, null=True)
+    vacation_date = models.DateField(
+        'Дата нарахування відпустки', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Працівник'
@@ -126,7 +130,7 @@ class Employee(models.Model):
         bonuses = self.inttask_set.filter(exec_status=IntTask.Done,
                                           actual_finish__month=month,
                                           actual_finish__year=year)\
-                                  .aggregate(Sum('bonus'))['bonus__sum']
+            .aggregate(Sum('bonus'))['bonus__sum']
 
         return round(bonuses, 2) if bonuses else 0
         # inttask bonuses
@@ -137,30 +141,31 @@ class Employee(models.Model):
 
     def total_bonuses_cm(self):
         return self.total_bonuses(0)
-    total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(datetime.now().month, datetime.now().year)
+    total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(
+        datetime.now().month, datetime.now().year)
 
     def total_bonuses_pm(self):
         return self.total_bonuses(-1)
     total_bonuses_pm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -1 if datetime.now().month > 1 else datetime.now().month + 11,
+        .format(datetime.now().month - 1 if datetime.now().month > 1 else datetime.now().month + 11,
                 datetime.now().year if datetime.now().month > 1 else datetime.now().year - 1)
 
     def total_bonuses_ppm(self):
         return self.total_bonuses(-2)
     total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -2 if datetime.now().month > 2 else datetime.now().month + 10,
+        .format(datetime.now().month - 2 if datetime.now().month > 2 else datetime.now().month + 10,
                 datetime.now().year if datetime.now().month > 2 else datetime.now().year - 1)
 
     def total_bonuses_pppm(self):
         return self.total_bonuses(-3)
     total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -3 if datetime.now().month > 3 else datetime.now().month + 9,
+        .format(datetime.now().month - 3 if datetime.now().month > 3 else datetime.now().month + 9,
                 datetime.now().year if datetime.now().month > 3 else datetime.now().year - 1)
 
     def total_bonuses_ppppm(self):
         return self.total_bonuses(-4)
     total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month -4 if datetime.now().month > 4 else datetime.now().month + 8,
+        .format(datetime.now().month - 4 if datetime.now().month > 4 else datetime.now().month + 8,
                 datetime.now().year if datetime.now().month > 4 else datetime.now().year - 1)
 
     def productivity(self):
@@ -201,8 +206,10 @@ class Customer(models.Model):
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
     requisites = models.TextField('Реквізити', blank=True)
-    debtor_term = models.PositiveSmallIntegerField('Термін післяоплати', blank=True, null=True)
-    act_template = models.CharField('Шаблон акту', max_length=3, choices=ACT_TEMPLATE_CHOICES, default='gks')
+    debtor_term = models.PositiveSmallIntegerField(
+        'Термін післяоплати', blank=True, null=True)
+    act_template = models.CharField(
+        'Шаблон акту', max_length=3, choices=ACT_TEMPLATE_CHOICES, default='gks')
 
     class Meta:
         verbose_name = 'Замовник'
@@ -219,7 +226,8 @@ class Customer(models.Model):
             if deal.pay_status == Deal.AdvancePaid and deal.act_value > deal.advance:
                 total += deal.act_value - deal.advance
         return u'{0:,}'.format(total).replace(u',', u' ')
-    debit_calc.short_description = 'Дебіторська заборгованість {}'.format(datetime.now().year)
+    debit_calc.short_description = 'Дебіторська заборгованість {}'.format(
+        datetime.now().year)
 
     def credit_calc(self):
         total = 0
@@ -241,7 +249,8 @@ class Customer(models.Model):
             if deal.pay_status == Deal.AdvancePaid and deal.act_value < deal.advance:
                 total += deal.act_value
         return u'{0:,}'.format(total).replace(u',', u' ')
-    completed_calc.short_description = 'Виконано та оплачено {}'.format(datetime.now().year)
+    completed_calc.short_description = 'Виконано та оплачено {}'.format(
+        datetime.now().year)
 
     def expect_calc(self):
         total = 0
@@ -258,16 +267,18 @@ class Customer(models.Model):
 
 class Project(models.Model):
     project_type = models.CharField('Вид робіт', max_length=100)
-    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
+    customer = models.ForeignKey(
+        Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     price_code = models.CharField('Пункт кошторису', max_length=8, unique=True)
-    price = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    price = models.DecimalField(
+        'Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
                                                       validators=[MaxValueValidator(100)], default=75)
     owner_bonus = models.PositiveSmallIntegerField('Бонус керівника проекту, %',
                                                    validators=[MaxValueValidator(100)], default=6)
     executors_bonus = models.PositiveSmallIntegerField('Бонус виконавців, %',
                                                        validators=[MaxValueValidator(100)], default=12)
-    copies_count = models.PositiveSmallIntegerField('Кількість примірників',default=0,
+    copies_count = models.PositiveSmallIntegerField('Кількість примірників', default=0,
                                                     validators=[MaxValueValidator(10)])
     description = models.TextField('Опис', blank=True)
     active = models.BooleanField('Активний', default=True)
@@ -299,8 +310,10 @@ class Company(models.Model):
         ('wovat', 'Без ПДВ'),
     )
     name = models.CharField('Назва', max_length=50, unique=True)
-    chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
-    taxation = models.CharField('Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
+    chief = models.ForeignKey(
+        Employee, verbose_name='Керівник', on_delete=models.PROTECT)
+    taxation = models.CharField(
+        'Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
     requisites = models.TextField('Реквізити', blank=True)
 
     class Meta:
@@ -397,7 +410,7 @@ class Deal(models.Model):
         (NotPaid, 'Не оплачений'),
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачений')
-        )
+    )
     NotIssued = 'NI'
     PartlyIssued = 'PI'
     Issued = 'IS'
@@ -405,7 +418,7 @@ class Deal(models.Model):
         (NotIssued, 'Не виписаний'),
         (PartlyIssued, 'Виписаний частково'),
         (Issued, 'Виписаний')
-        )
+    )
     ToDo = 'IW'
     InProgress = 'IP'
     Done = 'HD'
@@ -418,21 +431,31 @@ class Deal(models.Model):
     )
     number = models.CharField('Номер договору', max_length=30)
     date = models.DateField('Дата договору', default=now)
-    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
-    company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
-    value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    customer = models.ForeignKey(
+        Customer, verbose_name='Замовник', on_delete=models.PROTECT)
+    company = models.ForeignKey(
+        Company, verbose_name='Компанія', on_delete=models.PROTECT)
+    value = models.DecimalField(
+        'Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     value_correction = models.DecimalField('Коригування вартості робіт, грн.',
                                            max_digits=8, decimal_places=2, default=0)
-    advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
-    pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
+    advance = models.DecimalField(
+        'Аванс, грн.', max_digits=8, decimal_places=2, default=0)
+    pay_status = models.CharField(
+        'Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
     expire_date = models.DateField('Дата закінчення договору')
-    act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
-    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    act_status = models.CharField(
+        'Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
+    exec_status = models.CharField(
+        'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
-    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
-    act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
-    act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    manual_warning = models.CharField(
+        'Попередження', max_length=30, blank=True)
+    act_date = models.DateField(
+        'Дата акту виконаних робіт', blank=True, null=True)
+    act_value = models.DecimalField(
+        'Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.'
@@ -443,7 +466,8 @@ class Deal(models.Model):
                                               blank=True, null=True)
     comment = models.TextField('Коментар', blank=True)
     # Creating information
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
+    creator = models.ForeignKey(
+        User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -461,14 +485,17 @@ class Deal(models.Model):
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Доданий договір', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Доданий договір', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлений договір', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлений договір', extra={"title": title})
         super(Deal, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         title = self.number
-        log(user=get_current_user(), action='Видалений договір', extra={"title": title})
+        log(user=get_current_user(),
+            action='Видалений договір', extra={"title": title})
         super(Deal, self).delete(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
@@ -479,7 +506,8 @@ class Deal(models.Model):
         return u'{0:,}'.format(self.value).replace(u',', u' ')
     svalue.short_description = 'Вартість робіт, грн.'
 
-    def bonuses_calc(self):                                          # total deal's bonuses
+    # total deal's bonuses
+    def bonuses_calc(self):
         total = 0
         for task in self.task_set.all():
             total += task.total_bonus()
@@ -503,7 +531,8 @@ class Deal(models.Model):
         return round(total, 2)
     costs_calc.short_description = 'Витрати по договору, грн.'
 
-    def pay_date_calc(self):                                            # total deal's costs
+    # total deal's costs
+    def pay_date_calc(self):
         if self.customer.debtor_term:
             if self.act_date:
                 pay_date = self.act_date + BDay(self.customer.debtor_term)
@@ -523,7 +552,8 @@ def update_deal(sender, instance, **kwargs):
 
 
 class Receiver(models.Model):
-    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
+    customer = models.ForeignKey(
+        Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     name = models.CharField('Отримувач', max_length=50, unique=True)
     address = models.CharField('Адреса', max_length=255)
     contact_person = models.CharField('Контактна особа', max_length=50)
@@ -551,21 +581,28 @@ class Task(models.Model):
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
-    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
+    project_type = models.ForeignKey(
+        Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
     project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
-    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
-    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    deal = models.ForeignKey(
+        Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    exec_status = models.CharField(
+        'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
-    manual_warning = models.CharField('Попередження', max_length=30, blank=True)
-    owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
+    manual_warning = models.CharField(
+        'Попередження', max_length=30, blank=True)
+    owner = models.ForeignKey(
+        Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
     costs = models.ManyToManyField(Contractor, through='Order', related_name='tasks',
                                    verbose_name='Підрядники', blank=True)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
-    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
+    planned_finish = models.DateField(
+        'Планове закінчення', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок', blank=True, null=True)
-    actual_finish = models.DateField('Фактичне закінчення', blank=True, null=True)
+    actual_finish = models.DateField(
+        'Фактичне закінчення', blank=True, null=True)
     tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
                                                content_types=['application/pdf',
@@ -573,7 +610,8 @@ class Task(models.Model):
                                                               'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                                                max_upload_size=26214400,
                                                blank=True, null=True)
-    receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
+    receivers = models.ManyToManyField(
+        Receiver, through='Sending', verbose_name='Отримувачі проекту')
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -582,7 +620,8 @@ class Task(models.Model):
                                               blank=True, null=True)
     comment = models.TextField('Коментар', blank=True)
     # Creating information
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
+    creator = models.ForeignKey(
+        User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -602,14 +641,17 @@ class Task(models.Model):
             self.exec_status = Task.Sent
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Доданий проект', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Доданий проект', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлений проект', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлений проект', extra={"title": title})
         super(Task, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         title = self.object_code + ' ' + self.project_type.price_code
-        log(user=get_current_user(), action='Видалений проект', extra={"title": title})
+        log(user=get_current_user(),
+            action='Видалений проект', extra={"title": title})
         super(Task, self).delete(*args, **kwargs)
 
     def execution_status(self):
@@ -627,7 +669,7 @@ class Task(models.Model):
     def sending_status(self):
         try:
             if self.receivers.all().aggregate(Sum('sending__copies_count')).get('sending__copies_count__sum') \
-                        < self.project_type.copies_count:
+                    < self.project_type.copies_count:
                 return 'Не всі відправки'
         except TypeError:
             if self.project_type.copies_count > 0:
@@ -692,7 +734,8 @@ class Task(models.Model):
     # total task's costs
 
     def exec_part(self):
-        part = self.executors.all().aggregate(Sum('execution__part')).get('execution__part__sum')
+        part = self.executors.all().aggregate(
+            Sum('execution__part')).get('execution__part__sum')
         return part if part is not None else 0
     # executors part
 
@@ -704,7 +747,8 @@ class Task(models.Model):
 
     def owner_part(self):
         if self.project_type.owner_bonus > 0:
-            part = int(100 + (100 - self.exec_part())*self.project_type.executors_bonus/self.project_type.owner_bonus)
+            part = int(100 + (100 - self.exec_part()) *
+                       self.project_type.executors_bonus/self.project_type.owner_bonus)
         else:
             part = 0
         return part
@@ -712,7 +756,7 @@ class Task(models.Model):
 
     def owner_bonus(self):
         return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
-               * self.project_type.owner_bonus / 10000
+            * self.project_type.owner_bonus / 10000
     # owner's bonus
 
     def exec_bonus(self, part):
@@ -749,14 +793,19 @@ class Order(models.Model):
         (NotPaid, 'Не оплачений'),
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачений')
-        )
-    contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
-    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
+    )
+    contractor = models.ForeignKey(
+        Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
+    task = models.ForeignKey(
+        Task, verbose_name='Проект', on_delete=models.CASCADE)
     order_name = models.CharField('Назва робіт', max_length=30)
     deal_number = models.CharField('Номер договору', max_length=30)
-    value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
-    advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
-    pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
+    value = models.DecimalField(
+        'Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    advance = models.DecimalField(
+        'Аванс, грн.', max_digits=8, decimal_places=2, default=0)
+    pay_status = models.CharField(
+        'Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
 
     class Meta:
@@ -771,22 +820,28 @@ class Order(models.Model):
         title = self.task.object_code + ' ' + self.task.project_type.price_code
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Доданий підрядник по проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Доданий підрядник по проекту', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлений підрядник по проекту', extra={"title": title})
+                log(user=get_current_user(), action='Оновлений підрядник по проекту', extra={
+                    "title": title})
         super(Order, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         title = self.task.object_code + ' ' + self.task.project_type.price_code
-        log(user=get_current_user(), action='Видалений підрядник по проекту', extra={"title": title})
+        log(user=get_current_user(),
+            action='Видалений підрядник по проекту', extra={"title": title})
         super(Order, self).delete(*args, **kwargs)
 
 
 class Sending(models.Model):
-    receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(
+        Receiver, verbose_name='Отримувач проекту', on_delete=models.CASCADE)
+    task = models.ForeignKey(
+        Task, verbose_name='Проект', on_delete=models.CASCADE)
     receipt_date = models.DateField('Дата відправки')
-    copies_count = models.PositiveSmallIntegerField('Кількість примірників', validators=[MaxValueValidator(10)])
+    copies_count = models.PositiveSmallIntegerField(
+        'Кількість примірників', validators=[MaxValueValidator(10)])
     register_num = models.CharField('Реєстр', max_length=30, blank=True)
     comment = models.CharField('Коментар', max_length=255, blank=True)
 
@@ -802,9 +857,11 @@ class Sending(models.Model):
         title = self.task.object_code + ' ' + self.task.project_type.price_code
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Додана відправка проекту', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлена відправка проекту', extra={"title": title})
         if self.task.exec_status == Task.Done:
             self.task.exec_status = Task.Sent
             self.task.save()
@@ -812,7 +869,8 @@ class Sending(models.Model):
 
     def delete(self, *args, **kwargs):
         title = self.task.object_code + ' ' + self.task.project_type.price_code
-        log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
+        log(user=get_current_user(),
+            action='Видалена відправка проекту', extra={"title": title})
         super(Sending, self).delete(*args, **kwargs)
 
 
@@ -825,15 +883,22 @@ class Execution(models.Model):
         (InProgress, 'Виконується'),
         (Done, 'Виконано')
     )
-    executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
-    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
+    executor = models.ForeignKey(
+        Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
+    task = models.ForeignKey(
+        Task, verbose_name='Проект', on_delete=models.CASCADE)
     part_name = models.CharField('Роботи', max_length=100)
-    part = models.PositiveSmallIntegerField('Частка', validators=[MaxValueValidator(150)])
-    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    part = models.PositiveSmallIntegerField(
+        'Частка', validators=[MaxValueValidator(150)])
+    exec_status = models.CharField(
+        'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
-    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
-    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
-    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
+    planned_finish = models.DateField(
+        'Планове закінчення', blank=True, null=True)
+    start_date = models.DateTimeField(
+        'Початок виконання', blank=True, null=True)
+    finish_date = models.DateTimeField(
+        'Кінець виконання', blank=True, null=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -845,12 +910,15 @@ class Execution(models.Model):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code + ' ' + self.part_name
+        title = self.task.object_code + ' ' + \
+            self.task.project_type.price_code + ' ' + self.part_name
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додана частина проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Додана частина проекту', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлена частина проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлена частина проекту', extra={"title": title})
         if self.task.exec_status in [Task.Done, Task.Sent]:
             if self.exec_status != Execution.Done:
                 self.exec_status = Execution.Done
@@ -858,8 +926,10 @@ class Execution(models.Model):
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code + ' ' + self.part_name
-        log(user=get_current_user(), action='Видалена частина проекту', extra={"title": title})
+        title = self.task.object_code + ' ' + \
+            self.task.project_type.price_code + ' ' + self.part_name
+        log(user=get_current_user(),
+            action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
 
 
@@ -873,15 +943,23 @@ class IntTask(models.Model):
         (Done, 'Виконано')
     )
     task_name = models.CharField('Завдання', max_length=100)
-    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
-    planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
-    planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
-    actual_start = models.DateField('Фактичний початок робіт', blank=True, null=True)
-    actual_finish = models.DateField('Фактичне закінчення робіт', blank=True, null=True)
-    bonus = models.DecimalField('Бонус, грн.', max_digits=8, decimal_places=2, default=0)
+    exec_status = models.CharField(
+        'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    executor = models.ForeignKey(
+        Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
+    planned_start = models.DateField(
+        'Плановий початок робіт', blank=True, null=True)
+    planned_finish = models.DateField(
+        'Планове закінчення робіт', blank=True, null=True)
+    actual_start = models.DateField(
+        'Фактичний початок робіт', blank=True, null=True)
+    actual_finish = models.DateField(
+        'Фактичне закінчення робіт', blank=True, null=True)
+    bonus = models.DecimalField(
+        'Бонус, грн.', max_digits=8, decimal_places=2, default=0)
     comment = models.TextField('Коментар', blank=True)
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='inttask_creators', on_delete=models.PROTECT)
+    creator = models.ForeignKey(User, verbose_name='Створив',
+                                related_name='inttask_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -895,9 +973,11 @@ class IntTask(models.Model):
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додане завдання', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Додане завдання', extra={"title": title})
             else:
-                log(user=get_current_user(), action='Оновлене завдання', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлене завдання', extra={"title": title})
         super(IntTask, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -929,11 +1009,13 @@ class Event(models.Model):
         (RepeatMonthly, 'Щомісячна подія'),
         (RepeatYearly, 'Щорічна подія')
     )
-    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
+    creator = models.ForeignKey(
+        User, verbose_name='Створив', on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
     date = models.DateField('Дата')
     next_date = models.DateField('Дата наступної події', blank=True, null=True)
-    repeat = models.CharField('Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
+    repeat = models.CharField(
+        'Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
     title = models.CharField('Назва події', max_length=100)
     description = models.TextField('Опис', blank=True)
 
@@ -948,9 +1030,11 @@ class Event(models.Model):
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додана подія', extra={"title": self.title})
+                log(user=get_current_user(), action='Додана подія',
+                    extra={"title": self.title})
             else:
-                log(user=get_current_user(), action='Оновлена подія', extra={"title": self.title})
+                log(user=get_current_user(), action='Оновлена подія',
+                    extra={"title": self.title})
         super(Event, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -1006,11 +1090,13 @@ class News(models.Model):
         (Leisure, 'Дозвілля'),
         (Production, 'Робочі'),
     )
-    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
+    creator = models.ForeignKey(
+        User, verbose_name='Створив', on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
     title = models.CharField('Назва новини', max_length=100)
     text = models.TextField('Новина')
-    news_type = models.CharField('Тип новини', max_length=2, choices=TYPE_CHOICES, default=Production)
+    news_type = models.CharField(
+        'Тип новини', max_length=2, choices=TYPE_CHOICES, default=Production)
     actual_from = models.DateField('Актуальна з', blank=True, null=True)
     actual_to = models.DateField('Актуальна до', blank=True, null=True)
 

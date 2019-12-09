@@ -44,7 +44,8 @@ class ContentTypeRestrictedFileField(FileField):
         super(ContentTypeRestrictedFileField, self).__init__(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
-        data = super(ContentTypeRestrictedFileField, self).clean(*args, **kwargs)
+        data = super(ContentTypeRestrictedFileField,
+                     self).clean(*args, **kwargs)
 
         file = data.file
         try:
@@ -57,16 +58,18 @@ class ContentTypeRestrictedFileField(FileField):
                         break
 
                 if not found:
-                    raise forms.ValidationError(_('Розширення фойлу не підтримується.'))
+                    raise forms.ValidationError(
+                        _('Розширення фойлу не підтримується.'))
 
             # Check content-type if required
             if self.content_types and file.content_type not in self.content_types:
-                raise forms.ValidationError(_('Файл має бути у PDF або XLSX або DOCX форматі.'))
+                raise forms.ValidationError(
+                    _('Файл має бути у PDF або XLSX або DOCX форматі.'))
 
             # Check file size if required
             if self.max_upload_size and file._size > self.max_upload_size:
                 raise forms.ValidationError(_('Файл не може бути більшим %s. Розмір підвантажуваного файлу %s') % (
-                filesizeformat(self.max_upload_size), filesizeformat(file._size)))
+                    filesizeformat(self.max_upload_size), filesizeformat(file._size)))
         except AttributeError:
             pass
 
@@ -87,13 +90,18 @@ class NotClearableFileInput(FileInput):
             'input_text': self.input_text,
         }
         template = '%(input)s'
-        substitutions['input'] = super(NotClearableFileInput, self).render(name, value, attrs)
+        substitutions['input'] = super(
+            NotClearableFileInput, self).render(name, value, attrs)
 
         if value and hasattr(value, "url"):
             full_url = value.name
             file_name = full_url.split('/')[-1]
             template = self.template_with_initial
             substitutions['initial'] = format_html(self.url_markup_template,
-                                               value,
-                                               force_text(file_name, encoding='utf-8'))
+                                                   value,
+                                                   force_text(file_name, encoding='utf-8'))
         return mark_safe(template % substitutions)
+
+
+class AvatarInput(FileInput):
+    template_name = 'widgets/file_input.html'
