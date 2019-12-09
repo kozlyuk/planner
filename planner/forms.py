@@ -11,8 +11,7 @@ from crum import get_current_user
 
 from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
                            Project, Company, News, Event, Receiver, Contractor
-from .formatChecker import NotClearableFileInput
-from .fotoUpload import AvatarInput
+from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
 
 

@@ -20,7 +20,7 @@ from crum import get_current_user
 from eventlog.models import Log
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                           IntTask, News, Event, Customer, Company, Contractor
+    IntTask, News, Event, Customer, Company, Contractor
 
 
 class Round(Func):
@@ -42,7 +42,8 @@ class DealCalc(TemplateView):
         context = super().get_context_data(**kwargs)
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
         tasks = Task.objects.filter(deal=deal)
-        objects = tasks.values('object_code', 'object_address').order_by().distinct()
+        objects = tasks.values(
+            'object_code', 'object_address').order_by().distinct()
         template = deal.customer.act_template
 
         index = 0
@@ -64,18 +65,20 @@ class DealCalc(TemplateView):
                     value = price * count
                     svalue += round(value, 2)
                 object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
-                                    count, round(price, 2), round(value, 2)])
+                                     count, round(price, 2), round(value, 2)])
         elif template == 'msz':
             object_lists = [[] for _ in range(len(objects))]
             for obj in range(len(objects)):
                 index += 1
-                object_lists[obj].append([objects[obj]['object_code'] + ' ' + objects[obj]['object_address']])
+                object_lists[obj].append(
+                    [objects[obj]['object_code'] + ' ' + objects[obj]['object_address']])
                 for task in tasks.filter(object_code=objects[obj]['object_code'])\
                         .values('project_type__price_code', 'project_type__description', 'project_type__price'):
                     if task['project_type__price'] != 0:
                         price = round(task['project_type__price'] / 6 * 5, 2)
                         svalue += price
-                    object_lists[obj].append([index, task['project_type__description'], 'шт.', 1, price, price])
+                    object_lists[obj].append(
+                        [index, task['project_type__description'], 'шт.', 1, price, price])
 
         context['deal'] = deal
         context['objects'] = objects
@@ -126,8 +129,8 @@ class BonusesCalc(TemplateView):
         for ex in executions:
             index += 1
             executions_list.append([index, ex.task.object_code, ex.task.object_address,
-                                   ex.task.project_type, ex.part_name, ex.part,
-                                   round(ex.task.exec_bonus(ex.part), 2)])
+                                    ex.task.project_type, ex.part_name, ex.part,
+                                    round(ex.task.exec_bonus(ex.part), 2)])
             bonuses += ex.task.exec_bonus(ex.part)
 
         inttasks = IntTask.objects.filter(executor=employee,
@@ -142,7 +145,7 @@ class BonusesCalc(TemplateView):
             bonuses += task.bonus
         first_name = employee.user.first_name
 
-        bonuses = round( bonuses, 2 )
+        bonuses = round(bonuses, 2)
 
         context['first_name'] = first_name
         context['tasks'] = task_list
@@ -197,48 +200,61 @@ def home_page(request):
         actneed_deals_count = actneed_deals.count()
         debtor_deals_count = debtor_deals.count()
         unpaid_deals_count = unpaid_deals.count()
-        deals_div = int(actneed_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
-        debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
+        deals_div = int(actneed_deals_count / active_deals_count *
+                        100) if active_deals_count > 0 else 0
+        debtor_deals_div = int(
+            debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
         overdue_deals_count = len(overdue_deals)
-        overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
+        overdue_deals_div = int(
+            overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
     elif request.user.groups.filter(name='ГІПи').exists():
-        td_tasks = Task.objects.filter(exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
-        ip_tasks = Task.objects.filter(exec_status=Task.InProgress, owner__user=request.user).order_by('creation_date')
-        hd_tasks = Task.objects.filter(exec_status=Task.Done, owner__user=request.user).order_by('creation_date')
+        td_tasks = Task.objects.filter(
+            exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
+        ip_tasks = Task.objects.filter(
+            exec_status=Task.InProgress, owner__user=request.user).order_by('creation_date')
+        hd_tasks = Task.objects.filter(
+            exec_status=Task.Done, owner__user=request.user).order_by('creation_date')
         sent_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
                                          actual_finish__month=datetime.now().month,
                                          actual_finish__year=datetime.now().year)\
-                                 .order_by('-actual_finish')
+            .order_by('-actual_finish')
         td_tasks_count = td_tasks.count()
         ip_tasks_count = ip_tasks.count()
         hd_tasks_count = hd_tasks.count()
         sent_tasks_count = sent_tasks.count()
-        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent).count() + sent_tasks_count
-        tasks_div = int(sent_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(
+            exec_status=Task.Sent).count() + sent_tasks_count
+        tasks_div = int(sent_tasks_count / active_tasks_count *
+                        100) if active_tasks_count > 0 else 0
         overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent)\
                                           .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
                                           .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
                                           .count()
-        overdue_tasks_div = int(overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
+        overdue_tasks_div = int(
+            overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
         owner_productivity = request.user.employee.owner_productivity()
     else:
-        td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
-        ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
+        td_executions = Execution.objects.filter(
+            executor__user=request.user, exec_status=Execution.ToDo).order_by('creation_date')
+        ip_executions = Execution.objects.filter(
+            executor__user=request.user, exec_status=Execution.InProgress).order_by('creation_date')
         hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
-                               finish_date__month=datetime.now().month, finish_date__year=datetime.now().year)
+                                                 finish_date__month=datetime.now().month, finish_date__year=datetime.now().year)
         td_executions_count = td_executions.count()
         ip_executions_count = ip_executions.count()
         hd_executions_count = hd_executions.count()
         active_executions_count = Execution.objects.filter(executor__user=request.user)\
                                                    .exclude(exec_status=Execution.Done)\
                                                    .count() + hd_executions_count
-        executions_div = int(hd_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
+        executions_div = int(hd_executions_count / active_executions_count *
+                             100) if active_executions_count > 0 else 0
         overdue_executions_count = Execution.objects.filter(executor__user=request.user)\
                                             .exclude(exec_status=Execution.Done)\
                                             .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__isnull=True)\
                                             .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__gte=date.today())\
                                             .count()
-        overdue_executions_div = int(overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
+        overdue_executions_div = int(
+            overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
         productivity = request.user.employee.productivity()
 
     inttasks = IntTask.objects.filter(executor__user=request.user)\
@@ -257,7 +273,8 @@ def home_page(request):
     overdue_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
                                             .exclude(exec_status=IntTask.Done)\
                                             .exclude(planned_finish__gte=date.today()).count()
-    overdue_inttasks_div = int(overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
+    overdue_inttasks_div = int(
+        overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
 
     def date_delta(delta):
         month = datetime.now().month + delta
@@ -317,144 +334,146 @@ def home_page(request):
 #    total_bonuses_pm = exec_bonuses_pm + owner_bonuses_pm + inttask_bonuses_pm
 #    total_bonuses_ppm = exec_bonuses_ppm + owner_bonuses_ppm + inttask_bonuses_ppm
 
-    news = News.objects.exclude(actual_from__gt=date.today()).exclude(actual_to__lte=date.today()).order_by('-created')
-    events = Event.objects.filter(next_date__isnull=False).order_by('next_date')
+    news = News.objects.exclude(actual_from__gt=date.today()).exclude(
+        actual_to__lte=date.today()).order_by('-created')
+    events = Event.objects.filter(
+        next_date__isnull=False).order_by('next_date')
     activities = Log.objects.filter(user=request.user)[:50]
 
     if request.user.groups.filter(name='Бухгалтери').exists():
         return render(request, 'content_admin.html',
-                                  {
-                                      'employee': request.user.employee,
-                                      'actneed_deals': actneed_deals,
-                                      'debtor_deals': debtor_deals,
-                                      'overdue_deals': overdue_deals,
-                                      'inttasks': inttasks,
-                                      #'td_inttasks': td_inttasks,
-                                      #'ip_inttasks': ip_inttasks,
-                                      #'hd_inttasks': hd_inttasks,
-                                      'actneed_deals_count': actneed_deals_count,
-                                      'active_deals_count': active_deals_count,
-                                      'deals_div': deals_div,
-                                      'debtor_deals_count': debtor_deals_count,
-                                      'unpaid_deals_count': unpaid_deals_count,
-                                      'debtor_deals_div': debtor_deals_div,
-                                      'overdue_deals_count': overdue_deals_count,
-                                      'overdue_deals_div': overdue_deals_div,
-                                      #'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      #'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
-                                      'exec_bonuses_cm': exec_bonuses_cm,
-                                      #'exec_bonuses_pm': exec_bonuses_pm,
-                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
-                                      'owner_bonuses_cm': owner_bonuses_cm,
-                                      #'owner_bonuses_pm': owner_bonuses_pm,
-                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
-                                      'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
-                                      'total_bonuses_cm': total_bonuses_cm,
-                                      #'total_bonuses_pm': total_bonuses_pm,
-                                      #'total_bonuses_ppm': total_bonuses_ppm,
-                                      'employee_id': Employee.objects.get(user=request.user).id,
-                                      'cm': date_delta(0),
-                                      'pm': date_delta(-1),
-                                      'ppm': date_delta(-2),
-                                      'news': news,
-                                      'events': events,
-                                      'activities': activities
-                                  })
+                      {
+                          'employee': request.user.employee,
+                          'actneed_deals': actneed_deals,
+                          'debtor_deals': debtor_deals,
+                          'overdue_deals': overdue_deals,
+                          'inttasks': inttasks,
+                          # 'td_inttasks': td_inttasks,
+                          # 'ip_inttasks': ip_inttasks,
+                          # 'hd_inttasks': hd_inttasks,
+                          'actneed_deals_count': actneed_deals_count,
+                          'active_deals_count': active_deals_count,
+                          'deals_div': deals_div,
+                          'debtor_deals_count': debtor_deals_count,
+                          'unpaid_deals_count': unpaid_deals_count,
+                          'debtor_deals_div': debtor_deals_div,
+                          'overdue_deals_count': overdue_deals_count,
+                          'overdue_deals_div': overdue_deals_div,
+                          # 'hd_inttasks_count': hd_inttasks_count,
+                          'active_inttasks_count': active_inttasks_count,
+                          # 'inttasks_div': inttasks_div,
+                          'overdue_inttasks_count': overdue_inttasks_count,
+                          'overdue_inttasks_div': overdue_inttasks_div,
+                          'exec_bonuses_cm': exec_bonuses_cm,
+                          # 'exec_bonuses_pm': exec_bonuses_pm,
+                          # 'exec_bonuses_ppm': exec_bonuses_ppm,
+                          'owner_bonuses_cm': owner_bonuses_cm,
+                          # 'owner_bonuses_pm': owner_bonuses_pm,
+                          # 'owner_bonuses_ppm': owner_bonuses_ppm,
+                          'inttask_bonuses_cm': inttask_bonuses_cm,
+                          # 'inttask_bonuses_pm': inttask_bonuses_pm,
+                          # 'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                          'total_bonuses_cm': total_bonuses_cm,
+                          # 'total_bonuses_pm': total_bonuses_pm,
+                          # 'total_bonuses_ppm': total_bonuses_ppm,
+                          'employee_id': Employee.objects.get(user=request.user).id,
+                          'cm': date_delta(0),
+                          'pm': date_delta(-1),
+                          'ppm': date_delta(-2),
+                          'news': news,
+                          'events': events,
+                          'activities': activities
+                      })
     elif request.user.groups.filter(name='ГІПи').exists():
         return render(request, 'content_gip.html',
-                                  {
-                                      'employee': request.user.employee,
-                                      'td_tasks': td_tasks,
-                                      'ip_tasks': ip_tasks,
-                                      'hd_tasks': hd_tasks,
-                                      'sent_tasks': sent_tasks,
-                                      'inttasks': inttasks,
-                                      #'td_inttasks': td_inttasks,
-                                      #'ip_inttasks': ip_inttasks,
-                                      #'hd_inttasks': hd_inttasks,
-                                      'td_tasks_count': td_tasks_count,
-                                      'ip_tasks_count': ip_tasks_count,
-                                      'hd_tasks_count': hd_tasks_count,
-                                      'sent_tasks_count': sent_tasks_count,
-                                      'active_tasks_count': active_tasks_count,
-                                      'tasks_div': tasks_div,
-                                      'overdue_tasks_count': overdue_tasks_count,
-                                      'overdue_tasks_div': overdue_tasks_div,
-                                      'owner_productivity': owner_productivity,
-                                      #'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      #'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
-                                      'exec_bonuses_cm': exec_bonuses_cm,
-                                      #'exec_bonuses_pm': exec_bonuses_pm,
-                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
-                                      'owner_bonuses_cm': owner_bonuses_cm,
-                                      #'owner_bonuses_pm': owner_bonuses_pm,
-                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
-                                      'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
-                                      'total_bonuses_cm': total_bonuses_cm,
-                                      #'total_bonuses_pm': total_bonuses_pm,
-                                      #'total_bonuses_ppm': total_bonuses_ppm,
-                                      'employee_id': Employee.objects.get(user=request.user).id,
-                                      'cm': date_delta(0),
-                                      'pm': date_delta(-1),
-                                      'ppm': date_delta(-2),
-                                      'news': news,
-                                      'events': events,
-                                      'activities': activities
-                                  })
+                      {
+                          'employee': request.user.employee,
+                          'td_tasks': td_tasks,
+                          'ip_tasks': ip_tasks,
+                          'hd_tasks': hd_tasks,
+                          'sent_tasks': sent_tasks,
+                          'inttasks': inttasks,
+                          # 'td_inttasks': td_inttasks,
+                          # 'ip_inttasks': ip_inttasks,
+                          # 'hd_inttasks': hd_inttasks,
+                          'td_tasks_count': td_tasks_count,
+                          'ip_tasks_count': ip_tasks_count,
+                          'hd_tasks_count': hd_tasks_count,
+                          'sent_tasks_count': sent_tasks_count,
+                          'active_tasks_count': active_tasks_count,
+                          'tasks_div': tasks_div,
+                          'overdue_tasks_count': overdue_tasks_count,
+                          'overdue_tasks_div': overdue_tasks_div,
+                          'owner_productivity': owner_productivity,
+                          # 'hd_inttasks_count': hd_inttasks_count,
+                          'active_inttasks_count': active_inttasks_count,
+                          # 'inttasks_div': inttasks_div,
+                          'overdue_inttasks_count': overdue_inttasks_count,
+                          'overdue_inttasks_div': overdue_inttasks_div,
+                          'exec_bonuses_cm': exec_bonuses_cm,
+                          # 'exec_bonuses_pm': exec_bonuses_pm,
+                          # 'exec_bonuses_ppm': exec_bonuses_ppm,
+                          'owner_bonuses_cm': owner_bonuses_cm,
+                          # 'owner_bonuses_pm': owner_bonuses_pm,
+                          # 'owner_bonuses_ppm': owner_bonuses_ppm,
+                          'inttask_bonuses_cm': inttask_bonuses_cm,
+                          # 'inttask_bonuses_pm': inttask_bonuses_pm,
+                          # 'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                          'total_bonuses_cm': total_bonuses_cm,
+                          # 'total_bonuses_pm': total_bonuses_pm,
+                          # 'total_bonuses_ppm': total_bonuses_ppm,
+                          'employee_id': Employee.objects.get(user=request.user).id,
+                          'cm': date_delta(0),
+                          'pm': date_delta(-1),
+                          'ppm': date_delta(-2),
+                          'news': news,
+                          'events': events,
+                          'activities': activities
+                      })
     else:
         return render(request, 'content_exec.html',
-                                  {
-                                      'employee': request.user.employee,
-                                      'td_executions': td_executions,
-                                      'ip_executions': ip_executions,
-                                      'hd_executions': hd_executions,
-                                      'inttasks': inttasks,
-                                      #'td_inttasks': td_inttasks,
-                                      #'ip_inttasks': ip_inttasks,
-                                      #'hd_inttasks': hd_inttasks,
-                                      'td_executions_count': td_executions_count,
-                                      'ip_executions_count': ip_executions_count,
-                                      'hd_executions_count': hd_executions_count,
-                                      'active_executions_count': active_executions_count,
-                                      'executions_div': executions_div,
-                                      'overdue_executions_count': overdue_executions_count,
-                                      'overdue_executions_div': overdue_executions_div,
-                                      'productivity': productivity,
-                                      #'hd_inttasks_count': hd_inttasks_count,
-                                      'active_inttasks_count': active_inttasks_count,
-                                      #'inttasks_div': inttasks_div,
-                                      'overdue_inttasks_count': overdue_inttasks_count,
-                                      'overdue_inttasks_div': overdue_inttasks_div,
-                                      'exec_bonuses_cm': exec_bonuses_cm,
-                                      #'exec_bonuses_pm': exec_bonuses_pm,
-                                      #'exec_bonuses_ppm': exec_bonuses_ppm,
-                                      'owner_bonuses_cm': owner_bonuses_cm,
-                                      #'owner_bonuses_pm': owner_bonuses_pm,
-                                      #'owner_bonuses_ppm': owner_bonuses_ppm,
-                                      'inttask_bonuses_cm': inttask_bonuses_cm,
-                                      #'inttask_bonuses_pm': inttask_bonuses_pm,
-                                      #'inttask_bonuses_ppm': inttask_bonuses_ppm,
-                                      'total_bonuses_cm': total_bonuses_cm,
-                                      #'total_bonuses_pm': total_bonuses_pm,
-                                      #'total_bonuses_ppm': total_bonuses_ppm,
-                                      'employee_id': Employee.objects.get(user=request.user).id,
-                                      'cm': date_delta(0),
-                                      'pm': date_delta(-1),
-                                      'ppm': date_delta(-2),
-                                      'news': news,
-                                      'events': events,
-                                      'activities': activities
-                                  })
+                      {
+                          'employee': request.user.employee,
+                          'td_executions': td_executions,
+                          'ip_executions': ip_executions,
+                          'hd_executions': hd_executions,
+                          'inttasks': inttasks,
+                          # 'td_inttasks': td_inttasks,
+                          # 'ip_inttasks': ip_inttasks,
+                          # 'hd_inttasks': hd_inttasks,
+                          'td_executions_count': td_executions_count,
+                          'ip_executions_count': ip_executions_count,
+                          'hd_executions_count': hd_executions_count,
+                          'active_executions_count': active_executions_count,
+                          'executions_div': executions_div,
+                          'overdue_executions_count': overdue_executions_count,
+                          'overdue_executions_div': overdue_executions_div,
+                          'productivity': productivity,
+                          # 'hd_inttasks_count': hd_inttasks_count,
+                          'active_inttasks_count': active_inttasks_count,
+                          # 'inttasks_div': inttasks_div,
+                          'overdue_inttasks_count': overdue_inttasks_count,
+                          'overdue_inttasks_div': overdue_inttasks_div,
+                          'exec_bonuses_cm': exec_bonuses_cm,
+                          # 'exec_bonuses_pm': exec_bonuses_pm,
+                          # 'exec_bonuses_ppm': exec_bonuses_ppm,
+                          'owner_bonuses_cm': owner_bonuses_cm,
+                          # 'owner_bonuses_pm': owner_bonuses_pm,
+                          # 'owner_bonuses_ppm': owner_bonuses_ppm,
+                          'inttask_bonuses_cm': inttask_bonuses_cm,
+                          # 'inttask_bonuses_pm': inttask_bonuses_pm,
+                          # 'inttask_bonuses_ppm': inttask_bonuses_ppm,
+                          'total_bonuses_cm': total_bonuses_cm,
+                          # 'total_bonuses_pm': total_bonuses_pm,
+                          # 'total_bonuses_ppm': total_bonuses_ppm,
+                          'employee_id': Employee.objects.get(user=request.user).id,
+                          'cm': date_delta(0),
+                          'pm': date_delta(-1),
+                          'ppm': date_delta(-2),
+                          'news': news,
+                          'events': events,
+                          'activities': activities
+                      })
 
 
 @method_decorator(login_required, name='dispatch')
@@ -512,13 +531,15 @@ class DealUpdate(UpdateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+        self.success_url = reverse_lazy(
+            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(
+                self.request.POST, instance=self.object)
         else:
             context['tasks_formset'] = forms.TasksFormSet(instance=self.object)
         return context
@@ -543,7 +564,8 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+        self.success_url = reverse_lazy(
+            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -572,7 +594,8 @@ class DealDelete(DeleteView):
     model = Deal
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+        self.success_url = reverse_lazy(
+            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
@@ -649,19 +672,25 @@ class TaskUpdate(UpdateView):
     form_class = forms.TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        self.success_url = reverse_lazy(
+            'task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_formset'] = forms.CostsFormSet(self.request.POST, instance=self.object)
-            context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(
+                self.request.POST, instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(
+                self.request.POST, instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(
+                self.request.POST, instance=self.object)
         else:
-            context['executors_formset'] = forms.ExecutorsFormSet(instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(
+                instance=self.object)
             context['costs_formset'] = forms.CostsFormSet(instance=self.object)
-            context['sending_formset'] = forms.SendingFormSet(instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(
+                instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -690,15 +719,18 @@ class TaskCreate(CreateView):
     form_class = forms.TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        self.success_url = reverse_lazy(
+            'task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST)
+            context['executors_formset'] = forms.ExecutorsFormSet(
+                self.request.POST)
             context['costs_formset'] = forms.CostsFormSet(self.request.POST)
-            context['sending_formset'] = forms.SendingFormSet(self.request.POST)
+            context['sending_formset'] = forms.SendingFormSet(
+                self.request.POST)
         else:
             context['executors_formset'] = forms.ExecutorsFormSet()
             context['costs_formset'] = forms.CostsFormSet()
@@ -730,7 +762,8 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        self.success_url = reverse_lazy(
+            'task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
 
@@ -740,7 +773,8 @@ class TaskExchange(FormView):
     form_class = forms.TaskExchangeForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        self.success_url = reverse_lazy(
+            'task_list') + '?' + self.request.session.get('task_query_string', '')
         return self.success_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -760,7 +794,8 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
-        context["query_string"] = self.request.session.get('task_query_string', '')
+        context["query_string"] = self.request.session.get(
+            'task_query_string', '')
         return context
 
     def form_valid(self, form):
@@ -919,10 +954,12 @@ class SubtaskUpdate(UpdateView):
 
     def form_valid(self, form):
         if form.cleaned_data['finish_date'] and form.cleaned_data['exec_status'] != Execution.Done:
-            form.add_error('exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+            form.add_error(
+                'exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
             return self.form_invalid(form)
         elif form.cleaned_data['exec_status'] == Execution.Done and not form.cleaned_data['finish_date']:
-            form.add_error('finish_date', "Вкажіть будь ласка Дату виконання робіт")
+            form.add_error(
+                'finish_date', "Вкажіть будь ласка Дату виконання робіт")
             return self.form_invalid(form)
         else:
             return super().form_valid(form)
@@ -1034,7 +1071,8 @@ class ReceiverList(ListView):
         context['header_main'] = 'Адресати'
         context['objects_count'] = Receiver.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.ReceiverFilterForm(self.request.POST)
+            context['filter_form'] = forms.ReceiverFilterForm(
+                self.request.POST)
         else:
             context['filter_form'] = forms.ReceiverFilterForm(self.request.GET)
 
@@ -1067,7 +1105,8 @@ class ReceiverUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['receiver']
         context['header_main'] = 'Редагування ' + str(name)
-        context['back_btn_url'] = reverse('receiver_delete', kwargs={'pk': name.pk})
+        context['back_btn_url'] = reverse(
+            'receiver_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1082,9 +1121,11 @@ class ReceiverDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         receiver = context['receiver']
-        context['go_back_url'] = reverse('receiver_update', kwargs={'pk':receiver.pk})
+        context['go_back_url'] = reverse(
+            'receiver_update', kwargs={'pk': receiver.pk})
         context['main_header'] = 'Видалити адресат?'
-        context['header'] = 'Видалення адресату "' + str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        context['header'] = 'Видалення адресату "' + \
+            str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.task_set.exists():
             context['objects'] = obj.sending_set.all()
         return context
@@ -1103,7 +1144,8 @@ class ProjectList(ListView):
         project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
             .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100),
                                                   output_field=DecimalField())).\
-            values_list('project_type', 'customer__name', 'price_code', 'net_price', 'copies_count', 'active', 'url')
+            values_list('project_type', 'customer__name', 'price_code',
+                        'net_price', 'copies_count', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
         customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
@@ -1165,7 +1207,8 @@ class ProjectUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['project']
         context['header_main'] = 'Вид робіт'
-        context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk':name.pk})
+        context['back_btn_url'] = reverse(
+            'project_type_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1180,9 +1223,11 @@ class ProjectDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         project = context['project']
-        context['go_back_url'] = reverse('project_type_update', kwargs={'pk':project.pk})
+        context['go_back_url'] = reverse(
+            'project_type_update', kwargs={'pk': project.pk})
         context['main_header'] = 'Видалити вид робіт?'
-        context['header'] = 'Видалення "' + str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        context['header'] = 'Видалення "' + \
+            str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.task_set.exists():
             context['objects'] = obj.task_set.all()
         return context
@@ -1224,7 +1269,8 @@ class CustomerList(ListView):
         context['header_main'] = 'Замовники'
         context['objects_count'] = Customer.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.CustomerFilterForm(self.request.POST)
+            context['filter_form'] = forms.CustomerFilterForm(
+                self.request.POST)
         else:
             context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
 
@@ -1257,7 +1303,8 @@ class CustomerUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['customer']
         context['header_main'] = 'Замовник: ' + str(name)
-        context['back_btn_url'] = reverse('customer_delete', kwargs={'pk':name.pk})
+        context['back_btn_url'] = reverse(
+            'customer_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1272,9 +1319,11 @@ class CustomerDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         customer = context['customer']
-        context['go_back_url'] = reverse('customer_update', kwargs={'pk':customer.pk})
+        context['go_back_url'] = reverse(
+            'customer_update', kwargs={'pk': customer.pk})
         context['main_header'] = 'Видалити замовника?'
-        context['header'] = 'Видалення "' + str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        context['header'] = 'Видалення "' + \
+            str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.project_set.exists():
             context['objects'] = obj.project_set.all()
         return context
@@ -1347,7 +1396,8 @@ class CompanyUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['company']
         context['header_main'] = 'Компанія: ' + str(name)
-        context['back_btn_url'] = reverse('company_delete', kwargs={'pk':name.pk})
+        context['back_btn_url'] = reverse(
+            'company_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1362,9 +1412,11 @@ class CompanyDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         company = context['company']
-        context['go_back_url'] = reverse('company_update', kwargs={'pk':company.pk})
+        context['go_back_url'] = reverse(
+            'company_update', kwargs={'pk': company.pk})
         context['main_header'] = 'Видалити компанію?'
-        context['header'] = 'Видалення "' + str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        context['header'] = 'Видалення "' + \
+            str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.deal_set.exists():
             context['objects'] = obj.deal_set.all()
         return context
@@ -1401,7 +1453,8 @@ class СolleaguesList(ListView):
         context['header_main'] = 'Колеги'
         context['objects_count'] = Employee.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+            context['filter_form'] = forms.EmployeeFilterForm(
+                self.request.POST)
         else:
             context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
         return context
@@ -1441,7 +1494,8 @@ class EmployeeList(ListView):
         context['header_main'] = 'Працівники'
         context['objects_count'] = Employee.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.EmployeeFilterForm(self.request.POST)
+            context['filter_form'] = forms.EmployeeFilterForm(
+                self.request.POST)
         else:
             context['filter_form'] = forms.EmployeeFilterForm(self.request.GET)
         return context
@@ -1544,9 +1598,11 @@ class ContractorList(ListView):
         context['header_main'] = 'Підрядники'
         context['objects_count'] = Contractor.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.ContractorFilterForm(self.request.POST)
+            context['filter_form'] = forms.ContractorFilterForm(
+                self.request.POST)
         else:
-            context['filter_form'] = forms.ContractorFilterForm(self.request.GET)
+            context['filter_form'] = forms.ContractorFilterForm(
+                self.request.GET)
 
         return context
 
@@ -1577,7 +1633,8 @@ class ContractorUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['contractor']
         context['header_main'] = 'Редагування ' + str(name)
-        context['back_btn_url'] = reverse('contractor_delete', kwargs={'pk': name.pk})
+        context['back_btn_url'] = reverse(
+            'contractor_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         return context
 
@@ -1592,9 +1649,12 @@ class ContractorDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         contractor = context['contractor']
-        context['go_back_url'] = reverse('contractor_update', kwargs={'pk':contractor.pk})
+        context['go_back_url'] = reverse(
+            'contractor_update', kwargs={'pk': contractor.pk})
         context['main_header'] = 'Видалити адресат?'
-        context['header'] = 'Видалення підрядника "' + str(contractor) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        context['header'] = 'Видалення підрядника "' + \
+            str(contractor) + \
+            '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if obj.order_set.exists():
             context['objects'] = obj.order_set.all()
         return context

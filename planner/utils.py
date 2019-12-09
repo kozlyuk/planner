@@ -32,7 +32,8 @@ def get_pagination(objects, page, items_count):
         page_objects = paginator.page(1)
     indexes = []
     if paginator.num_pages > 1:
-        index_range = calculate_page_indexes(page_objects.number, paginator.num_pages)
+        index_range = calculate_page_indexes(
+            page_objects.number, paginator.num_pages)
         indexes.extend(range(index_range[0], index_range[1] + 1))
     return page_objects, indexes
 

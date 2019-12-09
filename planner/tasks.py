@@ -12,7 +12,6 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-
 def update_task_statuses(task_id=None):
     """ Update statuses. If task_id given updates for task_id else updates for last 500 tasks """
     if task_id:
@@ -31,17 +30,23 @@ def update_task_statuses(task_id=None):
             warning = 'Очікує на перевірку'
         elif task.planned_finish:
             if task.planned_finish < date.today():
-                warning = 'Протерміновано %s' % task.planned_finish.strftime(date_format)
+                warning = 'Протерміновано %s' % task.planned_finish.strftime(
+                    date_format)
             elif task.planned_finish - timedelta(days=7) <= date.today():
-                warning = 'Завершується %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершується %s' % task.planned_finish.strftime(
+                    date_format)
             else:
-                warning = 'Завершити до %s' % task.planned_finish.strftime(date_format)
+                warning = 'Завершити до %s' % task.planned_finish.strftime(
+                    date_format)
         elif task.deal.expire_date < date.today():
-            warning = 'Протерміновано %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Протерміновано %s' % task.deal.expire_date.strftime(
+                date_format)
         elif task.deal.expire_date - timedelta(days=7) <= date.today():
-            warning = 'Завершується %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершується %s' % task.deal.expire_date.strftime(
+                date_format)
         else:
-            warning = 'Завершити до %s' % task.deal.expire_date.strftime(date_format)
+            warning = 'Завершити до %s' % task.deal.expire_date.strftime(
+                date_format)
 
         Task.objects.filter(id=task.id).update(warning=warning)
 
@@ -81,13 +86,16 @@ def update_deal_statuses(deal_id=None):
             else:
                 warning = ''
         elif deal.expire_date < date.today():
-            warning = 'Протерміновано %s' % deal.expire_date.strftime(date_format)
+            warning = 'Протерміновано %s' % deal.expire_date.strftime(
+                date_format)
         elif deal.expire_date - timedelta(days=7) <= date.today():
-            warning = 'Закінчується %s' % deal.expire_date.strftime(date_format)
+            warning = 'Закінчується %s' % deal.expire_date.strftime(
+                date_format)
         else:
             warning = ''
 
-        Deal.objects.filter(id=deal.id).update(exec_status=exec_status, warning=warning)
+        Deal.objects.filter(id=deal.id).update(
+            exec_status=exec_status, warning=warning)
 
     logger.info("Updated deal {} statuses and warnings".format(deal_id))
 
@@ -105,7 +113,8 @@ def event_next_date_calculate():
 def send_actneed_report():
     """Sending notifications about closed contracts to accountants"""
 
-    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    accountants = Employee.objects.filter(
+        user__groups__name__in=['Бухгалтери'])
     deals = Deal.objects.filter(exec_status=Deal.Sent)\
                         .exclude(act_status=Deal.Issued)\
                         .exclude(number__icontains='загальний')
@@ -159,7 +168,8 @@ def send_actneed_report():
 def send_debtors_report():
     """Sending notifications about debtors to accountants"""
 
-    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    accountants = Employee.objects.filter(
+        user__groups__name__in=['Бухгалтери'])
     deals = Deal.objects.filter(exec_status=Deal.Sent)\
                         .exclude(pay_status=Deal.PaidUp) \
                         .exclude(pay_date__isnull=True) \
@@ -380,7 +390,8 @@ def send_overdue_tasks_report():
     connection = mail.get_connection()
     connection.open()
     if connection.send_messages(emails) > 0:
-        logger.info("Sent notifications about overdue tasks to owners and executors")
+        logger.info(
+            "Sent notifications about overdue tasks to owners and executors")
     connection.close()
 
 
@@ -490,7 +501,8 @@ def send_urgent_tasks_report():
     connection = mail.get_connection()
     connection.open()
     if connection.send_messages(emails) > 0:
-        logger.info("Sent notifications about urgent tasks to owners and executors")
+        logger.info(
+            "Sent notifications about urgent tasks to owners and executors")
     connection.close()
 
 
@@ -557,7 +569,8 @@ def send_monthly_report():
     month = datetime.now().month - 1
     year = datetime.now().year
 
-    employees = Employee.objects.exclude(user__username__startswith='outsourcing')
+    employees = Employee.objects.exclude(
+        user__username__startswith='outsourcing')
     tasks = Task.objects.filter(exec_status=Task.Sent,
                                 actual_finish__month=month,
                                 actual_finish__year=year)
@@ -652,7 +665,8 @@ def send_monthly_report():
 
                     message += '</table><br>'
 
-                message += 'Всьго Ви отримаєте {} бонусів.</body></html><br>'.format(round(bonuses, 2))
+                message += 'Всьго Ви отримаєте {} бонусів.</body></html><br>'.format(
+                    round(bonuses, 2))
 
                 emails.append(mail.EmailMessage(
                     'Бонуси за виконання проектів {}.{}'.format(month, year),
