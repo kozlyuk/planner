@@ -101,8 +101,9 @@
                                         {{ task.get_exec_status_display }}
                                 </td>
                                 <td>{% none_date_check task.finish_date %}</td>
-                                <td><span class="badge badge-pill badge-{% task_overdue_color task.task.warning %} label-mini">
-                                        {{ task.task.warning }}
+                                <td>
+                                    <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
+                                        {{task.warning_select}}
                                     </span>
                                 </td>
                             </tr>
