@@ -75,6 +75,10 @@
                         <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                         href="{% url 'deal_list' %}">Договори</a></li>
                     {% endif %}
+                    {% if request.user.is_superuser or request.user|has_group:"Проектувальники" or request.user|has_group:"ГІПи" %}
+                    <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                    href="{% url 'sprint_list' %}">Планування спринтів</a></li>
+                    {% endif %}
                     <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                     href="{% url 'colleagues_list' %}">Колеги</a></li>
                     {% if request.user.is_superuser %}
