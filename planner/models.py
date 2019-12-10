@@ -269,7 +269,7 @@ class Project(models.Model):
     project_type = models.CharField('Вид робіт', max_length=100)
     customer = models.ForeignKey(
         Customer, verbose_name='Замовник', on_delete=models.PROTECT)
-    price_code = models.CharField('Пункт кошторису', max_length=8, unique=True)
+    price_code = models.CharField('Пункт кошторису', max_length=10, unique=True)
     price = models.DecimalField(
         'Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     net_price_rate = models.PositiveSmallIntegerField('Вартість після вхідних витрат, %',
