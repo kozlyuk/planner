@@ -861,9 +861,7 @@ class SprintTaskList(ListView):
             finish_date_value = datetime.strptime(finish_date, '%d.%m.%Y')
         else:
             finish_date_value = start_date_value + timedelta(days=4)
-        tasks = tasks.filter(Q(task__planned_start__gte=start_date_value, task__planned_start__lte=finish_date_value) |
-                             Q(task__planned_finish__gte=start_date_value, task__planned_finish__lte=finish_date_value) |
-                             Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
+        tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
         if order != '0':
             tasks = tasks.order_by(order)
