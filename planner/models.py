@@ -878,9 +878,11 @@ class Execution(models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
     Done = 'HD'
+    OnChecking = 'OC'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
+        (OnChecking, 'На перевірці'),
         (Done, 'Виконано')
     )
     executor = models.ForeignKey(
@@ -888,8 +890,7 @@ class Execution(models.Model):
     task = models.ForeignKey(
         Task, verbose_name='Проект', on_delete=models.CASCADE)
     part_name = models.CharField('Роботи', max_length=100)
-    part = models.PositiveSmallIntegerField(
-        'Частка', validators=[MaxValueValidator(150)])
+    part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField(
         'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
