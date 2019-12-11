@@ -15,11 +15,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.urls import path, include
 from django.contrib import admin
-from planner import views
-from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
+from django.views.generic.base import RedirectView
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
+from planner import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -45,7 +45,11 @@ urlpatterns = [
         views.TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
-    url(r'^project/sprint/$', views.SprintTaskList.as_view(), name='sprint_list'),
+
+    url(r'^sprint/$', views.SprintTaskList.as_view(), name='sprint_list'),
+
+    url(r'^execution/(?P<pk>\d+)/status/(?P<status>[A-Z]{2})/$',
+        views.ExecutionStatusChange.as_view(), name='execution_status_change'),
 
     url(r'^receiver/$', views.ReceiverList.as_view(), name='receiver_list'),
     url(r'^receiver/add$', views.ReceiverCreate.as_view(), name='receiver_add'),

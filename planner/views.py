@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from django.views.generic.list import ListView
@@ -96,7 +97,7 @@ class BonusesCalc(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
-        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user\
+        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user \
                 or request.user.groups.filter(name='Бухгалтери').exists():
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
@@ -600,8 +601,7 @@ class DealDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(DealDelete, self).get_context_data(**kwargs)
-        obj = self.get_object()
-        if obj.task_set.exists():
+        if self.object.task_set.exists():
             context['tasks'] = obj.task_set.all()
         return context
 
@@ -865,8 +865,8 @@ class SprintTaskList(ListView):
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
         if order != '0':
             tasks = tasks.order_by(order)
-        # else:
-        #     tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        else:
+            tasks = tasks.order_by('-creation_date', 'task__object_code')
         return tasks
 
     def get_context_data(self, **kwargs):
@@ -882,6 +882,27 @@ class SprintTaskList(ListView):
         else:
             context['filter_form'] = forms.SprintFilterForm(self.request.GET)
         return context
+
+
+class ExecutionStatusChange(View):
+    """ View change Execution exec_status to given in url """
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = Execution.objects.filter(pk=kwargs['pk']).first()
+        if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
+            if request.user.is_superuser or request.user == obj.task.owner.user:
+                return super().dispatch(request, *args, **kwargs)
+            if request.user == obj.executor.user:
+                if kwargs['status'] != Execution.Done:
+                    return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get(self, request, *args, **kwargs):
+        obj = Execution.objects.filter(pk=kwargs['pk']).first()
+        if obj:
+            obj.exec_status = kwargs['status']
+            obj.save()
+        return redirect('sprint_list')
 
 
 # @method_decorator(login_required, name='dispatch')
@@ -1117,14 +1138,13 @@ class ReceiverDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
         receiver = context['receiver']
         context['go_back_url'] = reverse(
             'receiver_update', kwargs={'pk': receiver.pk})
         context['main_header'] = 'Видалити адресат?'
         context['header'] = 'Видалення адресату "' + \
             str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.task_set.exists():
+        if self.object.task_set.exists():
             context['objects'] = obj.sending_set.all()
         return context
 
@@ -1219,14 +1239,13 @@ class ProjectDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
         project = context['project']
         context['go_back_url'] = reverse(
             'project_type_update', kwargs={'pk': project.pk})
         context['main_header'] = 'Видалити вид робіт?'
         context['header'] = 'Видалення "' + \
             str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.task_set.exists():
+        if self.object.task_set.exists():
             context['objects'] = obj.task_set.all()
         return context
 
@@ -1315,14 +1334,13 @@ class CustomerDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
         customer = context['customer']
         context['go_back_url'] = reverse(
             'customer_update', kwargs={'pk': customer.pk})
         context['main_header'] = 'Видалити замовника?'
         context['header'] = 'Видалення "' + \
             str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.project_set.exists():
+        if self.object.project_set.exists():
             context['objects'] = obj.project_set.all()
         return context
 
@@ -1408,14 +1426,13 @@ class CompanyDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
         company = context['company']
         context['go_back_url'] = reverse(
             'company_update', kwargs={'pk': company.pk})
         context['main_header'] = 'Видалити компанію?'
         context['header'] = 'Видалення "' + \
             str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.deal_set.exists():
+        if self.object.deal_set.exists():
             context['objects'] = obj.deal_set.all()
         return context
 
@@ -1513,7 +1530,8 @@ class СolleaguesDetail(DetailView):
 class EmployeeUpdate(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists() or request.user.groups.filter(name='Секретарі').exists():
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists() or \
+                request.user.groups.filter(name='Секретарі').exists():
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
@@ -1645,7 +1663,6 @@ class ContractorDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = self.get_object()
         contractor = context['contractor']
         context['go_back_url'] = reverse(
             'contractor_update', kwargs={'pk': contractor.pk})
@@ -1653,6 +1670,6 @@ class ContractorDelete(DeleteView):
         context['header'] = 'Видалення підрядника "' + \
             str(contractor) + \
             '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
-        if obj.order_set.exists():
+        if self.object.order_set.exists():
             context['objects'] = obj.order_set.all()
         return context

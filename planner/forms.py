@@ -311,9 +311,11 @@ class SprintFilterForm(forms.Form):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['object_code', 'object_address', 'project_type', 'deal', 'exec_status', 'owner',
-                  'planned_start', 'planned_finish', 'actual_start', 'actual_finish',
-                  'tc_received', 'tc_upload', 'pdf_copy', 'project_code', 'comment', 'manual_warning']
+        fields = ['object_code', 'object_address',
+                  'project_type', 'deal', 'tc_received',
+                  'owner', 'exec_status', 'tc_upload',
+                  'planned_start', 'planned_finish', 'pdf_copy',
+                  'project_code', 'comment', 'manual_warning']
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
