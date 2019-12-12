@@ -311,17 +311,17 @@ class SprintFilterForm(forms.Form):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['object_code', 'object_address',
-                  'project_type', 'deal', 'tc_received',
-                  'owner', 'exec_status', 'tc_upload',
-                  'planned_start', 'planned_finish', 'pdf_copy',
-                  'project_code', 'comment', 'manual_warning']
+        fields = ['object_code', 'object_address', 'tc_received',       # TODO @arrathilar compose fields as ordered here
+                  'project_type', 'deal', 'tc_upload',
+                  'owner', 'exec_status', 'pdf_copy',
+                  'planned_start', 'planned_finish', 'actual_finish',
+                  'project_code', 'manual_warning', 'comment']          # TODO @arrathilar make comment oneline
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
             'planned_start': AdminDateWidget,
             'planned_finish': AdminDateWidget,
-            'actual_start': AdminDateWidget,
+#            'actual_start': AdminDateWidget,
             'actual_finish': AdminDateWidget,
             'tc_received': AdminDateWidget,
             'pdf_copy': NotClearableFileInput,
@@ -438,6 +438,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
     def clean(self):
         """forces each clean() method on the ChildCounts to be called"""
         super(ExecutorsInlineFormset, self).clean()
+        # Calculating outsourcing part
         percent = 0
         outsourcing_part = 0
         self.instance.__outsourcing_part__ = 0
@@ -449,6 +450,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                 if executor and executor.user.username.startswith('outsourcing'):
                     outsourcing_part += part
         self.instance.__outsourcing_part__ = outsourcing_part
+        # Check if sum of executions parts more than 100% and less then 150%
         if self.instance.pk:
             if self.instance.__exec_status__ in [Task.Done, Task.Sent] and percent < 100:
                 raise ValidationError(

@@ -634,12 +634,25 @@ class Task(models.Model):
         return self.object_code + ' ' + self.project_type.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.object_code + ' ' + self.project_type.price_code
+        # Set creator
         if not self.pk:
             self.creator = get_current_user()
+
+        # Automatic change Executions.exec_status when Task has no copies_count
         if self.exec_status == Task.Done and self.project_type.copies_count == 0:
             self.exec_status = Task.Sent
+
+        # Automatic change Executions.exec_status when Task has Done
+        if self.exec_status in [Task.Done, Task.Sent]:
+            for execution in self.execution_set.all():
+                if execution.exec_status != Execution.Done:
+                    execution.exec_status = Execution.Done
+                    execution.finish_date = self.actual_finish
+                    execution.save(logging=False)
+
+        # Logging
         if logging:
+            title = self.object_code + ' ' + self.project_type.price_code
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий проект', extra={"title": title})
@@ -854,17 +867,23 @@ class Sending(models.Model):
         return self.task.__str__() + ' --> ' + self.receiver.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code
+
+        # Automatic changing of Task.exec_status when all sendings was sent
+        sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
+        sendings += self.copies_count
+        if self.task.exec_status == Task.Done and sendings >= self.task.project_type.copies_count:
+            self.task.exec_status = Task.Sent
+            self.task.save(logging=False)
+
+        # Logging
         if logging:
+            title = self.task.object_code + ' ' + self.task.project_type.price_code
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана відправка проекту', extra={"title": title})
             else:
                 log(user=get_current_user(),
                     action='Оновлена відправка проекту', extra={"title": title})
-        if self.task.exec_status == Task.Done:
-            self.task.exec_status = Task.Sent
-            self.task.save()
         super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -912,19 +931,23 @@ class Execution(models.Model):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        title = self.task.object_code + ' ' + \
-            self.task.project_type.price_code + ' ' + self.part_name
+
+        # Automatic change Task.exec_status when Execution has changed
+        if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.task.exec_status == Task.ToDo:
+            self.task.exec_status = Task.InProgress
+            self.task.save(logging=False)
+
+        # Logging
         if logging:
+            title = self.task.object_code + ' ' + \
+                self.task.project_type.price_code + ' ' + self.part_name
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана частина проекту', extra={"title": title})
             else:
                 log(user=get_current_user(),
                     action='Оновлена частина проекту', extra={"title": title})
-        if self.task.exec_status in [Task.Done, Task.Sent]:
-            if self.exec_status != Execution.Done:
-                self.exec_status = Execution.Done
-                self.finish_date = self.task.actual_finish
+
         super(Execution, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
