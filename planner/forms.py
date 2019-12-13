@@ -323,7 +323,6 @@ class TaskForm(forms.ModelForm):
             'deal': Select2Widget,
             'planned_start': AdminDateWidget,
             'planned_finish': AdminDateWidget,
-#            'actual_start': AdminDateWidget,
             'actual_finish': AdminDateWidget,
             'tc_received': AdminDateWidget,
             'pdf_copy': NotClearableFileInput,
@@ -334,7 +333,7 @@ class TaskForm(forms.ModelForm):
         self.fields['object_address'].widget.attrs.update(
             {'style': 'width:100%;'})
         self.fields['comment'].widget.attrs.update(
-            {'style': 'width:100%; height:63px;'})
+            {'style': 'width:100%; height:30px;'})
 
         if get_current_user().is_superuser:
             self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
