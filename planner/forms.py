@@ -286,18 +286,18 @@ class SprintFilterForm(forms.Form):
             executors = list(Employee.objects.filter(
                 user=user).values_list('pk', 'name'))
 
-        customers = list(Customer.objects.all().values_list('pk', 'name'))
-        customers.insert(0, (0, "Всі"))
+        companies = list(Company.objects.all().values_list('pk', 'name'))
+        companies.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
-        self.fields['customer'].choices = customers
+        self.fields['company'].choices = companies
 
     exec_status = forms.ChoiceField(label='Статус', required=False,
                                     widget=forms.Select(attrs={"onChange": 'submit()'}))
     executor = forms.ChoiceField(label='Виконавець', required=False,
                                  widget=forms.Select(attrs={"onChange": 'submit()'}))
-    customer = forms.ChoiceField(label='Замовник', required=False,
+    company = forms.ChoiceField(label='Компанія', required=False,
                                  widget=forms.Select(attrs={"onChange": 'submit()'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
@@ -306,6 +306,8 @@ class SprintFilterForm(forms.Form):
                                  widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
     finish_date = forms.DateField(label='Дата завершення',
                                   widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
+    filter = forms.CharField(label='Слово пошуку',
+                             max_length=255, required=False)
 
 
 class TaskForm(forms.ModelForm):

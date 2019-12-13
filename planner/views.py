@@ -835,9 +835,10 @@ class SprintTaskList(ListView):
         tasks = Execution.objects.all()
         exec_status = self.request.GET.get('exec_status', '0')
         executor = self.request.GET.get('executor', '0')
-        customer = self.request.GET.get('customer', '0')
+        company = self.request.GET.get('company', '0')
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
+        search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
 
         if self.request.user.is_superuser:
@@ -851,8 +852,8 @@ class SprintTaskList(ListView):
             tasks = tasks.filter(exec_status=exec_status)
         if executor != '0':
             tasks = tasks.filter(executor=executor)
-        if customer != '0':
-            tasks = tasks.filter(task__deal__customer=customer)
+        if company != '0':
+            tasks = tasks.filter(task__deal__company=company)
         if start_date:
             start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
         else:
@@ -863,6 +864,11 @@ class SprintTaskList(ListView):
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
+        for word in search_string:
+            tasks = tasks.filter(Q(part_name__icontains=word) |
+                                 Q(task__object_code__icontains=word) |
+                                 Q(task__project_type__project_type__icontains=word) |
+                                 Q(task__object_address__icontains=word))
         if order != '0':
             tasks = tasks.order_by(order)
         else:
