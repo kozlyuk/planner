@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 from planner.settings_local import *
+from planner.settings_appearance import *
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
