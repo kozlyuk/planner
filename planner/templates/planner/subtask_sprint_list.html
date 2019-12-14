@@ -108,7 +108,7 @@
                                         {{ task.get_exec_status_display }}
                                 </td>
                                 <td class="text-center">
-                                    {% status_change request.user task.get_exec_status_display %}
+                                    {% status_change request.user task.pk task.exec_status %}
                                     {% comment %} <div class="btn-group" role="group">
                                         <button class="btn btn-sm btn-warning mx-0">В черзі </button>
                                         <button class="btn btn-sm btn-primary mx-0">Виконано</button>

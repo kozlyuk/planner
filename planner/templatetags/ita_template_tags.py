@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.conf.locale.uk import formats as uk_formats
 from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS
 
+from planner.models import Execution
+
 register = template.Library()
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
@@ -210,24 +212,18 @@ def none_date_check(date):
     return 'Дата не вказана'
 
 @register.simple_tag()
-def status_change(user, status):
-    if status == 'В черзі':
-        redo_url = reverse('execution_status_change', kwargs={'status': 'IP'})
-    elif status == 'Виконується':
-        undo_url = reverse('execution_status_change', kwargs={'status': 'IW'})
-        redo_url = reverse('execution_status_change', kwargs={'status': 'OC'})
-    elif status == 'На перевірці':
-        undo_url = reverse('execution_status_change', kwargs={'status': 'IP'})
-        redo_url = reverse('execution_status_change', kwargs={'status': 'HD'})
-    elif status == 'Виконано':
-        undo_url = reverse('execution_status_change', kwargs={'status': 'OC'})
+def status_change(user, pk, status):
+    if status == Execution.ToDo:
+        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
 
-    if status == 'В черзі':
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['InProgress'] + '!important'
         redo_btn = '<a style="' + redo_styles + '"href="/" class="btn btn-sm mx-0">Виконується</a>'
         return format_html(redo_btn)
 
-    elif status == 'Виконується':
+    elif status == Execution.InProgress:
+        undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
+        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
+
         undo_styles = 'color: black!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo'] + '!important'
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking'] + '!important'
         undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" href="/" class="btn btn-sm mx-0">В черзі</a>'
@@ -237,7 +233,10 @@ def status_change(user, status):
         if user.groups.filter(name="Проектувальники").exists():
             return format_html(redo_btn)
 
-    elif status == 'На перевірці':
+    elif status == Execution.OnChecking:
+        undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
+        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
+
         undo_styles = 'color: black!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo'] + '!important'
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking'] + '!important'
         undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" href="/" class="btn btn-sm mx-0">Виконується</a>'
@@ -247,7 +246,9 @@ def status_change(user, status):
         if user.groups.filter(name="Проектувальники").exists():
             return format_html(redo_btn)
 
-    elif status == 'Виконано':
+    else:   #status == Execution.Done:
+        undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': status})
+
         undo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking'] + '!important'
         undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" href="/" class="btn btn-sm mx-0">В черзі</a>'
         if user.groups.filter(name="ГІПи").exists():
