@@ -7,12 +7,15 @@ from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from django_select2.forms import Select2Widget
+from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
 from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
     Project, Company, News, Event, Receiver, Contractor
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
+
+date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
 class UserLoginForm(forms.ModelForm):
@@ -303,9 +306,9 @@ class SprintFilterForm(forms.Form):
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
     start_date = forms.DateField(label='Дата початку',
-                                 widget=AdminDateWidget(attrs={"value": start_date_value.strftime('%d.%m.%Y')}))
+                                 widget=AdminDateWidget(attrs={"value": start_date_value.strftime(date_format)}))
     finish_date = forms.DateField(label='Дата завершення',
-                                  widget=AdminDateWidget(attrs={"value": finish_date_value.strftime('%d.%m.%Y')}))
+                                  widget=AdminDateWidget(attrs={"value": finish_date_value.strftime(date_format)}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False)
 

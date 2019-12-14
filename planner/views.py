@@ -16,12 +16,15 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
+from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
 from eventlog.models import Log
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
     IntTask, News, Event, Customer, Company, Contractor
+
+date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
 class Round(Func):
@@ -602,7 +605,7 @@ class DealDelete(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(DealDelete, self).get_context_data(**kwargs)
         if self.object.task_set.exists():
-            context['tasks'] = obj.task_set.all()
+            context['tasks'] = self.object.task_set.all()
         return context
 
 
@@ -855,11 +858,11 @@ class SprintTaskList(ListView):
         if company != '0':
             tasks = tasks.filter(task__deal__company=company)
         if start_date:
-            start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
+            start_date_value = datetime.strptime(start_date, date_format)
         else:
             start_date_value = date.today() - timedelta(days=date.today().weekday())
         if finish_date:
-            finish_date_value = datetime.strptime(finish_date, '%d.%m.%Y')
+            finish_date_value = datetime.strptime(finish_date, date_format)
         else:
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
@@ -1151,7 +1154,7 @@ class ReceiverDelete(DeleteView):
         context['header'] = 'Видалення адресату "' + \
             str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.task_set.exists():
-            context['objects'] = obj.sending_set.all()
+            context['objects'] = self.object.sending_set.all()
         return context
 
 
@@ -1252,7 +1255,7 @@ class ProjectDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.task_set.exists():
-            context['objects'] = obj.task_set.all()
+            context['objects'] = self.object.task_set.all()
         return context
 
 
@@ -1347,7 +1350,7 @@ class CustomerDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.project_set.exists():
-            context['objects'] = obj.project_set.all()
+            context['objects'] = self.object.project_set.all()
         return context
 
 
@@ -1439,7 +1442,7 @@ class CompanyDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.deal_set.exists():
-            context['objects'] = obj.deal_set.all()
+            context['objects'] = self.object.deal_set.all()
         return context
 
 
@@ -1677,5 +1680,5 @@ class ContractorDelete(DeleteView):
             str(contractor) + \
             '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.order_set.exists():
-            context['objects'] = obj.order_set.all()
+            context['objects'] = self.object.order_set.all()
         return context
