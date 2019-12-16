@@ -902,7 +902,7 @@ class ExecutionStatusChange(View):
         if obj:
             obj.exec_status = kwargs['status']
             obj.save()
-        return redirect('sprint_list')
+        return redirect(reverse('sprint_list') + '?' +  self.request.session.get('execution_query_string', ''))
 
 
 # @method_decorator(login_required, name='dispatch')
