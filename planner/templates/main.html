@@ -23,9 +23,9 @@
             <div class="col-md-4">
                 <!-- BEGIN PORTLET-->
                 <h6 style="margin-top: -8px;" class="task-header center-block text-center"><i style="font-size: 12px;" class="icon-share font-white"></i> Новини та повідомлення</h6>
-                    <div class="portlet light mb-1 main-widget-tab">
+                    <div class="portlet light pb-4 main-widget-tab">
                     <div class="portlet-body">
-                        <div class="scroller" style="height: 310px;" data-always-visible="1" data-rail-visible1="0"
+                        <div class="scroller" style="height: 340px;" data-always-visible="1" data-rail-visible1="0"
                             data-handle-color="#D7DCE2">
                             {% for new in news %}
                             <div class="widget-media">
@@ -33,7 +33,7 @@
                                     <img class="widget-media-avatar circle margin-bottom-15"
                                         src="{{ new.creator.employee.avatar.thumbnail.url }}" alt="">
                                 </div>
-                                <div class="widget-media-body">
+                                <div class="widget-media-body ">
                                     <h4 class="widget-media-body-title">
                                         <a href="{% url 'news_detail' new.pk %}">{{ new.title }}</a>
                                     </h4>
@@ -55,12 +55,12 @@
 
             <div class="col-md-4">
                 <h6 style="margin-top: -8px;" class="task-header center-block text-center"><i style="font-size: 12px;" class="icon-bell font-white"></i> Найближчі події та свята</h6>
-                <div class="portlet light mb-1 main-widget-tab">
+                <div class="portlet light pb-4 main-widget-tab">
                     <div class="portlet-body">
-                        <div class="scroller" style="height: 310px;" data-always-visible="1" data-rail-visible="0">
+                        <div class="scroller" style="height: 340px;" data-always-visible="1" data-rail-visible="0">
                             <ul class="feeds">
                                 {% for event in events %}
-                                <li>
+                                <li style="width: 90%;">
                                     <div class="col1">
                                         <div class="cont">
                                             <div class="cont-col1">
@@ -97,12 +97,12 @@
             </div>
             <div class="col-md-4">
                 <h6 style="margin-top: -8px;" class="task-header center-block text-center"><i style="font-size: 12px;" class="icon-clock font-white"></i> Недавні дії</h6>
-                <div class="portlet light mb-1 main-widget-tab">
+                <div class="portlet light pb-4 main-widget-tab">
                     <div class="portlet-body">
                         <div class="scroller" style="height: 340px;" data-always-visible="1" data-rail-visible="0">
                             <ul class="feeds">
                                 {% for activity in activities %}
-                                <li>({{ activity.timestamp }}) - {{ activity.action }} [{{ activity.extra.title }}]</li>
+                                <li style="width: 98%;">({{ activity.timestamp }}) - {{ activity.action }} [{{ activity.extra.title }}]</li>
                                 {% endfor %}
                             </ul>
                         </div>
