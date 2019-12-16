@@ -301,7 +301,7 @@ class SprintFilterForm(forms.Form):
     executor = forms.ChoiceField(label='Виконавець', required=False,
                                  widget=forms.Select(attrs={"onChange": 'submit()'}))
     company = forms.ChoiceField(label='Компанія', required=False,
-                                 widget=forms.Select(attrs={"onChange": 'submit()'}))
+                                widget=forms.Select(attrs={"onChange": 'submit()'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
@@ -376,7 +376,6 @@ class TaskForm(forms.ModelForm):
         project_type = cleaned_data.get("project_type")
         deal = cleaned_data.get("deal")
         exec_status = cleaned_data.get("exec_status")
-        actual_finish = cleaned_data.get("actual_finish")
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__project_type__ = project_type
@@ -388,21 +387,11 @@ class TaskForm(forms.ModelForm):
             raise ValidationError("Даний Тип проекту не активний")
         if project_type and deal:
             if deal.customer != project_type.customer:
-                self.add_error(
-                    'project_type', "Тип проекту не відповідає Замовнику Договору")
-        if exec_status in [Task.Done, Task.Sent]:
-            if not actual_finish:
-                self.add_error('actual_finish',
-                               "Вкажіть будь ласка Фактичне закінчення робіт")
-            elif not pdf_copy:
-                self.add_error(
-                    'pdf_copy', "Підвантажте будь ласка електронний примірник")
-        if actual_finish and exec_status not in [Task.Done, Task.Sent]:
-            self.add_error(
-                'exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
+                self.add_error('project_type', "Тип проекту не відповідає Замовнику Договору")
+        if exec_status in [Task.Done, Task.Sent] and not pdf_copy:
+            self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
         if planned_finish and planned_finish > deal.expire_date:
-            self.add_error(
-                'planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
+            self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
         return cleaned_data
 
 

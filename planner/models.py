@@ -650,6 +650,12 @@ class Task(models.Model):
                     execution.finish_date = datetime.now()
                     execution.save(logging=False)
 
+         # Automatic set finish_date when Task has done
+        if self.exec_status in [Task.Done, Task.Sent] and self.actual_finish is None:
+            self.actual_finish = date.today()
+        elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.actual_finish is not None:
+            self.actual_finish = None
+
         # Logging
         if logging:
             title = self.object_code + ' ' + self.project_type.price_code
@@ -931,13 +937,11 @@ class Execution(models.Model):
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
-         # Automatic set finish_date when Execution has done
+        # Automatic set finish_date when Execution has done
         if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:
             self.finish_date = datetime.now()
-            self.task.save(logging=False)
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
             self.finish_date = None
-            self.task.save(logging=False)
 
         # Logging
         if logging:
