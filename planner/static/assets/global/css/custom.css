@@ -67,7 +67,7 @@ a.nav-link.active {
     background-color: transparent!important;
     border-bottom: 1px solid #f36a5a!important;
     position: relative;
-} 
+}
 
 
 .nav-item .nav-link.active {
@@ -255,4 +255,29 @@ hidden {
 
 #id_finish_date, #id_start_date {
     width: 70px;
+}
+
+/* Custom badge colors start */
+
+.badge--color1 {
+    background-color: #00FFAB!important;
+}
+
+@-webkit-keyframes blinker {
+    from {opacity: 1.0;}
+    to {opacity: 0.05;}
+}
+
+.badge--color__urgent {
+    background-color: #FF5600!important;
+    text-decoration: blink;
+	-webkit-animation-name: blinker;
+	-webkit-animation-duration: 0.9s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-timing-function:ease-in-out;
+	-webkit-animation-direction: alternate;
+}
+
+.badge--color2 {
+    background-color: #7D73FF!important;
 }
