@@ -647,7 +647,7 @@ class Task(models.Model):
             for execution in self.execution_set.all():
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
-                    execution.finish_date = self.actual_finish
+                    execution.finish_date = datetime.now()
                     execution.save(logging=False)
 
         # Logging
@@ -788,12 +788,12 @@ class Task(models.Model):
 @receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
 def update_subtasks(sender, instance, **kwargs):
     """ Change Subtasks status to Done if Task is Done after save Task. Update Tasks status after save Task"""
-    if instance.exec_status in [Task.Done, Task.Sent]:
-        for execution in instance.execution_set.all():
-            if execution.exec_status != Execution.Done:
-                execution.exec_status = Execution.Done
-                execution.finish_date = instance.actual_finish
-                execution.save()
+    # if instance.exec_status in [Task.Done, Task.Sent]:
+    #     for execution in instance.execution_set.all():
+    #         if execution.exec_status != Execution.Done:
+    #             execution.exec_status = Execution.Done
+    #             execution.finish_date = instance.actual_finish
+    #             execution.save()
     from planner.tasks import update_task_statuses
     update_task_statuses(instance.pk)
 
@@ -934,6 +934,11 @@ class Execution(models.Model):
 
         # Automatic change Task.exec_status when Execution has changed
         if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.task.exec_status == Task.ToDo:
+            self.task.exec_status = Task.InProgress
+            self.task.save(logging=False)
+
+        # Automatic set finish_date to datetime.now()
+        if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.exec_status == Task.Done:
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
