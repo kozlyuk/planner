@@ -961,7 +961,7 @@ class Execution(models.Model):
         """Show subtask warning if it exist. Else show task warning"""
         if self.warning:
             return self.warning
-        if self.planned_finish:
+        if self.planned_finish and self.exec_status != self.Done:
             if self.planned_finish < date.today():
                 return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
             return 'Завершити до %s' % self.planned_finish.strftime(date_format)
