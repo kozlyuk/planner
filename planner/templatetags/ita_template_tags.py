@@ -244,7 +244,7 @@ def status_change(user, pk, status):
         if user.groups.filter(name="ГІПи").exists():
             return format_html('<div class="btn-group" role="group">' + undo_btn + redo_btn + '</div>')
         if user.groups.filter(name="Проектувальники").exists():
-            return format_html(redo_btn)
+            return 'Підзадача на перевірці'
 
     else:   #status == Execution.Done:
         undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking})
