@@ -785,15 +785,9 @@ class Task(models.Model):
     # total bonus
 
 
-@receiver(post_save, sender=Task, dispatch_uid="update_subtasks_status")
-def update_subtasks(sender, instance, **kwargs):
-    """ Change Subtasks status to Done if Task is Done after save Task. Update Tasks status after save Task"""
-    # if instance.exec_status in [Task.Done, Task.Sent]:
-    #     for execution in instance.execution_set.all():
-    #         if execution.exec_status != Execution.Done:
-    #             execution.exec_status = Execution.Done
-    #             execution.finish_date = instance.actual_finish
-    #             execution.save()
+@receiver(post_save, sender=Task, dispatch_uid="update_task_status")
+def update_task(sender, instance, **kwargs):
+    """ Update Tasks status after save Task"""
     from planner.tasks import update_task_statuses
     update_task_statuses(instance.pk)
 
@@ -937,9 +931,12 @@ class Execution(models.Model):
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
-        # Automatic set finish_date to datetime.now()
-        if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.exec_status == Task.Done:
-            self.task.exec_status = Task.InProgress
+         # Automatic set finish_date when Execution has done
+        if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:
+            self.finish_date = datetime.now()
+            self.task.save(logging=False)
+        elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
+            self.finish_date = None
             self.task.save(logging=False)
 
         # Logging

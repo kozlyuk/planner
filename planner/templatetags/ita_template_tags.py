@@ -133,17 +133,17 @@ def calc_summary(summary_value, option='without_currency'):
     where * is the value
     '''
     if option == 'with_currency':
-        if summary_value is None or summary_value is 0:
+        if summary_value is None or summary_value == 0:
             return '0 грн. 0 коп.'
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
     if option == 'without_currency':
-        if summary_value is None or summary_value is 0:
+        if summary_value is None or summary_value == 0:
             return '0.00'
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ',' + summary_value[1]
     if option == 'vat_with_currency':
-        if summary_value is None or summary_value is 0:
+        if summary_value is None or summary_value == 0:
             return '0.00'
         summary_value = round(summary_value / 5, 2)
         summary_value = str(summary_value).split('.')
@@ -162,13 +162,13 @@ def calc_vat(value, option='without_currency'):
     if isinstance(value, int):
         return value
     if option == 'with_currency':
-        if value is None or value is 0:
+        if value is None or value == 0:
             return '0 грн. 00 коп.'
         vat = round(value + value / 5, 2)
         vat = str(vat).split('.')
         return vat[0] + ' грн. ' + vat[1] + ' коп.'
     if option == 'without_currency':
-        if value is None or value is 0:
+        if value is None or value == 0:
             return '0.00'
         vat = round(value + value / 5, 2)
         vat = str(vat).split('.')

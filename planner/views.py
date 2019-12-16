@@ -970,18 +970,6 @@ class SubtaskUpdate(UpdateView):
         context['sendings'] = Sending.objects.filter(task=execution.task)
         return context
 
-    def form_valid(self, form):
-        if form.cleaned_data['finish_date'] and form.cleaned_data['exec_status'] != Execution.Done:
-            form.add_error(
-                'exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
-            return self.form_invalid(form)
-        elif form.cleaned_data['exec_status'] == Execution.Done and not form.cleaned_data['finish_date']:
-            form.add_error(
-                'finish_date', "Вкажіть будь ласка Дату виконання робіт")
-            return self.form_invalid(form)
-        else:
-            return super().form_valid(form)
-
 
 @method_decorator(login_required, name='dispatch')
 class InttaskDetail(DetailView):

@@ -424,17 +424,6 @@ class ExecutorInlineForm(forms.ModelForm):
         self.fields['executor'].queryset = Employee.objects.filter(
             user__is_active=True)
 
-    def clean(self):
-        super(ExecutorInlineForm, self).clean()
-        exec_status = self.cleaned_data.get('exec_status')
-        finish_date = self.cleaned_data.get('finish_date')
-        if finish_date and exec_status != Execution.Done:
-            self.add_error(
-                'exec_status', "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
-        elif exec_status == Execution.Done and not finish_date:
-            self.add_error(
-                'finish_date', "Вкажіть будь ласка Дату виконання робіт")
-
 
 class ExecutorsInlineFormset(BaseInlineFormSet):
     """used to pass in the constructor of inlineformset_factory"""
