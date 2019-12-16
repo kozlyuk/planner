@@ -16,12 +16,15 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
+from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
 from eventlog.models import Log
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
     IntTask, News, Event, Customer, Company, Contractor
+
+date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
 class Round(Func):
@@ -532,9 +535,7 @@ class DealUpdate(UpdateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
-        return self.success_url
+        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
 
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
@@ -565,9 +566,7 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
-        return self.success_url
+        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
 
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
@@ -595,14 +594,12 @@ class DealDelete(DeleteView):
     model = Deal
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'deal_list') + '?' + self.request.session.get('deal_query_string', '')
-        return self.success_url
+        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
 
     def get_context_data(self, **kwargs):
         context = super(DealDelete, self).get_context_data(**kwargs)
         if self.object.task_set.exists():
-            context['tasks'] = obj.task_set.all()
+            context['tasks'] = self.object.task_set.all()
         return context
 
 
@@ -646,6 +643,7 @@ class TaskList(ListView):
         context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
         context['submit_button_text'] = 'Пошук'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['task_success_url'] = 'task'
         if self.request.POST:
             context['filter_form'] = forms.TaskFilterForm(self.request.POST)
         else:
@@ -672,9 +670,9 @@ class TaskUpdate(UpdateView):
     form_class = forms.TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'task_list') + '?' + self.request.session.get('task_query_string', '')
-        return self.success_url
+        if self.request.session['task_success_url'] == 'task':
+            return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        return reverse_lazy('sprint_list') + '?' + self.request.session.get('execution_query_string', '')
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
@@ -719,9 +717,7 @@ class TaskCreate(CreateView):
     form_class = forms.TaskForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'task_list') + '?' + self.request.session.get('task_query_string', '')
-        return self.success_url
+        return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
@@ -762,9 +758,9 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'task_list') + '?' + self.request.session.get('task_query_string', '')
-        return self.success_url
+        if self.request.session['task_success_url'] == 'task':
+            return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+        return reverse_lazy('sprint_list') + '?' + self.request.session.get('execution_query_string', '')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -773,9 +769,7 @@ class TaskExchange(FormView):
     form_class = forms.TaskExchangeForm
 
     def get_success_url(self):
-        self.success_url = reverse_lazy(
-            'task_list') + '?' + self.request.session.get('task_query_string', '')
-        return self.success_url
+        return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
@@ -794,8 +788,7 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
-        context["query_string"] = self.request.session.get(
-            'task_query_string', '')
+        context["query_string"] = self.request.session.get('task_query_string', '')
         return context
 
     def form_valid(self, form):
@@ -855,11 +848,11 @@ class SprintTaskList(ListView):
         if company != '0':
             tasks = tasks.filter(task__deal__company=company)
         if start_date:
-            start_date_value = datetime.strptime(start_date, '%d.%m.%Y')
+            start_date_value = datetime.strptime(start_date, date_format)
         else:
             start_date_value = date.today() - timedelta(days=date.today().weekday())
         if finish_date:
-            finish_date_value = datetime.strptime(finish_date, '%d.%m.%Y')
+            finish_date_value = datetime.strptime(finish_date, date_format)
         else:
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
@@ -882,7 +875,8 @@ class SprintTaskList(ListView):
         context['tasks_filtered'] = self.object_list.count()
         context['submit_icon'] = format_html('<i class="fas fa-filter"></i>')
         context['submit_button_text'] = 'Застосувати фільтр'
-        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['execution_query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['task_success_url'] = 'execution'
         if self.request.POST:
             context['filter_form'] = forms.SprintFilterForm(self.request.POST)
         else:
@@ -917,8 +911,7 @@ class ExecutionStatusChange(View):
 #     form_class = TaskRegistryForm
 #
 #     def get_success_url(self):
-#         self.success_url = reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
-#         return self.success_url
+#         return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
 #
 #     def dispatch(self, request, *args, **kwargs):
 #         if request.user.is_superuser or request.user.groups.filter(name='Секретарі').exists():
@@ -1151,7 +1144,7 @@ class ReceiverDelete(DeleteView):
         context['header'] = 'Видалення адресату "' + \
             str(receiver) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.task_set.exists():
-            context['objects'] = obj.sending_set.all()
+            context['objects'] = self.object.sending_set.all()
         return context
 
 
@@ -1252,7 +1245,7 @@ class ProjectDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(project) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.task_set.exists():
-            context['objects'] = obj.task_set.all()
+            context['objects'] = self.object.task_set.all()
         return context
 
 
@@ -1347,7 +1340,7 @@ class CustomerDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(customer) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.project_set.exists():
-            context['objects'] = obj.project_set.all()
+            context['objects'] = self.object.project_set.all()
         return context
 
 
@@ -1439,7 +1432,7 @@ class CompanyDelete(DeleteView):
         context['header'] = 'Видалення "' + \
             str(company) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.deal_set.exists():
-            context['objects'] = obj.deal_set.all()
+            context['objects'] = self.object.deal_set.all()
         return context
 
 
@@ -1677,5 +1670,5 @@ class ContractorDelete(DeleteView):
             str(contractor) + \
             '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.order_set.exists():
-            context['objects'] = obj.order_set.all()
+            context['objects'] = self.object.order_set.all()
         return context

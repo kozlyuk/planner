@@ -1,8 +1,11 @@
 import re
 from django import template
 from django.utils.html import format_html
+from django.urls import reverse
 from django.conf.locale.uk import formats as uk_formats
-from planner.settings import MEDIA_URL
+from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS
+
+from planner.models import Execution
 
 register = template.Library()
 date_format = uk_formats.DATE_INPUT_FORMATS[0]

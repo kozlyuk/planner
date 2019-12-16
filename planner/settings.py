@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 from planner.settings_local import *
+from planner.settings_appearance import *
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -100,7 +101,7 @@ LANGUAGE_CODE = 'uk'
 
 TIME_ZONE = 'Europe/Kiev'
 
-DATE_FORMAT = "d-m-Y"
+DATE_FORMAT = "d.m.Y"
 
 USE_I18N = True
 
@@ -108,9 +109,9 @@ USE_TZ = True
 
 USE_L10N = True
 
-from django.conf.locale.uk import formats as uk_formats
-uk_formats.DATE_FORMAT = 'd.m.Y'
-uk_formats.DATE_INPUT_FORMATS = ('%d.%m.%Y',)
+# from django.conf.locale.uk import formats as uk_formats
+# uk_formats.DATE_FORMAT = 'd.m.Y'
+# uk_formats.DATE_INPUT_FORMATS = ('%d.%m.%Y',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -132,4 +133,3 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
-

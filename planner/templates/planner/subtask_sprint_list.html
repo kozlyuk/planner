@@ -74,17 +74,18 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th><a href="?{% url_replace request 'o' 'task__object_code' %}"> ШИФР </a></th>
-                                <th class="hidden-xs"><a href="?{% url_replace request 'o' 'task__object_address' %}"> АДРЕСА </a></th>
-                                <th><a href="?{% url_replace request 'o' 'part_name' %}"> РОБОТИ </a></th>
-                                <th><a href="?{% url_replace request 'o' 'executor' %}"> ВИКОНАВЕЦЬ </a></th>
-                                <th class="hidden-xs"><a href="?{% url_replace request 'o' 'planned_start' %}"> ПЛАНОВИЙ ПОЧАТОК </a></th>
-                                <th class="hidden-xs"><a href="?{% url_replace request 'o' 'planned_finish' %}"> ПЛАНОВИЙ КІНЕЦЬ </a></th>
-                                <th><a href="?{% url_replace request 'o' 'exec_status' %}"> СТАТУС ВИКОНАННЯ
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'task__object_code' %}">шифр</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">адреса</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'part_name' %}">роботи</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}"> статус виконання
                                     </a></th>
-                                <th><a href="?{% url_replace request 'o' 'finish_date' %}">
-                                        ДАТА ВИКОНАННЯ </a></th>
-                                <th> ПОПЕРЕДЖЕННЯ </th>
+                                <th class="uppercase">змінити статус на</th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">
+                                        дата виконання</a></th>
+                                <th class="uppercase"> попередження </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,6 +106,13 @@
                                 <td>{% none_date_check task.planned_finish %}</td>
                                 <td>
                                         {{ task.get_exec_status_display }}
+                                </td>
+                                <td class="text-center">
+                                    {% status_change request.user task.pk task.exec_status %}
+                                    {% comment %} <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-warning mx-0">В черзі </button>
+                                        <button class="btn btn-sm btn-primary mx-0">Виконано</button>
+                                    </div> {% endcomment %}
                                 </td>
                                 <td>{% none_date_check task.finish_date %}</td>
                                 <td>
