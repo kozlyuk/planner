@@ -3,7 +3,7 @@ from django import template
 from django.utils.html import format_html
 from django.urls import reverse
 from django.conf.locale.uk import formats as uk_formats
-from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS
+from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS, TASK_BADGE_COLORS
 
 from planner.models import Execution
 
@@ -51,30 +51,42 @@ def proper_paginate(paginator, current_page, neighbors=10):
 @register.simple_tag
 def task_overdue_color(status):
     if status.startswith('Виконано'):
-        return 'success'
+        return TASK_BADGE_COLORS['Done']
     elif status.startswith('Очікує') or status.startswith('Не'):
-        return 'warning'
+        return TASK_BADGE_COLORS['ToDo']
     elif status.startswith('Завершити'):
-        return 'info'
+        return TASK_BADGE_COLORS['InProgress']
     elif status.startswith('Протерміновано'):
         return 'danger'
-    if re.match(r'^\w', status):
-        return 'secondary'
+    elif status.startswith('Друк'):
+        return TASK_BADGE_COLORS['Print']
+    elif status.startswith('Терміново'):
+        return TASK_BADGE_COLORS['Urgent']
+    elif status.startswith('Коригування'):
+        return TASK_BADGE_COLORS['Correction']
+    elif re.match(r'^\w', status):
+        return TASK_BADGE_COLORS['ManualWarning']
     return
 
 
 @register.simple_tag
 def task_status_color(status):
     if status.startswith('Виконано'):
-        return 'success'
+        return TASK_BADGE_COLORS['Done']
     elif status.startswith('В черзі') or status.startswith('Не'):
-        return 'warning'
+        return TASK_BADGE_COLORS['ToDo']
     elif status.startswith('Виконується'):
-        return 'info'
+        return TASK_BADGE_COLORS['InProgress']
     elif status.startswith('Надіслано'):
-        return 'primary'
-    if re.match(r'^\w', status):
-        return 'secondary'
+        return TASK_BADGE_COLORS['Sent']
+    elif status.startswith('Друк'):
+        return TASK_BADGE_COLORS['Print']
+    elif status.startswith('Терміново'):
+        return TASK_BADGE_COLORS['Urgent']
+    elif status.startswith('Коригування'):
+        return TASK_BADGE_COLORS['Correction']
+    elif re.match(r'^\w', status):
+        return TASK_BADGE_COLORS['ManualWarning']
     return
 
 
@@ -96,15 +108,15 @@ def deal_status_color(status):
 @register.simple_tag
 def task_secondary_overdue_color(status):
     if status.startswith('Виконується'):
-        return 'success'
+        return TASK_BADGE_COLORS['Done']
     elif status.startswith('В очікуванні') or status.startswith('Не'):
-        return 'warning'
+        return TASK_BADGE_COLORS['ToDo']
     elif status.startswith('Виконано'):
-        return 'info'
+        return TASK_BADGE_COLORS['InProgress']
     elif status.startswith('Протерміновано'):
-        return 'danger'
+        return TASK_BADGE_COLORS['Urgent']
     if re.match(r'^\w', status):
-        return 'secondary'
+        return TASK_BADGE_COLORS['ManualWarning']
     return
 
 
