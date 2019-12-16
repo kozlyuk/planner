@@ -272,8 +272,8 @@ class TaskFilterForm(forms.Form):
 
 class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(SprintFilterForm, self).__init__(*args, **kwargs)
-        exec_status = list(Task.EXEC_STATUS_CHOICES)
+        super().__init__(*args, **kwargs)
+        exec_status = list(Execution.EXEC_STATUS_CHOICES)
         exec_status.insert(0, (0, "Всі"))
 
         user = get_current_user()
