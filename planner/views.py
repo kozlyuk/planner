@@ -68,7 +68,7 @@ class DealCalc(TemplateView):
                     price = ptype['project_type__price'] / 6 * 5
                     value = price * count
                     svalue += round(value, 2)
-                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list,
+                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'послуга',
                                      count, round(price, 2), round(value, 2)])
         elif template == 'msz':
             object_lists = [[] for _ in range(len(objects))]
