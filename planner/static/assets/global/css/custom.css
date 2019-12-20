@@ -281,3 +281,73 @@ hidden {
 .badge--color2 {
     background-color: #7D73FF!important;
 }
+
+.filter-panel {
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    background: #fff;
+    border-color: #282b2f;
+    border-left: 2px solid #5b9bd1;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    right: -500px;
+    width: 500px;
+    height: 100vh;
+    z-index: 999
+}
+
+.filter-panel.open {
+    right: 0
+}
+
+.filter-panel .theme_btn {
+    display: inline-block;
+    vertical-align: middle;
+    *vertical-align: auto;
+    *zoom:1;*display: inline;
+    border-radius: .1875rem 0 0 .1875rem;
+    background: #fff;
+    width: 35px;
+    line-height: 35px;
+    position: absolute;
+    bottom: 100px;
+    left: -35px;
+    text-align: center;
+    border: 2px solid #5b9bd1;
+    border-right: white;
+    border-radius: 40px 0px 0px 40px;
+}
+
+.rtl .filter-panel {
+    border-left: 0;
+    border-right: 2px solid;
+    text-align: right;
+    left: -300px;
+    right: auto
+}
+
+.rtl .filter-panel.open {
+    left: 0
+}
+
+.rtl .filter-panel .theme_btn {
+    border-radius: 0 .1875rem .1875rem 0;
+    right: -35px;
+    left: auto
+}
+
+input[type=text] {
+    min-height: 34px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #555;
+    font-size: 14px;
+    outline: 0;
+}

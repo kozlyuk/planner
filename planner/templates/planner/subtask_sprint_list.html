@@ -18,7 +18,7 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            <!-----------------------filter panel-------------------------->
+            {% comment %} <!-----------------------filter panel-------------------------->
             <div class="accordion" id="filter">
                 <div class="card">
                     <div class="card-header" id="filter">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            <!--filter panel-->
+            <!--filter panel--> {% endcomment %}
 
             <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                 <div class="table-scrollable">
@@ -142,6 +142,26 @@
     </div>
     <!-- END CONTAINER -->
 </div>
+<div id="filter" class="filter-panel">
+    <div class="header text-center">
+        <h4>Фільтри</h2>
+    </div>
+    <a id="filterToggler" class="theme_btn">{{ submit_icon }}</a>
+
+        <form action="{{ form_action }}" method="get">
+            {{ filter_form.as_p }}
+            {% if submit_button_text %}
+            <div class="row">
+                <button type="submit" class="btn btn-sm btn-primary uppercase mx-auto">
+                    {{ submit_icon }} {{ submit_button_text }} </button>
+            </div>
+            {% endif %}
+        </form>
+
+</div>
+<script>
+
+</script>
 {% endblock %}
 {% block css %}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
@@ -155,6 +175,29 @@
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
     {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        function filterState() {
+            const state = localStorage.getItem('filter_state');
+            return state;
+        };
+        function setFilterState(state) {
+            localStorage.setItem('filter_state', state)
+        }
+        if (filterState() == 'True') {
+            $('.filter-panel').toggleClass('open');
+        }
+        $('.filter-panel .theme_btn').on('click', function() {
+            $('.filter-panel').toggleClass('open');
+            if (filterState() == null) {
+                setFilterState('True')
+            } else if (filterState() == 'True') {
+                setFilterState('False')
+            } else if (filterState() == 'False') {
+                setFilterState('True')
+            }
+        });
+    });
+
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
     {% comment %} const startDate = new Date('{{ start_date }}');
     const finishDate = new Date(startDate);

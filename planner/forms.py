@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-from django_select2.forms import Select2Widget
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
@@ -297,11 +297,11 @@ class SprintFilterForm(forms.Form):
         self.fields['company'].choices = companies
 
     exec_status = forms.ChoiceField(label='Статус', required=False,
-                                    widget=forms.Select(attrs={"onChange": 'submit()'}))
+                                    widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     executor = forms.ChoiceField(label='Виконавець', required=False,
-                                 widget=forms.Select(attrs={"onChange": 'submit()'}))
+                                 widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     company = forms.ChoiceField(label='Компанія', required=False,
-                                widget=forms.Select(attrs={"onChange": 'submit()'}))
+                                widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
@@ -310,17 +310,17 @@ class SprintFilterForm(forms.Form):
     finish_date = forms.DateField(label='Дата завершення',
                                   widget=AdminDateWidget(attrs={"value": finish_date_value.strftime(date_format)}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['object_code', 'object_address', 'tc_received',       # TODO @arrathilar compose fields as ordered here
+        fields = ['object_code', 'object_address', 'tc_received',
                   'project_type', 'deal', 'tc_upload',
                   'owner', 'exec_status', 'pdf_copy',
                   'planned_start', 'planned_finish', 'actual_finish',
-                  'project_code', 'manual_warning', 'comment']          # TODO @arrathilar make comment oneline
+                  'project_code', 'manual_warning', 'comment']
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
