@@ -22,6 +22,7 @@
                 <tr align="center">
                     <th width="6%">№ п/п</th>
                     <th>Назва об’єкту та вид робіт</th>
+                    <th>Одиниця виміру</th>
                     <th>Кількість</th>
                     {% if taxation == 'wvat' %}
                     <th>Ціна, з ПДВ грн.</th>
@@ -47,19 +48,19 @@
                 </tr>
                 {% if taxation == 'wvat' %}
                 <tr align="center">
-                    <td colspan="3">без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
+                    <td colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
                 </tr>
                 {% else %}
                 <tr align="center">
-                    <td colspan="3">Без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
+                    <td colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </td>
                 </tr>
                 {% endif %}
                 {% if taxation == 'wvat' %}
                 <tr align="center">
-                    <td colspan="3">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</td>
+                    <td colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</td>
                 </tr>
                 <tr align="center">
-                    <td colspan="3">з ПДВ: {% calc_vat svalue 'with_currency' %}</td>
+                    <td colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</td>
                 </tr>
                 {% endif %}
             </tbody>
@@ -71,7 +72,7 @@
 
 
 </div>
-<div aria-live="polite" aria-atomic="true" style="position: relative">
+<div class="copy-block" aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
     <div class="toast" data-delay="3000" style="position: fixed; bottom: 25px; right: 15px;">
         <div class="toast-header">
             <strong class="mr-auto">Копіювання</strong>
@@ -106,4 +107,7 @@ button.addEventListener('click', function () {
     //clear selected range
     window.getSelection().removeAllRanges();
 });
+window.onLoad = () => {
+    $('.toast-copy').toast('hide')
+}
 </script>

@@ -231,7 +231,7 @@ hidden {
     background-color: white!important;
 }
 
-.toast {
+.alert-danger>.toast {
     opacity: 1;
 }
 
