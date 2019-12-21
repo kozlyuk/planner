@@ -260,11 +260,11 @@ class TaskFilterForm(forms.Form):
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
 
-    exec_status = forms.ChoiceField(
+    exec_status = forms.MultipleChoiceField(
         label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    owner = forms.ChoiceField(label='Керівник проекту', required=False,
+    owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
                               widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
+    customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
         attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
@@ -296,11 +296,11 @@ class SprintFilterForm(forms.Form):
         self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
 
-    exec_status = forms.ChoiceField(label='Статус', required=False,
+    exec_status = forms.MultipleChoiceField(label='Статус', required=False,
                                     widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    executor = forms.ChoiceField(label='Виконавець', required=False,
+    executor = forms.MultipleChoiceField(label='Виконавець', required=False,
                                  widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    company = forms.ChoiceField(label='Компанія', required=False,
+    company = forms.MultipleChoiceField(label='Компанія', required=False,
                                 widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
