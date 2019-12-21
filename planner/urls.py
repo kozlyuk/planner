@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
 
-    url(r'^sprint/$', views.SprintTaskList.as_view(), name='sprint_list'),
+    url(r'^sprint/<int:year>/week/<int:week>/$', views.SprintTaskList.as_view(), name='sprint_list'),
 
     url(r'^execution/(?P<pk>\d+)/status/(?P<status>[A-Z]{2})/$',
         views.ExecutionStatusChange.as_view(), name='execution_status_change'),

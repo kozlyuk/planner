@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.dates import WeekArchiveView
 from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
 from django.db.models.functions import Concat
 from django.db import transaction
@@ -811,8 +812,12 @@ class TaskExchange(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SprintTaskList(ListView):
+class SprintTaskList(WeekArchiveView):
     model = Execution
+    date_field = "pub_date"
+    week_format = "%W"
+    allow_future = True
+
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
