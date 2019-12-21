@@ -142,13 +142,17 @@
     </div>
     <!-- END CONTAINER -->
 </div>
-<div id="filter" class="filter-panel">
+<div class="filter-panel">
+        <button type="button" class="close mobile-close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     <div class="header text-center">
         <h4>Фільтри</h2>
     </div>
     <a id="filterToggler" class="theme_btn">{{ submit_icon }}</a>
 
         <form action="{{ form_action }}" method="get">
+            <div id="filter-scroll">
             {{ filter_form.as_p }}
             {% if submit_button_text %}
             <div class="row">
@@ -156,8 +160,8 @@
                     {{ submit_icon }} {{ submit_button_text }} </button>
             </div>
             {% endif %}
+            </div>
         </form>
-
 </div>
 <script>
 
@@ -186,7 +190,7 @@
         if (filterState() == 'True') {
             $('.filter-panel').toggleClass('open');
         }
-        $('.filter-panel .theme_btn').on('click', function() {
+        $('.filter-panel .theme_btn, .filter-panel .mobile-close').on('click', function() {
             $('.filter-panel').toggleClass('open');
             if (filterState() == null) {
                 setFilterState('True')
