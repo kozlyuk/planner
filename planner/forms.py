@@ -102,24 +102,10 @@ class EmployeeForm(forms.ModelForm):
 class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DealFilterForm, self).__init__(*args, **kwargs)
-
         customer = list(Customer.objects.all().values_list('pk', 'name'))
-        customer.insert(0, (0, "Всі"))
-
         company = list(Company.objects.all().values_list('pk', 'name'))
-        company.insert(0, (0, "Всі"))
-
-        act_status = []
-        act_status.insert(0, (0, "Всі"))
-        act_status.insert(1, ('NI', "Не виписаний"))
-        act_status.insert(2, ('PI', "Виписаний частково"))
-        act_status.insert(3, ('IS', "Виписаний"))
-
-        pay_status = []
-        pay_status.insert(0, (0, "Всі"))
-        pay_status.insert(1, ('NP', "Не оплачений"))
-        pay_status.insert(2, ('AP', "Оплачений аванс"))
-        pay_status.insert(3, ('PU', "Оплачений"))
+        act_status = list(Deal.ACT_STATUS_CHOICES)
+        pay_status = list(Deal.PAYMENT_STATUS_CHOICES)
 
         self.fields['customer'].choices = customer
         self.fields['company'].choices = company

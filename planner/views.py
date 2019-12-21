@@ -497,22 +497,39 @@ class DealList(ListView):
     def get_queryset(self):
         deals = Deal.objects.all()
         search_string = self.request.GET.get('filter', '').split()
-        customer = self.request.GET.get('customer', '0')
-        company = self.request.GET.get('company', '0')
-        act_status = self.request.GET.get('act_status', '0')
-        pay_status = self.request.GET.get('pay_status', '0')
+        customers = self.request.GET.getlist('customer', '0')
+        companies = self.request.GET.getlist('company', '0')
+        act_statuses = self.request.GET.getlist('act_status', '0')
+        pay_statuses = self.request.GET.getlist('pay_status', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             deals = deals.filter(Q(number__icontains=word) |
                                  Q(value__icontains=word))
-        if customer != '0':
-            deals = deals.filter(customer=customer)
-        if company != '0':
-            deals = deals.filter(company=company)
-        if act_status != '0':
-            deals = deals.filter(act_status=act_status)
-        if pay_status != '0':
-            deals = deals.filter(pay_status=pay_status)
+
+        if customers != '0':
+            deals_union = Deal.objects.none()
+            for customer in customers:
+                deals_part = deals.filter(customer=customer)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if companies != '0':
+            deals_union = Deal.objects.none()
+            for company in companies:
+                deals_part = deals.filter(company=company)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if act_statuses != '0':
+            deals_union = Deal.objects.none()
+            for act_status in act_statuses:
+                deals_part = deals.filter(act_status=act_status)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if pay_statuses != '0':
+            deals_union = Deal.objects.none()
+            for pay_status in pay_statuses:
+                deals_part = deals.filter(pay_status=pay_status)
+                deals_union = deals_union | deals_part
+            deals = deals_union
         if order != '0':
             deals = deals.order_by(order)
         return deals
@@ -863,20 +880,20 @@ class SprintTaskList(ListView):
         if exec_statuses != '0':
             tasks_union = Task.objects.none()
             for status in exec_statuses:
-                tasks_segment = tasks.filter(exec_status=status)
-                tasks_union = tasks_union | tasks_segment
+                tasks_part = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_part
             tasks = tasks_union
         if executors != '0':
             tasks_union = Task.objects.none()
             for executor in executors:
-                tasks_segment = tasks.filter(executor=executor)
-                tasks_union = tasks_union | tasks_segment
+                tasks_part = tasks.filter(executor=executor)
+                tasks_union = tasks_union | tasks_part
             tasks = tasks_union
         if companies != '0':
             tasks_union = Task.objects.none()
             for company in companies:
-                tasks_segment = tasks.filter(task__deal__company=company)
-                tasks_union = tasks_union | tasks_segment
+                tasks_part = tasks.filter(task__deal__company=company)
+                tasks_union = tasks_union | tasks_part
             tasks = tasks_union
         if start_date:
             start_date_value = datetime.strptime(start_date, date_format)
