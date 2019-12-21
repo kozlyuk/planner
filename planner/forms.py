@@ -261,13 +261,13 @@ class TaskFilterForm(forms.Form):
         self.fields['customer'].choices = customers
 
     exec_status = forms.ChoiceField(
-        label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
+        label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     owner = forms.ChoiceField(label='Керівник проекту', required=False,
-                              widget=forms.Select(attrs={"onChange": 'submit()'}))
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
+                              widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    customer = forms.ChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
+        attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class SprintFilterForm(forms.Form):

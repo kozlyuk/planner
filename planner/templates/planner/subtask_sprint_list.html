@@ -142,27 +142,7 @@
     </div>
     <!-- END CONTAINER -->
 </div>
-<div class="filter-panel">
-        <button type="button" class="close mobile-close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    <div class="header text-center">
-        <h4>Фільтри</h2>
-    </div>
-    <a id="filterToggler" class="theme_btn">{{ submit_icon }}</a>
-
-        <form action="{{ form_action }}" method="get">
-            <div id="filter-scroll">
-            {{ filter_form.as_p }}
-            {% if submit_button_text %}
-            <div class="row">
-                <button type="submit" class="btn btn-sm btn-primary uppercase mx-auto">
-                    {{ submit_icon }} {{ submit_button_text }} </button>
-            </div>
-            {% endif %}
-            </div>
-        </form>
-</div>
+{% include 'widgets/filter_panel.html' %}
 <script>
 
 </script>
@@ -178,29 +158,7 @@
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
     {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        function filterState() {
-            const state = localStorage.getItem('filter_state');
-            return state;
-        };
-        function setFilterState(state) {
-            localStorage.setItem('filter_state', state)
-        }
-        if (filterState() == 'True') {
-            $('.filter-panel').toggleClass('open');
-        }
-        $('.filter-panel .theme_btn, .filter-panel .mobile-close').on('click', function() {
-            $('.filter-panel').toggleClass('open');
-            if (filterState() == null) {
-                setFilterState('True')
-            } else if (filterState() == 'True') {
-                setFilterState('False')
-            } else if (filterState() == 'False') {
-                setFilterState('True')
-            }
-        });
-    });
+    <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
 
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
     {% comment %} const startDate = new Date('{{ start_date }}');
@@ -208,5 +166,5 @@
     finishDate.setDate(finishDate.getDate() + {{ sprint_length }})
     let datepickerStart = $('.air-datepicker-start').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(startDate));
     let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate)); {% endcomment %}
-    </script>
+
 {% endblock extrahead %}

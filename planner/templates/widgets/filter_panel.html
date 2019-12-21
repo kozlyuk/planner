@@ -1,0 +1,21 @@
+<div class="filter-panel">
+        <button type="button" class="close mobile-close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    <div class="header text-center">
+        <h4>Фільтри</h2>
+    </div>
+    <a id="filterToggler" class="theme_btn">{{ submit_icon }}</a>
+
+        <form action="{{ form_action }}" method="get">
+            <div id="filter-scroll">
+            {{ filter_form.as_p }}
+            {% if submit_button_text %}
+            <div class="row">
+                <button type="submit" class="btn btn-sm btn-primary uppercase mx-auto">
+                    {{ submit_icon }} {{ submit_button_text }} </button>
+            </div>
+            {% endif %}
+            </div>
+        </form>
+</div>
