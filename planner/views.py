@@ -616,9 +616,9 @@ class TaskList(ListView):
     def get_queryset(self):
         tasks = Task.objects.all()
         search_string = self.request.GET.get('filter', '').split()
-        exec_status = self.request.GET.get('exec_status', '0')
-        owner = self.request.GET.get('owner', '0')
-        customer = self.request.GET.get('customer', '0')
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        owners = self.request.GET.getlist('owner', '0')
+        customers = self.request.GET.getlist('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             tasks = tasks.filter(Q(object_code__icontains=word) |
@@ -626,12 +626,24 @@ class TaskList(ListView):
                                  Q(deal__number__icontains=word) |
                                  Q(project_type__price_code__icontains=word) |
                                  Q(project_type__project_type__icontains=word))
-        if exec_status != '0':
-            tasks = tasks.filter(exec_status=exec_status)
-        if owner != '0':
-            tasks = tasks.filter(owner=owner)
-        if customer != '0':
-            tasks = tasks.filter(deal__customer=customer)
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_segment = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if owners != '0':
+            tasks_union = Task.objects.none()
+            for owner in owners:
+                tasks_segment = tasks.filter(owner=owner)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if customers != '0':
+            tasks_union = Task.objects.none()
+            for customer in customers:
+                tasks_segment = tasks.filter(deal__customer=customer)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
         if order != '0':
             tasks = tasks.order_by(order)
         else:

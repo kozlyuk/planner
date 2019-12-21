@@ -241,7 +241,6 @@ class TaskFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
         exec_status = []
-        exec_status.insert(0, (0, "Всі"))
         exec_status.insert(1, ('IW', "В черзі"))
         exec_status.insert(2, ('IP', "Виконується"))
         exec_status.insert(3, ('HD', "Виконано"))
@@ -249,10 +248,8 @@ class TaskFilterForm(forms.Form):
 
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
-        owners.insert(0, (0, "Всі"))
 
         customers = list(Customer.objects.all().values_list('pk', 'name'))
-        customers.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
