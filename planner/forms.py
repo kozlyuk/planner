@@ -126,16 +126,14 @@ class DealFilterForm(forms.Form):
         self.fields['act_status'].choices = act_status
         self.fields['pay_status'].choices = pay_status
 
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
-    company = forms.ChoiceField(label='Компанія', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
-    act_status = forms.ChoiceField(label='Акт виконаних робіт', required=False,
-                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
-    pay_status = forms.ChoiceField(label='Статус оплати', required=False,
-                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    act_status = forms.MultipleChoiceField(label='Акт виконаних робіт', required=False,
+                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
+                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class DealForm(forms.ModelForm):

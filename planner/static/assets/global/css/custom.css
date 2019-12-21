@@ -372,3 +372,31 @@ input[type=text] {
         height: 100vh;
     }
 }
+
+.add-btn-wrapper {
+    position: fixed;
+    top: 0;
+    right: 0px;
+}
+
+.add_btn {
+    display: inline-block;
+    vertical-align: middle;
+    *vertical-align: auto;
+    *zoom:1;*display: inline;
+    border-radius: .1875rem 0 0 .1875rem;
+    background: #fff;
+    width: 35px;
+    line-height: 35px;
+    position: absolute;
+    top: 130px;
+    left: -35px;
+    text-align: center;
+    border: 2px solid #4db3a4;
+    border-right: white;
+    border-radius: 40px 0px 0px 40px;
+}
+
+.add-task {
+    color: #4db3a4;
+}
