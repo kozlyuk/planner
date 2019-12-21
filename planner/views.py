@@ -824,11 +824,11 @@ class TaskExchange(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SprintTaskList(WeekArchiveView):
+class SprintTaskList(ListView):
     model = Execution
-    date_field = "pub_date"
-    week_format = "%W"
-    allow_future = True
+#    date_field = "pub_date"
+#    week_format = "%W"
+#    allow_future = True
 
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
@@ -843,9 +843,9 @@ class SprintTaskList(WeekArchiveView):
 
     def get_queryset(self):
         tasks = Execution.objects.all()
-        exec_status = self.request.GET.get('exec_status', '0')
-        executor = self.request.GET.get('executor', '0')
-        company = self.request.GET.get('company', '0')
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        executors = self.request.GET.getlist('executor', '0')
+        companies = self.request.GET.getlist('company', '0')
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
         search_string = self.request.GET.get('filter', '').split()
@@ -858,12 +858,24 @@ class SprintTaskList(WeekArchiveView):
         elif self.request.user.groups.filter(name='Проектувальники').exists():
             tasks = tasks.filter(executor=self.request.user.employee)
 
-        if exec_status != '0':
-            tasks = tasks.filter(exec_status=exec_status)
-        if executor != '0':
-            tasks = tasks.filter(executor=executor)
-        if company != '0':
-            tasks = tasks.filter(task__deal__company=company)
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_segment = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if executors != '0':
+            tasks_union = Task.objects.none()
+            for executor in executors:
+                tasks_segment = tasks.filter(executor=executor)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if companies != '0':
+            tasks_union = Task.objects.none()
+            for company in companies:
+                tasks_segment = tasks.filter(task__deal__company=company)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
         if start_date:
             start_date_value = datetime.strptime(start_date, date_format)
         else:

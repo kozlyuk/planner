@@ -242,15 +242,9 @@ TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
 class TaskFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
-        exec_status = []
-        exec_status.insert(1, ('IW', "В черзі"))
-        exec_status.insert(2, ('IP', "Виконується"))
-        exec_status.insert(3, ('HD', "Виконано"))
-        exec_status.insert(4, ('ST', "Надіслано"))
-
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
-
         customers = list(Customer.objects.all().values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
@@ -271,23 +265,15 @@ class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         exec_status = list(Execution.EXEC_STATUS_CHOICES)
-        exec_status.insert(0, (0, "Всі"))
-
         user = get_current_user()
         if user.is_superuser:
-            executors = list(Employee.objects.filter(
-                user__is_active=True).values_list('pk', 'name'))
-            executors.insert(0, (0, "Всі"))
+            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
         elif user.groups.filter(name='ГІПи').exists():
             executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
                              .values_list('pk', 'name'))
-            executors.insert(0, (0, "Всі"))
         elif user.groups.filter(name='Проектувальники').exists():
-            executors = list(Employee.objects.filter(
-                user=user).values_list('pk', 'name'))
-
+            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
         companies = list(Company.objects.all().values_list('pk', 'name'))
-        companies.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
