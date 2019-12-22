@@ -17,8 +17,11 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
+from django.http import HttpResponse
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
+from django_xhtml2pdf.utils import generate_pdf
+from django_xhtml2pdf.views import PdfMixin
 
 from eventlog.models import Log
 from planner import forms
@@ -668,7 +671,7 @@ class TaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-        context = super(TaskList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.object_list.count()
         context['form_action'] = reverse('task_list')
@@ -682,6 +685,63 @@ class TaskList(ListView):
             context['filter_form'] = forms.TaskFilterForm(self.request.GET)
         return context
 
+
+class TaskListPdf(PdfMixin, ListView):
+    model = Task
+    context_object_name = 'tasks'  # Default: object_list
+    success_url = reverse_lazy('task_list')
+
+    def get_queryset(self):
+        tasks = Task.objects.all()[:10]
+        search_string = self.request.GET.get('filter', '').split()
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        owners = self.request.GET.getlist('owner', '0')
+        customers = self.request.GET.getlist('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            tasks = tasks.filter(Q(object_code__icontains=word) |
+                                 Q(object_address__icontains=word) |
+                                 Q(deal__number__icontains=word) |
+                                 Q(project_type__price_code__icontains=word) |
+                                 Q(project_type__project_type__icontains=word))
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_segment = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if owners != '0':
+            tasks_union = Task.objects.none()
+            for owner in owners:
+                tasks_segment = tasks.filter(owner=owner)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if customers != '0':
+            tasks_union = Task.objects.none()
+            for customer in customers:
+                tasks_segment = tasks.filter(deal__customer=customer)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+#        if order != '0':
+#            tasks = tasks.order_by(order)
+ #       else:
+ #           tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        return tasks
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_filtered'] = self.object_list.count()
+        context['form_action'] = reverse('task_list')
+        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
+        context['submit_button_text'] = 'Пошук'
+        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['task_success_url'] = 'task'
+        if self.request.POST:
+            context['filter_form'] = forms.TaskFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.TaskFilterForm(self.request.GET)
+        return context
 
 @method_decorator(login_required, name='dispatch')
 class TaskDetail(DetailView):

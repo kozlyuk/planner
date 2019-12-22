@@ -33,6 +33,7 @@ urlpatterns = [
         views.TaskDelete.as_view(), name='task_delete'),
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
+    url(r'^project/pdf/$', views.TaskListPdf.as_view(), name='task_list_pdf'),
 
 #    url(r'^sprint/<int:year>/week/<int:week>/$', views.SprintList.as_view(), name='sprint_list'),
     url(r'^sprint/$', views.SprintList.as_view(), name='sprint_list'),
