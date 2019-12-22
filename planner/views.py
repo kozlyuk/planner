@@ -843,7 +843,7 @@ class TaskExchange(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SprintTaskList(ListView):
+class SprintList(ListView):
     model = Execution
 #    date_field = "pub_date"
 #    week_format = "%W"
@@ -913,7 +913,7 @@ class SprintTaskList(ListView):
         if order != '0':
             tasks = tasks.order_by(order)
         else:
-            tasks = tasks.order_by('-creation_date', 'task__object_code')
+            tasks = tasks.order_by('-planned_finish', 'task__object_code')
         return tasks
 
     def get_context_data(self, **kwargs):
