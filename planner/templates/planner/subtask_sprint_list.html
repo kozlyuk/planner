@@ -18,55 +18,6 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            {% comment %} <!-----------------------filter panel-------------------------->
-            <div class="accordion" id="filter">
-                <div class="card">
-                    <div class="card-header" id="filter">
-                        <h2 class="mb-0">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="panel-title">
-                                        <button class="btn text-muted bold btn-block" type="button"
-                                            data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
-                                            aria-controls="filterBody">
-                                            Підзадачі
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </h2>
-                    </div>
-
-                    <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
-                        <div class="card-body">
-                            <div class="container-fluid " style="display:block">
-                                <form action="{{ form_action }}" method="get">
-                                    {% for hidden_field in filter_form.hidden_fields %}
-                                    {{ hidden_field }}
-                                    {% endfor %}
-
-                                    {% for field in filter_form.visible_fields %}
-                                    {{ field.label_tag }}
-                                    {{ field|add_class:"mr-2" }}
-                                    {% if field.help_text %}
-                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% endfor %}
-                                    {% if field.help_text %}
-                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% if submit_button_text %}
-                                        <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                            style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                            {{ submit_icon }} {{ submit_button_text }} </button>
-                                    {% endif %}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--filter panel--> {% endcomment %}
             <button id="makePDF" type="button" class="btn btn-info">
                 Друк <i class="fas fa-print"></i>
             </button>
