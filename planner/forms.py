@@ -166,6 +166,8 @@ class DealForm(forms.ModelForm):
                 self.add_error('advance', "Вкажіть Аванс")
             if not pay_date:
                 self.add_error('pay_date', "Вкажіть Дату оплати")
+        if act_status == Deal.Issued and self.instance.exec_status != Deal.Done:
+            self.add_error('act_status', "Ви не можете закрити договір який ще не виконано")
         if act_status != Deal.NotIssued:
             if not value or value == 0:
                 self.add_error('value', "Вкажіть Вартість робіт")
@@ -348,7 +350,7 @@ class TaskForm(forms.ModelForm):
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
-        if not get_current_user().is_superuser and (not deal or deal.act_status != Deal.NotIssued):
+        if not get_current_user().is_superuser and (not deal or deal.act_status == Deal.Issued):
             raise ValidationError("Договір закрито, зверніться до керівника")
         if not project_type or project_type.active is False:
             raise ValidationError("Даний Тип проекту не активний")
