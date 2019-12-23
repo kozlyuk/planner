@@ -75,7 +75,7 @@
                             <tr>
                                 <th></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'task__object_code' %}">шифр</a></th>
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">адреса</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">договір</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'part_name' %}">роботи</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
@@ -93,13 +93,13 @@
                             <tr>
                                 <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
                                 {% if task.task.is_editable %}
-                                    <td><a href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
                                 {% elif task.task.is_viewable %}
-                                    <td><a href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
                                 {% else %}
-                                    <td>{{ task.task.object_code }}</td>
+                                    <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
                                 {% endif %}
-                                <td>{{ task.task.object_address }}</td>
+                                <td>{{ task.task.deal }}</td>
                                 <td>{{ task.part_name }}</td>
                                 <td>{{ task.executor }}</td>
                                 <td>{% none_date_check task.planned_start %}</td>
@@ -159,7 +159,11 @@
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
     {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
-
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
     {% comment %} const startDate = new Date('{{ start_date }}');
     const finishDate = new Date(startDate);
