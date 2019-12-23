@@ -18,9 +18,6 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            <button id="makePDF" type="button" class="btn btn-info">
-                Друк <i class="fas fa-print"></i>
-            </button>
             <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                 <div id="taskList" class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
@@ -100,6 +97,7 @@
 {% if perms.planner.add_task %}
 <div class="add-btn-wrapper">
     <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
+    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
 </div>
 {% endif %}
 {% include 'widgets/filter_panel.html' %}
