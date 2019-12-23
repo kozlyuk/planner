@@ -2,6 +2,7 @@ __pycache__
 #migrations/
 media/
 .idea/
+.vscode/
 settings_local.py
 venv/
 /celerybeat-schedule

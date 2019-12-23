@@ -34,3 +34,4 @@ six
 sqlparse
 vine
 zipp
+django-xhtml2pdf    # For creating PDF from Class based views

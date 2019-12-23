@@ -17,8 +17,11 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
+from django.http import HttpResponse
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
+from django_xhtml2pdf.utils import generate_pdf
+from django_xhtml2pdf.views import PdfMixin
 
 from eventlog.models import Log
 from planner import forms
@@ -497,22 +500,39 @@ class DealList(ListView):
     def get_queryset(self):
         deals = Deal.objects.all()
         search_string = self.request.GET.get('filter', '').split()
-        customer = self.request.GET.get('customer', '0')
-        company = self.request.GET.get('company', '0')
-        act_status = self.request.GET.get('act_status', '0')
-        pay_status = self.request.GET.get('pay_status', '0')
+        customers = self.request.GET.getlist('customer', '0')
+        companies = self.request.GET.getlist('company', '0')
+        act_statuses = self.request.GET.getlist('act_status', '0')
+        pay_statuses = self.request.GET.getlist('pay_status', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             deals = deals.filter(Q(number__icontains=word) |
                                  Q(value__icontains=word))
-        if customer != '0':
-            deals = deals.filter(customer=customer)
-        if company != '0':
-            deals = deals.filter(company=company)
-        if act_status != '0':
-            deals = deals.filter(act_status=act_status)
-        if pay_status != '0':
-            deals = deals.filter(pay_status=pay_status)
+
+        if customers != '0':
+            deals_union = Deal.objects.none()
+            for customer in customers:
+                deals_part = deals.filter(customer=customer)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if companies != '0':
+            deals_union = Deal.objects.none()
+            for company in companies:
+                deals_part = deals.filter(company=company)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if act_statuses != '0':
+            deals_union = Deal.objects.none()
+            for act_status in act_statuses:
+                deals_part = deals.filter(act_status=act_status)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if pay_statuses != '0':
+            deals_union = Deal.objects.none()
+            for pay_status in pay_statuses:
+                deals_part = deals.filter(pay_status=pay_status)
+                deals_union = deals_union | deals_part
+            deals = deals_union
         if order != '0':
             deals = deals.order_by(order)
         return deals
@@ -521,6 +541,8 @@ class DealList(ListView):
         context = super(DealList, self).get_context_data(**kwargs)
         context['deals_count'] = Deal.objects.all().count()
         context['deals_filtered'] = self.object_list.count()
+        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
+        context['submit_button_text'] = 'Пошук'
         self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = forms.DealFilterForm(self.request.POST)
@@ -614,9 +636,9 @@ class TaskList(ListView):
     def get_queryset(self):
         tasks = Task.objects.all()
         search_string = self.request.GET.get('filter', '').split()
-        exec_status = self.request.GET.get('exec_status', '0')
-        owner = self.request.GET.get('owner', '0')
-        customer = self.request.GET.get('customer', '0')
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        owners = self.request.GET.getlist('owner', '0')
+        customers = self.request.GET.getlist('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             tasks = tasks.filter(Q(object_code__icontains=word) |
@@ -624,12 +646,24 @@ class TaskList(ListView):
                                  Q(deal__number__icontains=word) |
                                  Q(project_type__price_code__icontains=word) |
                                  Q(project_type__project_type__icontains=word))
-        if exec_status != '0':
-            tasks = tasks.filter(exec_status=exec_status)
-        if owner != '0':
-            tasks = tasks.filter(owner=owner)
-        if customer != '0':
-            tasks = tasks.filter(deal__customer=customer)
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_segment = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if owners != '0':
+            tasks_union = Task.objects.none()
+            for owner in owners:
+                tasks_segment = tasks.filter(owner=owner)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if customers != '0':
+            tasks_union = Task.objects.none()
+            for customer in customers:
+                tasks_segment = tasks.filter(deal__customer=customer)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
         if order != '0':
             tasks = tasks.order_by(order)
         else:
@@ -637,11 +671,11 @@ class TaskList(ListView):
         return tasks
 
     def get_context_data(self, **kwargs):
-        context = super(TaskList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['tasks_count'] = Task.objects.all().count()
         context['tasks_filtered'] = self.object_list.count()
         context['form_action'] = reverse('task_list')
-        context['submit_icon'] = format_html('<i class="fa fa-search"></i>')
+        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
         context['submit_button_text'] = 'Пошук'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         self.request.session['task_success_url'] = 'task'
@@ -651,6 +685,63 @@ class TaskList(ListView):
             context['filter_form'] = forms.TaskFilterForm(self.request.GET)
         return context
 
+
+class TaskListPdf(PdfMixin, ListView):
+    model = Task
+    context_object_name = 'tasks'  # Default: object_list
+    success_url = reverse_lazy('task_list')
+
+    def get_queryset(self):
+        tasks = Task.objects.all()[:10]
+        search_string = self.request.GET.get('filter', '').split()
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        owners = self.request.GET.getlist('owner', '0')
+        customers = self.request.GET.getlist('customer', '0')
+        order = self.request.GET.get('o', '0')
+        for word in search_string:
+            tasks = tasks.filter(Q(object_code__icontains=word) |
+                                 Q(object_address__icontains=word) |
+                                 Q(deal__number__icontains=word) |
+                                 Q(project_type__price_code__icontains=word) |
+                                 Q(project_type__project_type__icontains=word))
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_segment = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if owners != '0':
+            tasks_union = Task.objects.none()
+            for owner in owners:
+                tasks_segment = tasks.filter(owner=owner)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if customers != '0':
+            tasks_union = Task.objects.none()
+            for customer in customers:
+                tasks_segment = tasks.filter(deal__customer=customer)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+#        if order != '0':
+#            tasks = tasks.order_by(order)
+ #       else:
+ #           tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+        return tasks
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks_count'] = Task.objects.all().count()
+        context['tasks_filtered'] = self.object_list.count()
+        context['form_action'] = reverse('task_list')
+        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
+        context['submit_button_text'] = 'Пошук'
+        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
+        self.request.session['task_success_url'] = 'task'
+        if self.request.POST:
+            context['filter_form'] = forms.TaskFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.TaskFilterForm(self.request.GET)
+        return context
 
 @method_decorator(login_required, name='dispatch')
 class TaskDetail(DetailView):
@@ -812,11 +903,11 @@ class TaskExchange(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SprintTaskList(WeekArchiveView):
+class SprintList(ListView):
     model = Execution
-    date_field = "pub_date"
-    week_format = "%W"
-    allow_future = True
+#    date_field = "pub_date"
+#    week_format = "%W"
+#    allow_future = True
 
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
@@ -831,9 +922,9 @@ class SprintTaskList(WeekArchiveView):
 
     def get_queryset(self):
         tasks = Execution.objects.all()
-        exec_status = self.request.GET.get('exec_status', '0')
-        executor = self.request.GET.get('executor', '0')
-        company = self.request.GET.get('company', '0')
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
+        executors = self.request.GET.getlist('executor', '0')
+        companies = self.request.GET.getlist('company', '0')
         start_date = self.request.GET.get('start_date')
         finish_date = self.request.GET.get('finish_date')
         search_string = self.request.GET.get('filter', '').split()
@@ -846,12 +937,24 @@ class SprintTaskList(WeekArchiveView):
         elif self.request.user.groups.filter(name='Проектувальники').exists():
             tasks = tasks.filter(executor=self.request.user.employee)
 
-        if exec_status != '0':
-            tasks = tasks.filter(exec_status=exec_status)
-        if executor != '0':
-            tasks = tasks.filter(executor=executor)
-        if company != '0':
-            tasks = tasks.filter(task__deal__company=company)
+        if exec_statuses != '0':
+            tasks_union = Task.objects.none()
+            for status in exec_statuses:
+                tasks_part = tasks.filter(exec_status=status)
+                tasks_union = tasks_union | tasks_part
+            tasks = tasks_union
+        if executors != '0':
+            tasks_union = Task.objects.none()
+            for executor in executors:
+                tasks_part = tasks.filter(executor=executor)
+                tasks_union = tasks_union | tasks_part
+            tasks = tasks_union
+        if companies != '0':
+            tasks_union = Task.objects.none()
+            for company in companies:
+                tasks_part = tasks.filter(task__deal__company=company)
+                tasks_union = tasks_union | tasks_part
+            tasks = tasks_union
         if start_date:
             start_date_value = datetime.strptime(start_date, date_format)
         else:
@@ -870,7 +973,7 @@ class SprintTaskList(WeekArchiveView):
         if order != '0':
             tasks = tasks.order_by(order)
         else:
-            tasks = tasks.order_by('-creation_date', 'task__object_code')
+            tasks = tasks.order_by('-planned_finish', 'task__object_code')
         return tasks
 
     def get_context_data(self, **kwargs):

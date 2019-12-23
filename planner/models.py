@@ -590,7 +590,7 @@ class Task(models.Model):
         'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField(
-        'Попередження', max_length=30, blank=True)
+        'Примітка', max_length=30, blank=True)
     owner = models.ForeignKey(
         Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',

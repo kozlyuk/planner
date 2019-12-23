@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-from django_select2.forms import Select2Widget
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
@@ -102,40 +102,24 @@ class EmployeeForm(forms.ModelForm):
 class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(DealFilterForm, self).__init__(*args, **kwargs)
-
         customer = list(Customer.objects.all().values_list('pk', 'name'))
-        customer.insert(0, (0, "Всі"))
-
         company = list(Company.objects.all().values_list('pk', 'name'))
-        company.insert(0, (0, "Всі"))
-
-        act_status = []
-        act_status.insert(0, (0, "Всі"))
-        act_status.insert(1, ('NI', "Не виписаний"))
-        act_status.insert(2, ('PI', "Виписаний частково"))
-        act_status.insert(3, ('IS', "Виписаний"))
-
-        pay_status = []
-        pay_status.insert(0, (0, "Всі"))
-        pay_status.insert(1, ('NP', "Не оплачений"))
-        pay_status.insert(2, ('AP', "Оплачений аванс"))
-        pay_status.insert(3, ('PU', "Оплачений"))
+        act_status = list(Deal.ACT_STATUS_CHOICES)
+        pay_status = list(Deal.PAYMENT_STATUS_CHOICES)
 
         self.fields['customer'].choices = customer
         self.fields['company'].choices = company
         self.fields['act_status'].choices = act_status
         self.fields['pay_status'].choices = pay_status
 
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
-    company = forms.ChoiceField(label='Компанія', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
-    act_status = forms.ChoiceField(label='Акт виконаних робіт', required=False,
-                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
-    pay_status = forms.ChoiceField(label='Статус оплати', required=False,
-                                   widget=forms.Select(attrs={"onChange": 'submit()'}))
+    customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    act_status = forms.MultipleChoiceField(label='Акт виконаних робіт', required=False,
+                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
+                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class DealForm(forms.ModelForm):
@@ -242,66 +226,49 @@ TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
 class TaskFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(TaskFilterForm, self).__init__(*args, **kwargs)
-        exec_status = []
-        exec_status.insert(0, (0, "Всі"))
-        exec_status.insert(1, ('IW', "В черзі"))
-        exec_status.insert(2, ('IP', "Виконується"))
-        exec_status.insert(3, ('HD', "Виконано"))
-        exec_status.insert(4, ('ST', "Надіслано"))
-
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
-        owners.insert(0, (0, "Всі"))
-
         customers = list(Customer.objects.all().values_list('pk', 'name'))
-        customers.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
 
-    exec_status = forms.ChoiceField(
-        label='Статус', required=False, widget=forms.Select(attrs={"onChange": 'submit()'}))
-    owner = forms.ChoiceField(label='Керівник проекту', required=False,
-                              widget=forms.Select(attrs={"onChange": 'submit()'}))
-    customer = forms.ChoiceField(label='Замовник', required=False, widget=forms.Select(
-        attrs={"onChange": 'submit()'}))
+    exec_status = forms.MultipleChoiceField(
+        label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
+                              widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
+        attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         exec_status = list(Execution.EXEC_STATUS_CHOICES)
-        exec_status.insert(0, (0, "Всі"))
-
         user = get_current_user()
         if user.is_superuser:
-            executors = list(Employee.objects.filter(
-                user__is_active=True).values_list('pk', 'name'))
-            executors.insert(0, (0, "Всі"))
+            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
         elif user.groups.filter(name='ГІПи').exists():
             executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
                              .values_list('pk', 'name'))
-            executors.insert(0, (0, "Всі"))
         elif user.groups.filter(name='Проектувальники').exists():
-            executors = list(Employee.objects.filter(
-                user=user).values_list('pk', 'name'))
-
+            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
         companies = list(Company.objects.all().values_list('pk', 'name'))
-        companies.insert(0, (0, "Всі"))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
 
-    exec_status = forms.ChoiceField(label='Статус', required=False,
-                                    widget=forms.Select(attrs={"onChange": 'submit()'}))
-    executor = forms.ChoiceField(label='Виконавець', required=False,
-                                 widget=forms.Select(attrs={"onChange": 'submit()'}))
-    company = forms.ChoiceField(label='Компанія', required=False,
-                                widget=forms.Select(attrs={"onChange": 'submit()'}))
+    exec_status = forms.MultipleChoiceField(label='Статус', required=False,
+                                    widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    executor = forms.MultipleChoiceField(label='Виконавець', required=False,
+                                 widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False,
+                                widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
@@ -310,17 +277,17 @@ class SprintFilterForm(forms.Form):
     finish_date = forms.DateField(label='Дата завершення',
                                   widget=AdminDateWidget(attrs={"value": finish_date_value.strftime(date_format)}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False)
+                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['object_code', 'object_address', 'tc_received',       # TODO @arrathilar compose fields as ordered here
+        fields = ['object_code', 'object_address', 'tc_received',
                   'project_type', 'deal', 'tc_upload',
                   'owner', 'exec_status', 'pdf_copy',
                   'planned_start', 'planned_finish', 'actual_finish',
-                  'project_code', 'manual_warning', 'comment']          # TODO @arrathilar make comment oneline
+                  'project_code', 'manual_warning', 'comment']
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
