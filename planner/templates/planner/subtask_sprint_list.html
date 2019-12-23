@@ -83,7 +83,7 @@
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}"> статус виконання
                                     </a></th>
-                                <th id="print-ignore" class="uppercase">змінити статус на</th>
+                                <th class="print-ignore" class="uppercase">змінити статус на</th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">
                                         дата виконання</a></th>
                                 <th class="uppercase"> попередження </th>
@@ -107,7 +107,7 @@
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>
-                                <td id="print-ignore" class="text-center">
+                                <td class="print-ignore" class="text-center">
                                     {% status_change request.user task.pk task.exec_status %}
                                 </td>
                                 <td>{% none_date_check task.finish_date %}</td>
@@ -168,7 +168,7 @@
                         printable: 'sprintList',
                         type: 'html',
                         maxWidth: 'auto',
-                        style: '@page { size: A4 landscape; }; #sprintList {width: 120px!important;} th, tr > td {font-size: 10px!important;} #print-ignore {display:none} .uppercase { text-transform: uppercase !important; }',
+                        style: '@page { size: A4 landscape; }; #sprintList {width: 120px!important;} th, tr > td {font-size: 10px!important;} .print-ignore {display:none} .uppercase { text-transform: uppercase !important; }',
                         css: 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
                     }
                 )
