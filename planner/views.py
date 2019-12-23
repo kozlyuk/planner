@@ -689,7 +689,6 @@ class TaskList(ListView):
 class TaskListPdf(PdfMixin, ListView):
     model = Task
     context_object_name = 'tasks'  # Default: object_list
-    success_url = reverse_lazy('task_list')
 
     def get_queryset(self):
         tasks = Task.objects.all()[:10]
@@ -973,7 +972,7 @@ class SprintList(ListView):
         if order != '0':
             tasks = tasks.order_by(order)
         else:
-            tasks = tasks.order_by('-planned_finish', 'task__object_code')
+            tasks = tasks.order_by('planned_finish', 'task__object_code')
         return tasks
 
     def get_context_data(self, **kwargs):
