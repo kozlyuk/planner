@@ -648,7 +648,7 @@ class Task(models.Model):
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
                     execution.finish_date = datetime.now()
-                    execution.save(logging=False)
+                    execution.save()
 
          # Automatic set finish_date when Task has done
         if self.exec_status in [Task.Done, Task.Sent] and self.actual_finish is None:

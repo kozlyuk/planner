@@ -63,12 +63,12 @@
         <!-- END CONTENT -->
     </div>
     <!-- END CONTAINER -->
-{% if perms.planner.add_deal %}
 <div class="add-btn-wrapper">
+{% if perms.planner.add_deal %}
     <a href="{% url 'deal_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
+{% endif %}
     <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
 </div>
-{% endif %}
 {% include "widgets/filter_panel.html" %}
 {% endblock %}
 
