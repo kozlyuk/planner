@@ -18,6 +18,9 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
+            <button id="makePDF" type="button" class="btn btn-info">
+                Друк <i class="fas fa-print"></i>
+            </button>
             <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                 <div id="taskList" class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
