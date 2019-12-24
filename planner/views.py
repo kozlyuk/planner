@@ -17,11 +17,9 @@ from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
-from django_xhtml2pdf.utils import generate_pdf
-from django_xhtml2pdf.views import PdfMixin
 
 from eventlog.models import Log
 from planner import forms
@@ -492,6 +490,10 @@ class DealList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
             return super(DealList, self).dispatch(request, *args, **kwargs)
         else:
@@ -556,9 +558,7 @@ class DealUpdate(UpdateView):
     model = Deal
     form_class = forms.DealForm
     context_object_name = 'deal'
-
-    def get_success_url(self):
-        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+    success_url = reverse_lazy('deal_list')
 
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
@@ -587,9 +587,7 @@ class DealCreate(CreateView):
     model = Deal
     form_class = forms.DealForm
     context_object_name = 'deal'
-
-    def get_success_url(self):
-        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+    success_url = reverse_lazy('deal_list')
 
     def get_context_data(self, **kwargs):
         context = super(DealCreate, self).get_context_data(**kwargs)
@@ -615,9 +613,7 @@ class DealCreate(CreateView):
 @method_decorator(login_required, name='dispatch')
 class DealDelete(DeleteView):
     model = Deal
-
-    def get_success_url(self):
-        return reverse_lazy('deal_list') + '?' + self.request.session.get('deal_query_string', '')
+    success_url = reverse_lazy('deal_list')
 
     def get_context_data(self, **kwargs):
         context = super(DealDelete, self).get_context_data(**kwargs)
@@ -632,6 +628,13 @@ class TaskList(ListView):
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
     success_url = reverse_lazy('home_page')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('task_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('task_query_string', '')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         tasks = Task.objects.all()
@@ -686,63 +689,6 @@ class TaskList(ListView):
         return context
 
 
-class TaskListPdf(PdfMixin, ListView):
-    model = Task
-    context_object_name = 'tasks'  # Default: object_list
-    success_url = reverse_lazy('task_list')
-
-    def get_queryset(self):
-        tasks = Task.objects.all()[:10]
-        search_string = self.request.GET.get('filter', '').split()
-        exec_statuses = self.request.GET.getlist('exec_status', '0')
-        owners = self.request.GET.getlist('owner', '0')
-        customers = self.request.GET.getlist('customer', '0')
-        order = self.request.GET.get('o', '0')
-        for word in search_string:
-            tasks = tasks.filter(Q(object_code__icontains=word) |
-                                 Q(object_address__icontains=word) |
-                                 Q(deal__number__icontains=word) |
-                                 Q(project_type__price_code__icontains=word) |
-                                 Q(project_type__project_type__icontains=word))
-        if exec_statuses != '0':
-            tasks_union = Task.objects.none()
-            for status in exec_statuses:
-                tasks_segment = tasks.filter(exec_status=status)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if owners != '0':
-            tasks_union = Task.objects.none()
-            for owner in owners:
-                tasks_segment = tasks.filter(owner=owner)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if customers != '0':
-            tasks_union = Task.objects.none()
-            for customer in customers:
-                tasks_segment = tasks.filter(deal__customer=customer)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-#        if order != '0':
-#            tasks = tasks.order_by(order)
- #       else:
- #           tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
-        return tasks
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['tasks_count'] = Task.objects.all().count()
-        context['tasks_filtered'] = self.object_list.count()
-        context['form_action'] = reverse('task_list')
-        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
-        context['submit_button_text'] = 'Пошук'
-        self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
-        self.request.session['task_success_url'] = 'task'
-        if self.request.POST:
-            context['filter_form'] = forms.TaskFilterForm(self.request.POST)
-        else:
-            context['filter_form'] = forms.TaskFilterForm(self.request.GET)
-        return context
-
 @method_decorator(login_required, name='dispatch')
 class TaskDetail(DetailView):
     model = Task
@@ -763,8 +709,8 @@ class TaskUpdate(UpdateView):
 
     def get_success_url(self):
         if self.request.session['task_success_url'] == 'task':
-            return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
-        return reverse_lazy('sprint_list') + '?' + self.request.session.get('execution_query_string', '')
+            return reverse_lazy('task_list')
+        return reverse_lazy('sprint_list')
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
@@ -807,9 +753,7 @@ class TaskUpdate(UpdateView):
 class TaskCreate(CreateView):
     model = Task
     form_class = forms.TaskForm
-
-    def get_success_url(self):
-        return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+    success_url = reverse_lazy('task_list')
 
     def get_context_data(self, **kwargs):
         context = super(TaskCreate, self).get_context_data(**kwargs)
@@ -851,17 +795,15 @@ class TaskDelete(DeleteView):
 
     def get_success_url(self):
         if self.request.session['task_success_url'] == 'task':
-            return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
-        return reverse_lazy('sprint_list') + '?' + self.request.session.get('execution_query_string', '')
+            return reverse_lazy('task_list')
+        return reverse_lazy('sprint_list')
 
 
 @method_decorator(login_required, name='dispatch')
 class TaskExchange(FormView):
     template_name = 'planner/task_exchange.html'
     form_class = forms.TaskExchangeForm
-
-    def get_success_url(self):
-        return reverse_lazy('task_list') + '?' + self.request.session.get('task_query_string', '')
+    success_url = reverse_lazy('task_list')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
@@ -880,7 +822,6 @@ class TaskExchange(FormView):
         tasks = Task.objects.filter(id__in=self.tasks_ids)
         context["tasks_ids"] = self.tasks_ids
         context["tasks"] = tasks
-        context["query_string"] = self.request.session.get('task_query_string', '')
         return context
 
     def form_valid(self, form):
@@ -915,9 +856,14 @@ class SprintList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
                 request.user.groups.filter(name='Проектувальники').exists():
             return super().dispatch(request, *args, **kwargs)
+
         raise PermissionDenied
 
     def get_queryset(self):
