@@ -18,71 +18,20 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            {% comment %} <!-----------------------filter panel-------------------------->
-            <div class="accordion" id="filter">
-                <div class="card">
-                    <div class="card-header" id="filter">
-                        <h2 class="mb-0">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="panel-title">
-                                        <button class="btn text-muted bold btn-block" type="button"
-                                            data-toggle="collapse" data-target="#filterBody" aria-expanded="true"
-                                            aria-controls="filterBody">
-                                            Підзадачі
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </h2>
-                    </div>
-
-                    <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
-                        <div class="card-body">
-                            <div class="container-fluid " style="display:block">
-                                <form action="{{ form_action }}" method="get">
-                                    {% for hidden_field in filter_form.hidden_fields %}
-                                    {{ hidden_field }}
-                                    {% endfor %}
-
-                                    {% for field in filter_form.visible_fields %}
-                                    {{ field.label_tag }}
-                                    {{ field|add_class:"mr-2" }}
-                                    {% if field.help_text %}
-                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% endfor %}
-                                    {% if field.help_text %}
-                                    <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% if submit_button_text %}
-                                        <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                            style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                            {{ submit_icon }} {{ submit_button_text }} </button>
-                                    {% endif %}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--filter panel--> {% endcomment %}
-
             <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
-                <div class="table-scrollable">
+                <div id="sprintList" class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
                         <thead>
                             <tr>
-                                <th></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'task__object_code' %}">шифр</a></th>
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">адреса</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">договір</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'part_name' %}">роботи</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}"> статус виконання
                                     </a></th>
-                                <th class="uppercase">змінити статус на</th>
+                                <th class="print-ignore uppercase">змінити статус</th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">
                                         дата виконання</a></th>
                                 <th class="uppercase"> попередження </th>
@@ -91,15 +40,14 @@
                         <tbody>
                             {% for task in tasks %}
                             <tr>
-                                <td><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
                                 {% if task.task.is_editable %}
-                                    <td><a href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
                                 {% elif task.task.is_viewable %}
-                                    <td><a href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
+                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
                                 {% else %}
-                                    <td>{{ task.task.object_code }}</td>
+                                    <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
                                 {% endif %}
-                                <td>{{ task.task.object_address }}</td>
+                                <td>{{ task.task.deal }}</td>
                                 <td>{{ task.part_name }}</td>
                                 <td>{{ task.executor }}</td>
                                 <td>{% none_date_check task.planned_start %}</td>
@@ -107,12 +55,8 @@
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>
-                                <td class="text-center">
+                                <td class="print-ignore" class="text-center">
                                     {% status_change request.user task.pk task.exec_status %}
-                                    {% comment %} <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-warning mx-0">В черзі </button>
-                                        <button class="btn btn-sm btn-primary mx-0">Виконано</button>
-                                    </div> {% endcomment %}
                                 </td>
                                 <td>{% none_date_check task.finish_date %}</td>
                                 <td>
@@ -142,6 +86,9 @@
     </div>
     <!-- END CONTAINER -->
 </div>
+<div class="add-btn-wrapper">
+    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
+</div>
 {% include 'widgets/filter_panel.html' %}
 <script>
 
@@ -149,17 +96,35 @@
 {% endblock %}
 {% block css %}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+    <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
     {% comment %} <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="{% static 'air_datepicker/main.min.css' %}"/> {% endcomment %}
 {% endblock css %}
 
 {% block extrahead %}
+    <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script type="text/javascript" src="{% static 'air_datepicker/main.min.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
     {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
-
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        const makePDFButton = document.querySelector('#makePDF');
+        makePDFButton.addEventListener('click', () => {
+            printJS(
+                    {
+                        printable: 'sprintList',
+                        type: 'html',
+                        maxWidth: 'auto',
+                        style: '@page { size: A4 landscape; }; #sprintList {width: 120px!important;} th, tr > td {font-size: 10px!important;} .print-ignore {display:none} .uppercase { text-transform: uppercase !important; }',
+                        css: 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
+                    }
+                )
+        })
+    </script>
     {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
     {% comment %} const startDate = new Date('{{ start_date }}');
     const finishDate = new Date(startDate);

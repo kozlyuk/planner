@@ -12,58 +12,7 @@
         <br><!-- BEGIN CONTENT -->
         <div class="container-fluid">
             <div class="portlet-body">
-                {% comment %} <!-----------------------filter panel-------------------------->
-                <div class="accordion" id="filter">
-                    <div class="card">
-                        <div class="card-header" id="filter">
-                        <h2 class="mb-0">
-                        <div class="panel panel-default">
-                        <div class="panel-heading">
-                        <div class="panel-title">
-                            <button class="btn text-muted bold btn-block" type="button" data-toggle="collapse" data-target="#filterBody" aria-expanded="true" aria-controls="filterBody">
-                            Договори
-                            </button>
-                            {% if perms.planner.add_deal %}
-                                <button onclick="window.location.href = '{% url 'deal_add' %}'"
-                                    class="btn dark btn-sm btn-outline sbold uppercase"
-                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
-                                    <i class="fa fa-plus"></i> Додати договір </button>
-                            {% endif %}
-                        </div>
-                        </div>
-                        </h2>
-                        </div>
-
-                        <div id="filterBody" class="collapse show" aria-labelledby="filter" data-parent="#filter">
-                            <div class="card-body">
-                                <div class="container-fluid " style="display:block">
-                                            <form action="{% url 'deal_list' %}" method="get">
-                                                {% for hidden_field in filter_form.hidden_fields %}
-                                                    {{ hidden_field }}
-                                                {% endfor %}
-
-                                                {% for field in filter_form.visible_fields %}
-                                                    {{ field.label_tag }}
-                                                    {{ field }}
-                                                    {% if field.help_text %}
-                                                        <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                    {% endif %}
-                                                {% endfor %}
-                                                    {% if field.help_text %}
-                                                        <small class="form-text text-secondary">{{ field.help_text }}</small>
-                                                    {% endif %}
-                                                    <button type="submit" class="btn btn-sm btn-primary uppercase"
-                                                        style="margin-right: 5px; margin-bottom: 5px; margin-top: 2px">
-                                                    <i class="fa fa-search"></i>Пошук </button>
-                                            </form>
-                                        </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-----------------------filter panel--------------------------> {% endcomment %}
-
-                <div class="table-scrollable">
+                <div id="dealList" class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
                         <thead>
                             <tr>
@@ -117,11 +66,29 @@
 {% if perms.planner.add_deal %}
 <div class="add-btn-wrapper">
     <a href="{% url 'deal_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
+    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
 </div>
 {% endif %}
 {% include "widgets/filter_panel.html" %}
 {% endblock %}
 
+{% block css %}
+<link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
+{% endblock css %}
+
 {% block extrahead %}
+<script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
 <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
+<script>
+const makePDFButton = document.querySelector('#makePDF');
+makePDFButton.addEventListener('click', () => {
+    printJS({
+        printable: 'dealList',
+        type: 'html',
+        maxWidth: 'auto',
+        style: '@page { size: A4 landscape; }; #sprintList {width: 120px!important;} th, tr > td {font-size: 10px!important;} .print-ignore {display:none} .uppercase { text-transform: uppercase !important; }',
+        css: 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
+    })
+})
+</script>
 {% endblock extrahead %}

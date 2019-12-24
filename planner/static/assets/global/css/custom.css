@@ -379,7 +379,7 @@ input[type=text] {
     right: 0px;
 }
 
-.add_btn {
+.add_btn, .print_btn {
     display: inline-block;
     vertical-align: middle;
     *vertical-align: auto;
@@ -389,12 +389,19 @@ input[type=text] {
     width: 35px;
     line-height: 35px;
     position: absolute;
-    top: 130px;
+    top: 180px;
     left: -35px;
     text-align: center;
     border: 2px solid #4db3a4;
     border-right: white;
     border-radius: 40px 0px 0px 40px;
+}
+
+.print_btn {
+    top: 120px;
+    color: #6c757d!important;
+    border: 2px solid #6c757d;
+    border-right: white;
 }
 
 .add-task {
