@@ -18,9 +18,6 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            <button id="makePDF" type="button" class="btn btn-info">
-                Друк <i class="fas fa-print"></i>
-            </button>
             <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
                 <div id="sprintList" class="table-scrollable">
                     <table class="table table-striped table-advance table-hover">
@@ -34,7 +31,7 @@
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}"> статус виконання
                                     </a></th>
-                                <th class="print-ignore" class="uppercase">змінити статус на</th>
+                                <th class="print-ignore uppercase">змінити статус</th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">
                                         дата виконання</a></th>
                                 <th class="uppercase"> попередження </th>
@@ -88,6 +85,9 @@
         <!-- END CONTENT -->
     </div>
     <!-- END CONTAINER -->
+</div>
+<div class="add-btn-wrapper">
+    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
 </div>
 {% include 'widgets/filter_panel.html' %}
 <script>
