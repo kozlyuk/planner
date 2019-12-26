@@ -612,7 +612,8 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['project_type', 'price_code', 'customer', 'price', 'net_price_rate',
-                  'owner_bonus', 'executors_bonus', 'copies_count', 'description', 'active']
+                  'owner_bonus', 'executors_bonus', 'copies_count', 'description',
+                  'need_project_code', 'active']
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
