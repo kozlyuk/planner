@@ -250,7 +250,7 @@ def home_page(request):
                                                  finish_date__month=datetime.now().month, finish_date__year=datetime.now().year)
         td_executions_count = td_executions.count()
         ip_executions_count = ip_executions.count()
-        ip_executions_count = oc_executions.count()
+        oc_executions_count = oc_executions.count()
         hd_executions_count = hd_executions.count()
         active_executions_count = Execution.objects.filter(executor__user=request.user)\
                                                    .exclude(exec_status=Execution.Done)\
