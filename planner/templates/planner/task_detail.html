@@ -9,21 +9,12 @@
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
     <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
          xmlns="http://www.w3.org/1999/html">
-        <!-- BEGIN BREADCRUMBS -->
-        <div class="breadcrumbs">
-            <div class="container-fluid">
-                <a href="{% url 'task_list' %}">
-                    <h2 class="breadcrumbs-title">Проекти</h2>
-                </a>
-            </div>
-        </div>
-        <!-- END BREADCRUMBS -->
 
         <!-- BEGIN CONTENT -->
         <div class="container-fluid container-lf-space">
             <!-- BEGIN PAGE BASE CONTENT -->
-            <div class="row widget-row">
-                <div class="col-md-8 margin-bottom-20">
+            <div class="row widget-row mt-4">
+                <div class="col-md-8">
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white widget-tab">
                         <ul class="nav nav-pills nav-tabs" id="pills-tab" role="tablist">
@@ -36,7 +27,7 @@
                                         role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Додатково </a>
                             </li>
                         </ul>
-                        <div class="tab-content scroller" id="pills-tabContent">
+                        <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
                                     aria-labelledby="pills-tab_1_1">
                                 <div class="widget-news margin-bottom-20">
@@ -95,7 +86,7 @@
                                 </div>
                             </div>
                             <a href="{{request.META.HTTP_REFERER}}"
-                                class="btn dark task-return btn-sm btn-outline sbold uppercase" style="float: right;"> Повернутись </a>
+                                class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;"> Повернутись </a>
                         </div>
                     </div>
                     <!-- END WIDGET -->
