@@ -620,6 +620,7 @@ class ProjectForm(forms.ModelForm):
         self.fields['description'].widget.attrs.update(
             {'style': 'height:50px;'})
         self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
+        self.fields['need_project_code'].widget.attrs.update({'style': 'height:15px;'})
 
 
 class CustomerFilterForm(forms.Form):
