@@ -915,7 +915,8 @@ class SprintList(ListView):
             tasks = tasks.filter(Q(part_name__icontains=word) |
                                  Q(task__object_code__icontains=word) |
                                  Q(task__project_type__project_type__icontains=word) |
-                                 Q(task__object_address__icontains=word))
+                                 Q(task__object_address__icontains=word) |
+                                 Q(task__deal__number__icontains=word))
         if order != '0':
             tasks = tasks.order_by(order)
         else:

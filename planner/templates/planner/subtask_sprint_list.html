@@ -47,7 +47,7 @@
                                 {% else %}
                                     <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
                                 {% endif %}
-                                <td>{{ task.task.deal }}</td>
+                                <td>{{ task.task.deal.number }}</td>
                                 <td>{{ task.part_name }}</td>
                                 <td>{{ task.executor }}</td>
                                 <td>{% none_date_check task.planned_start %}</td>
