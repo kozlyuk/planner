@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
 from django.core.validators import MaxValueValidator
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Max
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 from .formatChecker import ContentTypeRestrictedFileField
@@ -280,6 +280,7 @@ class Project(models.Model):
                                                        validators=[MaxValueValidator(100)], default=12)
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', default=0,
                                                     validators=[MaxValueValidator(10)])
+    need_project_code = models.BooleanField('Потрібен шифр проекту', default=True)
     description = models.TextField('Опис', blank=True)
     active = models.BooleanField('Активний', default=True)
 
@@ -583,7 +584,7 @@ class Task(models.Model):
     object_address = models.CharField('Адреса об’єкту', max_length=255)
     project_type = models.ForeignKey(
         Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
-    project_code = models.CharField('Шифр проекту', max_length=30, blank=True)
+    project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
     deal = models.ForeignKey(
         Deal, verbose_name='Договір', on_delete=models.PROTECT)
     exec_status = models.CharField(
@@ -634,9 +635,12 @@ class Task(models.Model):
         return self.object_code + ' ' + self.project_type.__str__()
 
     def save(self, logging=True, *args, **kwargs):
-        # Set creator
         if not self.pk:
+            # Set creator
             self.creator = get_current_user()
+            # Automatic set project_code
+            if self.project_type.need_project_code:
+                self.project_code = Task.objects.aggregate(Max('project_code'))['project_code__max'] + 1
 
         # Automatic change Executions.exec_status when Task has no copies_count
         if self.exec_status == Task.Done and self.project_type.copies_count == 0:
