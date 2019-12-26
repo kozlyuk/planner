@@ -280,6 +280,7 @@ class Project(models.Model):
                                                        validators=[MaxValueValidator(100)], default=12)
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', default=0,
                                                     validators=[MaxValueValidator(10)])
+    need_project_code = models.BooleanField('Потрібен шифр проекту', default=True)
     description = models.TextField('Опис', blank=True)
     active = models.BooleanField('Активний', default=True)
 
