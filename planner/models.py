@@ -481,6 +481,14 @@ class Deal(models.Model):
         return self.number + ' ' + self.customer.name
 
     def save(self, logging=True, *args, **kwargs):
+
+        # Automatic set act_date when Deals act_status has Issued
+        if self.act_status != Deal.NotIssued and self.act_date is None:
+            self.act_date = date.today()
+        elif self.act_status == Deal.NotIssued and self.act_date is not None:
+            self.act_date = None
+
+        # Logging
         title = self.number
         if not self.pk:
             self.creator = get_current_user()
@@ -946,6 +954,10 @@ class Execution(models.Model):
             self.finish_date = datetime.now()
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
             self.finish_date = None
+
+        # Automatic change Executions.exec_status when Task has Done
+        if self.task.exec_status in [Task.Done, Task.Sent]:
+            self.exec_status = Execution.Done
 
         # Logging
         if logging:

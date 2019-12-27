@@ -166,13 +166,11 @@ class DealForm(forms.ModelForm):
                 self.add_error('advance', "Вкажіть Аванс")
             if not pay_date:
                 self.add_error('pay_date', "Вкажіть Дату оплати")
-        if act_status == Deal.Issued and self.instance.exec_status != Deal.Done:
+        if act_status == Deal.Issued and self.instance.exec_status in [Deal.ToDo, Deal.InProgress]:
             self.add_error('act_status', "Ви не можете закрити договір який ще не виконано")
         if act_status != Deal.NotIssued:
             if not value or value == 0:
                 self.add_error('value', "Вкажіть Вартість робіт")
-            if not act_date:
-                self.add_error('act_date', "Вкажіть Дату акту виконаних робіт")
             if not act_value or act_value == 0:
                 self.add_error(
                     'act_value', "Вкажіть Суму акту виконаних робіт")
@@ -347,6 +345,7 @@ class TaskForm(forms.ModelForm):
         exec_status = cleaned_data.get("exec_status")
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
+        project_code = cleaned_data.get("project_code")
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
@@ -361,6 +360,8 @@ class TaskForm(forms.ModelForm):
             self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
         if planned_finish and planned_finish > deal.expire_date:
             self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
+        if project_code and Task.objects.filter(project_code=project_code).exclude(pk=self.instance.pk).exists():
+            self.add_error('project_code', "Проект з таким шифром вже існує")
         return cleaned_data
 
 
