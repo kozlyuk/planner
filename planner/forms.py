@@ -166,13 +166,11 @@ class DealForm(forms.ModelForm):
                 self.add_error('advance', "Вкажіть Аванс")
             if not pay_date:
                 self.add_error('pay_date', "Вкажіть Дату оплати")
-        if act_status == Deal.Issued and self.instance.exec_status != Deal.Done:
+        if act_status == Deal.Issued and self.instance.exec_status in [Deal.ToDo, Deal.InProgress]:
             self.add_error('act_status', "Ви не можете закрити договір який ще не виконано")
         if act_status != Deal.NotIssued:
             if not value or value == 0:
                 self.add_error('value', "Вкажіть Вартість робіт")
-            if not act_date:
-                self.add_error('act_date', "Вкажіть Дату акту виконаних робіт")
             if not act_value or act_value == 0:
                 self.add_error(
                     'act_value', "Вкажіть Суму акту виконаних робіт")
