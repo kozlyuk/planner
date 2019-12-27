@@ -347,6 +347,7 @@ class TaskForm(forms.ModelForm):
         exec_status = cleaned_data.get("exec_status")
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
+        project_code = cleaned_data.get("project_code")
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
@@ -361,6 +362,8 @@ class TaskForm(forms.ModelForm):
             self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
         if planned_finish and planned_finish > deal.expire_date:
             self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
+        if project_code and Task.objects.filter(project_code=project_code).exclude(pk=self.instance.pk).exists():
+            self.add_error('project_code', "Проект з таким шифром вже існує")
         return cleaned_data
 
 
