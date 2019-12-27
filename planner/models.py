@@ -947,6 +947,10 @@ class Execution(models.Model):
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
             self.finish_date = None
 
+        # Automatic change Executions.exec_status when Task has Done
+        if self.task.exec_status in [Task.Done, Task.Sent]:
+            self.exec_status = Execution.Done
+
         # Logging
         if logging:
             title = self.task.object_code + ' ' + \
