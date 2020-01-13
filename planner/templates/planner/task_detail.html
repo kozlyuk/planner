@@ -39,7 +39,9 @@
                                         <p>Договір: <strong>{{ task.deal }}</strong></p>
                                         <p>Керівник проекту: <strong>{{ task.owner.name }}</strong></p>
                                         <p>Статус виконання: <strong>{{ task.get_exec_status_display }}</strong></p>
-
+                                        {% if task.project_code %}
+                                        <p>Шифр проекту: <strong>{{ task.project_code }}</strong></p>
+                                        {% endif %}
                                         <table class="table table-hover">
                                             <thead>
                                             <tr>
