@@ -11,12 +11,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     $('.filter-panel .theme_btn, .filter-panel .mobile-close').on('click', function() {
         $('.filter-panel').toggleClass('open');
-        if (filterState() == null) {
-            setFilterState('True')
-        } else if (filterState() == 'True') {
-            setFilterState('False')
-        } else if (filterState() == 'False') {
-            setFilterState('True')
-        }
     });
 });
