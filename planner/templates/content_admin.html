@@ -78,7 +78,7 @@
                                 <span class="badge badge-pill badge-warning float-right"> Вартість робіт:
                                     {{ deal.value }} грн. </span>
                             </h3>
-                            {{ deal.overdue_status }}
+                            {{ deal.warning }}
                         </div>
                     </div>
                     {% endfor %}
@@ -184,7 +184,7 @@
                         <span class="pull-right">{{ actneed_deals_count }}/{{ active_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ tasks_div }}"
+                        <div class="progress-bar bg-light" role="progressbar"
                             aria-valuemin="0" aria-valuemax="100" style="width: {{ deals_div }}%;"> </div>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                         <span class="pull-right">{{ debtor_deals_count }}/{{ unpaid_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_tasks_div }}"
+                        <div class="progress-bar bg-light" role="progressbar"
                             aria-valuemin="0" aria-valuemax="100" style="width: {{ debtor_deals_div }}%;"> </div>
                     </div>
                 </div>
@@ -210,7 +210,7 @@
                         <span class="pull-right">{{ overdue_deals_count }}/{{ active_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ inttasks_div }}"
+                        <div class="progress-bar bg-light" role="progressbar"
                             aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_deals_div }}%;">
                         </div>
                     </div>
@@ -224,7 +224,7 @@
                         <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar" aria-valuenow="{{ overdue_inttasks_div }}"
+                        <div class="progress-bar bg-light" role="progressbar"
                             aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_inttasks_div }}%;"> </div>
                     </div>
                 </div>

@@ -56,7 +56,7 @@
                                     class="badge badge-pill badge-{% task_status_color task.get_exec_status_display %} label-mini">
                                     {{ task.get_exec_status_display }} </span></td>
                             <td> {{ task.owner.name }} </td>
-                            <td> {{ task.overdue_status }} </td>
+                            <td> {{ task.warning }} </td>
                         </tr>
                         {% endfor %}
                     </table>
