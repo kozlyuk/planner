@@ -1,36 +1,35 @@
-amqp
-billiard
-celery
 Django == 2.2.10
 django-admin-list-filter-dropdown
-django-appconf
 django-crum
-django-debug-toolbar
 django-fontawesome-5
-django-js-asset
 django-jsonfield
 django-mptt
 django-mptt-admin
 django-select2
 django-stdimage
-django-timezone-field
 django-widget-tweaks
-importlib-metadata
-kombu
-#mod-wsgi==4.6.7
-more-itertools
 mysqlclient
-numpy
 pandas
 Pillow
-progressbar2
-pyparsing
-python-crontab
-python-dateutil
-python-utils
-pytz
 redis
-six
-sqlparse
-vine
-zipp
+celery
+# django-appconf
+# django-js-asset
+# django-timezone-field
+# importlib-metadata
+# amqp
+# billiard
+# kombu
+# mod-wsgi==4.6.7
+# more-itertools
+# numpy
+# progressbar2
+# pyparsing
+# python-crontab
+# python-dateutil
+# python-utils
+# pytz
+# six
+# sqlparse
+# vine
+# zipp
