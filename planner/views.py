@@ -444,10 +444,10 @@ class DealList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        if request.GET == {}:
-            request.GET = request.GET.copy()
-            request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
-            request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
+        # if request.GET == {}:
+        #     request.GET = request.GET.copy()
+        #     request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
+        #     request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
             return super(DealList, self).dispatch(request, *args, **kwargs)
         else:
@@ -583,12 +583,12 @@ class TaskList(ListView):
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.GET == {}:
-            request.GET = request.GET.copy()
-            request.GET = QueryDict(self.request.session.get('task_query_string', ''))
-            request.META['QUERY_STRING'] = self.request.session.get('task_query_string', '')
-        return super().dispatch(request, *args, **kwargs)
+    # def dispatch(self, request, *args, **kwargs):
+    #     if request.GET == {}:
+    #         request.GET = request.GET.copy()
+    #         request.GET = QueryDict(self.request.session.get('task_query_string', ''))
+    #         request.META['QUERY_STRING'] = self.request.session.get('task_query_string', '')
+    #     return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         tasks = Task.objects.all()
@@ -809,10 +809,10 @@ class SprintList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        if request.GET == {}:
-            request.GET = request.GET.copy()
-            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
-            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
+        # if request.GET == {}:
+        #     request.GET = request.GET.copy()
+        #     request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
+        #     request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
                 request.user.groups.filter(name='Проектувальники').exists():
             return super().dispatch(request, *args, **kwargs)
@@ -863,7 +863,8 @@ class SprintList(ListView):
         else:
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
-                             Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value))
+                             Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
+                             Q(planned_finish__lte=start_date_value, exec_status__in=[Task.ToDo, Task.InProgress]))
         for word in search_string:
             tasks = tasks.filter(Q(part_name__icontains=word) |
                                  Q(task__object_code__icontains=word) |
@@ -873,7 +874,7 @@ class SprintList(ListView):
         if order != '0':
             tasks = tasks.order_by(order)
         else:
-            tasks = tasks.order_by('-planned_finish', 'task__object_code')
+            tasks = tasks.order_by('planned_finish', 'task__object_code')
         return tasks
 
     def get_context_data(self, **kwargs):

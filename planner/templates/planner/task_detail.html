@@ -33,7 +33,7 @@
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
                                         <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
-                                            <span class="badge badge-pill badge-{% task_overdue_color task.overdue_status %} float-right"> {{ task.overdue_status }} </span>
+                                            <span class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right"> {{ task.warning }} </span>
                                         </h3>
                                         <p>Тип проекту: <strong>{{ task.project_type }}</strong></p>
                                         <p>Договір: <strong>{{ task.deal }}</strong></p>
@@ -77,7 +77,7 @@
                                     {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
                                     <div class="widget-news-right-body">
                                         <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
-                                            <span class="label label-{% task_overdue_color task.overdue_status %}"> {{ task.overdue_status }} </span>
+                                            <span class="label label-{% task_overdue_color task.warning %}"> {{ task.warning }} </span>
                                         </h3>
                                         <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
                                         <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
