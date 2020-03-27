@@ -864,7 +864,8 @@ class SprintList(ListView):
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
-                             Q(planned_finish__lte=start_date_value, exec_status__in=[Task.ToDo, Task.InProgress]))
+                             Q(planned_finish__lte=start_date_value, exec_status__in=[Execution.ToDo,
+                             Execution.InProgress, Execution.OnChecking]))
         for word in search_string:
             tasks = tasks.filter(Q(part_name__icontains=word) |
                                  Q(task__object_code__icontains=word) |
@@ -1058,7 +1059,7 @@ class ReceiverList(ListView):
     success_url = reverse_lazy('home_page')
     paginate_by = 15
 
-    def get_queryset(self):  # todo args url
+    def get_queryset(self):
         receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
             values_list('name', 'address', 'contact_person', 'phone', 'url')
         search_string = self.request.GET.get('filter', '').split()
