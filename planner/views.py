@@ -444,10 +444,10 @@ class DealList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        # if request.GET == {}:
-        #     request.GET = request.GET.copy()
-        #     request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
-        #     request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
             return super(DealList, self).dispatch(request, *args, **kwargs)
         else:
@@ -583,12 +583,12 @@ class TaskList(ListView):
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     if request.GET == {}:
-    #         request.GET = request.GET.copy()
-    #         request.GET = QueryDict(self.request.session.get('task_query_string', ''))
-    #         request.META['QUERY_STRING'] = self.request.session.get('task_query_string', '')
-    #     return super().dispatch(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('task_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('task_query_string', '')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         tasks = Task.objects.all()
@@ -809,10 +809,10 @@ class SprintList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        # if request.GET == {}:
-        #     request.GET = request.GET.copy()
-        #     request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
-        #     request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
         if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
                 request.user.groups.filter(name='Проектувальники').exists():
             return super().dispatch(request, *args, **kwargs)
