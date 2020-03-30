@@ -864,7 +864,7 @@ class SprintList(ListView):
             finish_date_value = start_date_value + timedelta(days=4)
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
-                             Q(planned_finish__lte=start_date_value, exec_status__in=[Execution.ToDo,
+                             Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
                              Execution.InProgress, Execution.OnChecking]))
         for word in search_string:
             tasks = tasks.filter(Q(part_name__icontains=word) |
