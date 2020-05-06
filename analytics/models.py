@@ -27,4 +27,4 @@ class Kpi(models.Model):
         ordering = ['-period']
 
     def __str__(self):
-        return f"{self.employee.name} {self.get_name_display}"
+        return f"{self.employee.name} {self.get_name_display()}"

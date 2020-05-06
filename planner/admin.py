@@ -259,8 +259,9 @@ class DealAdmin(admin.ModelAdmin):
     list_per_page = 50
     search_fields = ['number', 'value']
     ordering = ['-creation_date', 'customer', '-number']
-    list_filter = [('customer', RelatedDropdownFilter), ('company',
-                                                         RelatedDropdownFilter), 'pay_status', 'act_status']
+    list_filter = [('customer', RelatedDropdownFilter),
+                   ('company', RelatedDropdownFilter),
+                   'pay_status', 'act_status']
     date_hierarchy = 'expire_date'
     readonly_fields = ['bonuses_calc',
                        'value_calc', 'costs_calc', 'pay_date_calc']
