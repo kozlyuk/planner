@@ -308,18 +308,12 @@ class TaskForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "Тип проекту не входить до можливих значень Замовника Договору")
         if exec_status in [Task.Done, Task.Sent]:
-            if not actual_finish:
-                raise forms.ValidationError(
-                    "Вкажіть будь ласка Фактичне закінчення робіт")
-            elif not pdf_copy:
+            if not pdf_copy:
                 raise forms.ValidationError(
                     "Підвантажте будь ласка електронний примірник")
             elif deal.act_status == Deal.Issued:
                 raise forms.ValidationError(
                     "Договір закрито, зверніться до керівника")
-        if actual_finish and exec_status not in [Task.Done, Task.Sent]:
-            raise forms.ValidationError(
-                "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
         if planned_finish and planned_finish > deal.expire_date:
             raise forms.ValidationError(
                 "Планова дата закінчення повинна бути меншою дати закінчення договору")
@@ -578,25 +572,7 @@ class TaskAdmin(admin.ModelAdmin):
         return super(TaskAdmin, self).get_inline_instances(request, obj)
 
 
-class IntTaskForm(forms.ModelForm):
-
-    def clean(self):
-        cleaned_data = super(IntTaskForm, self).clean()
-        exec_status = cleaned_data.get("exec_status")
-        actual_finish = cleaned_data.get("actual_finish")
-
-        if exec_status == Task.Done:
-            if not actual_finish:
-                raise forms.ValidationError(
-                    "Вкажіть Фактичне закінчення робіт")
-        if actual_finish:
-            if exec_status != Task.Done:
-                raise forms.ValidationError("Відмітьте Статус виконання")
-
-
 class IntTaskAdmin(admin.ModelAdmin):
-
-    form = IntTaskForm
 
     list_display = ['task_name', 'exec_status',
                     'executor', 'planned_start', 'planned_finish']
