@@ -1,11 +1,7 @@
 from django.contrib import admin
-from analytics.models import Bonus, KpiName, Kpi
+from analytics.models import Kpi
 
 
-@admin.register(KpiName)
-class KpiNameAdmin(admin.ModelAdmin):
-    list_display = ['name']
-    fieldsets = [
-        (None, {'fields': ['name',
-                           ]})
-        ]
+@admin.register(Kpi)
+class KpiAdmin(admin.ModelAdmin):
+    list_display = ['employee', 'period', 'name', 'value']
