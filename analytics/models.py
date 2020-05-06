@@ -8,9 +8,13 @@ class Kpi(models.Model):
     """ Model contains KPI """
     BonusItel = 'BI'
     BonusGKP = 'BG'
+    Tasks = 'TA'
+    Productivity = 'PR'
     KPI_CHOICES = (
         (BonusItel, 'Бонус Ітел-Ісервіс'),
-        (BonusGKP, 'Бонус Галкомпроект')
+        (BonusGKP, 'Бонус Галкомпроект'),
+        (Tasks, 'Бонуси Загальні'),
+        (Productivity, 'Продуктивність')
     )
     employee = models.ForeignKey(Employee, verbose_name='Працівник', on_delete=models.CASCADE)
     name = models.CharField('Показник ефективності', max_length=2, choices=KPI_CHOICES, default=BonusItel)
