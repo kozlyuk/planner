@@ -40,17 +40,16 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник',
                              blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
-    mobile_phone = models.CharField(
-        'Мобільний телефон', max_length=13, blank=True)
+    mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
                            variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
-    salary = models.DecimalField(
-        'Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
+    salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
+    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=100,
+                                                   validators=[MaxValueValidator(200)])
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
-    vacation_date = models.DateField(
-        'Дата нарахування відпустки', blank=True, null=True)
+    vacation_date = models.DateField('Дата нарахування відпустки', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Працівник'

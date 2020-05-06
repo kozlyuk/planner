@@ -1,7 +1,7 @@
 """planner URL Configuration"""
 
 from django.conf.urls import url
-from django.urls import path, include
+from django.urls import include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.views.generic.base import RedirectView
@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>\d+)/$', views.TaskDetail.as_view(), name='task_detail'),
     url(r'^project/exchange/$', views.TaskExchange.as_view(), name='task_exchange'),
 
-#    url(r'^sprint/<int:year>/week/<int:week>/$', views.SprintList.as_view(), name='sprint_list'),
+    #url(r'^sprint/<int:year>/week/<int:week>/$', views.SprintList.as_view(), name='sprint_list'),
     url(r'^sprint/$', views.SprintList.as_view(), name='sprint_list'),
 
     url(r'^execution/(?P<pk>\d+)/status/(?P<status>[A-Z]{2})/$',
