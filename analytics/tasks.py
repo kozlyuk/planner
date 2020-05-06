@@ -11,7 +11,7 @@ LOGGER = get_task_logger(__name__)
 
 
 @app.task
-def save_bonus(month=date.today().month, year=date.today().year):
+def save_kpi(month=date.today().month, year=date.today().year):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.all()
     period = date(year=year, month=month, day=1)
@@ -65,7 +65,7 @@ def save_bonus(month=date.today().month, year=date.today().year):
 
         # save productivity
         if employee.salary > 0:
-            productivity = bonuses / employee.salary * employee.coefficient / 100
+            productivity = bonuses / employee.salary / employee.coefficient * 100
 
             if bonuses > 0:
                 Kpi.objects.get_or_create(employee=employee,
