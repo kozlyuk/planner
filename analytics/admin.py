@@ -1,11 +1,11 @@
 from django.contrib import admin
-from analytics.models import Bonus, KpiName, Kpi
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
+
+from analytics.models import Kpi
 
 
-@admin.register(KpiName)
-class KpiNameAdmin(admin.ModelAdmin):
-    list_display = ['name']
-    fieldsets = [
-        (None, {'fields': ['name',
-                           ]})
-        ]
+@admin.register(Kpi)
+class KpiAdmin(admin.ModelAdmin):
+    list_display = ['employee', 'period', 'name', 'value']
+    date_hierarchy = 'period'
+    list_filter = [('employee', RelatedDropdownFilter), 'name']

@@ -40,17 +40,16 @@ class Employee(models.Model):
     head = models.ForeignKey('self', verbose_name='Кервіник',
                              blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
-    mobile_phone = models.CharField(
-        'Мобільний телефон', max_length=13, blank=True)
+    mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
                            variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
-    salary = models.DecimalField(
-        'Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
+    salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
+    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=80,
+                                                   validators=[MaxValueValidator(200)])
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
-    vacation_date = models.DateField(
-        'Дата нарахування відпустки', blank=True, null=True)
+    vacation_date = models.DateField('Дата нарахування відпустки', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Працівник'
@@ -949,15 +948,15 @@ class Execution(models.Model):
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
+        # Automatic change Executions.exec_status when Task has Done
+        if self.task.exec_status in [Task.Done, Task.Sent]:
+            self.exec_status = Execution.Done
+
         # Automatic set finish_date when Execution has done
         if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:
             self.finish_date = datetime.now()
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
             self.finish_date = None
-
-        # Automatic change Executions.exec_status when Task has Done
-        if self.task.exec_status in [Task.Done, Task.Sent]:
-            self.exec_status = Execution.Done
 
         # Logging
         if logging:
@@ -1026,6 +1025,14 @@ class IntTask(models.Model):
         verbose_name_plural = 'Завдання'
 
     def save(self, logging=True, *args, **kwargs):
+
+        # Automatic set finish_date when IntTask has done
+        if self.exec_status == Task.Done and self.actual_finish is None:
+            self.actual_finish = date.today()
+        elif self.exec_status != Execution.Done and self.actual_finish is not None:
+            self.actual_finish = None
+
+        # Logging
         title = self.task_name
         if not self.pk:
             self.creator = get_current_user()
