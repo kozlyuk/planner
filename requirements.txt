@@ -13,6 +13,7 @@ pandas
 Pillow
 redis
 celery
+wheel
 # django-appconf
 # django-js-asset
 # django-timezone-field
