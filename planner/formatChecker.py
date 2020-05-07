@@ -84,7 +84,7 @@ class NotClearableFileInput(FileInput):
 
     url_markup_template = '<a href="/media/{0}">{1}</a>'
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         substitutions = {
             'initial_text': self.initial_text,
             'input_text': self.input_text,
