@@ -45,7 +45,7 @@ class Employee(models.Model):
                            variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
-    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=100,
+    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=80,
                                                    validators=[MaxValueValidator(200)])
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])

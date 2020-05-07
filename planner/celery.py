@@ -3,7 +3,7 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 
-from datetime import datetime
+from datetime import date
 from dateutil.relativedelta import relativedelta
 
 
@@ -21,7 +21,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-last_month = datetime.now() - relativedelta(months=1)
+last_month = date.today() - relativedelta(months=1)
 
 app.conf.beat_schedule = {
     'task_statuses': {
@@ -75,10 +75,21 @@ app.conf.beat_schedule = {
         'schedule': crontab(day_of_month=10, hour=17, minute=00),
     },
 
-    'save_kpi': {
-        'task': 'analytics.tasks.save_kpi',
+    'calc_bonuses': {
+        'task': 'analytics.tasks.calc_bonuses',
         # on 10th of month at 07-00
         'schedule': crontab(day_of_month=10, hour=7, minute=00),
         'args': (last_month.month, last_month.year)
     },
-}
+    'calc_kpi': {
+        'task': 'analytics.tasks.calc_kpi',
+        # on 10th of month at 07-10
+        'schedule': crontab(day_of_month=10, hour=7, minute=10),
+        'args': (last_month.month, last_month.year)
+    },
+    'calc_kpi_ed': {
+        'task': 'analytics.tasks.calc_kpi',
+        # on 10th of month at 07-20
+        'schedule': crontab(day_of_month=10, hour=7, minute=20),
+        'args': (date.today().day, date.today().month, date.today().year)
+    },}
