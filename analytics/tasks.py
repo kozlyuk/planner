@@ -13,7 +13,7 @@ LOGGER = get_task_logger(__name__)
 @app.task
 def calc_bonuses(month=date.today().month, year=date.today().year):
     """ Save monthly bonuses of Employees """
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(user__is_active=True)
     period = date(year=year, month=month, day=1)
 
     for employee in employees:
@@ -22,7 +22,7 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
             bonuses = 0
 
             # calculate executor bonuses
-            executions = employee.execution_set.filter(task__deal__customer=kpi_name[0],
+            executions = employee.execution_set.filter(task__deal__company=kpi_name[0],
                                                        task__actual_finish__month=month,
                                                        task__actual_finish__year=year
                                                        )
@@ -30,7 +30,7 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
                 bonuses += query.task.exec_bonus(query.part)
 
             # calculate owner bonuses
-            tasks = employee.task_set.filter(deal__customer=kpi_name[0],
+            tasks = employee.task_set.filter(deal__company=kpi_name[0],
                                              actual_finish__month=month,
                                              actual_finish__year=year
                                              )
@@ -39,31 +39,31 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
 
             # save bonuses
             if bonuses > 0:
-                Kpi.objects.get_or_create(employee=employee,
-                                          name=kpi_name[1],
-                                          period__month=month,
-                                          period__year=year,
-                                          defaults={'value': bonuses,
-                                          'period': period}
-                                          )
+                kpi, created = Kpi.objects.get_or_create(employee=employee,
+                                                         name=kpi_name[1],
+                                                         period__month=month,
+                                                         period__year=year,
+                                                         )
+                kpi.value = bonuses
+                kpi.period = period
+                kpi.save()
 
         # calculate inttask bonuses
         inttask_bonus = employee.inttask_set.filter(actual_finish__month=month,
                                                     actual_finish__year=year
                                                     )\
                                             .aggregate(Sum('bonus'))['bonus__sum']
-        if inttask_bonus:
-            bonuses += inttask_bonus
 
         # save inttasks bonuses
-        if bonuses > 0:
-            Kpi.objects.get_or_create(employee=employee,
-                                      name=Kpi.Tasks,
-                                      period__month=month,
-                                      period__year=year,
-                                      defaults={'value': bonuses,
-                                      'period': period}
-                                      )
+        if inttask_bonus:
+            kpi, created = Kpi.objects.get_or_create(employee=employee,
+                                                     name=Kpi.Tasks,
+                                                     period__month=month,
+                                                     period__year=year,
+                                                     )
+            kpi.value = inttask_bonus
+            kpi.period = period
+            kpi.save()
 
     LOGGER.info("Employee bonuses for %s.%s saved", month, year)
 
@@ -71,7 +71,7 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
 @app.task
 def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().year):
     """ Save monthly bonuses of Employees """
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(user__is_active=True)
     period = date(year=year, month=month, day=day)
 
     for employee in employees:
@@ -100,24 +100,14 @@ def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().y
         if inttask_bonus:
             bonuses += inttask_bonus
 
-        # save inttasks bonuses
-        if bonuses > 0:
-            Kpi.objects.get_or_create(employee=employee,
-                                      name=Kpi.Tasks,
-                                      period__month=month,
-                                      period__year=year,
-                                      defaults={'value': bonuses,
-                                      'period': period}
-                                      )
-
         if employee.salary > 0:
             # calculate productivity
-            if month == date.today().month:
+            if month == date.today().month and year == date.today().year:
                 # current month
-                productivity = int(bonuses / employee.salary / employee.coefficient * date.today().day * 300000)
+                productivity = bonuses / employee.salary / employee.coefficient * date.today().day * 300000
             else:
                 # previous month
-                productivity = int(bonuses / employee.salary / employee.coefficient * 10000)
+                productivity = bonuses / employee.salary / employee.coefficient * 10000
 
             # save productivity
             if bonuses > 0:
@@ -129,6 +119,5 @@ def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().y
                 kpi.value = productivity
                 kpi.period = period
                 kpi.save()
-
 
     LOGGER.info("Employee KPIs for %s.%s.%s saved", day, month, year)
