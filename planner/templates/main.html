@@ -6,6 +6,8 @@
 {% load fontawesome_5 %}
 
 {% block context %}
+{% now "m" as current_month %}
+{% now "Y" as current_year %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
@@ -15,7 +17,6 @@
     <div class="container-fluid container-lf-space">
         <!-- BEGIN PAGE BASE CONTENT -->
         <div id="row1" class="mt-3">
-
             {% block 'row1' %}
             {% endblock %}
         </div>

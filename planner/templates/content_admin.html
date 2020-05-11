@@ -124,10 +124,12 @@
             <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
                 <div class="widget-thumb-wrap">
                     <i class="widget-thumb-icon bg-red icon-layers"></i>
-                    <p class="mb-0">Ведення проектів</p>
+                    <p class="mb-0">Виконання проектів</p>
                     <div class="widget-thumb-body">
-                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
-                            data-counter="counterup" data-value="{{ owner_bonuses_cm }}">0</span>
+                        <span style="float: left; font-size: 22px"
+                            class="widget-thumb-body-stat"
+                            data-counter="counterup"
+                            data-value="{{ bonus }}">0</span>
                     </div>
                 </div>
             </div>
@@ -138,10 +140,12 @@
             <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
                 <div class="widget-thumb-wrap">
                     <i class="widget-thumb-icon bg-green icon-layers mt-1"></i>
-                    <p class="mb-0">Виконання проектів</p>
+                    <p class="mb-0">Виконання завдань</p>
                     <div class="widget-thumb-body">
-                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat" data-counter="counterup"
-                            data-value="{{ exec_bonuses_cm }}">0</span>
+                        <span style="float: left; font-size: 22px"
+                            class="widget-thumb-body-stat"
+                            data-counter="counterup"
+                            data-value="{{ inttask_bonus }}">0</span>
                     </div>
                 </div>
             </div>
@@ -152,24 +156,13 @@
             <div class="widget-thumb widget-bg-color-white margin-bottom-4 pt-3 pb-3">
                 <div class="widget-thumb-wrap">
                     <i class="widget-thumb-icon bg-blue icon-bulb"></i>
-                    <p class="mb-0">Виконання завдань</p>
+                    <p class="mb-0">Бонуси сумарно</p>
                     <div class="widget-thumb-body">
-                        <span style="float: left; font-size: 22px" class="widget-thumb-body-stat" data-counter="counterup"
-                            data-value="{{ inttask_bonuses_cm }}">0</span>
-                    </div>
-                </div>
-            </div>
-            <!-- END WIDGET THUMB -->
-        </div>
-        <div class="col-12 pl-0 pr-0">
-            <!-- BEGIN WIDGET THUMB -->
-            <div class="widget-thumb widget-bg-color-white pt-3 pb-3">
-                <div class="widget-thumb-wrap">
-                    <i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
-                    <p class="mb-0">Сумарно</p>
-                    <div class="widget-thumb-body">
-                        <a href={% url 'bonus_calc' employee_id cm.1 cm.0 %}><span style="float: left; font-size: 22px" class="widget-thumb-body-stat"
-                                data-counter="counterup" data-value="{{ total_bonuses_cm }}">0</span></a>
+                        <a href={% url 'bonus_calc' employee_id current_year current_month %}>
+                            <span style="float: left; font-size: 22px"
+                            class="widget-thumb-body-stat"
+                            data-counter="counterup"
+                            data-value="{{ total_bonus }}">0</span></a>
                     </div>
                 </div>
             </div>
@@ -184,8 +177,9 @@
                         <span class="pull-right">{{ actneed_deals_count }}/{{ active_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar"
-                            aria-valuemin="0" aria-valuemax="100" style="width: {{ deals_div }}%;"> </div>
+                        <div class="progress-bar bg-light"
+                            role="progressbar"
+                            style="width: {{ deals_div }}%"> </div>
                     </div>
                 </div>
             </div>
@@ -197,8 +191,9 @@
                         <span class="pull-right">{{ debtor_deals_count }}/{{ unpaid_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar"
-                            aria-valuemin="0" aria-valuemax="100" style="width: {{ debtor_deals_div }}%;"> </div>
+                        <div class="progress-bar bg-light"
+                            role="progressbar"
+                            style="width: {{ debtor_deals_div }}%"> </div>
                     </div>
                 </div>
             </div>
@@ -210,8 +205,9 @@
                         <span class="pull-right">{{ overdue_deals_count }}/{{ active_deals_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar"
-                            aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_deals_div }}%;">
+                        <div class="progress-bar bg-light"
+                            role="progressbar"
+                            style="width: {{ overdue_deals_div }}%">
                         </div>
                     </div>
                 </div>
@@ -224,12 +220,12 @@
                         <span class="pull-right">{{ overdue_inttasks_count }}/{{ active_inttasks_count }}</span>
                     </span>
                     <div class="progress">
-                        <div class="progress-bar bg-light" role="progressbar"
-                            aria-valuemin="0" aria-valuemax="100" style="width: {{ overdue_inttasks_div }}%;"> </div>
+                        <div class="progress-bar bg-light"
+                            role="progressbar"
+                            style="width: {{ overdue_inttasks_div }}%"> </div>
                     </div>
                 </div>
             </div>
-            <!-- END WIDGET PROGRESS -->
         </div>
     </div>
 </div>
