@@ -89,7 +89,7 @@ app.conf.beat_schedule = {
     },
     'calc_kpi_ed': {
         'task': 'analytics.tasks.calc_kpi',
-        # on 10th of month at 07-20
-        'schedule': crontab(day_of_month=10, hour=7, minute=20),
+        # everyhour
+        'schedule': crontab(hour="8-19", minute=2),
         'args': (date.today().day, date.today().month, date.today().year)
     },}

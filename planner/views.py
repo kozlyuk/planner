@@ -10,18 +10,18 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.dates import WeekArchiveView
+# from django.views.generic.dates import WeekArchiveView
 from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
-from django.http import HttpResponse, QueryDict
+from django.http import QueryDict
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
-from eventlog.models import Log
+from planner.dashboard import context_accounter, context_pm, context_projector
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
     IntTask, News, Event, Customer, Company, Contractor
@@ -185,255 +185,23 @@ def logout_page(request):
     return redirect('login_page')
 
 
-@login_required()
-def home_page(request):
+@method_decorator(login_required, name='dispatch')
+class Dashboard(TemplateView):
 
-    if request.user.groups.filter(name='Бухгалтери').exists():
-        active_deals = Deal.objects.exclude(act_status=Deal.Issued) \
-                                   .exclude(number__icontains='загальний')
-        actneed_deals = active_deals.filter(exec_status=Deal.Sent)
-        unpaid_deals = Deal.objects.exclude(act_status=Deal.NotIssued) \
-                                   .exclude(pay_status=Deal.PaidUp) \
-                                   .exclude(number__icontains='загальний')
-        debtor_deals = unpaid_deals.filter(exec_status=Deal.Sent)\
-                                   .exclude(pay_date__isnull=True) \
-                                   .exclude(pay_date__gte=date.today())
-        overdue_deals = Deal.objects.exclude(exec_status=Deal.Sent) \
-                                    .exclude(expire_date__gte=date.today()) \
-                                    .exclude(number__icontains='загальний')
+    def get_template_names(self):
+        if self.request.user.groups.filter(name='Бухгалтери').exists():
+            return 'content_admin.html'
+        if self.request.user.groups.filter(name='ГІПи').exists():
+            return 'content_gip.html'
+        return 'content_exec.html'
 
-        active_deals_count = active_deals.count()
-        actneed_deals_count = actneed_deals.count()
-        debtor_deals_count = debtor_deals.count()
-        unpaid_deals_count = unpaid_deals.count()
-        deals_div = int(actneed_deals_count / active_deals_count *
-                        100) if active_deals_count > 0 else 0
-        debtor_deals_div = int(
-            debtor_deals_count / unpaid_deals_count * 100) if unpaid_deals_count > 0 else 0
-        overdue_deals_count = len(overdue_deals)
-        overdue_deals_div = int(
-            overdue_deals_count / active_deals_count * 100) if active_deals_count > 0 else 0
-    elif request.user.groups.filter(name='ГІПи').exists():
-        td_tasks = Task.objects.filter(
-            exec_status=Task.ToDo, owner__user=request.user).order_by('creation_date')
-        ip_tasks = Task.objects.filter(
-            exec_status=Task.InProgress, owner__user=request.user).order_by('creation_date')
-        hd_tasks = Task.objects.filter(
-            exec_status=Task.Done, owner__user=request.user).order_by('creation_date')
-        sent_tasks = Task.objects.filter(owner__user=request.user, exec_status=Task.Sent,
-                                         actual_finish__month=datetime.now().month,
-                                         actual_finish__year=datetime.now().year)\
-            .order_by('-actual_finish')
-        td_tasks_count = td_tasks.count()
-        ip_tasks_count = ip_tasks.count()
-        hd_tasks_count = hd_tasks.count()
-        sent_tasks_count = sent_tasks.count()
-        active_tasks_count = Task.objects.filter(owner__user=request.user).exclude(
-            exec_status=Task.Sent).count() + sent_tasks_count
-        tasks_div = int(sent_tasks_count / active_tasks_count *
-                        100) if active_tasks_count > 0 else 0
-        overdue_tasks_count = Task.objects.filter(owner__user=request.user).exclude(exec_status=Task.Sent)\
-                                          .exclude(deal__expire_date__gte=date.today(), planned_finish__isnull=True)\
-                                          .exclude(deal__expire_date__gte=date.today(), planned_finish__gte=date.today())\
-                                          .count()
-        overdue_tasks_div = int(
-            overdue_tasks_count / active_tasks_count * 100) if active_tasks_count > 0 else 0
-        owner_productivity = request.user.employee.owner_productivity()
-    else:
-        td_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.ToDo)\
-                                         .order_by('creation_date')
-        ip_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.InProgress)\
-                                         .order_by('creation_date')
-        oc_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.OnChecking)\
-                                         .order_by('creation_date')
-        hd_executions = Execution.objects.filter(executor__user=request.user, exec_status=Execution.Done,
-                                                 finish_date__month=datetime.now().month, finish_date__year=datetime.now().year)
-        td_executions_count = td_executions.count()
-        ip_executions_count = ip_executions.count()
-        oc_executions_count = oc_executions.count()
-        hd_executions_count = hd_executions.count()
-        active_executions_count = Execution.objects.filter(executor__user=request.user)\
-                                                   .exclude(exec_status=Execution.Done)\
-                                                   .count() + hd_executions_count
-        executions_div = int(hd_executions_count / active_executions_count *
-                             100) if active_executions_count > 0 else 0
-        overdue_executions_count = Execution.objects.filter(executor__user=request.user)\
-                                            .exclude(exec_status=Execution.Done)\
-                                            .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__isnull=True)\
-                                            .exclude(task__deal__expire_date__gte=date.today(), task__planned_finish__gte=date.today())\
-                                            .count()
-        overdue_executions_div = int(
-            overdue_executions_count / active_executions_count * 100) if active_executions_count > 0 else 0
-        productivity = request.user.employee.productivity()
-
-    inttasks = IntTask.objects.filter(executor__user=request.user)\
-                              .exclude(exec_status=IntTask.Done)\
-                              .order_by('exec_status')
-
-    hd_inttasks_count = IntTask.objects.filter(executor__user=request.user, exec_status=IntTask.Done,
-                                               actual_finish__month=datetime.now().month,
-                                               actual_finish__year=datetime.now().year).count()
-    active_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
-                                           .exclude(exec_status=IntTask.Done).count() + hd_inttasks_count
-    overdue_inttasks_count = IntTask.objects.filter(executor__user=request.user)\
-                                            .exclude(exec_status=IntTask.Done)\
-                                            .exclude(planned_finish__gte=date.today()).count()
-    overdue_inttasks_div = int(
-        overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
-
-    def date_delta(delta):
-        month = datetime.now().month + delta
-        year = datetime.now().year
-        if month < 1:
-            month += 12
-            year += -1
-        return month, year
-
-    def exec_bonuses(delta):
-        bonuses = 0
-        month, year = date_delta(delta)
-        executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
-                                              executor__user=request.user,
-                                              task__actual_finish__month=month,
-                                              task__actual_finish__year=year, part__gt=0)
-        for query in executions:
-            bonuses += query.task.exec_bonus(query.part)
-        return round(bonuses, 2)
-        # executor bonuses
-
-    def owner_bonuses(delta):
-        bonuses = 0
-        month, year = date_delta(delta)
-        tasks = Task.objects.filter(owner__user=request.user,
-                                    exec_status=Task.Sent,
-                                    actual_finish__month=month,
-                                    actual_finish__year=year)
-        for query in tasks:
-            bonuses += query.owner_bonus()
-
-        return round(bonuses, 2)
-        # owner bonuses
-
-    def inttask_bonuses(delta):
-        bonuses = 0
-        month, year = date_delta(delta)
-        inttasks = IntTask.objects.filter(executor__user=request.user,
-                                          exec_status=IntTask.Done,
-                                          actual_finish__month=month,
-                                          actual_finish__year=year)
-        for query in inttasks:
-            bonuses += query.bonus
-        return round(bonuses, 2)
-        # inttask bonuses
-
-    exec_bonuses_cm = exec_bonuses(0)
-    owner_bonuses_cm = owner_bonuses(0)
-    inttask_bonuses_cm = inttask_bonuses(0)
-    total_bonuses_cm = exec_bonuses_cm + owner_bonuses_cm + inttask_bonuses_cm
-
-    news = News.objects.exclude(actual_from__gt=date.today()).exclude(
-        actual_to__lte=date.today()).order_by('-created')
-    events = Event.objects.filter(
-        next_date__isnull=False).order_by('next_date')
-    activities = Log.objects.filter(user=request.user)[:50]
-
-    if request.user.groups.filter(name='Бухгалтери').exists():
-        return render(request, 'content_admin.html',
-                      {
-                          'employee': request.user.employee,
-                          'actneed_deals': actneed_deals,
-                          'debtor_deals': debtor_deals,
-                          'overdue_deals': overdue_deals,
-                          'inttasks': inttasks,
-                          'actneed_deals_count': actneed_deals_count,
-                          'active_deals_count': active_deals_count,
-                          'deals_div': deals_div,
-                          'debtor_deals_count': debtor_deals_count,
-                          'unpaid_deals_count': unpaid_deals_count,
-                          'debtor_deals_div': debtor_deals_div,
-                          'overdue_deals_count': overdue_deals_count,
-                          'overdue_deals_div': overdue_deals_div,
-                          'active_inttasks_count': active_inttasks_count,
-                          'overdue_inttasks_count': overdue_inttasks_count,
-                          'overdue_inttasks_div': overdue_inttasks_div,
-                          'exec_bonuses_cm': exec_bonuses_cm,
-                          'owner_bonuses_cm': owner_bonuses_cm,
-                          'inttask_bonuses_cm': inttask_bonuses_cm,
-                          'total_bonuses_cm': total_bonuses_cm,
-                          'employee_id': Employee.objects.get(user=request.user).id,
-                          'cm': date_delta(0),
-                          'pm': date_delta(-1),
-                          'ppm': date_delta(-2),
-                          'news': news,
-                          'events': events,
-                          'activities': activities
-                      })
-    elif request.user.groups.filter(name='ГІПи').exists():
-        return render(request, 'content_gip.html',
-                      {
-                          'employee': request.user.employee,
-                          'td_tasks': td_tasks,
-                          'ip_tasks': ip_tasks,
-                          'hd_tasks': hd_tasks,
-                          'sent_tasks': sent_tasks,
-                          'inttasks': inttasks,
-                          'td_tasks_count': td_tasks_count,
-                          'ip_tasks_count': ip_tasks_count,
-                          'hd_tasks_count': hd_tasks_count,
-                          'sent_tasks_count': sent_tasks_count,
-                          'active_tasks_count': active_tasks_count,
-                          'tasks_div': tasks_div,
-                          'overdue_tasks_count': overdue_tasks_count,
-                          'overdue_tasks_div': overdue_tasks_div,
-                          'owner_productivity': owner_productivity,
-                          'active_inttasks_count': active_inttasks_count,
-                          'overdue_inttasks_count': overdue_inttasks_count,
-                          'overdue_inttasks_div': overdue_inttasks_div,
-                          'exec_bonuses_cm': exec_bonuses_cm,
-                          'owner_bonuses_cm': owner_bonuses_cm,
-                          'inttask_bonuses_cm': inttask_bonuses_cm,
-                          'total_bonuses_cm': total_bonuses_cm,
-                          'employee_id': Employee.objects.get(user=request.user).id,
-                          'cm': date_delta(0),
-                          'pm': date_delta(-1),
-                          'ppm': date_delta(-2),
-                          'news': news,
-                          'events': events,
-                          'activities': activities
-                      })
-    else:
-        return render(request, 'content_exec.html',
-                      {
-                          'employee': request.user.employee,
-                          'td_executions': td_executions,
-                          'ip_executions': ip_executions,
-                          'oc_executions': oc_executions,
-                          'hd_executions': hd_executions,
-                          'inttasks': inttasks,
-                          'td_executions_count': td_executions_count,
-                          'ip_executions_count': ip_executions_count,
-                          'oc_executions_count': oc_executions_count,
-                          'hd_executions_count': hd_executions_count,
-                          'active_executions_count': active_executions_count,
-                          'executions_div': executions_div,
-                          'overdue_executions_count': overdue_executions_count,
-                          'overdue_executions_div': overdue_executions_div,
-                          'productivity': productivity,
-                          'active_inttasks_count': active_inttasks_count,
-                          'overdue_inttasks_count': overdue_inttasks_count,
-                          'overdue_inttasks_div': overdue_inttasks_div,
-                          'exec_bonuses_cm': exec_bonuses_cm,
-                          'owner_bonuses_cm': owner_bonuses_cm,
-                          'inttask_bonuses_cm': inttask_bonuses_cm,
-                          'total_bonuses_cm': total_bonuses_cm,
-                          'employee_id': Employee.objects.get(user=request.user).id,
-                          'cm': date_delta(0),
-                          'pm': date_delta(-1),
-                          'ppm': date_delta(-2),
-                          'news': news,
-                          'events': events,
-                          'activities': activities
-                      })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Бухгалтери').exists():
+            return {**context, **context_accounter(self.request.user)}
+        if self.request.user.groups.filter(name='ГІПи').exists():
+            return {**context, **context_pm(self.request.user)}
+        return {**context, **context_projector(self.request.user)}
 
 
 @method_decorator(login_required, name='dispatch')
@@ -963,18 +731,12 @@ class ExecutionStatusChange(View):
 
 
 @method_decorator(login_required, name='dispatch')
-class SubtaskUpdate(UpdateView):
+class SubtaskDetail(DetailView):
     model = Execution
-    fields = ['exec_status', 'finish_date']
     success_url = reverse_lazy('home_page')
 
-    def get_form(self, form_class=None):
-        form = super(SubtaskUpdate, self).get_form(form_class)
-        form.fields['finish_date'].widget = AdminDateWidget()
-        return form
-
     def get_context_data(self, **kwargs):
-        context = super(SubtaskUpdate, self).get_context_data(**kwargs)
+        context = super(SubtaskDetail, self).get_context_data(**kwargs)
         execution = Execution.objects.get(pk=self.kwargs['pk'])
         context['executors'] = Execution.objects.filter(task=execution.task)
         context['sendings'] = Sending.objects.filter(task=execution.task)

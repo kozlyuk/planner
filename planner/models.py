@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
-from django.contrib.auth.models import User
 from datetime import date, datetime
+from django.db import models
+from django.db.models import Q, Sum, Max
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.core.validators import MaxValueValidator
+from django.conf.locale.uk import formats as uk_formats
+from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import BDay
-from django.core.validators import MaxValueValidator
-from django.db.models import Q, Sum, Max
-from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
-from .formatChecker import ContentTypeRestrictedFileField
 from stdimage.models import StdImageField
 from eventlog.models import log
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from decimal import Decimal
+from .formatChecker import ContentTypeRestrictedFileField
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -166,33 +165,6 @@ class Employee(models.Model):
     total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
         .format(datetime.now().month - 4 if datetime.now().month > 4 else datetime.now().month + 8,
                 datetime.now().year if datetime.now().month > 4 else datetime.now().year - 1)
-
-    def productivity(self):
-        if self.salary == 0:
-            return 0
-        return int(self.total_bonuses(0) / self.salary / datetime.now().day * 3000)
-        # 3000 = 30(days in month) * 100(percentage)
-    productivity.short_description = 'Продуктивність'
-
-    def owner_productivity(self):
-        income = Decimal(0)
-        salaries = self.salary
-        done_tasks = self.task_set.filter(Q(exec_status=Task.Done) |
-                                          Q(exec_status=Task.Sent),
-                                          actual_finish__month=datetime.now().month,
-                                          actual_finish__year=datetime.now().year)
-        for task in done_tasks:
-            income += task.project_type.net_price()
-
-        team_members = self.employee_set.filter(user__is_active=True)
-        for member in team_members:
-            salaries += member.salary
-
-        if salaries == 0:
-            return 0
-        return int(income / salaries / datetime.now().day * 600)
-        # 600 = / 5(productivity norm) * 30(days in month) * 100(percentage)
-    owner_productivity.short_description = 'Продуктивність'
 
 
 class Customer(models.Model):
