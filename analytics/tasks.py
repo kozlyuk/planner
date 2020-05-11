@@ -1,5 +1,6 @@
 """ Tasks for analytics app """
 from datetime import date
+from decimal import Decimal
 from celery.utils.log import get_task_logger
 from django.db.models import Sum
 
@@ -76,48 +77,73 @@ def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().y
 
     for employee in employees:
 
-        bonuses = 0
+        # calculate productivity for PMs
+        if employee.user.groups.filter(name='ГІПи').exists():
 
-        # calculate executor bonuses
-        executions = employee.execution_set.filter(finish_date__month=month,
-                                                   finish_date__year=year
-                                                   )
-        for query in executions:
-            bonuses += query.task.exec_bonus(query.part)
+            # calculate owner`s team income
+            income = Decimal(0)
+            tasks = employee.task_set.filter(actual_finish__month=month,
+                                             actual_finish__year=year
+                                             )
+            for task in tasks:
+                income += task.project_type.net_price()
 
-        # calculate owner bonuses
-        tasks = employee.task_set.filter(actual_finish__month=month,
-                                         actual_finish__year=year
-                                         )
-        for query in tasks:
-            bonuses += query.owner_bonus()
+            # calculate owner`s team salaries
+            salaries = employee.salary
+            team_members = employee.employee_set.filter(user__is_active=True)
+            for member in team_members:
+                salaries += member.salary
 
-        # calculate inttask bonuses
-        inttask_bonus = employee.inttask_set.filter(actual_finish__month=month,
-                                                    actual_finish__year=year
-                                                    ) \
-                                            .aggregate(Sum('bonus'))['bonus__sum']
-        if inttask_bonus:
-            bonuses += inttask_bonus
+            if salaries > 0:
+                # calculate owner`s productivity
+                if month == date.today().month and year == date.today().year:
+                    # productivity for current month
+                    # 3000 = 30(days in month) * 100(percentage)
+                    productivity = income / salaries / employee.coefficient / date.today().day * 3000
+                else:
+                    # productivity for previous month
+                    # 3000 = 30(days in month) * 100(percentage)
+                    productivity = income / salaries / employee.coefficient * 100
 
-        if employee.salary > 0:
-            # calculate productivity
-            if month == date.today().month and year == date.today().year:
-                # current month
-                productivity = bonuses / employee.salary / employee.coefficient * date.today().day * 300000
-            else:
-                # previous month
-                productivity = bonuses / employee.salary / employee.coefficient * 10000
+        # calculate productivity for executors
+        elif employee.user.groups.filter(name='Проектувальники').exists():
+            # calculate executor bonuses
+            bonuses = 0
+            executions = employee.execution_set.filter(finish_date__month=month,
+                                                       finish_date__year=year
+                                                       )
+            for query in executions:
+                bonuses += query.task.exec_bonus(query.part)
 
-            # save productivity
-            if bonuses > 0:
-                kpi, created = Kpi.objects.get_or_create(employee=employee,
-                                                         name=Kpi.Productivity,
-                                                         period__month=month,
-                                                         period__year=year,
-                                                        )
-                kpi.value = productivity
-                kpi.period = period
-                kpi.save()
+            # calculate inttask bonuses
+            inttask_bonus = employee.inttask_set.filter(actual_finish__month=month,
+                                                        actual_finish__year=year
+                                                        ) \
+                                                .aggregate(Sum('bonus'))['bonus__sum']
+            if inttask_bonus:
+                bonuses += inttask_bonus
+
+            if employee.salary > 0:
+                # calculate productivity
+                if month == date.today().month and year == date.today().year:
+                    # productivity for current month
+                    # 300000 = 30(days in month) * 100(percentage) * 100(percentage)
+                    productivity = bonuses / employee.salary / employee.coefficient / date.today().day * 300000
+                else:
+                    # productivity for previous month
+                    # 10000 = 100(percentage) * 100(percentage)
+                    productivity = bonuses / employee.salary / employee.coefficient * 10000
+
+
+        # save productivity
+        if productivity:
+            kpi, created = Kpi.objects.get_or_create(employee=employee,
+                                                     name=Kpi.Productivity,
+                                                     period__month=month,
+                                                     period__year=year,
+                                                     )
+            kpi.value = productivity
+            kpi.period = period
+            kpi.save()
 
     LOGGER.info("Employee KPIs for %s.%s.%s saved", day, month, year)
