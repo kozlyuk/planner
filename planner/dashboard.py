@@ -37,7 +37,7 @@ def context_general(user):
                                         name=Kpi.Tasks,
                                         period__month=TODAY.month,
                                         period__year=TODAY.year)\
-                                   .bonus
+                                   .value
     except Kpi.DoesNotExist:
         inttask_bonus = 0
     total_bonus = bonus + inttask_bonus
