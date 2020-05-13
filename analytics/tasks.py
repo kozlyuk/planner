@@ -70,10 +70,10 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
 
 
 @app.task
-def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().year):
+def calc_kpi(month=date.today().month, year=date.today().year):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.filter(user__is_active=True)
-    period = date(year=year, month=month, day=day)
+    period = date(year=year, month=month, day=1)
 
     for employee in employees:
 
@@ -146,4 +146,4 @@ def calc_kpi(day=date.today().day, month=date.today().month, year=date.today().y
             kpi.period = period
             kpi.save()
 
-    LOGGER.info("Employee KPIs for %s.%s.%s saved", day, month, year)
+    LOGGER.info("Employee KPIs for %s.%s.%s saved", month, year)

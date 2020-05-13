@@ -10,6 +10,6 @@ def months(start_month, start_year, end_month, end_year):
 
 for month in months(1, 2015, 6, 2020):
     calc_bonuses(month.month, month.year)
-    calc_kpi(1, month.month, month.year)
+    calc_kpi(month.month, month.year)
 
 print('Calculation finished')
