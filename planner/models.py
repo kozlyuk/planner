@@ -561,28 +561,22 @@ class Task(models.Model):
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
-    project_type = models.ForeignKey(
-        Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
+    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
     project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
-    deal = models.ForeignKey(
-        Deal, verbose_name='Договір', on_delete=models.PROTECT)
-    exec_status = models.CharField(
-        'Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
-    manual_warning = models.CharField(
-        'Примітка', max_length=30, blank=True)
-    owner = models.ForeignKey(
-        Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
+    manual_warning = models.CharField('Примітка', max_length=30, blank=True)
+    owner = models.ForeignKey(Employee, verbose_name='Керівник проекту', on_delete=models.PROTECT)
     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
                                        verbose_name='Виконавці', blank=True)
     costs = models.ManyToManyField(Contractor, through='Order', related_name='tasks',
                                    verbose_name='Підрядники', blank=True)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
-    planned_finish = models.DateField(
-        'Планове закінчення', blank=True, null=True)
+    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateField('Фактичний початок', blank=True, null=True)
-    actual_finish = models.DateField(
-        'Фактичне закінчення', blank=True, null=True)
+    actual_finish = models.DateField('Фактичне закінчення', blank=True, null=True)
+    sending_date = models.DateField('Дата відправки', blank=True, null=True)
     tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
                                                content_types=['application/pdf',
@@ -590,8 +584,7 @@ class Task(models.Model):
                                                               'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                                                max_upload_size=26214400,
                                                blank=True, null=True)
-    receivers = models.ManyToManyField(
-        Receiver, through='Sending', verbose_name='Отримувачі проекту')
+    receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -611,7 +604,7 @@ class Task(models.Model):
         ordering = ['-creation_date', '-deal', 'object_code']
 
     def __str__(self):
-        return self.object_code + ' ' + self.project_type.__str__()
+        return f"{self.object_code} {self.project_type}"
 
     def save(self, logging=True, *args, **kwargs):
         if not self.pk:
@@ -624,6 +617,7 @@ class Task(models.Model):
         # Automatic change Executions.exec_status when Task has no copies_count
         if self.exec_status == Task.Done and self.project_type.copies_count == 0:
             self.exec_status = Task.Sent
+            self.sending_date = self.actual_finish
 
         # Automatic change Executions.exec_status when Task has Done
         if self.exec_status in [Task.Done, Task.Sent]:
@@ -856,6 +850,7 @@ class Sending(models.Model):
         sendings += self.copies_count
         if self.task.exec_status == Task.Done and sendings >= self.task.project_type.copies_count:
             self.task.exec_status = Task.Sent
+            self.task.sending_date = self.receipt_date
             self.task.save(logging=False)
 
         # Logging
