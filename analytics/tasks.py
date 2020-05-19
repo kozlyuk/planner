@@ -19,21 +19,21 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
 
     for employee in employees:
 
-        for kpi_name in [(1, Kpi.BonusItel), (2, Kpi.BonusGKP)]:
+        for kpi_name in [(1, Kpi.BonusItel), (2, Kpi.BonusGKP), (3, Kpi.BonusSIA)]:
             bonuses = 0
 
             # calculate executor bonuses
             executions = employee.execution_set.filter(task__deal__company=kpi_name[0],
-                                                       task__actual_finish__month=month,
-                                                       task__actual_finish__year=year
+                                                       finish_date__month=month,
+                                                       finish_date__year=year
                                                        )
             for query in executions:
                 bonuses += query.task.exec_bonus(query.part)
 
             # calculate owner bonuses
             tasks = employee.task_set.filter(deal__company=kpi_name[0],
-                                             actual_finish__month=month,
-                                             actual_finish__year=year
+                                             sending_date__month=month,
+                                             sending_date__year=year
                                              )
             for query in tasks:
                 bonuses += query.owner_bonus()
