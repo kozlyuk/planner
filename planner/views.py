@@ -111,10 +111,10 @@ class BonusesCalc(TemplateView):
         context = super().get_context_data(**kwargs)
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
 
+        # calculate owner bonuses
         tasks = Task.objects.filter(owner=employee,
-                                    exec_status=Task.Sent,
-                                    actual_finish__month=self.kwargs['month'],
-                                    actual_finish__year=self.kwargs['year'])
+                                    sending_date__month=self.kwargs['month'],
+                                    sending_date__year=self.kwargs['year'])
         bonuses = 0
         index = 0
         task_list = []
@@ -125,10 +125,10 @@ class BonusesCalc(TemplateView):
                               round(task.owner_bonus(), 2)])
             bonuses += task.owner_bonus()
 
-        executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
-                                              executor=employee,
-                                              task__actual_finish__month=self.kwargs['month'],
-                                              task__actual_finish__year=self.kwargs['year'])
+        # calculate executor bonuses
+        executions = Execution.objects.filter(executor=employee,
+                                              finish_date__month=self.kwargs['month'],
+                                              finish_date__year=self.kwargs['year'])
 
         index = 0
         executions_list = []
@@ -139,8 +139,8 @@ class BonusesCalc(TemplateView):
                                     round(ex.task.exec_bonus(ex.part), 2)])
             bonuses += ex.task.exec_bonus(ex.part)
 
+        # calculate inttask bonuses
         inttasks = IntTask.objects.filter(executor=employee,
-                                          exec_status=IntTask.Done,
                                           actual_finish__month=self.kwargs['month'],
                                           actual_finish__year=self.kwargs['year'])
         index = 0
