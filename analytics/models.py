@@ -8,11 +8,13 @@ class Kpi(models.Model):
     """ Model contains KPI """
     BonusItel = 'BI'
     BonusGKP = 'BG'
+    BonusSIA = 'BS'
     Tasks = 'TA'
     Productivity = 'PR'
     KPI_CHOICES = (
         (BonusItel, 'Бонус Ітел-Ісервіс'),
         (BonusGKP, 'Бонус Галкомпроект'),
+        (BonusSIA, 'Бонус Семенович'),
         (Tasks, 'Бонуси Загальні'),
         (Productivity, 'Продуктивність')
     )

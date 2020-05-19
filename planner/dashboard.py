@@ -28,7 +28,7 @@ def context_general(user):
         overdue_inttasks_count / active_inttasks_count * 100) if active_inttasks_count > 0 else 0
 
     bonus = Kpi.objects.filter(employee__user=user,
-                               name__in=[Kpi.BonusItel, Kpi.BonusGKP],
+                               name__in=[Kpi.BonusItel, Kpi.BonusGKP, Kpi.BonusSIA],
                                period__month=TODAY.month,
                                period__year=TODAY.year)\
                        .aggregate(Sum('value'))['value__sum'] or 0
