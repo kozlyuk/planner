@@ -956,6 +956,15 @@ class Execution(models.Model):
         return self.task.warning
     warning_select.short_description = 'Попередження'
 
+    def is_active(self):
+        """Show if subtask edit period is not expired"""
+        # return False if subtask Done more than 10 days ago
+        if self.exec_status == Execution.Done:
+            date_delta = datetime.now() - self.finish_date
+            if date_delta.days > 10:
+                return False
+        return True
+
 
 class IntTask(models.Model):
     ToDo = 'IW'
