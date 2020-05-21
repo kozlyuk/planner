@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from decimal import Decimal
 from django.contrib import admin
 from django.db.models import Q
 from django import forms
@@ -390,7 +391,7 @@ class OrdersInlineFormSet(BaseInlineFormSet):
 
         if self.instance.__exec_status__ == Task.Done:
             if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
-                costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
+                costs_part = outsourcing / self.instance.__project_type__.net_price() * 100 * Decimal(1.2)
                 if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
                     raise ValidationError(
                         'Добавте будь ласка витрати по аутсорсингу')

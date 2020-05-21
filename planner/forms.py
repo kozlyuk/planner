@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from decimal import Decimal
 from django import forms
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
@@ -383,6 +384,12 @@ class ExecutorInlineForm(forms.ModelForm):
         self.fields['executor'].queryset = Employee.objects.filter(
             user__is_active=True)
 
+    def clean(self):
+        super().clean()
+        if self.changed_data and self.instance.pk:
+            if self.instance.is_active() == False:
+                self.add_error('executor', "Ця підзадача виконана більше 10 днів тому")
+
 
 class ExecutorsInlineFormset(BaseInlineFormSet):
     """used to pass in the constructor of inlineformset_factory"""
@@ -443,8 +450,7 @@ class OrderInlineForm(forms.ModelForm):
             if not value or value == 0:
                 self.add_error('value', "Вкажіть будь ласка Вартість робіт")
         if pay_date and pay_status == Order.NotPaid:
-            self.add_error(
-                'pay_status', "Відмітьте Статус оплати або видаліть Дату оплати")
+            self.add_error('pay_status', "Відмітьте Статус оплати або видаліть Дату оплати")
 
 
 class CostsInlineFormset(BaseInlineFormSet):
@@ -460,16 +466,13 @@ class CostsInlineFormset(BaseInlineFormSet):
         if self.instance.pk:
             if self.instance.__exec_status__ in [Task.Done, Task.Sent]:
                 if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
-                    costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
+                    costs_part = outsourcing / self.instance.__project_type__.net_price() * 100 * Decimal(1.2)
                     if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
-                        raise ValidationError(
-                            "Добавте будь ласка витрати по аутсорсингу")
+                        raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
                     if self.instance.__outsourcing_part__ < costs_part:
-                        raise ValidationError(
-                            "Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
+                        raise ValidationError("Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
                 elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
-                    raise ValidationError(
-                        "У проекту вартість якого дорівнює нулю не може бути витрат")
+                    raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
 CostsFormSet = inlineformset_factory(
