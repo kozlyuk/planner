@@ -5,7 +5,7 @@ from celery.utils.log import get_task_logger
 from django.db.models import Sum
 
 from planner.celery import app
-from planner.models import Employee
+from planner.models import Employee, Execution
 from analytics.models import Kpi
 
 LOGGER = get_task_logger(__name__)
@@ -24,17 +24,16 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
 
             # calculate executor bonuses
             executions = employee.execution_set.filter(task__deal__company=kpi_name[0],
+                                                       exec_status=Execution.Done,
                                                        finish_date__month=month,
-                                                       finish_date__year=year
-                                                       )
+                                                       finish_date__year=year)
             for query in executions:
                 bonuses += query.task.exec_bonus(query.part)
 
             # calculate owner bonuses
             tasks = employee.task_set.filter(deal__company=kpi_name[0],
                                              sending_date__month=month,
-                                             sending_date__year=year
-                                             )
+                                             sending_date__year=year)
             for query in tasks:
                 bonuses += query.owner_bonus()
 
@@ -43,16 +42,14 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
                 kpi, created = Kpi.objects.get_or_create(employee=employee,
                                                          name=kpi_name[1],
                                                          period__month=month,
-                                                         period__year=year,
-                                                         )
+                                                         period__year=year)
                 kpi.value = bonuses
                 kpi.period = period
                 kpi.save()
 
         # calculate inttask bonuses
         inttask_bonus = employee.inttask_set.filter(actual_finish__month=month,
-                                                    actual_finish__year=year
-                                                    )\
+                                                    actual_finish__year=year)\
                                             .aggregate(Sum('bonus'))['bonus__sum']
 
         # save inttasks bonuses
@@ -60,8 +57,7 @@ def calc_bonuses(month=date.today().month, year=date.today().year):
             kpi, created = Kpi.objects.get_or_create(employee=employee,
                                                      name=Kpi.Tasks,
                                                      period__month=month,
-                                                     period__year=year,
-                                                     )
+                                                     period__year=year)
             kpi.value = inttask_bonus
             kpi.period = period
             kpi.save()
@@ -83,8 +79,7 @@ def calc_kpi(month=date.today().month, year=date.today().year):
             # calculate owner`s team income
             income = Decimal(0)
             tasks = employee.task_set.filter(actual_finish__month=month,
-                                             actual_finish__year=year
-                                             )
+                                             actual_finish__year=year)
             for task in tasks:
                 income += task.project_type.net_price()
 
@@ -110,15 +105,13 @@ def calc_kpi(month=date.today().month, year=date.today().year):
             # calculate executor bonuses
             bonuses = 0
             executions = employee.execution_set.filter(finish_date__month=month,
-                                                       finish_date__year=year
-                                                       )
+                                                       finish_date__year=year)
             for query in executions:
                 bonuses += query.task.exec_bonus(query.part)
 
             # calculate inttask bonuses
             inttask_bonus = employee.inttask_set.filter(actual_finish__month=month,
-                                                        actual_finish__year=year
-                                                        ) \
+                                                        actual_finish__year=year) \
                                                 .aggregate(Sum('bonus'))['bonus__sum']
             if inttask_bonus:
                 bonuses += inttask_bonus
@@ -140,8 +133,7 @@ def calc_kpi(month=date.today().month, year=date.today().year):
             kpi, created = Kpi.objects.get_or_create(employee=employee,
                                                      name=Kpi.Productivity,
                                                      period__month=month,
-                                                     period__year=year,
-                                                     )
+                                                     period__year=year)
             kpi.value = productivity
             kpi.period = period
             kpi.save()
