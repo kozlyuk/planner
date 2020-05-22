@@ -122,7 +122,7 @@ class BonusesCalc(TemplateView):
             index += 1
             task_list.append([index, task.object_code, task.object_address,
                               task.project_type, task.owner_part(),
-                              round(task.owner_bonus(), 2)])
+                              round(task.owner_bonus(), 2), task.actual_finish])
             bonuses += task.owner_bonus()
 
         # calculate executor bonuses
