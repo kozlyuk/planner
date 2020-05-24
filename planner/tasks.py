@@ -2,7 +2,7 @@ from planner.celery import app
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core import mail
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 from django.conf.locale.uk import formats as uk_formats
 from django.db.models import Q
 from planner.models import Employee, Deal, Task, Execution, IntTask, Event
@@ -566,8 +566,8 @@ def send_unsent_tasks_report():
 def send_monthly_report():
     """Sending monthly report to employee"""
 
-    month = datetime.now().month - 1
-    year = datetime.now().year
+    month = date.today().month - 1
+    year = date.today().year
 
     employees = Employee.objects.exclude(
         user__username__startswith='outsourcing')
