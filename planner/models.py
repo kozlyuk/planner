@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import date, datetime
+from datetime import date
 from django.db import models
 from django.db.models import Q, Sum, Max
 from django.db.models.signals import post_save
@@ -23,7 +23,7 @@ date_format = uk_formats.DATE_INPUT_FORMATS[0]
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/projects/user_<id>/Year/Month/<filename>
     return 'projects/user_{0}/{1}/{2}/{3}'\
-        .format(get_current_user().id, datetime.now().year, datetime.now().month, filename)
+        .format(get_current_user().id, date.today().year, date.today().month, filename)
 
 
 def avatar_directory_path(instance, filename):
@@ -86,8 +86,8 @@ class Employee(models.Model):
 
     @staticmethod
     def date_delta(delta):
-        month = datetime.now().month + delta
-        year = datetime.now().year
+        month = date.today().month + delta
+        year = date.today().year
         if month < 1:
             month += 12
             year += -1
@@ -139,31 +139,31 @@ class Employee(models.Model):
     def total_bonuses_cm(self):
         return self.total_bonuses(0)
     total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(
-        datetime.now().month, datetime.now().year)
+        date.today().month, date.today().year)
 
     def total_bonuses_pm(self):
         return self.total_bonuses(-1)
     total_bonuses_pm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month - 1 if datetime.now().month > 1 else datetime.now().month + 11,
-                datetime.now().year if datetime.now().month > 1 else datetime.now().year - 1)
+        .format(date.today().month - 1 if date.today().month > 1 else date.today().month + 11,
+                date.today().year if date.today().month > 1 else date.today().year - 1)
 
     def total_bonuses_ppm(self):
         return self.total_bonuses(-2)
     total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month - 2 if datetime.now().month > 2 else datetime.now().month + 10,
-                datetime.now().year if datetime.now().month > 2 else datetime.now().year - 1)
+        .format(date.today().month - 2 if date.today().month > 2 else date.today().month + 10,
+                date.today().year if date.today().month > 2 else date.today().year - 1)
 
     def total_bonuses_pppm(self):
         return self.total_bonuses(-3)
     total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month - 3 if datetime.now().month > 3 else datetime.now().month + 9,
-                datetime.now().year if datetime.now().month > 3 else datetime.now().year - 1)
+        .format(date.today().month - 3 if date.today().month > 3 else date.today().month + 9,
+                date.today().year if date.today().month > 3 else date.today().year - 1)
 
     def total_bonuses_ppppm(self):
         return self.total_bonuses(-4)
     total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
-        .format(datetime.now().month - 4 if datetime.now().month > 4 else datetime.now().month + 8,
-                datetime.now().year if datetime.now().month > 4 else datetime.now().year - 1)
+        .format(date.today().month - 4 if date.today().month > 4 else date.today().month + 8,
+                date.today().year if date.today().month > 4 else date.today().year - 1)
 
     def tasks_for_period(self, period):
         """ return queryset with tasks for given month """
@@ -213,7 +213,7 @@ class Customer(models.Model):
                 total += deal.act_value - deal.advance
         return u'{0:,}'.format(total).replace(u',', u' ')
     debit_calc.short_description = 'Дебіторська заборгованість {}'.format(
-        datetime.now().year)
+        date.today().year)
 
     def credit_calc(self):
         total = 0
@@ -227,7 +227,7 @@ class Customer(models.Model):
 
     def completed_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=datetime.now().year):
+        for deal in self.deal_set.filter(act_date__year=date.today().year):
             if deal.pay_status == Deal.PaidUp:
                 total += deal.act_value
             if deal.pay_status == Deal.AdvancePaid and deal.act_value >= deal.advance:
@@ -236,7 +236,7 @@ class Customer(models.Model):
                 total += deal.act_value
         return u'{0:,}'.format(total).replace(u',', u' ')
     completed_calc.short_description = 'Виконано та оплачено {}'.format(
-        datetime.now().year)
+        date.today().year)
 
     def expect_calc(self):
         total = 0
@@ -285,7 +285,7 @@ class Project(models.Model):
 
     def turnover_calc(self):
         total = 0
-        for task in self.task_set.filter(actual_finish__year=datetime.now().year):
+        for task in self.task_set.filter(actual_finish__year=date.today().year):
             total += task.project_type.price
         return u'{0:,}'.format(total).replace(u',', u' ')
     turnover_calc.short_description = 'Оборот по пункту'
@@ -312,24 +312,24 @@ class Company(models.Model):
 
     def turnover_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=datetime.now().year):
+        for deal in self.deal_set.filter(act_date__year=date.today().year):
             total += deal.act_value
         return u'{0:,}'.format(total).replace(u',', u' ')
-    turnover_calc.short_description = 'Оборот {}'.format(datetime.now().year)
+    turnover_calc.short_description = 'Оборот {}'.format(date.today().year)
 
     def costs_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=datetime.now().year):
+        for deal in self.deal_set.filter(act_date__year=date.today().year):
             total += deal.costs_calc()
         return u'{0:,}'.format(total).replace(u',', u' ')
-    costs_calc.short_description = 'Витрати {}'.format(datetime.now().year)
+    costs_calc.short_description = 'Витрати {}'.format(date.today().year)
 
     def bonuses_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=datetime.now().year):
+        for deal in self.deal_set.filter(act_date__year=date.today().year):
             total += deal.bonuses_calc()
         return u'{0:,}'.format(total).replace(u',', u' ')
-    bonuses_calc.short_description = 'Бонуси {}'.format(datetime.now().year)
+    bonuses_calc.short_description = 'Бонуси {}'.format(date.today().year)
 
 
 class Contractor(models.Model):
@@ -380,7 +380,7 @@ class Contractor(models.Model):
     def completed_calc(self):
         total = 0
         for order in self.order_set.filter(task__exec_status=Task.Done,
-                                           pay_date__year=datetime.now().year):
+                                           pay_date__year=date.today().year):
             if order.pay_status == Order.PaidUp:
                 total += order.value
             if order.pay_status == Order.AdvancePaid:
@@ -625,7 +625,7 @@ class Task(models.Model):
             for execution in self.execution_set.all():
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
-                    execution.finish_date = datetime.now()
+                    execution.finish_date = date.today()
                     execution.save()
 
          # Automatic set finish_date when Task has done
@@ -678,10 +678,10 @@ class Task(models.Model):
             return True
         if self.deal.act_status == Deal.Issued:
             return False
-        if self.actual_finish.month >= (datetime.now().month + 12*(datetime.now().year-self.actual_finish.year)-1):
-            if self.actual_finish.month == datetime.now().month:
+        if self.actual_finish.month >= (date.today().month + 12*(date.today().year-self.actual_finish.year)-1):
+            if self.actual_finish.month == date.today().month:
                 return True
-            if datetime.now().day < 6:
+            if date.today().day < 6:
                 return True
         return False
     # try if task edit period is not expired
@@ -849,17 +849,24 @@ class Sending(models.Model):
         if logging:
             title = self.task.object_code + ' ' + self.task.project_type.price_code
             if not self.pk:
-                log(user=get_current_user(),
-                    action='Додана відправка проекту', extra={"title": title})
+                log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
             else:
-                log(user=get_current_user(),
-                    action='Оновлена відправка проекту', extra={"title": title})
+                log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
         super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code
-        log(user=get_current_user(),
-            action='Видалена відправка проекту', extra={"title": title})
+
+        # Automatic changing of Task.exec_status when sendings was deleted
+        sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
+        sendings -= self.copies_count
+        if self.task.exec_status == Task.Sent and sendings < self.task.project_type.copies_count:
+            self.task.exec_status = Task.Done
+            self.task.sending_date = None
+            self.task.save(logging=False)
+
+        # Logging
+        title = f"{self.task.object_code} {self.task.project_type.price_code}"
+        log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
         super(Sending, self).delete(*args, **kwargs)
 
 
@@ -881,8 +888,8 @@ class Execution(models.Model):
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
     planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
-    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
-    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
+    start_date = models.DateField('Початок виконання', blank=True, null=True)
+    finish_date = models.DateField('Кінець виконання', blank=True, null=True)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
@@ -907,7 +914,7 @@ class Execution(models.Model):
 
         # Automatic set finish_date when Execution has done
         if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:
-            self.finish_date = datetime.now()
+            self.finish_date = date.today()
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
             self.finish_date = None
 
@@ -946,7 +953,7 @@ class Execution(models.Model):
         """Show if subtask edit period is not expired"""
         # return False if subtask Done more than 10 days ago
         if self.exec_status == Execution.Done:
-            date_delta = datetime.now() - self.finish_date
+            date_delta = date.today() - self.finish_date
             if date_delta.days > 10:
                 return False
         return True
