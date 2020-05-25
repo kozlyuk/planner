@@ -44,7 +44,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.number.errors}}
                                                         </small>
-                                                        {{ form.number }}
+                                                        {{ form.number|attr:"style: padding-left: 5px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -54,7 +54,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.date.errors}}
                                                         </small>
-                                                        {{ form.date|attr:"style: width:60%" }}
+                                                        {{ form.date|attr:"style: width:60%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -78,7 +78,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.company.errors}}
                                                         </small>
-                                                        {{ form.company|attr:"style: width:100%" }}
+                                                        {{ form.company|attr:"style: width:100%; padding-left: 3px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -92,7 +92,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.value.errors}}
                                                         </small>
-                                                        {{ form.value|attr:"style: width:100%" }}
+                                                        {{ form.value|attr:"style: width:100%; padding-left: 3px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -102,7 +102,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.advance.errors}}
                                                         </small>
-                                                        {{ form.advance|attr:"style: width:100%" }}
+                                                        {{ form.advance|attr:"style: width:100%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -116,7 +116,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.pay_status.errors}}
                                                         </small>
-                                                        {{ form.pay_status|attr:"style: width:100%" }}
+                                                        {{ form.pay_status|attr:"style: width:100%; padding-left: 1px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -126,7 +126,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.pay_date.errors}}
                                                         </small>
-                                                        {{ form.pay_date|attr:"style: width:60%" }}
+                                                        {{ form.pay_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -140,7 +140,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.act_status.errors}}
                                                         </small>
-                                                        {{ form.act_status|attr:"style: width:100%" }}
+                                                        {{ form.act_status|attr:"style: width:100%; padding-left: 1px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -150,7 +150,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.act_date.errors}}
                                                         </small>
-                                                        {{ form.act_date|attr:"style: width:60%" }}
+                                                        {{ form.act_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -164,7 +164,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.expire_date.errors}}
                                                         </small>
-                                                        {{ form.expire_date|attr:"style: width:60%" }}
+                                                        {{ form.expire_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -174,7 +174,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.act_value.errors}}
                                                         </small>
-                                                        {{ form.act_value|attr:"style: width:100%" }}
+                                                        {{ form.act_value|attr:"style: width:100%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -198,7 +198,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.value_correction.errors}}
                                                         </small>
-                                                        {{ form.value_correction|attr:"style: width:100%" }}
+                                                        {{ form.value_correction|attr:"style: width:100%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -212,7 +212,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.comment.errors}}
                                                         </small>
-                                                        {{ form.comment }}
+                                                        {{ form.comment|attr:"style: width:100%; height:44px; padding-left: 5px;" }}
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -222,7 +222,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.manual_warning.errors}}
                                                         </small>
-                                                        {{ form.manual_warning|attr:"style: width:100%"}}
+                                                        {{ form.manual_warning|attr:"style: width:100%; padding-left: 5px;"}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -305,11 +305,11 @@
                                                     </div> {% endcomment %}
                                                     {{field.errors}}
                                                     {% if field.name == 'planned_finish' %}
-                                                    {{ field|attr:"style: width:50%" }}
+                                                    {{ field|attr:"style: width:50%; padding-left: 5px;" }}
                                                     {% elif field.name == 'object_code' %}
-                                                    {{ field|attr:"style: width:50%" }}
+                                                    {{ field|attr:"style: width:50%; padding-left: 5px;" }}
                                                     {% elif field %}
-                                                    {{ field|attr:"style: width:100%" }}
+                                                    {{ field|attr:"style: width:100%; padding-left: 5px;" }}
                                                     {% endif %}
                                                 </th>
                                                 {% endif %}
@@ -345,7 +345,7 @@
                                             {{ hidden_field }}
                                             {% endfor %}
                                             <th class="pl-1 pr-1">
-                                                {{ tasks_formset.empty_form.object_code|attr:"style: width:50%" }}
+                                                {{ tasks_formset.empty_form.object_code|attr:"style: width:50%; padding-left: 5px;" }}
                                             </th>
                                             <th class="pl-1 pr-1">
                                                 {{ tasks_formset.empty_form.object_address|attr:"style: width:100%" }}
