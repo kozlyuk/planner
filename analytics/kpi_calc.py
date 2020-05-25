@@ -20,12 +20,25 @@ from planner.models import Task, Sending
 tasks = Task.objects.all()
 for task in tasks:
     if task.sending_set.all().exists():
-        task.sending_date = task.actual_finish
+        task.sending_date = task.sending_set.earliest('receipt_date').receipt_date
     if task.project_type.copies_count == 0:
         task.sending_date = task.actual_finish
     task.save()
 
 print('Calculation finished')
+
+
+from planner.models import Task, Sending
+
+tasks = Task.objects.all()
+for task in tasks:
+    if task.sending_set.all().exists():
+        sending = task.sending_set.earliest('receipt_date').receipt_date
+        if sending.month == 4 and sending.year == 2020:
+            task.sending_date = sending
+    if task.project_type.copies_count == 0:
+        task.sending_date = task.actual_finish
+    task.save()
 
 
 from analytics.models import Kpi
