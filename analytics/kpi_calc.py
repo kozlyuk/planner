@@ -20,7 +20,7 @@ from planner.models import Task, Sending
 tasks = Task.objects.all()
 for task in tasks:
     if task.sending_set.all().exists():
-        task.sending_date = task.sending_set.earliest('receipt_date').receipt_date
+        task.sending_date = task.actual_finish
     if task.project_type.copies_count == 0:
         task.sending_date = task.actual_finish
     task.save()
