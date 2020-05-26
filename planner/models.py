@@ -953,9 +953,14 @@ class Execution(models.Model):
         """Show if subtask edit period is not expired"""
         # return False if subtask Done more than 10 days ago
         if self.exec_status == Execution.Done:
+            # if date in current month return True
+            if self.finish_date.month == date.today().month and self.finish_date.year == date.today().year:
+                return True
+            # if date less than 10 days from today return True
             date_delta = date.today() - self.finish_date
-            if date_delta.days > 10:
-                return False
+            if date_delta.days < 10:
+                return True
+            return False
         return True
 
 
