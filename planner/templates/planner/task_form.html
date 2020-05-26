@@ -43,7 +43,7 @@
                                                             for="id_{{ form.object_code.name }}">{{ form.object_code.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
-                                                        {{ form.object_code|attr:"style: width:100%" }}
+                                                        {{ form.object_code|attr:"style: width:100%; padding-left: 5px;" }}
                                                     </div>
                                                     <!--alert: object_address-->
                                                     <div class="col-1">
@@ -54,7 +54,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.object_address.errors}}
                                                         </small>
-                                                        {{ form.object_address|attr:"style: width:100%" }}
+                                                        {{ form.object_address|attr:"style: width:100%; padding-left: 5px;" }}
                                                     </div>
                                                     <!--alert: tc_received-->
                                                     <div class="col-1">
@@ -65,7 +65,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.tc_received.errors}}
                                                         </small>
-                                                        {{ form.tc_received|attr:"style: width:10%" }}
+                                                        {{ form.tc_received|attr:"style: width:10%; padding-left: 5px;" }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -95,7 +95,7 @@
                                                                     class="text-danger">
                                                                     {{form.deal.errors}}
                                                                 </small>
-                                                                {{ form.deal|attr:"style: width:100%" }}
+                                                                {{ form.deal|attr:"style: width:100%; padding-left: 8px;" }}
                                                             </div>
                                                         </div>
                                                         <div class="row mt-4">
@@ -105,10 +105,12 @@
                                                                     for="id_{{ form.owner.name }}">{{ form.owner.label }}:</label>
                                                             </div>
                                                             <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
-                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                                    {{form.owner.errors}}
-                                                                </small>
-                                                                {{ form.owner|attr:"style: width:100%" }}
+                                                                <div class="form-group">
+                                                                    <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                        {{form.owner.errors}}
+                                                                    </small>
+                                                                    {{ form.owner|attr:"style: width:100%; height: 34px; font-size: 14px; padding-left: 3px;"|add_class:"form-control" }}
+                                                                </div>
                                                             </div>
                                                             <!--alert: exec_status-->
                                                             <div style="flex: 0 0 12.666667%" class="col-2">
@@ -116,10 +118,12 @@
                                                                     for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
                                                             </div>
                                                             <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
-                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                                    {{form.exec_status.errors}}
-                                                                </small>
-                                                                {{ form.exec_status|attr:"style: width:100%" }}
+                                                                <div class="form-group">
+                                                                    <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                        {{form.exec_status.errors}}
+                                                                    </small>
+                                                                    {{ form.exec_status|attr:"style: width:100%; height: 34px; font-size: 14px; padding-left: 3px;"|add_class:"form-control" }}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -148,7 +152,7 @@
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.planned_start.errors}}
                                                         </small>
-                                                        {{ form.planned_start|attr:"style: width:10%" }}
+                                                        {{ form.planned_start|attr:"style: width:10%; padding-left: 8px;" }}
                                                     </div>
                                                     <!--alert: planned_finish-->
                                                     <div class="col-1">
@@ -156,21 +160,25 @@
                                                             for="id_{{ form.planned_finish.name }}">{{ form.planned_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
+                                                        <div class="form-group">
                                                         <small style="position: absolute; margin-top: -15px;" class="text-danger">
                                                             {{form.planned_finish.errors}}
                                                         </small>
-                                                        {{ form.planned_finish|attr:"style: width:10%" }}
+                                                        {{ form.planned_finish|attr:"style: width:10%; padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                     <!--alert: actual_finish-->
                                                     <div class="col-1">
                                                         <label
-                                                            for="id_{{ form.actual_finish.name }}">{{ form.actual_finish.label }}:</label>
+                                                            for="id_actual_finish">{{ form.actual_finish.label }}:</label>
                                                     </div>
                                                     <div class="col-3">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.actual_finish.errors}}
-                                                        </small>
-                                                        {{ form.actual_finish|attr:"style: width:10%" }}
+                                                        <div class="form-group">
+                                                            <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                {{form.actual_finish.errors}}
+                                                            </small>
+                                                            {{ form.actual_finish|attr:"disabled style: width:50%; padding-left: 5px;" }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -186,10 +194,12 @@
                                                                     for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
                                                             </div>
                                                             <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
-                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                                    {{form.project_code.errors}}
-                                                                </small>
-                                                                {{ form.project_code|attr:"style: width:100%" }}
+                                                                <div class="form-group">
+                                                                    <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                        {{form.project_code.errors}}
+                                                                    </small>
+                                                                    {{ form.project_code|attr:"style: height: 34px; width:100%; padding-left: 8px"|add_class:"form-control" }}
+                                                                </div>
                                                             </div>
                                                             <!--alert: manual_warning-->
                                                             <div style="flex: 0 0 12.666667%" class="col-2">
@@ -197,10 +207,12 @@
                                                                     for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
                                                             </div>
                                                             <div style="flex: 0 0 37.333333%; max-width: 37.333333%;" class="col-4">
-                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                                    {{form.manual_warning.errors}}
-                                                                </small>
-                                                                {{ form.manual_warning|attr:"style: width:100%" }}
+                                                                <div class="form-group">
+                                                                    <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                        {{form.manual_warning.errors}}
+                                                                    </small>
+                                                                    {{ form.manual_warning|attr:"style: height: 34px; width:100%; padding-left: 8px;"|add_class:"form-control" }}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="row mt-4">
@@ -210,10 +222,12 @@
                                                                     for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
                                                             </div>
                                                             <div style="flex: 0 0 87.333333%; max-width: 87.333333%" class="col-10">
-                                                                <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                                    {{form.comment.errors}}
-                                                                </small>
-                                                                {{ form.comment }}
+                                                                <div class="form-group">
+                                                                    <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                                        {{form.comment.errors}}
+                                                                    </small>
+                                                                    {{ form.comment|attr:"style: width:100%; height:45px; padding-left: 8px; font-size: 14px;"|add_class:"form-control" }}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -284,35 +298,39 @@
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.executor.errors }}
-                                                    {{ form.executor|attr:"style: width:100%" }}
+                                                    {{ form.executor|attr:"style: width:100%; height:34px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.part_name.errors }}
-                                                    {{ form.part_name|attr:"style: width:100%" }}
+                                                    {{ form.part_name|attr:"style: height:34px; width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.part.errors }}
-                                                    {{ form.part|attr:"style: width:100%" }}
+                                                    {{ form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.exec_status.errors }}
-                                                    {{ form.exec_status|attr:"style: width:100%" }}
+                                                    {{ form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.planned_start.errors }}
-                                                    {{ form.planned_start|attr:"style: width:60%" }}
+                                                    {{ form.planned_start|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.planned_finish.errors }}
-                                                    {{ form.planned_finish|attr:"style: width:60%" }}
+                                                    {{ form.planned_finish|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.finish_date.errors }}
-                                                    {{ form.finish_date|attr:"style: width:60%" }}
+                                                    {{ form.finish_date|attr:"disabled style: text-align: center; width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.warning.errors }}
-                                                    {{ form.warning|attr:"style: width:100%" }}
+                                                    {{ form.warning|attr:"style: width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th>{{ form.DELETE }}{{ form.id }} </th>
                                             </tr>
@@ -348,32 +366,38 @@
                                                     {{ executors_formset.empty_form.executor|attr:"style: width:100%" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ executors_formset.empty_form.part_name.errors }}
-                                                    {{ executors_formset.empty_form.part_name|attr:"style: width:100%" }}
+                                                    {{ executors_formset.empty_form.part_name|attr:"style: height:34px; width:100%; padding-left: 5px;" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ executors_formset.empty_form.part.errors }}
-                                                    {{ executors_formset.empty_form.part|attr:"style: width:100%" }}
+                                                    {{ executors_formset.empty_form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ executors_formset.empty_form.exec_status.errors }}
-                                                    {{ executors_formset.empty_form.exec_status|attr:"style: width:100%" }}
+                                                    {{ executors_formset.empty_form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.planned_start.errors }}
-                                                    {{ executors_formset.empty_form.planned_start|attr:"style: width:60%" }}
+                                                    {{ executors_formset.empty_form.planned_start|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.planned_finish.errors }}
-                                                    {{ executors_formset.empty_form.planned_finish|attr:"style: width:60%" }}
+                                                    {{ executors_formset.empty_form.planned_finish|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.finish_date.errors }}
-                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%" }}
+                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ executors_formset.empty_form.warning.errors }}
-                                                    {{ executors_formset.empty_form.warning|attr:"style: width:100%" }}
+                                                    {{ executors_formset.empty_form.warning|attr:"style: width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th>{{ form.DELETE }}</th>
                                             </tr>
@@ -421,23 +445,29 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.deal_number.errors }}
-                                                    {{ form.deal_number|attr:"style: width:100%" }}
+                                                    {{ form.deal_number|attr:"style: width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.value.errors }}
-                                                    {{ form.value|attr:"style: width:100%" }}
+                                                    {{ form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.advance.errors }}
-                                                    {{ form.advance|attr:"style: width:100%" }}
+                                                    {{ form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.pay_status.errors }}
-                                                    {{ form.pay_status|attr:"style: width:100%" }}
+                                                    {{ form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.pay_date.errors }}
-                                                    {{ form.pay_date|attr:"style: width:60%" }}
+                                                    {{ form.pay_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
@@ -471,23 +501,29 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ costs_formset.empty_form.deal_number.errors }}
-                                                    {{ costs_formset.empty_form.deal_number|attr:"style: width:100%" }}
+                                                    {{ costs_formset.empty_form.deal_number|attr:"style: width:100%; padding-left: 5px;" }}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ costs_formset.empty_form.value.errors }}
-                                                    {{ costs_formset.empty_form.value|attr:"style: width:100%" }}
+                                                    {{ costs_formset.empty_form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ costs_formset.empty_form.advance.errors }}
-                                                    {{ costs_formset.empty_form.advance|attr:"style: width:100%" }}
+                                                    {{ costs_formset.empty_form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ costs_formset.empty_form.pay_status.errors }}
-                                                    {{ costs_formset.empty_form.pay_status|attr:"style: width:100%" }}
+                                                    {{ costs_formset.empty_form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control" }}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ costs_formset.empty_form.pay_date.errors }}
-                                                    {{ costs_formset.empty_form.pay_date|attr:"style: width:60%" }}
+                                                    {{ costs_formset.empty_form.pay_date|attr:"style: width:60%; padding-left: 5px;" }}
                                                 </th>
                                                 <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
@@ -529,19 +565,21 @@
                                             <tr>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.receiver.errors }}
-                                                    {{form.receiver|attr:"style: width:100%"}}
+                                                    {{form.receiver|attr:"style: width:100%; padding-left: 5px;"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.receipt_date.errors }}
-                                                    {{form.receipt_date|attr:"style: width:60%"}}
+                                                    {{form.receipt_date|attr:"style: width:60%; padding-left: 5px;"}}
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    <div class="form-group">
                                                     {{ form.copies_count.errors }}
-                                                    {{form.copies_count|attr:"style: width:100%"}}
+                                                    {{form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"}}
+                                                    </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     {{ form.register_num.errors }}
-                                                    {{form.register_num|attr:"style: width:100%"}}
+                                                    {{form.register_num|attr:"style: width:100%; padding-left: 5px;"}}
                                                 </th>
                                                 <th>{{ form.id }}{{ form.DELETE }}</th>
                                             </tr>
@@ -570,19 +608,21 @@
                                         <tr>
                                             <th class="pl-1 pr-1">
                                                 {{ sending_formset.empty_form.receiver.errors }}
-                                                {{sending_formset.empty_form.receiver|attr:"style: width:100%"}}
+                                                {{sending_formset.empty_form.receiver|attr:"style: width:100%; padding-left: 5px;"}}
                                             </th>
                                             <th class="pl-1 pr-1">
                                                 {{ sending_formset.empty_form.receipt_date.errors }}
-                                                {{sending_formset.empty_form.receipt_date|attr:"style: width:60%"}}
+                                                {{sending_formset.empty_form.receipt_date|attr:"style: width:60%; padding-left: 5px;"}}
                                             </th>
                                             <th class="pl-1 pr-1">
+                                                <div class="form-group">
                                                 {{ sending_formset.empty_form.copies_count.errors }}
-                                                {{sending_formset.empty_form.copies_count|attr:"style: width:100%"}}
+                                                {{sending_formset.empty_form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"}}
+                                                </div>
                                             </th>
                                             <th class="pl-1 pr-1">
                                                 {{ sending_formset.empty_form.register_num.errors }}
-                                                {{sending_formset.empty_form.register_num|attr:"style: width:100%"}}
+                                                {{sending_formset.empty_form.register_num|attr:"style: width:100%; padding-left: 5px;"}}
                                             </th>
                                             <th>{{ sending_formset.empty_form.DELETE }} {{ sending_formset.empty_form.id }}</th>
                                         </tr>
