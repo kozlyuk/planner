@@ -41,20 +41,20 @@
                                                             for="id_{{ form.number.name }}">{{ form.number.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.number|attr:"style: padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.number.errors}}
-                                                        </small>
-                                                        {{ form.number|attr:"style: padding-left: 5px;" }}
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <label
                                                             for="id_{{ form.date.name }}">{{ form.date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.date.errors}}
-                                                        </small>
-                                                        {{ form.date|attr:"style: width:60%; padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -65,10 +65,10 @@
                                                             for="id_{{ form.customer.name }}">{{ form.customer.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.customer|attr:"style: padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.customer.errors}}
-                                                        </small>
-                                                        {{ form.customer|attr:"style: padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -76,10 +76,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.company.errors}}
-                                                        </small>
-                                                        {{ form.company|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                        {{ form.company|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.company.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -92,10 +92,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.value.errors}}
-                                                        </small>
-                                                        {{ form.value|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control" }}
+                                                        {{ form.value|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
@@ -104,10 +104,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.advance.errors}}
-                                                        </small>
-                                                        {{ form.advance|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.advance|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.advance.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -120,10 +120,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.pay_status.errors}}
-                                                        </small>
-                                                        {{ form.pay_status|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.pay_status|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.pay_status.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
@@ -131,10 +131,10 @@
                                                             for="id_{{ form.pay_date.name }}">{{ form.pay_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.pay_date.errors}}
-                                                        </small>
-                                                        {{ form.pay_date|attr:"style: width:60%; padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -146,10 +146,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.act_status.errors}}
-                                                        </small>
-                                                        {{ form.act_status|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.act_status|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.act_status.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
@@ -157,10 +157,10 @@
                                                             for="id_{{ form.act_date.name }}">{{ form.act_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.act_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.act_date.errors}}
-                                                        </small>
-                                                        {{ form.act_date|attr:"style: width:60%; padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -171,10 +171,10 @@
                                                             for="id_{{ form.expire_date.name }}">{{ form.expire_date.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.expire_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.expire_date.errors}}
-                                                        </small>
-                                                        {{ form.expire_date|attr:"style: width:60%; padding-left: 8px;" }}
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -182,10 +182,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.act_value.errors}}
-                                                        </small>
-                                                        {{ form.act_value|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.act_value|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.act_value.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -197,10 +197,10 @@
                                                             for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.pdf_copy|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
                                                             {{form.pdf_copy.errors}}
-                                                        </small>
-                                                        {{ form.pdf_copy }}
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <label
@@ -208,10 +208,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.value_correction.errors}}
-                                                        </small>
-                                                        {{ form.value_correction|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.value_correction|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value_correction.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -224,10 +224,10 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
-                                                            {{form.comment.errors}}
-                                                        </small>
-                                                        {{ form.comment|attr:"style: width:100%; height:44px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"}}
+                                                        {{ form.comment|attr:"style: width:100%; height:44px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.comment.errors}}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
@@ -235,10 +235,10 @@
                                                             for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
                                                     </div>
                                                     <div class="col-4">
-                                                        <small style="position: absolute; margin-top: -15px;" class="text-danger">
+                                                        {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        <div class="invalid-feedback">
                                                             {{form.manual_warning.errors}}
-                                                        </small>
-                                                        {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"}}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -319,14 +319,22 @@
                                                         <label
                                                             for="id_{{ form.prefix }}-{{field.name}}">{{ field.label }}:</label>
                                                     </div> {% endcomment %}
-                                                    {{field.errors}}
                                                     {% if field.name == 'planned_finish' %}
-                                                    {{ field|attr:"style: width:50%; padding-left: 5px;" }}
+                                                    {{ field|attr:"style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{field.errors}}
+                                                    </div>
                                                     {% elif field.name == 'object_code' %}
-                                                    {{ field|attr:"style: width:50%; padding-left: 5px;" }}
+                                                    {{ field|attr:"style: width:50%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{field.errors}}
+                                                    </div>
                                                     {% elif field %}
                                                     <div class="form-group">
-                                                    {{ field|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                    {{ field|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{field.errors}}
+                                                        </div>
                                                     </div>
                                                     {% endif %}
                                                 </th>
@@ -363,25 +371,43 @@
                                             {{ hidden_field }}
                                             {% endfor %}
                                             <th class="pl-1 pr-1">
-                                                {{ tasks_formset.empty_form.object_code|attr:"style: width:50%; padding-left: 5px;" }}
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                {{ tasks_formset.empty_form.object_address|attr:"style: width:100%" }}
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                {{ tasks_formset.empty_form.project_type|attr:"style: width:100%" }}
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                <div class="form-group">
-                                                {{ tasks_formset.empty_form.owner|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                {{ tasks_formset.empty_form.object_code|attr:"style: width:50%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                <div class="invalid-feedback">
+                                                    {{tasks_formset.empty_form.object_code.errors}}
                                                 </div>
                                             </th>
                                             <th class="pl-1 pr-1">
-                                                {{ tasks_formset.empty_form.planned_finish|attr:"style: width:50%" }}
+                                                {{ tasks_formset.empty_form.object_address|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                <div class="invalid-feedback">
+                                                    {{tasks_formset.empty_form.object_address.errors}}
+                                                </div>
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.project_type|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                <div class="invalid-feedback">
+                                                    {{tasks_formset.empty_form.project_type.errors}}
+                                                </div>
                                             </th>
                                             <th class="pl-1 pr-1">
                                                 <div class="form-group">
-                                                {{ tasks_formset.empty_form.exec_status|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control" }}
+                                                {{ tasks_formset.empty_form.owner|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{tasks_formset.empty_form.owner.errors}}
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                {{ tasks_formset.empty_form.planned_finish|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                <div class="invalid-feedback">
+                                                    {{tasks_formset.empty_form.owner.errors}}
+                                                </div>
+                                            </th>
+                                            <th class="pl-1 pr-1">
+                                                <div class="form-group">
+                                                {{ tasks_formset.empty_form.exec_status|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{tasks_formset.empty_form.exec_status.errors}}
+                                                    </div>
                                                 </div>
                                             </th>
                                             <th class="pl-1 pr-1"> </th>
