@@ -420,7 +420,7 @@
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.finish_date|attr:"style: width:60%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ executors_formset.empty_form.finish_date|attr:"disabled style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{executors_formset.empty_form.finish_date.errors}}
                                                     </div>
