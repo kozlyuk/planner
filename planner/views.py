@@ -918,7 +918,9 @@ class ProjectList(ListView):
         customer = self.request.GET.get('customer', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
-            project_types = project_types.filter(project_type__icontains=word)
+            project_types = project_types.filter(Q(project_type__icontains=word) |
+                                                 Q(price_code__contains=word) |
+                                                 Q(description__icontains=word))
         if customer != '0':
             project_types = project_types.filter(customer=customer)
         if order != '0':
