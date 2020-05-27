@@ -39,6 +39,9 @@
                                         <p>Договір: <strong>{{ task.deal }}</strong></p>
                                         <p>Керівник проекту: <strong>{{ task.owner.name }}</strong></p>
                                         <p>Статус виконання: <strong>{{ task.get_exec_status_display }}</strong></p>
+                                        {% if task.sending_date %}
+                                        <p>Дата відправки: <strong>{{ task.sending_date }}</strong></p>
+                                        {% endif %}
                                         {% if task.project_code %}
                                         <p>Шифр проекту: <strong>{{ task.project_code }}</strong></p>
                                         {% endif %}

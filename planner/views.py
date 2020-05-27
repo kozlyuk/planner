@@ -24,7 +24,7 @@ from crum import get_current_user
 from planner.dashboard import context_accounter, context_pm, context_projector
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-    IntTask, News, Event, Customer, Company, Contractor
+                           IntTask, News, Event, Customer, Company, Contractor
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
@@ -110,11 +110,10 @@ class BonusesCalc(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
+        period = date(year=kwargs['year'], month=kwargs['month'], day=1)
 
-        # calculate owner bonuses
-        tasks = Task.objects.filter(owner=employee,
-                                    sending_date__month=self.kwargs['month'],
-                                    sending_date__year=self.kwargs['year'])
+        # get owner tasks
+        tasks = employee.tasks_for_period(period)
         bonuses = 0
         index = 0
         task_list = []
@@ -122,42 +121,34 @@ class BonusesCalc(TemplateView):
             index += 1
             task_list.append([index, task.object_code, task.object_address,
                               task.project_type, task.owner_part(),
-                              round(task.owner_bonus(), 2)])
+                              round(task.owner_bonus(), 2), task.actual_finish, task.sending_date])
             bonuses += task.owner_bonus()
 
-        # calculate executor bonuses
-        executions = Execution.objects.filter(executor=employee,
-                                              finish_date__month=self.kwargs['month'],
-                                              finish_date__year=self.kwargs['year'])
-
+        # get executions
+        executions = employee.executions_for_period(period)
         index = 0
         executions_list = []
         for ex in executions:
             index += 1
             executions_list.append([index, ex.task.object_code, ex.task.object_address,
                                     ex.task.project_type, ex.part_name, ex.part,
-                                    round(ex.task.exec_bonus(ex.part), 2)])
+                                    round(ex.task.exec_bonus(ex.part), 2), ex.task.actual_finish])
             bonuses += ex.task.exec_bonus(ex.part)
 
-        # calculate inttask bonuses
-        inttasks = IntTask.objects.filter(executor=employee,
-                                          actual_finish__month=self.kwargs['month'],
-                                          actual_finish__year=self.kwargs['year'])
+        # get inttasks
+        inttasks = employee.inttasks_for_period(period)
         index = 0
         inttasks_list = []
         for task in inttasks:
             index += 1
             inttasks_list.append([index, task.task_name, task.bonus])
             bonuses += task.bonus
-        first_name = employee.user.first_name
 
-        bonuses = round(bonuses, 2)
-
-        context['first_name'] = first_name
+        context['first_name'] = employee.user.first_name
         context['tasks'] = task_list
         context['executions'] = executions_list
         context['inttasks'] = inttasks_list
-        context['bonuses'] = bonuses
+        context['bonuses'] = round(bonuses, 2)
         return context
 
 

@@ -294,7 +294,6 @@ class TaskForm(forms.ModelForm):
             'deal': Select2Widget,
             'planned_start': AdminDateWidget,
             'planned_finish': AdminDateWidget,
-            'actual_finish': AdminDateWidget,
             'tc_received': AdminDateWidget,
             'pdf_copy': NotClearableFileInput,
         }
@@ -373,7 +372,6 @@ class ExecutorInlineForm(forms.ModelForm):
                   'finish_date', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
-            'finish_date': AdminDateWidget(),
             'planned_start': AdminDateWidget(),
             'planned_finish': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
