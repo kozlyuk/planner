@@ -132,7 +132,7 @@ class BonusesCalc(TemplateView):
             index += 1
             executions_list.append([index, ex.task.object_code, ex.task.object_address,
                                     ex.task.project_type, ex.part_name, ex.part,
-                                    round(ex.task.exec_bonus(ex.part), 2), ex.task.actual_finish])
+                                    round(ex.task.exec_bonus(ex.part), 2), ex.finish_date])
             bonuses += ex.task.exec_bonus(ex.part)
 
         # get inttasks
