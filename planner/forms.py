@@ -384,9 +384,8 @@ class ExecutorInlineForm(forms.ModelForm):
 
     def clean(self):
         super().clean()
-        if self.instance.pk and self.changed_data and \
-                self.changed_data != ['finish_date']:
-            if self.instance.is_active() == False:
+        if self.instance.pk and self.changed_data:
+            # if self.instance.is_active() == False:
                 self.add_error('executor', "Ця підзадача виконана більше 10 днів тому")
 
 

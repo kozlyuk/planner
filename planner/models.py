@@ -625,7 +625,8 @@ class Task(models.Model):
             for execution in self.execution_set.all():
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
-                    execution.finish_date = date.today()
+                    if execution.finish_date is None:
+                        execution.finish_date = date.today()
                     execution.save()
 
          # Automatic set finish_date when Task has done
@@ -909,7 +910,7 @@ class Execution(models.Model):
             self.task.save(logging=False)
 
         # Automatic change Executions.exec_status when Task has Done
-        if self.task.exec_status in [Task.Done, Task.Sent]:
+        if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
             self.exec_status = Execution.Done
 
         # Automatic set finish_date when Execution has done
