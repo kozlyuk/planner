@@ -132,7 +132,7 @@ class BonusesCalc(TemplateView):
             index += 1
             executions_list.append([index, ex.task.object_code, ex.task.object_address,
                                     ex.task.project_type, ex.part_name, ex.part,
-                                    round(ex.task.exec_bonus(ex.part), 2), ex.task.actual_finish])
+                                    round(ex.task.exec_bonus(ex.part), 2), ex.finish_date])
             bonuses += ex.task.exec_bonus(ex.part)
 
         # get inttasks
@@ -558,10 +558,6 @@ class TaskExchange(FormView):
 @method_decorator(login_required, name='dispatch')
 class SprintList(ListView):
     model = Execution
-#    date_field = "pub_date"
-#    week_format = "%W"
-#    allow_future = True
-
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
