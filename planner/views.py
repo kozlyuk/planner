@@ -558,10 +558,6 @@ class TaskExchange(FormView):
 @method_decorator(login_required, name='dispatch')
 class SprintList(ListView):
     model = Execution
-#    date_field = "pub_date"
-#    week_format = "%W"
-#    allow_future = True
-
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50
