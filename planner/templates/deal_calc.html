@@ -7,9 +7,5 @@
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
 <div class="page-container page-container-bg-solid mb-5" xmlns="http://www.w3.org/1999/html"
     xmlns="http://www.w3.org/1999/html">
-    {% if template == 'gks' %}
     {% include 'deal_calc_templates/gks.html' %}
-    {% elif template == 'msz' %}
-    {% include 'deal_calc_templates/msz.html' %}
-    {% endif %}
 {% endblock context %}
