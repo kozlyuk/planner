@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta
+from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
@@ -53,45 +54,31 @@ class DealCalc(TemplateView):
         template = deal.customer.act_template
 
         index = 0
-        svalue = 0
+        svalue = Decimal(0)
         object_lists = []
-        if template == 'gks':
-            project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
-                .order_by('project_type__price_code').distinct()
-            for ptype in project_types:
-                if ptype['project_type__price'] != 0:
-                    index += 1
-                    object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
-                        .values_list('object_code', flat=True)
-                    object_list = ''
-                    for obj in object_codes:
-                        object_list += obj + ' '
-                    count = object_codes.count()
-                    price = ptype['project_type__price'] / 6 * 5
-                    value = price * count
-                    svalue += round(value, 2)
-                object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'послуга',
-                                     count, round(price, 2), round(value, 2)])
-        elif template == 'msz':
-            object_lists = [[] for _ in range(len(objects))]
-            for obj in range(len(objects)):
+        project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
+            .order_by('project_type__price_code').distinct()
+        for ptype in project_types:
+            if ptype['project_type__price'] != 0:
                 index += 1
-                object_lists[obj].append(
-                    [objects[obj]['object_code'] + ' ' + objects[obj]['object_address']])
-                for task in tasks.filter(object_code=objects[obj]['object_code'])\
-                        .values('project_type__price_code', 'project_type__description', 'project_type__price'):
-                    if task['project_type__price'] != 0:
-                        price = round(task['project_type__price'] / 6 * 5, 2)
-                        svalue += price
-                    object_lists[obj].append(
-                        [index, task['project_type__description'], 'шт.', 1, price, price])
+                object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                    .values_list('object_code', flat=True)
+                object_list = ''
+                for obj in object_codes:
+                    object_list += obj + ' '
+                count = object_codes.count()
+                price = round(ptype['project_type__price'] / Decimal(1.2), 2)
+                value = price * count
+                svalue += value
+            object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'об\'єкт',
+                                count, price, value])
 
         context['deal'] = deal
         context['objects'] = objects
         context['taxation'] = deal.company.taxation
         context['template'] = template
         context['object_lists'] = object_lists
-        context['svalue'] = round(svalue, 2)
+        context['svalue'] = svalue
         return context
 
 
@@ -132,7 +119,7 @@ class BonusesCalc(TemplateView):
             index += 1
             executions_list.append([index, ex.task.object_code, ex.task.object_address,
                                     ex.task.project_type, ex.part_name, ex.part,
-                                    round(ex.task.exec_bonus(ex.part), 2), ex.task.actual_finish])
+                                    round(ex.task.exec_bonus(ex.part), 2), ex.finish_date])
             bonuses += ex.task.exec_bonus(ex.part)
 
         # get inttasks
@@ -558,10 +545,6 @@ class TaskExchange(FormView):
 @method_decorator(login_required, name='dispatch')
 class SprintList(ListView):
     model = Execution
-#    date_field = "pub_date"
-#    week_format = "%W"
-#    allow_future = True
-
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'  # Default: object_list
     paginate_by = 50

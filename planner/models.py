@@ -625,7 +625,8 @@ class Task(models.Model):
             for execution in self.execution_set.all():
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
-                    execution.finish_date = date.today()
+                    if execution.finish_date is None:
+                        execution.finish_date = date.today()
                     execution.save()
 
          # Automatic set finish_date when Task has done
@@ -909,7 +910,7 @@ class Execution(models.Model):
             self.task.save(logging=False)
 
         # Automatic change Executions.exec_status when Task has Done
-        if self.task.exec_status in [Task.Done, Task.Sent]:
+        if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
             self.exec_status = Execution.Done
 
         # Automatic set finish_date when Execution has done
@@ -950,18 +951,23 @@ class Execution(models.Model):
     warning_select.short_description = 'Попередження'
 
     def is_active(self):
-        """Show if subtask edit period is not expired"""
-        # return False if subtask Done more than 10 days ago
-        if self.exec_status == Execution.Done:
-            # if date in current month return True
-            if self.finish_date.month == date.today().month and self.finish_date.year == date.today().year:
-                return True
-            # if date less than 10 days from today return True
-            date_delta = date.today() - self.finish_date
-            if date_delta.days < 10:
-                return True
-            return False
-        return True
+        """ Show if subtask edit period is not expired
+            Return False if subtask Done more than 10 days ago
+        """
+        # if execution is not Done return True
+        if self.exec_status != Execution.Done:
+            return True
+        # if execution doesn't have date return True
+        if not self.finish_date:
+            return True
+        # if date in current month return True
+        if self.finish_date.month == date.today().month and self.finish_date.year == date.today().year:
+            return True
+        # if date less than 10 days from today return True
+        date_delta = date.today() - self.finish_date
+        if date_delta.days < 10:
+            return True
+        return False
 
 
 class IntTask(models.Model):
