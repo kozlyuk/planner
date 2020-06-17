@@ -1,3 +1,7 @@
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![GitHub contributors](https://img.shields.io/github/contributors/kozlyuk/planner.svg)](https://GitHub.com/kozlyuk/planner/graphs/contributors/)
+[![GitHub pull-requests closed](https://img.shields.io/github/issues-pr-closed/kozlyuk/planner.svg)](https://GitHub.com/kozlyuk/planner/pulls/)
+[![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 # Installing
 1. install Python3
 2. create virtual env ``` python3 -m venv /path/to/new/virtual/environment```
