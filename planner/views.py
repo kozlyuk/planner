@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta
+from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
@@ -53,7 +54,7 @@ class DealCalc(TemplateView):
         template = deal.customer.act_template
 
         index = 0
-        svalue = 0
+        svalue = Decimal(0)
         object_lists = []
         project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
             .order_by('project_type__price_code').distinct()
@@ -66,18 +67,18 @@ class DealCalc(TemplateView):
                 for obj in object_codes:
                     object_list += obj + ' '
                 count = object_codes.count()
-                price = ptype['project_type__price'] / 6 * 5
+                price = round(ptype['project_type__price'] / Decimal(1.2), 2)
                 value = price * count
-                svalue += round(value, 2)
+                svalue += value
             object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'об\'єкт',
-                                count, round(price, 2), round(value, 2)])
+                                count, price, value])
 
         context['deal'] = deal
         context['objects'] = objects
         context['taxation'] = deal.company.taxation
         context['template'] = template
         context['object_lists'] = object_lists
-        context['svalue'] = round(svalue, 2)
+        context['svalue'] = svalue
         return context
 
 
