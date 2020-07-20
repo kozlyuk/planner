@@ -555,11 +555,15 @@ class Task(models.Model):
     InProgress = 'IP'
     Done = 'HD'
     Sent = 'ST'
+    # OnHold = 'OH'
+    # Canceled = 'CL'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
         (Done, 'Виконано'),
         (Sent, 'Надіслано')
+        # (OnHold, 'Призупинено')
+        # (Canceled, 'Відмінено')
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
@@ -838,13 +842,21 @@ class Sending(models.Model):
 
     def save(self, logging=True, *args, **kwargs):
 
+        # saving object
+        super(Sending, self).save(*args, **kwargs)
+
         # Automatic changing of Task.exec_status when all sendings was sent
         sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
-        sendings += self.copies_count
-        if self.task.exec_status == Task.Done and sendings >= self.task.project_type.copies_count:
-            self.task.exec_status = Task.Sent
-            self.task.sending_date = self.receipt_date
-            self.task.save(logging=False)
+        changed = False
+        if sendings >= self.task.project_type.copies_count:
+            if self.task.exec_status == Task.Done:
+                self.task.exec_status = Task.Sent
+                changed = True
+            if not self.task.sending_date:
+                self.task.sending_date = self.receipt_date
+                changed = True
+            if changed:
+                self.task.save(logging=False)
 
         # Logging
         if logging:
@@ -853,7 +865,6 @@ class Sending(models.Model):
                 log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
             else:
                 log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
-        super(Sending, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
 
