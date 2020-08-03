@@ -126,6 +126,9 @@ SELECT2_JS = 'django_select2/select2.min.js'
 SELECT2_CSS = 'django_select2/select2.min.css'
 SELECT2_I18N_PATH = 'django_select2/i18n'
 
+# Forms settings
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+
 # REDIS and CELERY related settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'

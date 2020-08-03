@@ -105,7 +105,6 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super().clean()
-
         for form in self.forms:
             if not form.is_valid():
                 return
@@ -120,24 +119,34 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
             if pay_date and pay_status == Order.NotPaid:
                 form.add_error('pay_status', 'Відмітьте Статус оплати або видаліть Дату оплати')
 
+
 class ContractorOrdersInline(admin.TabularInline):
     model = Order
     formset = ContractorOrdersInlineFormSet
-    fields = ['order_name', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date']
+    fields = ['order_name', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date', 'exec_status', 'actual_finish']
+    readonly_fields = ['exec_status', 'actual_finish']
     ordering = ['pay_status', '-pay_date']
     extra = 0
     can_delete = False
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        return qs.exclude(pay_status=Order.PaidUp, pay_date__lte=date.today()-timedelta(days=365))
 
-        return qs.exclude(pay_date__lte=date.today()-timedelta(days=365))
+    def exec_status(self, obj):
+        return obj.task.get_exec_status_display()
+    exec_status.short_description = 'Статус проекту'
+
+    def actual_finish(self, obj):
+        return obj.task.actual_finish
+    actual_finish.short_description = 'Дата виконання'
 
 
 class ContractorAdmin(admin.ModelAdmin):
     list_display = ['name', 'advance_calc', 'credit_calc',
                     'expect_calc', 'completed_calc', 'active']
     search_fields = ['name', 'contact_person']
+    list_filter = ['active']
     ordering = ['name']
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
