@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import date, timedelta
 from decimal import Decimal
 from django.contrib import admin
 from django.db.models import Q
@@ -7,8 +8,8 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from django.utils.html import format_html
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
 from .models import IntTask, Contractor, Order, Company, News, Event
@@ -100,6 +101,39 @@ class CompanyAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
+class ContractorOrdersInlineFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        super().clean()
+
+        for form in self.forms:
+            if not form.is_valid():
+                return
+            pay_status = form.cleaned_data.get("pay_status")
+            pay_date = form.cleaned_data.get("pay_date")
+            value = form.cleaned_data.get("value")
+            if pay_status and pay_status != Order.NotPaid:
+                if not pay_date:
+                    form.add_error('pay_date', 'Вкажіть будь ласка Дату оплати')
+                if not value or value == 0:
+                    form.add_error('value', 'Вкажіть будь ласка Вартість робіт')
+            if pay_date and pay_status == Order.NotPaid:
+                form.add_error('pay_status', 'Відмітьте Статус оплати або видаліть Дату оплати')
+
+class ContractorOrdersInline(admin.TabularInline):
+    model = Order
+    formset = ContractorOrdersInlineFormSet
+    fields = ['order_name', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date']
+    ordering = ['pay_status', '-pay_date']
+    extra = 0
+    can_delete = False
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        return qs.exclude(pay_date__lte=date.today()-timedelta(days=365))
+
+
 class ContractorAdmin(admin.ModelAdmin):
     list_display = ['name', 'advance_calc', 'credit_calc',
                     'expect_calc', 'completed_calc', 'active']
@@ -112,6 +146,7 @@ class ContractorAdmin(admin.ModelAdmin):
                            'active'
                            ]})
     ]
+    inlines = [ContractorOrdersInline]
 
 
 class ReceiverAdmin(admin.ModelAdmin):
@@ -146,7 +181,7 @@ class SendingAdmin(admin.ModelAdmin):
             return self.readonly_fields
         if request.user.groups.filter(name='Секретарі').exists():
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.task.owner.user == request.user:
             return self.readonly_fields
@@ -155,7 +190,7 @@ class SendingAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return True
-        if obj != None:
+        if obj is not None:
             if obj.task.owner.user == request.user:
                 return True
         return False
@@ -407,7 +442,8 @@ class SendingsInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super(SendingsInlineFormSet, self).clean()
-        if self.instance.__exec_status__ == Task.Sent and not self.forms and self.instance.project_type.copies_count > 0:
+        if self.instance.__exec_status__ == Task.Sent and not self.forms \
+            and self.instance.project_type.copies_count > 0:
             raise forms.ValidationError(
                 "Ви не можете закрити цей проект без відправки")
 
@@ -420,7 +456,7 @@ class ExecutersInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
             return self.readonly_fields
@@ -428,7 +464,7 @@ class ExecutersInline(admin.TabularInline):
             return self.readonly_fields
         fields = []
         for field in self.model._meta.fields:
-            if (not field.name == 'id'):
+            if not field.name == 'id':
                 fields.append(field.name)
         self.can_delete = False
         self.max_num = 0
@@ -443,7 +479,7 @@ class SendingsInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
             return self.readonly_fields
@@ -451,7 +487,7 @@ class SendingsInline(admin.TabularInline):
             return self.readonly_fields
         fields = []
         for field in self.model._meta.fields:
-            if (not field.name == 'id'):
+            if not field.name == 'id':
                 fields.append(field.name)
         self.can_delete = False
         self.max_num = 0
@@ -466,7 +502,7 @@ class OrdersInline(admin.TabularInline):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
             return self.readonly_fields
@@ -512,7 +548,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': [
-         'project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
+            'project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type',
                     'deal', 'exec_status', 'owner', 'warning_mark']
@@ -558,7 +594,7 @@ class TaskAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.owner.user == request.user and obj.is_active():
             return self.readonly_fields
@@ -606,7 +642,7 @@ class IntTaskAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
             return self.readonly_fields
-        if obj == None:
+        if obj is None:
             return self.readonly_fields
         if obj.executor.user == request.user:
             return self.readonly_fields

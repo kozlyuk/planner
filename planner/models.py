@@ -349,7 +349,7 @@ class Contractor(models.Model):
 
     def advance_calc(self):
         total = 0
-        for order in self.order_set.exclude(task__exec_status=Task.Done):
+        for order in self.order_set.exclude(task__exec_status__in=[Task.Done, Task.Sent]):
             if order.pay_status == Order.AdvancePaid:
                 total += order.advance
             if order.pay_status == Order.PaidUp:
@@ -359,7 +359,7 @@ class Contractor(models.Model):
 
     def credit_calc(self):
         total = 0
-        for order in self.order_set.filter(task__exec_status=Task.Done):
+        for order in self.order_set.filter(task__exec_status__in=[Task.Done, Task.Sent]):
             if order.pay_status == Order.NotPaid:
                 total += order.value
             if order.pay_status == Order.AdvancePaid:
@@ -369,7 +369,7 @@ class Contractor(models.Model):
 
     def expect_calc(self):
         total = 0
-        for order in self.order_set.exclude(task__exec_status=Task.Done):
+        for order in self.order_set.exclude(task__exec_status__in=[Task.Done, Task.Sent]):
             if order.pay_status == Order.PaidUp:
                 total += order.value
             if order.pay_status == Order.AdvancePaid:
@@ -379,7 +379,7 @@ class Contractor(models.Model):
 
     def completed_calc(self):
         total = 0
-        for order in self.order_set.filter(task__exec_status=Task.Done,
+        for order in self.order_set.filter(task__exec_status__in=[Task.Done, Task.Sent],
                                            pay_date__year=date.today().year):
             if order.pay_status == Order.PaidUp:
                 total += order.value
@@ -585,18 +585,14 @@ class Task(models.Model):
     sending_date = models.DateField('Дата відправки', blank=True, null=True)
     tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
-                                               content_types=['application/pdf',
-                                                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-                                               max_upload_size=26214400,
-                                               blank=True, null=True)
+        content_types=['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                       max_upload_size=26214400, blank=True, null=True)
     receivers = models.ManyToManyField(Receiver, through='Sending', verbose_name='Отримувачі проекту')
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
-                                              content_types=['application/pdf',
-                                                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-                                              max_upload_size=26214400,
-                                              blank=True, null=True)
+        content_types=['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                       max_upload_size=26214400, blank=True, null=True)
     comment = models.TextField('Коментар', blank=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)

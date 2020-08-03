@@ -7,8 +7,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-from django_select2.forms import Select2Widget, Select2MultipleWidget
 from django.conf.locale.uk import formats as uk_formats
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
 from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
@@ -113,14 +113,16 @@ class DealFilterForm(forms.Form):
         self.fields['act_status'].choices = act_status
         self.fields['pay_status'].choices = pay_status
 
-    customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    company = forms.MultipleChoiceField(label='Компанія', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    customer = forms.MultipleChoiceField(label='Замовник', required=False,
+        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False,
+        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     act_status = forms.MultipleChoiceField(label='Акт виконаних робіт', required=False,
-                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
-                                   widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
+        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class DealForm(forms.ModelForm):
@@ -151,7 +153,6 @@ class DealForm(forms.ModelForm):
         pay_date = cleaned_data.get("pay_date")
         advance = cleaned_data.get("advance")
         act_status = cleaned_data.get("act_status")
-        act_date = cleaned_data.get("act_date")
         act_value = cleaned_data.get("act_value")
         pdf_copy = cleaned_data.get("pdf_copy")
         self.data.__customer__ = cleaned_data.get("customer")
@@ -429,7 +430,7 @@ ExecutorsFormSet = inlineformset_factory(
 class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['contractor', 'deal_number', 'value',
+        fields = ['contractor', 'order_name', 'deal_number', 'value',
                   'advance', 'pay_status', 'pay_date']
         widgets = {
             'contractor': Select2Widget(),

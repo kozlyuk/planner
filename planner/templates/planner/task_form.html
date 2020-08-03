@@ -459,13 +459,14 @@
                                         id="costs_formset_not_empty">
                                         <thead>
                                             <tr align="center">
-                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
+                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
                                                 <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
                                                 <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="1%">ДІЇ</th>
+                                                <th width="2%">ДІЇ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -478,6 +479,12 @@
                                                     {{ form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{form.contractor.errors}}
+                                                    </div>
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{form.order_name.errors}}
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
@@ -528,13 +535,14 @@
                                     <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
                                         <thead>
                                             <tr align="center">
-                                                <th width="30%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="5%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
+                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
                                                 <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="15%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="15%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
+                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
                                                 <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="1%">ДІЇ</th>
+                                                <th width="2%">ДІЇ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -546,6 +554,12 @@
                                                     {{ costs_formset.empty_form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{costs_formset.empty_form.contractor.errors}}
+                                                    </div>
+                                                </th>
+                                                <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{costs_formset.empty_form.order_name.errors}}
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
