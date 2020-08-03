@@ -14,6 +14,10 @@ Pillow
 redis
 celery
 wheel
+
+# Debuging tools
+django-silk         # https://github.com/jazzband/django-silk
+
 # django-appconf
 # django-js-asset
 # django-timezone-field
