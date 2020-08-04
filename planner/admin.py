@@ -147,7 +147,7 @@ class ContractorAdmin(admin.ModelAdmin):
                     'expect_calc', 'completed_calc', 'active']
     search_fields = ['name', 'contact_person']
     list_filter = ['active']
-    ordering = ['name']
+    ordering = ['-active', 'name']
     fieldsets = [
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),

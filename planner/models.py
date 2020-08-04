@@ -370,7 +370,7 @@ class Contractor(models.Model):
     def expect_calc(self):
         total = 0
         for order in self.order_set.exclude(task__exec_status__in=[Task.Done, Task.Sent]):
-            if order.pay_status == Order.PaidUp:
+            if order.pay_status == Order.NotPaid:
                 total += order.value
             if order.pay_status == Order.AdvancePaid:
                 total += order.value - order.advance

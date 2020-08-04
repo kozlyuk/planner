@@ -15,7 +15,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
 from django.db.models.functions import Concat
 from django.db import transaction
-from django.contrib.admin.widgets import AdminDateWidget
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
 from django.http import QueryDict
@@ -56,7 +55,7 @@ class DealCalc(TemplateView):
         index = 0
         svalue = Decimal(0)
         object_lists = []
-        project_types = tasks.values('project_type__price_code', 'project_type__description', 'project_type__price') \
+        project_types = tasks.values('project_type__price_code', 'project_type__project_type', 'project_type__price') \
             .order_by('project_type__price_code').distinct()
         for ptype in project_types:
             if ptype['project_type__price'] != 0:
@@ -70,7 +69,7 @@ class DealCalc(TemplateView):
                 price = round(ptype['project_type__price'] / Decimal(1.2), 2)
                 value = price * count
                 svalue += value
-            object_lists.append([index, ptype['project_type__description'] + ' ' + object_list, 'об\'єкт',
+            object_lists.append([index, f"{ptype['project_type__project_type']} {object_list}", "об'єкт",
                                 count, price, value])
 
         context['deal'] = deal
