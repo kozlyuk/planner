@@ -128,6 +128,7 @@ SELECT2_I18N_PATH = 'django_select2/i18n'
 
 # Forms settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 
 # REDIS and CELERY related settings
 CELERY_BROKER_URL = 'redis://localhost:6379'
