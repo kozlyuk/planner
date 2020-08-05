@@ -120,14 +120,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, "planner/static/")
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = '/media/'
-FILE_UPLOAD_MAX_MEMORY_SIZE = 26214400
 
+# SELECT2 settings
 SELECT2_JS = 'django_select2/select2.min.js'
 SELECT2_CSS = 'django_select2/select2.min.css'
 SELECT2_I18N_PATH = 'django_select2/i18n'
 
 # Forms settings
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 
 # REDIS and CELERY related settings

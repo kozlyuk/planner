@@ -39,9 +39,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'owner_count', 'task_count', 'inttask_count',
-                    'total_bonuses_ppppm', 'total_bonuses_pppm',
-                    'total_bonuses_ppm', 'total_bonuses_pm', 'total_bonuses_cm']
+    list_display = ['name', 'owner_count', 'task_count', 'inttask_count']
     fieldsets = [
         (None, {'fields': [('user', 'name'),
                            ('position', 'head'),
@@ -624,7 +622,7 @@ class TaskAdmin(admin.ModelAdmin):
 class IntTaskAdmin(admin.ModelAdmin):
 
     list_display = ['task_name', 'exec_status',
-                    'executor', 'planned_start', 'planned_finish']
+                    'executor', 'actual_finish']
     fieldsets = [
         (None, {'fields': ['task_name',
                            ('exec_status', 'executor'),
@@ -639,7 +637,6 @@ class IntTaskAdmin(admin.ModelAdmin):
     list_filter = ['exec_status',
                    ('executor', admin.RelatedOnlyFieldListFilter)]
     search_fields = ['task_name']
-    ordering = ['-creation_date', 'task_name']
 
     def get_queryset(self, request):
         qs = super(IntTaskAdmin, self).get_queryset(request)

@@ -407,9 +407,10 @@ class TaskUpdate(UpdateView):
     form_class = forms.TaskForm
 
     def get_success_url(self):
-        if self.request.session['task_success_url'] == 'task':
-            return reverse_lazy('task_list')
-        return reverse_lazy('sprint_list')
+        if 'task_success_url' in self.request.session and \
+            self.request.session['task_success_url'] == 'execution':
+            return reverse_lazy('sprint_list')
+        return reverse_lazy('task_list')
 
     def get_context_data(self, **kwargs):
         context = super(TaskUpdate, self).get_context_data(**kwargs)
@@ -492,9 +493,10 @@ class TaskDelete(DeleteView):
     model = Task
 
     def get_success_url(self):
-        if self.request.session['task_success_url'] == 'task':
-            return reverse_lazy('task_list')
-        return reverse_lazy('sprint_list')
+        if 'task_success_url' in self.request.session and \
+            self.request.session['task_success_url'] == 'execution':
+            return reverse_lazy('sprint_list')
+        return reverse_lazy('task_list')
 
 
 @method_decorator(login_required, name='dispatch')

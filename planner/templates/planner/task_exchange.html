@@ -49,12 +49,10 @@
                         {% for task in tasks %}
                         <tr>
                             <td> {{ task.object_code }} </td>
-                            <td class="hidden-xs"> {{ task.object_address }}</td>
-                            <td> {{ task.project_type }}</td>
-                            <td class="hidden-xs"> {{ task.deal }}</td>
-                            <td><span
-                                    class="badge badge-pill badge-{% task_status_color task.get_exec_status_display %} label-mini">
-                                    {{ task.get_exec_status_display }} </span></td>
+                            <td class="hidden-xs"> {{ task.object_address }} </td>
+                            <td> {{ task.project_type }} </td>
+                            <td class="hidden-xs"> {{ task.deal }} </td>
+                            <td> {{ task.get_exec_status_display }} </td>
                             <td> {{ task.owner.name }} </td>
                             <td> {{ task.warning }} </td>
                         </tr>

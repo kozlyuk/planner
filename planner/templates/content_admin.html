@@ -101,7 +101,7 @@
                         <h3 class="widget-news-right-body-title">
                             <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
                             <span
-                                class="badge badge-pill badge-{% task_secondary_overdue_color inttask.get_exec_status_display %} float-right">
+                                class="badge badge-pill badge-{% task_overdue_color inttask.get_exec_status_display %} float-right">
                                 {{ inttask.get_exec_status_display }} </span>
                         </h3>
                     </div>
