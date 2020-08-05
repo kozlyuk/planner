@@ -8,14 +8,14 @@ def months(start_month, start_year, end_month, end_year):
     end = datetime(end_year, end_month, 1)
     return list(rrule(MONTHLY, dtstart=start, until=end))
 
-for month in months(1, 2015, 6, 2020):
+for month in months(1, 2015, 12, 2020):
     calc_bonuses(month.month, month.year)
     calc_kpi(month.month, month.year)
 
 print('Calculation finished')
 
 
-from planner.models import Task, Sending
+from planner.models import Task
 
 tasks = Task.objects.all()
 for task in tasks:
@@ -28,7 +28,7 @@ for task in tasks:
 print('Calculation finished')
 
 
-from planner.models import Task, Sending
+from planner.models import Task
 
 tasks = Task.objects.all()
 for task in tasks:

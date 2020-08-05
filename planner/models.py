@@ -2,7 +2,7 @@
 
 from datetime import date
 from django.db import models
-from django.db.models import Q, Sum, Max
+from django.db.models import Sum, Max
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -83,87 +83,6 @@ class Employee(models.Model):
                                   .exclude(planned_finish__gte=date.today()).count()
         return 'Активні-' + str(active) + '/Протерміновані-' + str(overdue)
     inttask_count.short_description = 'Завдання'
-
-    @staticmethod
-    def date_delta(delta):
-        month = date.today().month + delta
-        year = date.today().year
-        if month < 1:
-            month += 12
-            year += -1
-        return month, year
-
-    def exec_bonuses(self, delta):
-        bonuses = 0
-        month, year = self.date_delta(delta)
-
-        executions = self.execution_set.filter(Q(task__exec_status=Task.Done) |
-                                               Q(task__exec_status=Task.Sent),
-                                               part__gt=0,
-                                               task__actual_finish__month=month,
-                                               task__actual_finish__year=year)
-        for query in executions:
-            bonuses += query.task.exec_bonus(query.part)
-
-        return round(bonuses, 2)
-        # executor bonuses
-
-    def owner_bonuses(self, delta):
-        bonuses = 0
-        month, year = self.date_delta(delta)
-
-        tasks = self.task_set.filter(exec_status=Task.Sent,
-                                     actual_finish__month=month,
-                                     actual_finish__year=year)
-        for query in tasks:
-            bonuses += query.owner_bonus()
-
-        return round(bonuses, 2)
-        # owner bonuses
-
-    def inttask_bonuses(self, delta):
-        month, year = self.date_delta(delta)
-
-        bonuses = self.inttask_set.filter(exec_status=IntTask.Done,
-                                          actual_finish__month=month,
-                                          actual_finish__year=year)\
-                                  .aggregate(Sum('bonus'))['bonus__sum']
-
-        return round(bonuses, 2) if bonuses else 0
-        # inttask bonuses
-
-    def total_bonuses(self, delta):
-        return self.exec_bonuses(delta) + self.owner_bonuses(delta) + self.inttask_bonuses(delta)
-        # total bonuses
-
-    def total_bonuses_cm(self):
-        return self.total_bonuses(0)
-    total_bonuses_cm.short_description = 'Бонуси {}.{}'.format(
-        date.today().month, date.today().year)
-
-    def total_bonuses_pm(self):
-        return self.total_bonuses(-1)
-    total_bonuses_pm.short_description = 'Бонуси {}.{}'\
-        .format(date.today().month - 1 if date.today().month > 1 else date.today().month + 11,
-                date.today().year if date.today().month > 1 else date.today().year - 1)
-
-    def total_bonuses_ppm(self):
-        return self.total_bonuses(-2)
-    total_bonuses_ppm.short_description = 'Бонуси {}.{}'\
-        .format(date.today().month - 2 if date.today().month > 2 else date.today().month + 10,
-                date.today().year if date.today().month > 2 else date.today().year - 1)
-
-    def total_bonuses_pppm(self):
-        return self.total_bonuses(-3)
-    total_bonuses_pppm.short_description = 'Бонуси {}.{}'\
-        .format(date.today().month - 3 if date.today().month > 3 else date.today().month + 9,
-                date.today().year if date.today().month > 3 else date.today().year - 1)
-
-    def total_bonuses_ppppm(self):
-        return self.total_bonuses(-4)
-    total_bonuses_ppppm.short_description = 'Бонуси {}.{}'\
-        .format(date.today().month - 4 if date.today().month > 4 else date.today().month + 8,
-                date.today().year if date.today().month > 4 else date.today().year - 1)
 
     def tasks_for_period(self, period):
         """ return queryset with tasks for given month """
@@ -555,15 +474,15 @@ class Task(models.Model):
     InProgress = 'IP'
     Done = 'HD'
     Sent = 'ST'
-    # OnHold = 'OH'
-    # Canceled = 'CL'
+    OnHold = 'OH'
+    Canceled = 'CL'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
         (Done, 'Виконано'),
-        (Sent, 'Надіслано')
-        # (OnHold, 'Призупинено')
-        # (Canceled, 'Відмінено')
+        (Sent, 'Надіслано'),
+        (OnHold, 'Призупинено'),
+        (Canceled, 'Відмінено')
     )
     object_code = models.CharField('Шифр об’єкту', max_length=30)
     object_address = models.CharField('Адреса об’єкту', max_length=255)
@@ -905,6 +824,7 @@ class Execution(models.Model):
         unique_together = ('executor', 'task', 'part_name')
         verbose_name = 'Виконавець'
         verbose_name_plural = 'Виконавці'
+        ordering = ['creation_date']
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
@@ -1003,6 +923,7 @@ class IntTask(models.Model):
         unique_together = ('task_name', 'executor')
         verbose_name = 'Завдання'
         verbose_name_plural = 'Завдання'
+        ordering = ['-exec_status', '-actual_finish']
 
     def save(self, logging=True, *args, **kwargs):
 
