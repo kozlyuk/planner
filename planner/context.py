@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import Sum
 
 from planner.models import Task, Execution, Deal, Employee, IntTask, News, Event
@@ -198,3 +199,97 @@ def context_projector(user):
         }
 
     return {**context, **context_general(user)}
+
+
+def context_bonus_per_month(employee, period):
+
+    # get owner tasks
+    tasks = employee.tasks_for_period(period)
+    bonuses = 0
+    index = 0
+    task_list = []
+    for task in tasks:
+        index += 1
+        owner_bonus = task.owner_bonus().quantize(Decimal("1.00"), ROUND_HALF_UP)
+        task_list.append([index, task.object_code,
+                          task.object_address,
+                          task.project_type,
+                          task.owner_part(),
+                          owner_bonus,
+                          task.actual_finish,
+                          task.sending_date])
+        bonuses += owner_bonus
+
+    # get executions
+    executions = employee.executions_for_period(period)
+    index = 0
+    executions_list = []
+    for ex in executions:
+        index += 1
+        exec_bonus = ex.task.exec_bonus(ex.part).quantize(Decimal("1.00"), ROUND_HALF_UP)
+        executions_list.append([index,
+                                ex.task.object_code,
+                                ex.task.object_address,
+                                ex.task.project_type,
+                                ex.part_name, ex.part,
+                                exec_bonus,
+                                ex.finish_date])
+        bonuses += exec_bonus
+
+    # get inttasks
+    inttasks = employee.inttasks_for_period(period)
+    index = 0
+    inttasks_list = []
+    for task in inttasks:
+        index += 1
+        inttasks_list.append([index, task.task_name, task.bonus])
+        bonuses += task.bonus
+
+    context = {
+        'first_name': employee.user.first_name,
+        'tasks': task_list,
+        'executions': executions_list,
+        'inttasks': inttasks_list,
+        'bonuses': bonuses
+    }
+    return context
+
+
+def context_deal_calculation(deal):
+
+    # get tasks
+    tasks = Task.objects.filter(deal=deal)
+    objects = tasks.values('object_code', 'object_address').order_by().distinct()
+    project_types = tasks.values('project_type__price_code',
+                                 'project_type__project_type',
+                                 'project_type__price') \
+                         .order_by('project_type__price_code').distinct()
+
+    # prepare table data
+    index = 0
+    svalue = Decimal(0)
+    object_lists = []
+    for ptype in project_types:
+        if ptype['project_type__price'] != 0:
+            index += 1
+            object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                                .values_list('object_code', flat=True)
+            object_list = ''
+            for obj in object_codes:
+                object_list += obj + ' '
+            count = object_codes.count()
+            price = ptype['project_type__price'] / Decimal(1.2)
+            price = price.quantize(Decimal("1.00"), ROUND_HALF_UP)
+            value = price * count
+            svalue += value
+            object_lists.append([index, f"{ptype['project_type__project_type']} {object_list}",
+                                 "об'єкт", count, price, value])
+
+    context = {
+        'deal': deal,
+        'objects': objects,
+        'taxation': deal.company.taxation,
+        'object_lists': object_lists,
+        'svalue': svalue
+    }
+    return context

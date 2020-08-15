@@ -1,5 +1,4 @@
 from datetime import datetime, date, timedelta
-from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
@@ -21,7 +20,8 @@ from django.http import QueryDict
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
-from planner.dashboard import context_accounter, context_pm, context_projector
+from planner.context import context_accounter, context_pm, context_projector, \
+                            context_bonus_per_month, context_deal_calculation
 from planner import forms
 from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                            IntTask, News, Event, Customer, Company, Contractor
@@ -47,38 +47,9 @@ class DealCalc(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         deal = Deal.objects.get(id=self.kwargs['deal_id'])
-        tasks = Task.objects.filter(deal=deal)
-        objects = tasks.values(
-            'object_code', 'object_address').order_by().distinct()
-        template = deal.customer.act_template
+        context_deal = context_deal_calculation(deal)
 
-        index = 0
-        svalue = Decimal(0)
-        object_lists = []
-        project_types = tasks.values('project_type__price_code', 'project_type__project_type', 'project_type__price') \
-            .order_by('project_type__price_code').distinct()
-        for ptype in project_types:
-            if ptype['project_type__price'] != 0:
-                index += 1
-                object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
-                    .values_list('object_code', flat=True)
-                object_list = ''
-                for obj in object_codes:
-                    object_list += obj + ' '
-                count = object_codes.count()
-                price = round(ptype['project_type__price'] / Decimal(1.2), 2)
-                value = price * count
-                svalue += value
-            object_lists.append([index, f"{ptype['project_type__project_type']} {object_list}", "об'єкт",
-                                count, price, value])
-
-        context['deal'] = deal
-        context['objects'] = objects
-        context['taxation'] = deal.company.taxation
-        context['template'] = template
-        context['object_lists'] = object_lists
-        context['svalue'] = svalue
-        return context
+        return {**context, **context_deal}
 
 
 @method_decorator(login_required, name='dispatch')
@@ -97,45 +68,9 @@ class BonusesCalc(TemplateView):
         context = super().get_context_data(**kwargs)
         employee = Employee.objects.get(id=self.kwargs['employee_id'])
         period = date(year=kwargs['year'], month=kwargs['month'], day=1)
+        context_bonus = context_bonus_per_month(employee, period)
 
-        # get owner tasks
-        tasks = employee.tasks_for_period(period)
-        bonuses = 0
-        index = 0
-        task_list = []
-        for task in tasks:
-            index += 1
-            task_list.append([index, task.object_code, task.object_address,
-                              task.project_type, task.owner_part(),
-                              round(task.owner_bonus(), 2), task.actual_finish, task.sending_date])
-            bonuses += task.owner_bonus()
-
-        # get executions
-        executions = employee.executions_for_period(period)
-        index = 0
-        executions_list = []
-        for ex in executions:
-            index += 1
-            executions_list.append([index, ex.task.object_code, ex.task.object_address,
-                                    ex.task.project_type, ex.part_name, ex.part,
-                                    round(ex.task.exec_bonus(ex.part), 2), ex.finish_date])
-            bonuses += ex.task.exec_bonus(ex.part)
-
-        # get inttasks
-        inttasks = employee.inttasks_for_period(period)
-        index = 0
-        inttasks_list = []
-        for task in inttasks:
-            index += 1
-            inttasks_list.append([index, task.task_name, task.bonus])
-            bonuses += task.bonus
-
-        context['first_name'] = employee.user.first_name
-        context['tasks'] = task_list
-        context['executions'] = executions_list
-        context['inttasks'] = inttasks_list
-        context['bonuses'] = round(bonuses, 2)
-        return context
+        return {**context, **context_bonus}
 
 
 def login_page(request):

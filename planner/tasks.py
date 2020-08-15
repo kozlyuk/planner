@@ -59,11 +59,11 @@ def update_task_statuses(task_id=None):
 
 @app.task
 def update_deal_statuses(deal_id=None):
-    """ Update statuses and warnings. If deal_id given updates for deal_id else updates for last 100 deals """
+    """ Update statuses and warnings. If deal_id given updates for deal_id else updates for last 200 deals """
     if deal_id:
         deals = Deal.objects.filter(pk=deal_id)
     else:
-        deals = Deal.objects.order_by('-id')[:100]
+        deals = Deal.objects.order_by('-id')[:200]
     for deal in deals:
         tasks = deal.task_set.values_list('exec_status', flat=True)
         if Task.ToDo in tasks:
@@ -294,8 +294,7 @@ def send_overdue_tasks_report():
     """Sending notifications about overdue tasks to owners and executors"""
 
     employees = Employee.objects.filter(user__is_active=True)
-    tasks = Task.objects.exclude(exec_status=Task.Sent) \
-                        .exclude(exec_status=Task.Done) \
+    tasks = Task.objects.exclude(exec_status__in=[Task.Done, Task.Sent, Task.OnHold, Task.Canceled]) \
                         .exclude(deal__expire_date__gte=date.today(),
                                  planned_finish__isnull=True) \
                         .exclude(deal__expire_date__gte=date.today(),
@@ -404,8 +403,7 @@ def send_urgent_tasks_report():
     """Sending notifications about urgent tasks to owners and executors"""
 
     employees = Employee.objects.filter(user__is_active=True)
-    tasks = Task.objects.exclude(exec_status=Task.Sent) \
-                        .exclude(exec_status=Task.Done) \
+    tasks = Task.objects.exclude(exec_status__in=[Task.Done, Task.Sent, Task.OnHold, Task.Canceled]) \
                         .exclude(planned_finish__isnull=True,
                                  deal__expire_date__lt=date.today()) \
                         .exclude(planned_finish__isnull=True,
@@ -567,124 +565,171 @@ def send_unsent_tasks_report():
 
 
 @app.task
-def send_monthly_report():
-    """Sending monthly report to employee"""
+def send_monthly_report(period=date.today().replace(day=1)):
+    """ Sending monthly report to employee """
 
-    month = date.today().month - 1
-    year = date.today().year
+    # template_name = "bonuses_list.html"
+    # employees = Employee.objects.exclude(user__username__startswith='outsourcing')
 
-    employees = Employee.objects.exclude(
-        user__username__startswith='outsourcing')
-    tasks = Task.objects.filter(exec_status=Task.Sent,
-                                actual_finish__month=month,
-                                actual_finish__year=year)
-    executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
-                                          task__actual_finish__month=month,
-                                          task__actual_finish__year=year)
-    inttasks = IntTask.objects.filter(exec_status=IntTask.Done,
-                                      actual_finish__month=month,
-                                      actual_finish__year=year)
+    # emails = []
 
-    emails = []
+    # for employee in employees:
+    #     # get owner tasks
+    #     tasks = employee.tasks_for_period(period)
+    #     bonuses = 0
+    #     index = 0
+    #     task_list = []
+    #     for task in tasks:
+    #         index += 1
+    #         task_list.append([index, task.object_code, task.object_address,
+    #                          task.project_type, task.owner_part(),
+    #                          round(task.owner_bonus(), 2), task.actual_finish, task.sending_date])
+    #         bonuses += task.owner_bonus()
 
-    for employee in employees:
+    #     # get executions
+    #     executions = employee.executions_for_period(period)
+    #     index = 0
+    #     executions_list = []
+    #     for ex in executions:
+    #         index += 1
+    #         executions_list.append([index, ex.task.object_code, ex.task.object_address,
+    #                                 ex.task.project_type, ex.part_name, ex.part,
+    #                                 round(ex.task.exec_bonus(ex.part), 2), ex.finish_date])
+    #         bonuses += ex.task.exec_bonus(ex.part)
 
-        if employee.user.email:
-            otasks = tasks.filter(owner=employee)
-            eexecutions = executions.filter(executor=employee)
-            einttasks = inttasks.filter(executor=employee)
+    #     # get inttasks
+    #     inttasks = employee.inttasks_for_period(period)
+    #     index = 0
+    #     inttasks_list = []
+    #     for task in inttasks:
+    #         index += 1
+    #         inttasks_list.append([index, task.task_name, task.bonus])
+    #         bonuses += task.bonus
 
-            if otasks.exists() or eexecutions.exists() or einttasks.exists():
-                bonuses = 0
-                message = '<html><body>\
-                          Шановний(а) {}.<br><br>\
-                          За {}.{} Вам були нараховані бонуси за виконання проектів та завдань.<br>\
-                          Звірьте їх будь ласка та при необхідності уточніть інформацію у\
-                          свого керівника або відповідальної особи по проекту.<br><br>' \
-                    .format(employee.user.first_name, month, year)
+    #     context['first_name'] = employee.user.first_name
+    #     context['tasks'] = task_list
+    #     context['executions'] = executions_list
+    #     context['inttasks'] = inttasks_list
+    #     context['bonuses'] = round(bonuses, 2)
+    #     return context
 
-                if otasks.exists():
-                    index = 0
-                    message += 'Бонуси за ведення проекту:<br>\
-                               <table border="1">\
-                               <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
-                               <th>Тип проекту</th><th>Відсоток</th><th>Бонус</th>'
-                    for task in otasks:
-                        index += 1
-                        message += '<tr>\
-                                   <td>{}</td>\
-                                   <td><a href="https://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
-                                   <td>{:.80}</td>\
-                                   <td>{}</td>\
-                                   <td>{!s}</td>\
-                                   <td>{!s}</td>\
-                                   </tr>'. \
-                            format(index, task.pk, task.object_code, task.object_address,
-                                   task.project_type, task.owner_part(),
-                                   round(task.owner_bonus(), 2))
-                        bonuses += task.owner_bonus()
 
-                    message += '</table><br>'
 
-                if eexecutions.exists():
-                    index = 0
-                    message += 'Бонуси за виконання проекту:<br>\
-                               <table border="1">\
-                               <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
-                               <th>Тип проекту</th><th>Назва робіт</th><th>Відсоток</th><th>Бонус</th>'
+    # month = date.today().month - 1
+    # year = date.today().year
 
-                    for ex in eexecutions:
-                        index += 1
-                        message += '<tr>\
-                                   <td>{}</td>\
-                                   <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
-                                   <td>{:.80}</td>\
-                                   <td>{}</td>\
-                                   <td>{}</td>\
-                                   <td>{}</td>\
-                                   <td>{!s}</td>\
-                                   </tr>'. \
-                            format(index, ex.task.pk, ex.task.object_code, ex.task.object_address,
-                                   ex.task.project_type, ex.part_name, ex.part,
-                                   round(ex.task.exec_bonus(ex.part), 2))
-                        bonuses += ex.task.exec_bonus(ex.part)
+    # employees = Employee.objects.exclude(
+    #     user__username__startswith='outsourcing')
+    # tasks = Task.objects.filter(exec_status=Task.Sent,
+    #                             actual_finish__month=month,
+    #                             actual_finish__year=year)
+    # executions = Execution.objects.filter(Q(task__exec_status=Task.Done) | Q(task__exec_status=Task.Sent),
+    #                                       task__actual_finish__month=month,
+    #                                       task__actual_finish__year=year)
+    # inttasks = IntTask.objects.filter(exec_status=IntTask.Done,
+    #                                   actual_finish__month=month,
+    #                                   actual_finish__year=year)
 
-                    message += '</table><br>'
+    # emails = []
 
-                if einttasks.exists():
-                    index = 0
-                    message += 'Бонуси за виконання завдань:<br>\
-                               <table border="1">\
-                               <th>&#8470;</th><th>Завдання</th><th>Бонус</th>'
+    # for employee in employees:
 
-                    for task in einttasks:
-                        index += 1
-                        message += '<tr>\
-                                   <td>{}</td>\
-                                   <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
-                                   <td>{}</td>\
-                                   </tr>'. \
-                            format(index, task.pk, task.task_name, task.bonus)
-                        bonuses += task.bonus
+    #     if employee.user.email:
+    #         otasks = tasks.filter(owner=employee)
+    #         eexecutions = executions.filter(executor=employee)
+    #         einttasks = inttasks.filter(executor=employee)
 
-                    message += '</table><br>'
+    #         if otasks.exists() or eexecutions.exists() or einttasks.exists():
+    #             bonuses = 0
+    #             message = '<html><body>\
+    #                       Шановний(а) {}.<br><br>\
+    #                       За {}.{} Вам були нараховані бонуси за виконання проектів та завдань.<br>\
+    #                       Звірьте їх будь ласка та при необхідності уточніть інформацію у\
+    #                       свого керівника або відповідальної особи по проекту.<br><br>' \
+    #                 .format(employee.user.first_name, month, year)
 
-                message += 'Всьго Ви отримаєте {} бонусів.</body></html><br>'.format(
-                    round(bonuses, 2))
+    #             if otasks.exists():
+    #                 index = 0
+    #                 message += 'Бонуси за ведення проекту:<br>\
+    #                            <table border="1">\
+    #                            <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
+    #                            <th>Тип проекту</th><th>Відсоток</th><th>Бонус</th>'
+    #                 for task in otasks:
+    #                     index += 1
+    #                     message += '<tr>\
+    #                                <td>{}</td>\
+    #                                <td><a href="https://erp.itel.rv.ua/project/{}/change/">{}</a></td>\
+    #                                <td>{:.80}</td>\
+    #                                <td>{}</td>\
+    #                                <td>{!s}</td>\
+    #                                <td>{!s}</td>\
+    #                                </tr>'. \
+    #                         format(index, task.pk, task.object_code, task.object_address,
+    #                                task.project_type, task.owner_part(),
+    #                                round(task.owner_bonus(), 2))
+    #                     bonuses += task.owner_bonus()
 
-                emails.append(mail.EmailMessage(
-                    'Бонуси за виконання проектів {}.{}'.format(month, year),
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [employee.user.email],
-                    ['s.kozlyuk@itel.rv.ua'],
-                ))
+    #                 message += '</table><br>'
 
-    for email in emails:
-        email.content_subtype = "html"
+    #             if eexecutions.exists():
+    #                 index = 0
+    #                 message += 'Бонуси за виконання проекту:<br>\
+    #                            <table border="1">\
+    #                            <th>&#8470;</th><th>Шифр об\'єкту</th><th>Адреса об\'єкту</th>\
+    #                            <th>Тип проекту</th><th>Назва робіт</th><th>Відсоток</th><th>Бонус</th>'
 
-    connection = mail.get_connection()
-    connection.open()
-    if connection.send_messages(emails) > 0:
-        logger.info("Sent monthly report to employee")
-    connection.close()
+    #                 for ex in eexecutions:
+    #                     index += 1
+    #                     message += '<tr>\
+    #                                <td>{}</td>\
+    #                                <td><a href="http://erp.itel.rv.ua/admin/planner/task/{}/change/">{}</a></td>\
+    #                                <td>{:.80}</td>\
+    #                                <td>{}</td>\
+    #                                <td>{}</td>\
+    #                                <td>{}</td>\
+    #                                <td>{!s}</td>\
+    #                                </tr>'. \
+    #                         format(index, ex.task.pk, ex.task.object_code, ex.task.object_address,
+    #                                ex.task.project_type, ex.part_name, ex.part,
+    #                                round(ex.task.exec_bonus(ex.part), 2))
+    #                     bonuses += ex.task.exec_bonus(ex.part)
+
+    #                 message += '</table><br>'
+
+    #             if einttasks.exists():
+    #                 index = 0
+    #                 message += 'Бонуси за виконання завдань:<br>\
+    #                            <table border="1">\
+    #                            <th>&#8470;</th><th>Завдання</th><th>Бонус</th>'
+
+    #                 for task in einttasks:
+    #                     index += 1
+    #                     message += '<tr>\
+    #                                <td>{}</td>\
+    #                                <td><a href="http://erp.itel.rv.ua/admin/planner/inttask/{}/change/">{}</a></td>\
+    #                                <td>{}</td>\
+    #                                </tr>'. \
+    #                         format(index, task.pk, task.task_name, task.bonus)
+    #                     bonuses += task.bonus
+
+    #                 message += '</table><br>'
+
+    #             message += 'Всьго Ви отримаєте {} бонусів.</body></html><br>'.format(
+    #                 round(bonuses, 2))
+
+    #             emails.append(mail.EmailMessage(
+    #                 'Бонуси за виконання проектів {}.{}'.format(month, year),
+    #                 message,
+    #                 settings.DEFAULT_FROM_EMAIL,
+    #                 [employee.user.email],
+    #                 ['s.kozlyuk@itel.rv.ua'],
+    #             ))
+
+    # for email in emails:
+    #     email.content_subtype = "html"
+
+    # connection = mail.get_connection()
+    # connection.open()
+    # if connection.send_messages(emails) > 0:
+    #     logger.info("Sent monthly report to employee")
+    # connection.close()
