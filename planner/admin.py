@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company, News, Event
+from .models import IntTask, Contractor, Order, Company
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -655,33 +655,6 @@ class IntTaskAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
-class NewsAdmin(admin.ModelAdmin):
-
-    list_display = ['creator', 'created', 'title',
-                    'news_type', 'actual_from', 'actual_to']
-    ordering = ['created']
-    list_filter = ['creator']
-    fieldsets = [
-        (None, {'fields': [('title', 'news_type'),
-                           ('text',),
-                           ('actual_from', 'actual_to')
-                           ]})
-    ]
-
-
-class EventAdmin(admin.ModelAdmin):
-
-    list_display = ['creator', 'date', 'title', 'repeat']
-    ordering = ['created']
-    list_filter = ['creator']
-    fieldsets = [
-        (None, {'fields': [('title',),
-                           ('date', 'repeat'),
-                           ('description',),
-                           ]})
-    ]
-
-
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
 admin.site.disable_action('delete_selected')
@@ -696,5 +669,3 @@ admin.site.register(Sending, SendingAdmin)
 admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
-admin.site.register(News, NewsAdmin)
-admin.site.register(Event, EventAdmin)

@@ -11,8 +11,8 @@ from django.conf.locale.uk import formats as uk_formats
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
-from planner.models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
-    Project, Company, News, Event, Receiver, Contractor
+from .models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
+                    Project, Company, Receiver, Contractor
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
 
@@ -28,11 +28,11 @@ class UserLoginForm(forms.ModelForm):
     def is_valid(self):
         username_ = self.data["username"]
         try:
-            User._default_manager.get(username=username_)
+            User.objects.get(username=username_)
             self.errors.clear()
             self.cleaned_data["username"] = username_
             return True
-        except:
+        except User.DoesNotExist:
             return False
 
 
@@ -548,33 +548,6 @@ class TaskExchangeForm(forms.Form):
 #     receipt_date = forms.DateField(label='Дата реєстру', widget=AdminDateWidget())
 #     copies_count = forms.CharField(label='Кількість примірників')
 #     register_num = forms.CharField(label='Номер реєстру')
-
-
-class NewsForm(forms.ModelForm):
-    class Meta:
-        model = News
-        fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
-
-    def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
-        self.fields['actual_from'].widget = AdminDateWidget()
-        self.fields['actual_to'].widget = AdminDateWidget()
-        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
-        self.fields['text'].widget.attrs.update(
-            {'style': 'width:100%; height:63px;'})
-
-
-class EventForm(forms.ModelForm):
-    class Meta:
-        model = Event
-        fields = ['title', 'date', 'repeat', 'description']
-
-    def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
-        self.fields['date'].widget = AdminDateWidget()
-        self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
-        self.fields['description'].widget.attrs.update(
-            {'style': 'width:100%; height:63px;'})
 
 
 class EmployeeSelfUpdateForm(forms.ModelForm):

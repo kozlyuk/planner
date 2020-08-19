@@ -10,7 +10,10 @@ from dateutil.relativedelta import relativedelta
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'planner.settings')
 
-app = Celery('planner', include=['analytics.tasks'])
+app = Celery('planner', include=['analytics.tasks',
+                                 'notice.tasks',
+                                 'messaging.tasks',
+                                 ])
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
@@ -69,7 +72,6 @@ app.conf.beat_schedule = {
         # on 10th of month at 17-00
         'schedule': crontab(day_of_month=10, hour=17, minute=00),
     },
-
     'calc_bonuses': {
         'task': 'analytics.tasks.calc_bonuses',
         # on 10th of month at 07-00
