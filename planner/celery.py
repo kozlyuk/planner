@@ -10,7 +10,10 @@ from dateutil.relativedelta import relativedelta
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'planner.settings')
 
-app = Celery('planner', include=['analytics.tasks', 'notice.tasks'])
+app = Celery('planner', include=['analytics.tasks',
+                                 'notice.tasks',
+                                 'messaging.tasks',
+                                 ])
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
