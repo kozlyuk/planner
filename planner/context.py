@@ -4,7 +4,8 @@ from django.db.models import Sum
 from django.utils.html import format_html
 from django.conf import settings
 
-from planner.models import Task, Execution, Deal, Employee, IntTask, News, Event
+from planner.models import Task, Execution, Deal, Employee, IntTask
+from notice.models import News, Event
 from analytics.models import Kpi
 from eventlog.models import Log
 

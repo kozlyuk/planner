@@ -20,11 +20,11 @@ from django.http import QueryDict
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
-from planner.context import context_accounter, context_pm, context_projector, \
-                            context_bonus_per_month, context_deal_calculation
-from planner import forms
-from planner.models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                           IntTask, News, Event, Customer, Company, Contractor
+from .context import context_accounter, context_pm, context_projector, \
+                     context_bonus_per_month, context_deal_calculation
+from . import forms
+from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
+                    IntTask, Customer, Company, Contractor
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
@@ -661,69 +661,6 @@ class InttaskDetail(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class NewsList(ListView):
-    model = News
-    success_url = reverse_lazy('home_page')
-
-
-@method_decorator(login_required, name='dispatch')
-class NewsDetail(DetailView):
-    model = News
-    success_url = reverse_lazy('news_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class NewsCreate(CreateView):
-    model = News
-    form_class = forms.NewsForm
-    success_url = reverse_lazy('news_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class NewsUpdate(UpdateView):
-    model = News
-    form_class = forms.NewsForm
-    success_url = reverse_lazy('news_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class NewsDelete(DeleteView):
-    model = News
-    success_url = reverse_lazy('news_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class EventList(ListView):
-    model = Event
-    success_url = reverse_lazy('home_page')
-
-
-@method_decorator(login_required, name='dispatch')
-class EventDetail(DetailView):
-    model = Event
-
-
-@method_decorator(login_required, name='dispatch')
-class EventCreate(CreateView):
-    model = Event
-    form_class = forms.EventForm
-    success_url = reverse_lazy('event_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class EventUpdate(UpdateView):
-    model = Event
-    form_class = forms.EventForm
-    success_url = reverse_lazy('event_list')
-
-
-@method_decorator(login_required, name='dispatch')
-class EventDelete(DeleteView):
-    model = Event
-    success_url = reverse_lazy('event_list')
-
-
-@method_decorator(login_required, name='dispatch')
 class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1110,11 +1047,11 @@ class CompanyDelete(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class СolleaguesList(ListView):
+class СolleagueList(ListView):
     """ ListView for Сolleagues.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
     model = Employee
-    template_name = "planner/colleagues_list.html"
+    template_name = "planner/colleague_list.html"
     success_url = reverse_lazy('home_page')
     paginate_by = 18
 
@@ -1189,12 +1126,12 @@ class EmployeeList(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class СolleaguesDetail(DetailView):
+class СolleagueDetail(DetailView):
     model = Employee
     context_object_name = 'employee'
 
     def get_context_data(self, **kwargs):
-        context = super(СolleaguesDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         return context
 
 

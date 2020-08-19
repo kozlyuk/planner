@@ -82,7 +82,7 @@
                         href="{% url 'sprint_list' %}">Планування спринтів</a></li>
                         {% endif %}
                         <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                        href="{% url 'colleagues_list' %}">Колеги</a></li>
+                        href="{% url 'colleague_list' %}">Колеги</a></li>
                         {% if request.user.is_superuser %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
                         {% endif %}
@@ -98,7 +98,7 @@
                 {% if request.user.is_superuser or request.user|has_group:"Проектувальники" or request.user|has_group:"ГІПи" %}
                     <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
                 {% endif %}
-                <a class="link {% if request.resolver_match.url_name == 'colleagues_list' %}active{% endif %} uppercase" href="{% url 'colleagues_list' %}">Колеги</a>
+                <a class="link {% if request.resolver_match.url_name == 'colleague_list' %}active{% endif %} uppercase" href="{% url 'colleague_list' %}">Колеги</a>
 
                 {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>

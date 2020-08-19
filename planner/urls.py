@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
+    path('notice/', include('notice.urls')),
 
     path('', views.Dashboard.as_view(), name='home_page'),
 
@@ -66,8 +67,8 @@ urlpatterns = [
     path('login/', views.login_page, name='login_page'),
     path('logout/', views.logout_page, name='logout_page'),
 
-    path('colleagues/', views.СolleaguesList.as_view(), name='colleagues_list'),
-    path('colleagues/<int:pk>/detail/', views.СolleaguesDetail.as_view(), name='colleagues_detail'),
+    path('colleague/', views.СolleagueList.as_view(), name='colleague_list'),
+    path('colleague/<int:pk>/detail/', views.СolleagueDetail.as_view(), name='colleague_detail'),
 
     path('employee/', views.EmployeeList.as_view(), name='employee_list'),
     path('employee/add', views.EmployeeCreate.as_view(), name='employee_add'),
@@ -75,19 +76,6 @@ urlpatterns = [
     path('employee/change/', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
     path('employee/<int:employee_id>/bonus/<int:year>/<int:month>/',
          views.BonusesCalc.as_view(), name='bonus_calc'),
-
-    path('news/', views.NewsList.as_view(), name='news_list'),
-    path('news/<int:pk>/detail/', views.NewsDetail.as_view(), name='news_detail'),
-    path('news/<int:pk>/change/', views.NewsUpdate.as_view(), name='news_update'),
-    path('news/add/', views.NewsCreate.as_view(), name='news_add'),
-    path('news/<int:pk>/delete/', views.NewsDelete.as_view(), name='news_delete'),
-
-    path('event/', views.EventList.as_view(), name='event_list'),
-    path('event/<int:pk>/detail/', views.EventDetail.as_view(), name='event_detail'),
-    path('event/<int:pk>/change/', views.EventUpdate.as_view(), name='event_update'),
-    path('event/add/', views.EventCreate.as_view(), name='event_add'),
-    path('event/<int:pk>/delete/', views.EventDelete.as_view(), name='event_delete'),
-
 
     path('select2/', include('django_select2.urls')),
 ]

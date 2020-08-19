@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'stdimage',
     'planner.apps.PlannerConfig',
+    'notice.apps.NoticeConfig',
     'eventlog.apps.EventlogConfig',
     'analytics.apps.AnalyticsConfig',
     'django_select2',

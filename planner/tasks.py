@@ -7,7 +7,7 @@ from django.core.mail import EmailMessage, get_connection
 from django.conf.locale.uk import formats as uk_formats
 from django.template.loader import render_to_string
 
-from planner.models import Employee, Deal, Task, Event
+from planner.models import Employee, Deal, Task
 from planner.celery import app
 from planner.context import context_bonus_per_month
 from planner.context_email import context_actneed_deals, context_debtors_deals, \
@@ -110,15 +110,6 @@ def update_deal_statuses(deal_id=None):
     logger.info("Updated deal %s statuses and warnings", deal_id)
 
 
-@app.task
-def event_next_date_calculate():
-    """Calculate next_date fields for Events"""
-    for event in Event.objects.all():
-        event.next_date = event.next_repeat()
-        event.save(update_fields=['next_date'], logging=False)
-    logger.info("Calculated next_date fields for Events")
-
-
 def send_email_list(emails: EmailMessage) -> None:
     """ sends email to emails list """
     try:
@@ -127,7 +118,7 @@ def send_email_list(emails: EmailMessage) -> None:
         message_count = connection.send_messages(emails)
         connection.close()
         logger.info("Sent %s messages", message_count)
-        print(message_count)
+        print(f"Sent { message_count} messages")
     except SMTPException as error:
         logger.warning("Connection error while sending emails: %s", error)
 
@@ -266,7 +257,7 @@ def send_unsent_tasks_report():
                 'Не надіслані проекти',
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                # [employee.user.email],
+                [employee.user.email],
                 ['s.kozlyuk@itel.rv.ua'],
                 ))
 
