@@ -59,11 +59,6 @@ app.conf.beat_schedule = {
         # workdays at 8-20
         'schedule': crontab(day_of_week="1-5", hour=8, minute=20),
     },
-    'urgent_tasks_report': {
-        'task': 'planner.tasks.send_urgent_tasks_report',
-        # workdays at 8-21
-        'schedule': crontab(day_of_week="1-5", hour=8, minute=21),
-    },
     'unsent_tasks_report': {
         'task': 'planner.tasks.send_unsent_tasks_report',
         # monday at 8-22

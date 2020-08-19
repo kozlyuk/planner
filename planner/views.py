@@ -343,7 +343,7 @@ class TaskUpdate(UpdateView):
 
     def get_success_url(self):
         if 'task_success_url' in self.request.session and \
-            self.request.session['task_success_url'] == 'execution':
+                self.request.session['task_success_url'] == 'execution':
             return reverse_lazy('sprint_list')
         return reverse_lazy('task_list')
 
@@ -429,7 +429,7 @@ class TaskDelete(DeleteView):
 
     def get_success_url(self):
         if 'task_success_url' in self.request.session and \
-            self.request.session['task_success_url'] == 'execution':
+                self.request.session['task_success_url'] == 'execution':
             return reverse_lazy('sprint_list')
         return reverse_lazy('task_list')
 
@@ -543,7 +543,8 @@ class SprintList(ListView):
         tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                              Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
                              Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
-                             Execution.InProgress, Execution.OnChecking]))
+                                                                                 Execution.InProgress,
+                                                                                 Execution.OnChecking]))
         for word in search_string:
             tasks = tasks.filter(Q(part_name__icontains=word) |
                                  Q(task__object_code__icontains=word) |
@@ -590,7 +591,7 @@ class ExecutionStatusChange(View):
         if obj:
             obj.exec_status = kwargs['status']
             obj.save()
-        return redirect(reverse('sprint_list') + '?' +  self.request.session.get('execution_query_string', ''))
+        return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
 
 
 # @method_decorator(login_required, name='dispatch')
@@ -1158,7 +1159,7 @@ class EmployeeList(ListView):
     def get_queryset(self):
         employees = Employee.objects.order_by('-user__is_active', 'name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
-                                    .values_list('name',  'url')
+                                    .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
         for word in search_string:
             employees = employees.filter(Q(name__icontains=word))

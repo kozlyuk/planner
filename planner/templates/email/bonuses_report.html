@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+        border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    Шановний(а) {{ first_name }}.<br>
+    За {{ month }}.{{ year }} Вам були нараховані бонуси за виконання проектів та завдань.<br>
+
+    {% if executions %}
+        <br>Бонуси за виконання проектів:
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_execution %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in executions %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if tasks %}
+        <br>Бонуси за ведення проектів:
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_task %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in tasks %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if inttasks %}
+        <br>Бонуси за виконання завдань:
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_inttask %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in inttasks %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <br>Всьго Ви отримаєте {{ bonuses }} бонусів.
+</body>
+</html>

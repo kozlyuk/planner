@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+        border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    Шановний(а) {{ first_name }}.<br>
+
+    {% if tasks %}
+        <br>Протерміновані наступні проекти, в яких Ви відповідальна особа:
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_task %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in tasks %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if executions %}
+        <br>Протерміновані наступні проекти, в яких Ви виконуєте роботи::
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_execution %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in executions %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if inttasks %}
+        <br>Ви протермінували наступні завдання:
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels_inttask %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in inttasks %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</body>
+</html>
