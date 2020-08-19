@@ -6,6 +6,7 @@ from django.db.models import Sum, Max
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.urls import reverse
 from django.core.validators import MaxValueValidator
 from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
@@ -99,6 +100,29 @@ class Employee(models.Model):
         """ return queryset with inttasks for given month """
         return self.inttask_set.filter(actual_finish__month=period.month,
                                        actual_finish__year=period.year)
+
+    def overdue_tasks(self):
+        """ return queryset with overdue tasks of task owner """
+        return self.task_set.exclude(exec_status__in=[Task.Done, Task.Sent,
+                                                      Task.OnHold, Task.Canceled]) \
+                            .exclude(deal__expire_date__gte=date.today(),
+                                     planned_finish__isnull=True) \
+                            .exclude(deal__expire_date__gte=date.today(),
+                                     planned_finish__gte=date.today())
+
+    def overdue_executions(self):
+        """ return queryset with overdue executions of employee """
+        return self.execution_set.exclude(exec_status__in=[Execution.Done, Execution.OnChecking]) \
+                                 .exclude(planned_finish__gte=date.today())
+
+    def overdue_inttasks(self):
+        """ return queryset with overdues inttasks of employee """
+        return self.inttask_set.exclude(exec_status=IntTask.Done) \
+                               .exclude(planned_finish__gte=date.today())
+
+    def unsent_tasks(self):
+        """ return queryset with tasks tasks of task owner """
+        return self.task_set.filter(exec_status=Task.Done)
 
 
 class Customer(models.Model):
@@ -374,7 +398,10 @@ class Deal(models.Model):
     def __str__(self):
         return self.number + ' ' + self.customer.name
 
-    def save(self, logging=True, *args, **kwargs):
+    def get_absolute_url(self):
+        return reverse('deal_update', args=[self.pk])
+
+    def save(self, *args, logging=True, **kwargs):
 
         # Automatic set act_date when Deals act_status has Issued
         if self.act_status != Deal.NotIssued and self.act_date is None:
@@ -526,7 +553,10 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.object_code} {self.project_type}"
 
-    def save(self, logging=True, *args, **kwargs):
+    def get_absolute_url(self):
+        return reverse('task_detail', args=[self.pk])
+
+    def save(self, *args, logging=True, **kwargs):
         if not self.pk:
             # Set creator
             self.creator = get_current_user()
@@ -668,15 +698,18 @@ class Task(models.Model):
         else:
             part = 0
         return part
+    owner_part.short_description = "Частка"
     # owner part
 
     def owner_bonus(self):
         return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
             * self.project_type.owner_bonus / 10000
+    owner_bonus.short_description = "Бонус"
     # owner's bonus
 
     def exec_bonus(self, part):
         return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000
+    exec_bonus.short_description = "Бонус"
     # executor's bonus
 
     def executors_bonus(self):
@@ -721,7 +754,7 @@ class Order(models.Model):
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
 
-    def save(self, logging=True, *args, **kwargs):
+    def save(self, *args, logging=True, **kwargs):
         title = self.task.object_code + ' ' + self.task.project_type.price_code
         if logging:
             if not self.pk:
@@ -755,7 +788,7 @@ class Sending(models.Model):
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.receiver.__str__()
 
-    def save(self, logging=True, *args, **kwargs):
+    def save(self, *args, logging=True, **kwargs):
 
         # saving object
         super(Sending, self).save(*args, **kwargs)
@@ -829,7 +862,7 @@ class Execution(models.Model):
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
-    def save(self, logging=True, *args, **kwargs):
+    def save(self, *args, logging=True, **kwargs):
 
         # Automatic change Task.exec_status when Execution has changed
         if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.task.exec_status == Task.ToDo:
@@ -925,7 +958,7 @@ class IntTask(models.Model):
         verbose_name_plural = 'Завдання'
         ordering = ['-exec_status', '-actual_finish']
 
-    def save(self, logging=True, *args, **kwargs):
+    def save(self, *args, logging=True, **kwargs):
 
         # Automatic set finish_date when IntTask has done
         if self.exec_status == Task.Done and self.actual_finish is None:
@@ -953,6 +986,9 @@ class IntTask(models.Model):
 
     def __str__(self):
         return self.task_name
+
+    def get_absolute_url(self):
+        return reverse('inttask_detail', args=[self.pk])
 
     def is_editable(self):
         user = get_current_user()
@@ -988,7 +1024,7 @@ class Event(models.Model):
         verbose_name_plural = 'Події'
         ordering = ['next_date']
 
-    def save(self, logging=True, *args, **kwargs):
+    def save(self, *args, logging=True, **kwargs):
         self.next_date = self.next_repeat()
         if not self.pk:
             self.creator = get_current_user()

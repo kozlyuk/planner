@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+        border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    Шановна(ий) {{ first_name }}.<br>
+    В наступних угодах пройшов термін оплати:<br>
+    {% if deals %}
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fields in deals %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</body>
+</html>

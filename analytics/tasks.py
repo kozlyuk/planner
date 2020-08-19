@@ -138,4 +138,4 @@ def calc_kpi(month=date.today().month, year=date.today().year):
             kpi.period = period
             kpi.save()
 
-    LOGGER.info("Employee KPIs for %s.%s.%s saved", month, year)
+    LOGGER.info("Employee KPIs for %s.%s saved", month, year)

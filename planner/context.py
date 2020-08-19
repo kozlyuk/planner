@@ -1,6 +1,8 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import Sum
+from django.utils.html import format_html
+from django.conf import settings
 
 from planner.models import Task, Execution, Deal, Employee, IntTask, News, Event
 from analytics.models import Kpi
@@ -20,7 +22,7 @@ def context_general(user):
     active_inttasks_count = active_inttasks.count()
     overdue_inttasks_count = active_inttasks.exclude(planned_finish__gte=TODAY).count()
     overdue_inttasks_div = int(overdue_inttasks_count / (active_inttasks_count + hd_inttasks_count) * 100) \
-                           if active_inttasks_count > 0 else 0
+        if active_inttasks_count > 0 else 0
 
     bonus = Kpi.objects.filter(employee__user=user,
                                name__in=[Kpi.BonusItel, Kpi.BonusGKP, Kpi.BonusSIA],
@@ -68,6 +70,7 @@ def context_general(user):
 
     return context
 
+
 def context_accounter(user):
 
     deals = Deal.objects.all()
@@ -89,12 +92,12 @@ def context_accounter(user):
     debtor_deals_count = debtor_deals.count()
     unpaid_deals_count = unpaid_deals.count()
     deals_div = int(actneed_deals_count / active_deals_count * 100) \
-                if active_deals_count > 0 else 0
+        if active_deals_count > 0 else 0
     debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) \
-                       if unpaid_deals_count > 0 else 0
+        if unpaid_deals_count > 0 else 0
     overdue_deals_count = len(overdue_deals)
     overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) \
-                        if active_deals_count > 0 else 0
+        if active_deals_count > 0 else 0
 
     context = {
         'employee': user.employee,
@@ -113,6 +116,7 @@ def context_accounter(user):
 
     return {**context, **context_general(user)}
 
+
 def context_pm(user):
 
     owner_tasks = Task.objects.filter(owner__user=user).order_by('creation_date')
@@ -129,7 +133,7 @@ def context_pm(user):
     active_tasks = owner_tasks.exclude(exec_status__in=[Task.Sent, Task.OnHold, Task.Canceled])
     active_tasks_count = active_tasks.count()
     tasks_div = int(sent_tasks_count / active_tasks_count * 100) \
-                if active_tasks_count > 0 else 0
+        if active_tasks_count > 0 else 0
     overdue_tasks_count = active_tasks.exclude(deal__expire_date__gte=TODAY,
                                                planned_finish__isnull=True)\
                                       .exclude(deal__expire_date__gte=TODAY,
@@ -156,6 +160,7 @@ def context_pm(user):
 
     return {**context, **context_general(user)}
 
+
 def context_projector(user):
 
     user_executions = Execution.objects.filter(executor__user=user)
@@ -180,7 +185,7 @@ def context_projector(user):
                                                        task__planned_finish__gte=TODAY)\
                                               .count()
     overdue_executions_div = int(overdue_executions_count / active_executions_count * 100) \
-                             if active_executions_count > 0 else 0
+        if active_executions_count > 0 else 0
 
     context = {
         'employee': user.employee,
@@ -204,6 +209,15 @@ def context_projector(user):
 def context_bonus_per_month(employee, period):
 
     # get owner tasks
+    labels_task = ["№",
+                   Task._meta.get_field('object_code').verbose_name,
+                   Task._meta.get_field('object_address').verbose_name,
+                   Task._meta.get_field('project_type').verbose_name,
+                   Task.owner_part.short_description,
+                   Task.owner_bonus.short_description,
+                   Task._meta.get_field('actual_finish').verbose_name,
+                   Task._meta.get_field('sending_date').verbose_name,
+                   ]
     tasks = employee.tasks_for_period(period)
     bonuses = 0
     index = 0
@@ -211,16 +225,29 @@ def context_bonus_per_month(employee, period):
     for task in tasks:
         index += 1
         owner_bonus = task.owner_bonus().quantize(Decimal("1.00"), ROUND_HALF_UP)
-        task_list.append([index, task.object_code,
+        task_list.append([index,
+                          format_html('<a href="%s%s">%s</a>'
+                                      % (settings.SITE_URL,
+                                         task.get_absolute_url(),
+                                         task.object_code)),
                           task.object_address,
                           task.project_type,
                           task.owner_part(),
                           owner_bonus,
                           task.actual_finish,
-                          task.sending_date])
+                          task.sending_date
+                          ])
         bonuses += owner_bonus
-
     # get executions
+    labels_execution = ["№",
+                        Task._meta.get_field('object_code').verbose_name,
+                        Task._meta.get_field('object_address').verbose_name,
+                        Task._meta.get_field('project_type').verbose_name,
+                        Execution._meta.get_field('part_name').verbose_name,
+                        Execution._meta.get_field('part').verbose_name,
+                        Task.exec_bonus.short_description,
+                        Execution._meta.get_field('finish_date').verbose_name,
+                        ]
     executions = employee.executions_for_period(period)
     index = 0
     executions_list = []
@@ -228,29 +255,48 @@ def context_bonus_per_month(employee, period):
         index += 1
         exec_bonus = ex.task.exec_bonus(ex.part).quantize(Decimal("1.00"), ROUND_HALF_UP)
         executions_list.append([index,
-                                ex.task.object_code,
+                                format_html('<a href="%s%s">%s</a>'
+                                            % (settings.SITE_URL,
+                                               ex.task.get_absolute_url(),
+                                               ex.task.object_code)),
                                 ex.task.object_address,
                                 ex.task.project_type,
-                                ex.part_name, ex.part,
+                                ex.part_name,
+                                ex.part,
                                 exec_bonus,
-                                ex.finish_date])
+                                ex.finish_date
+                                ])
         bonuses += exec_bonus
-
     # get inttasks
+    labels_inttask = ["№",
+                      IntTask._meta.get_field('task_name').verbose_name,
+                      IntTask._meta.get_field('bonus').verbose_name,
+                      ]
     inttasks = employee.inttasks_for_period(period)
     index = 0
     inttasks_list = []
     for task in inttasks:
         index += 1
-        inttasks_list.append([index, task.task_name, task.bonus])
+        inttasks_list.append([index,
+                              format_html('<a href="%s%s">%s</a>'
+                                          % (settings.SITE_URL,
+                                             task.get_absolute_url(),
+                                             task.task_name)),
+                              task.bonus
+                              ])
         bonuses += task.bonus
-
+    # creating context
     context = {
         'first_name': employee.user.first_name,
+        'labels_task': labels_task,
+        'labels_execution': labels_execution,
+        'labels_inttask': labels_inttask,
         'tasks': task_list,
         'executions': executions_list,
         'inttasks': inttasks_list,
-        'bonuses': bonuses
+        'bonuses': bonuses,
+        'month': period.month,
+        'year': period.year
     }
     return context
 
@@ -264,7 +310,6 @@ def context_deal_calculation(deal):
                                  'project_type__project_type',
                                  'project_type__price') \
                          .order_by('project_type__price_code').distinct()
-
     # prepare table data
     index = 0
     svalue = Decimal(0)
@@ -284,7 +329,7 @@ def context_deal_calculation(deal):
             svalue += value
             object_lists.append([index, f"{ptype['project_type__project_type']} {object_list}",
                                  "об'єкт", count, price, value])
-
+    # creating context
     context = {
         'deal': deal,
         'objects': objects,
