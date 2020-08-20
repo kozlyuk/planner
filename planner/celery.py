@@ -38,37 +38,37 @@ app.conf.beat_schedule = {
         'schedule': crontab(day_of_week="1-5", hour="8-18", minute=1),
     },
     'event_next_date': {
-        'task': 'planner.tasks.event_next_date_calculate',
+        'task': 'notice.tasks.event_next_date_calculate',
         # at midnight
         'schedule': crontab(minute=0, hour=0),
     },
     'actneed_report': {
-        'task': 'planner.tasks.send_actneed_report',
+        'task': 'messaging.tasks.send_actneed_report',
         # workdays at 8-10
         'schedule': crontab(day_of_week="1-5", hour=8, minute=10),
     },
     'debtors_report': {
-        'task': 'planner.tasks.send_debtors_report',
+        'task': 'messaging.tasks.send_debtors_report',
         # workdays at 8-11
         'schedule': crontab(day_of_week="1-5", hour=8, minute=11),
     },
     'overdue_deals_report': {
-        'task': 'planner.tasks.send_overdue_deals_report',
+        'task': 'messaging.tasks.send_overdue_deals_report',
         # workdays at 8-12
         'schedule': crontab(day_of_week="1-5", hour=8, minute=12),
     },
     'overdue_tasks_report': {
-        'task': 'planner.tasks.send_overdue_tasks_report',
+        'task': 'messaging.tasks.send_overdue_tasks_report',
         # workdays at 8-20
         'schedule': crontab(day_of_week="1-5", hour=8, minute=20),
     },
     'unsent_tasks_report': {
-        'task': 'planner.tasks.send_unsent_tasks_report',
+        'task': 'messaging.tasks.send_unsent_tasks_report',
         # monday at 8-22
         'schedule': crontab(day_of_week=1, hour=8, minute=22),
     },
     'monthly_report': {
-        'task': 'planner.tasks.send_monthly_report',
+        'task': 'messaging.tasks.send_monthly_report',
         # on 10th of month at 17-00
         'schedule': crontab(day_of_month=10, hour=17, minute=00),
     },

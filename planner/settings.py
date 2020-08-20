@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',
-    'silk'
 ]
 
 MIDDLEWARE = [
@@ -48,12 +47,15 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    'planner.middleware.ExceptionHandler',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['silk']
+    MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
 
 ROOT_URLCONF = 'planner.urls'
 

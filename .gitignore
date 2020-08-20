@@ -8,6 +8,7 @@ venv/
 /celerybeat-schedule
 /dump.rdb
 /celerybeat.pid
+planner.log
 
 # Windows image file caches
 Thumbs.db
