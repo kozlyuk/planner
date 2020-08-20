@@ -1,8 +1,8 @@
-from django.core.mail import EmailMessage
-from django.conf import settings
-from django.contrib.auth.models import User
+import logging
 from crum import get_current_user
-from messaging.tasks import send_email_list
+
+
+logger = logging.getLogger(__name__)
 
 
 class ExceptionHandler:
@@ -14,11 +14,5 @@ class ExceptionHandler:
         return response
 
     def process_exception(self, request, exception):
-        superuser_email = User.objects.get(username='admin').email
         employee_name = get_current_user().username
-        email = EmailMessage(f'Exception happend in {employee_name}',
-                             str(exception),
-                             settings.DEFAULT_FROM_EMAIL,
-                             [superuser_email],
-                             )
-        send_email_list.delay([email])
+        logger.exception("Fatal exception happend in %s", employee_name)
