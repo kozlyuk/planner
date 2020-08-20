@@ -10,12 +10,13 @@ from planner.models import Employee, Deal
 from planner.context import context_bonus_per_month
 from planner.celery import app
 from .context_email import context_actneed_deals, context_debtors_deals, \
-                                  context_overdue_tasks
+                           context_overdue_tasks
 
 
 logger = get_task_logger(__name__)
 
 
+@app.task
 def send_email_list(emails: EmailMessage) -> None:
     """ sends email to emails list """
     try:
