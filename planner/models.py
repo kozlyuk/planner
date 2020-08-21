@@ -194,8 +194,7 @@ class Customer(models.Model):
 
 class Project(models.Model):
     project_type = models.CharField('Вид робіт', max_length=100)
-    customer = models.ForeignKey(
-        Customer, verbose_name='Замовник', on_delete=models.PROTECT)
+    customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     price_code = models.CharField('Пункт кошторису', max_length=10, unique=True)
     price = models.DecimalField(
         'Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
@@ -217,7 +216,7 @@ class Project(models.Model):
         ordering = ['-price_code']
 
     def __str__(self):
-        return self.price_code + ' ' + self.project_type + ' ' + self.customer.name
+        return self.price_code + ' ' + self.project_type
 
     def net_price(self):
         net_price = self.price * self.net_price_rate / 100
