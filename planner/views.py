@@ -134,7 +134,7 @@ class DealList(ListView):
             raise PermissionDenied
 
     def get_queryset(self):
-        deals = Deal.objects.all()
+        deals = Deal.objects.all().select_related('customer')
         search_string = self.request.GET.get('filter', '').split()
         customers = self.request.GET.getlist('customer', '0')
         companies = self.request.GET.getlist('company', '0')
@@ -189,7 +189,9 @@ class DealList(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class DealUpdate(UpdateView):
-    model = Deal
+    queryset = Deal.objects.select_related('company', 'customer') \
+                           .prefetch_related('task_set', 'task_set__project_type', 'task_set__owner')
+    # model = Deal
     form_class = forms.DealForm
     context_object_name = 'deal'
     success_url = reverse_lazy('deal_list')
@@ -271,7 +273,7 @@ class TaskList(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        tasks = Task.objects.all()
+        tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
         search_string = self.request.GET.get('filter', '').split()
         exec_statuses = self.request.GET.getlist('exec_status', '0')
         owners = self.request.GET.getlist('owner', '0')
@@ -498,7 +500,7 @@ class SprintList(ListView):
         raise PermissionDenied
 
     def get_queryset(self):
-        tasks = Execution.objects.all()
+        tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
         exec_statuses = self.request.GET.getlist('exec_status', '0')
         executors = self.request.GET.getlist('executor', '0')
         companies = self.request.GET.getlist('company', '0')

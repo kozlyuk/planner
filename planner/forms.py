@@ -315,7 +315,7 @@ class TaskForm(forms.ModelForm):
 
         if self.instance.pk is None or self.instance.deal.act_status == Deal.NotIssued:
             self.fields['deal'].queryset = Deal.objects.filter(
-                act_status=Deal.NotIssued)
+                act_status=Deal.NotIssued).select_related('customer')
         else:
             self.fields['deal'].widget.attrs['disabled'] = True
             self.fields['deal'].required = False
