@@ -124,10 +124,6 @@ class Employee(models.Model):
 
 
 class Customer(models.Model):
-    ACT_TEMPLATE_CHOICES = (
-        ('gks', 'Шаблон ГКС'),
-        ('msz', 'Шаблон МС'),
-    )
     name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
@@ -135,8 +131,7 @@ class Customer(models.Model):
     requisites = models.TextField('Реквізити', blank=True)
     debtor_term = models.PositiveSmallIntegerField(
         'Термін післяоплати', blank=True, null=True)
-    act_template = models.CharField(
-        'Шаблон акту', max_length=3, choices=ACT_TEMPLATE_CHOICES, default='gks')
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Замовник'
@@ -643,6 +638,8 @@ class Task(models.Model):
         elif user.groups.filter(name='Бухгалтери').exists():
             return True
         elif user.groups.filter(name='Секретарі').exists():
+            return True
+        elif user.groups.filter(name='Замовники').exists():
             return True
         else:
             return False

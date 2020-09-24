@@ -250,16 +250,15 @@ class TaskFilterForm(forms.Form):
 class SprintFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        exec_status = list(Execution.EXEC_STATUS_CHOICES)
         user = get_current_user()
-        if user.is_superuser:
-            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
-        elif user.groups.filter(name='ГІПи').exists():
+        exec_status = list(Execution.EXEC_STATUS_CHOICES)
+        companies = list(Company.objects.all().values_list('pk', 'name'))
+        executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        if user.groups.filter(name='ГІПи').exists():
             executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
-                             .values_list('pk', 'name'))
+                                     .values_list('pk', 'name'))
         elif user.groups.filter(name='Проектувальники').exists():
             executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
-        companies = list(Company.objects.all().values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
@@ -608,7 +607,7 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['name', 'contact_person', 'phone', 'email',
-                  'debtor_term', 'act_template', 'requisites']
+                  'debtor_term', 'user', 'requisites']
 
 
 class CompanyFilterForm(forms.Form):

@@ -100,6 +100,11 @@ def logout_page(request):
 @method_decorator(login_required, name='dispatch')
 class Dashboard(TemplateView):
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name='Замовники').exists():
+            return redirect('task_list')
+        return super().dispatch(request, *args, **kwargs)
+
     def get_template_names(self):
         if self.request.user.groups.filter(name='Бухгалтери').exists():
             return 'content_admin.html'
@@ -274,6 +279,9 @@ class TaskList(ListView):
 
     def get_queryset(self):
         tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
+        # filter only customer tasks
+        if self.request.user.groups.filter(name='Замовники').exists():
+            tasks = tasks.filter(deal__customer__user=self.request.user)
         search_string = self.request.GET.get('filter', '').split()
         exec_statuses = self.request.GET.getlist('exec_status', '0')
         owners = self.request.GET.getlist('owner', '0')
@@ -493,14 +501,15 @@ class SprintList(ListView):
             request.GET = request.GET.copy()
             request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
             request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
-        if request.user.is_superuser or request.user.groups.filter(name='ГІПи').exists() or \
-                request.user.groups.filter(name='Проектувальники').exists():
+        if request.user.has_perm('planner.view_execution'):
             return super().dispatch(request, *args, **kwargs)
-
         raise PermissionDenied
 
     def get_queryset(self):
         tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
+        # filter only customer tasks
+        if self.request.user.groups.filter(name='Замовники').exists():
+            tasks = tasks.filter(task__deal__customer__user=self.request.user)
         exec_statuses = self.request.GET.getlist('exec_status', '0')
         executors = self.request.GET.getlist('executor', '0')
         companies = self.request.GET.getlist('company', '0')

@@ -22,10 +22,10 @@
                                 <a class="nav-link active" id="pills-tab main-widget-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
                                     role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> Опис </a>
                             </li>
-                            <li class="nav-item">
+                            {% comment %} <li class="nav-item">
                                 <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
                                         role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Додатково </a>
-                            </li>
+                            </li> {% endcomment %}
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
@@ -74,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
+                            {% comment %} <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
                                     aria-labelledby="pills-tab_1_2">
                                 <div class="widget-news margin-bottom-20">
                                     {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
@@ -89,7 +89,7 @@
                                         {% if cost.comment %}<p>Коментар: <strong>{{ cost.comment }}</strong></p>>{% endif %}
                                     </div>
                                 </div>
-                            </div>
+                            </div> {% endcomment %}
                             <a href="{{request.META.HTTP_REFERER}}"
                                 class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;"> Повернутись </a>
                         </div>
@@ -104,10 +104,10 @@
                                 <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
                                     role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
                             </li>
-                            <li class="nav-item">
+                            {% comment %} <li class="nav-item">
                                 <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
                                 role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
-                            </li>
+                            </li> {% endcomment %}
                             <li class="nav-item">
                                 <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
                                     role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Відправки </a>
@@ -142,7 +142,7 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
+                            {% comment %} <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
                                 aria-labelledby="pills-tab_2_2">
                                 {% if costs|length > 0 %}
                                 {% for cost in costs %}
@@ -169,7 +169,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                            </div>
+                            </div> {% endcomment %}
                             <div class="tab-pane fade show" id="tab_2_3" role="tabpane2"
                                 aria-labelledby="pills-tab_2_3">
                                 {% if sendings|length > 0 %}
