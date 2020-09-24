@@ -29,11 +29,11 @@
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}"> статус виконання
-                                    </a></th>
-                                <th class="print-ignore uppercase">змінити статус</th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">
-                                        дата виконання</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}">статус виконання</a></th>
+                                {% if request.user.is_staff %}
+                                    <th class="print-ignore uppercase">змінити статус</th>
+                                {% endif %}
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">дата виконання</a></th>
                                 <th class="uppercase"> попередження </th>
                             </tr>
                         </thead>
@@ -55,9 +55,11 @@
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>
-                                <td class="print-ignore" class="text-center">
-                                    {% status_change request.user task.pk task.exec_status %}
-                                </td>
+                                {% if request.user.is_staff %}
+                                    <td class="print-ignore" class="text-center">
+                                        {% status_change request.user task.pk task.exec_status %}
+                                    </td>
+                                {% endif %}
                                 <td>{% none_date_check task.finish_date %}</td>
                                 <td>
                                     <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
