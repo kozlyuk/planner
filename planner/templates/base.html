@@ -69,20 +69,26 @@
                 <label class="hamburger" for="hamburger"> <i></i> </label>
                 <section class="drawer-list">
                     <ul>
-                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                        href="{% url 'home_page' %}">Головна</a></li>
-                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                        href="{% url 'task_list' %}">Проекти</a></li>
-                        {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
+                        {% if request.user.is_staff %}
+                            <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'home_page' %}">Головна</a></li>
+                        {% endif %}
+                        {% if perms.planner.view_task %}
+                            <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'task_list' %}">Проекти</a></li>
+                        {% endif %}
+                        {% if perms.planner.view_deal %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'deal_list' %}">Договори</a></li>
                         {% endif %}
-                        {% if request.user.is_superuser or request.user|has_group:"Проектувальники" or request.user|has_group:"ГІПи" %}
-                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                        href="{% url 'sprint_list' %}">Планування спринтів</a></li>
+                        {% if perms.planner.view_execution %}
+                            <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'sprint_list' %}">Планування спринтів</a></li>
                         {% endif %}
-                        <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                        href="{% url 'colleague_list' %}">Колеги</a></li>
+                        {% if perms.planner.view_employee %}
+                            <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'colleague_list' %}">Колеги</a></li>
+                        {% endif %}
                         {% if request.user.is_superuser %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
                         {% endif %}
@@ -90,16 +96,21 @@
                 </section>
             </div>
             <nav class="container-fluid desktop-menu">
-                <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
-                <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
-                {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
+                {% if request.user.is_staff %}
+                    <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
+                {% endif %}
+                {% if perms.planner.view_task %}
+                    <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
+                {% endif %}
+                {% if perms.planner.view_deal %}
                     <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
                 {% endif %}
-                {% if request.user.is_superuser or request.user|has_group:"Проектувальники" or request.user|has_group:"ГІПи" %}
+                {% if perms.planner.view_execution %}
                     <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
                 {% endif %}
-                <a class="link {% if request.resolver_match.url_name == 'colleague_list' %}active{% endif %} uppercase" href="{% url 'colleague_list' %}">Колеги</a>
-
+                {% if request.user.is_staff %}
+                    <a class="link {% if request.resolver_match.url_name == 'colleague_list' %}active{% endif %} uppercase" href="{% url 'colleague_list' %}">Колеги</a>
+                {% endif %}
                 {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -121,7 +132,7 @@
                         {% if perms.planner.view_employee %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{%     endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
                         {% endif %}
-                </div>
+                    </div>
                 {% endif %}
                 {% if request.user.is_superuser %}
                     <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-users-cog"></i></a>
@@ -145,18 +156,22 @@
                             data-close-others="true">
                             <div class="dropdown-user-inner">
                                 <span class="username username-hide-on-mobile">{{ user.username }}</span>
-                                <img class="userpic" alt="" src="{{ user.employee.avatar.thumbnail.url }}" /></div>
+                                {% if request.user.is_staff %}
+                                    <img class="userpic" alt="" src="{{ user.employee.avatar.thumbnail.url }}" /></div>
+                                {% endif %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-default">
-                            <li>
-                                <a href="{% url 'employee_self_update' %}">
-                                    <i class="icon-user"></i>Мій профіль</a>
-                            </li>
-                            <li>
+                            {% if request.user.is_staff %}
+                                <li>
+                                    <a href="{% url 'employee_self_update' %}">
+                                        <i class="icon-user"></i>Мій профіль</a>
+                                </li>
+                            {% endif %}
+                            {% comment %} <li>
                                 <a href="#">
                                     <i class="icon-calendar"></i>Календар</a>
-                            </li>
-                            <li class="divider"></li>
+                            </li> {% endcomment %}
+                            {% comment %} <li class="divider"></li> {% endcomment %}
                             <li>
                                 <a href="{% url 'logout_page' %}">
                                     <i class="icon-key"></i>Вийти</a>
