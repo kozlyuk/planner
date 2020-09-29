@@ -70,7 +70,7 @@ def calc_bonuses(prev_month=False):
 @app.task
 def calc_kpi(prev_month=False):
     """ Save monthly bonuses of Employees """
-    employees = Employee.objects.filter(user__is_active=True)
+    employees = Employee.objects.filter(user__is_active=True, user__groups__name='Проектувальники')
     period = date.today().replace(day=1)
     if prev_month:
         period = period - relativedelta(months=1)

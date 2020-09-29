@@ -244,7 +244,8 @@ class TaskFilterForm(forms.Form):
     customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
         attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+                             max_length=255, required=False, widget=forms.TextInput(
+                                 attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class SprintFilterForm(forms.Form):
@@ -253,10 +254,13 @@ class SprintFilterForm(forms.Form):
         user = get_current_user()
         exec_status = list(Execution.EXEC_STATUS_CHOICES)
         companies = list(Company.objects.all().values_list('pk', 'name'))
-        executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
-        if user.groups.filter(name='ГІПи').exists():
+
+        # what executors is available in filter
+        if self.request.user.is_superuser or user.groups.filter(name='Замовники').exists():
+            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        elif user.groups.filter(name='ГІПи').exists():
             executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
-                                     .values_list('pk', 'name'))
+                             .values_list('pk', 'name'))
         elif user.groups.filter(name='Проектувальники').exists():
             executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
 
@@ -265,11 +269,14 @@ class SprintFilterForm(forms.Form):
         self.fields['company'].choices = companies
 
     exec_status = forms.MultipleChoiceField(label='Статус', required=False,
-                                    widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                            widget=Select2MultipleWidget(
+                                                attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     executor = forms.MultipleChoiceField(label='Виконавець', required=False,
-                                 widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                         widget=Select2MultipleWidget(
+                                             attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     company = forms.MultipleChoiceField(label='Компанія', required=False,
-                                widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                        widget=Select2MultipleWidget(
+                                            attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=4)
@@ -278,7 +285,8 @@ class SprintFilterForm(forms.Form):
     finish_date = forms.DateField(label='Дата завершення',
                                   widget=AdminDateWidget(attrs={"value": finish_date_value.strftime(date_format)}))
     filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False, widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+                             max_length=255, required=False, widget=forms.TextInput(
+                                 attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class TaskForm(forms.ModelForm):
