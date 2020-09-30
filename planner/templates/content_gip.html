@@ -9,7 +9,7 @@
     <div class="col-xl-5 col-lg-6 col-md-6 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
         <div class="widget-bg-color-white widget-tab main-widget-tab">
-            <h6 class="task-header center-block text-center">Проекти</h6>
+            <h6 class="task-header center-block text-center"><i class="fas fa-tasks"></i> Проекти</h6>
             <ul class="nav nav-pills nav-tabs pt-2" id="pills-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" id="pills-tab_1_1-tab" data-toggle="pill" href="#tab_1_1" role="tab"
@@ -23,7 +23,7 @@
                     <a class="nav-link active" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2" role="tab"
                         aria-controls="pills-tab_1_2" aria-selected="true"> Виконуються
                         {% if ip_tasks_count != 0 %}
-                            <span class="badge badge-pill badge-info">  {{ ip_tasks_count }} </span>
+                            <span class="badge badge-pill badge-danger">  {{ ip_tasks_count }} </span>
                         {% endif %}
                     </a>
                 </li>
@@ -40,6 +40,14 @@
                         aria-controls="pills-tab_1_4" aria-selected="false"> Надіслано
                         {% if sent_tasks_count != 0 %}
                             <span class="badge badge-pill badge-primary"> {{ sent_tasks_count }} </span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-tab_1_5-tab" data-toggle="pill" href="#tab_1_5" role="tab"
+                        aria-controls="pills-tab_1_5" aria-selected="false"> Завдання
+                        {% if sent_tasks_count != 0 %}
+                            <span class="badge badge-pill badge-info"> {{ active_inttasks_count }} </span>
                         {% endif %}
                     </a>
                 </li>
@@ -125,40 +133,64 @@
                     </div>
                     {% endfor %}
                 </div>
-            </div>
-        </div>
-        <!-- END WIDGET TAB -->
-    </div>
-    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 margin-bottom-20">
-        <!-- BEGIN WIDGET TAB -->
-        <div class="widget-bg-color-white widget-tab main-widget-tab">
-            <h6 class="task-header center-block text-center">Завдання</h6>
-            {% if inttasks %}
-            <div class="tab-content scroller" style="height: 390px;" data-always-visible="1"
-                data-handle-color="#D7DCE2">
-                {% for inttask in inttasks %}
-                <div class="widget-news margin-bottom-10">
-                    {#                                        <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                    <div class="widget-news-right-body">
-                        <h3 class="widget-news-right-body-title">
+                <div class="tab-pane fade" id="tab_1_5" role="tabpanel" aria-labelledby="pills-tab_1_5">
+                    {% for inttask in inttasks %}
+                    <div class="widget-news margin-bottom-10">
+                        <div class="widget-news-right-body">
+                            <h3 class="widget-news-right-body-title">
                             <a href="{% url 'inttask_detail' inttask.id %}">{{ inttask.task_name }}</a>
-                            <span
+                                <span
                                 class="badge badge-pill badge-{% task_overdue_color inttask.get_exec_status_display %} float-right">
                                 {{ inttask.get_exec_status_display }} </span>
-                        </h3>
+                            </h3>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-            {% else %}
-            <div class="noTasks tab-content scroller" style="height: 410px;" data-always-visible="1"
-                data-handle-color="#D7DCE2">
-                <p class="noContent">На жаль у вас не має завдань <i class="far fa-frown"></i></p>
-            </div>
-            {% endif %}
         </div>
         <!-- END WIDGET TAB -->
     </div>
+
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 margin-bottom-20">
+        <h6 style="margin-top: -8px;" class="task-header center-block text-center"><i style="font-size: 12px;" class="far fa-star"></i> Рейтинг проектувальників</h6>
+        <!-- BEGIN WIDGET TAB -->
+        <div class="portlet light  widget-bg-color-white widget-tab main-widget-tab">
+            <div class="portlet-body">
+                <div class="scroller" style="height: 365px;" data-always-visible="1" data-rail-visible="0">
+                    <ul class="feeds">
+                        {% for rating in executors_rating %}
+                        <li style="width: 100%;">
+                            <div class="col1">
+                                <div class="cont">
+                                    <div class="cont-col1">
+                                        <div class="label label-sm label-success">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                    </div>
+                                    <div class="cont-col2">
+                                        <div class="desc">
+                                            {{ rating.employee.name }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col2">
+                                {% if rating.value < 80 %}
+                                <div class="badge badge-pill badge-warning"> {{ rating.value }} </div>
+                                {% else %}
+                                <div class="badge badge-pill badge-success"> {{ rating.value }} </div>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- END WIDGET TAB -->
+    </div>
+
     <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
         <!-- BEGIN WIDGET THUMB -->
         <div class="col-12 pl-0 pr-0 mb-3">
