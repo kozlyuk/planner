@@ -13,6 +13,12 @@ from eventlog.models import Log
 TODAY = date.today()
 
 
+def executors_rating():
+    """ Get list of executors ratings in descending ordering """
+    period = date.today().replace(day=1)
+    return Kpi.objects.filter(name=Kpi.Productivity, period=period).order_by('-value')
+
+
 def context_general(user):
 
     user_inttasks = IntTask.objects.filter(executor__user=user)
@@ -66,7 +72,8 @@ def context_general(user):
         'productivity': int(productivity),
         'news': news,
         'events': events,
-        'activities': activities
+        'activities': activities,
+        'executors_rating': executors_rating(),
         }
 
     return context
@@ -74,6 +81,7 @@ def context_general(user):
 
 def context_accounter(user):
 
+    # Deals tab section
     deals = Deal.objects.all()
     active_deals = deals.exclude(act_status=Deal.Issued) \
                         .exclude(number__icontains='загальний')
@@ -92,6 +100,8 @@ def context_accounter(user):
     actneed_deals_count = actneed_deals.count()
     debtor_deals_count = debtor_deals.count()
     unpaid_deals_count = unpaid_deals.count()
+
+    # Progress bar section
     deals_div = int(actneed_deals_count / active_deals_count * 100) \
         if active_deals_count > 0 else 0
     debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) \
@@ -120,6 +130,7 @@ def context_accounter(user):
 
 def context_pm(user):
 
+    # Projects tab section
     owner_tasks = Task.objects.filter(owner__user=user).order_by('creation_date')
     td_tasks = owner_tasks.filter(exec_status=Task.ToDo)
     td_tasks_count = td_tasks.count()
@@ -131,6 +142,8 @@ def context_pm(user):
                                     actual_finish__month=TODAY.month,
                                     actual_finish__year=TODAY.year)
     sent_tasks_count = sent_tasks.count()
+
+    # Progress bar section
     active_tasks = owner_tasks.exclude(exec_status__in=[Task.Sent, Task.OnHold, Task.Canceled])
     active_tasks_count = active_tasks.count()
     tasks_div = int(sent_tasks_count / active_tasks_count * 100) \
@@ -164,6 +177,7 @@ def context_pm(user):
 
 def context_projector(user):
 
+    # Tasks tab section
     user_executions = Execution.objects.filter(executor__user=user)
     td_executions = user_executions.filter(exec_status=Execution.ToDo)
     ip_executions = user_executions.filter(exec_status=Execution.InProgress)
@@ -175,6 +189,8 @@ def context_projector(user):
     ip_executions_count = ip_executions.count()
     oc_executions_count = oc_executions.count()
     hd_executions_count = hd_executions.count()
+
+    # Progress bar section
     active_executions_count = user_executions.exclude(exec_status=Execution.Done)\
                                              .count() + hd_executions_count
     executions_div = int(hd_executions_count / active_executions_count *
