@@ -66,7 +66,7 @@
         <div class="menu-container">
             <div class="border-menu mobile-menu">
                 <input id="hamburger" class="hamburger" type="checkbox" />
-                <label class="hamburger" for="hamburger"> </label>
+                <label class="hamburger" for="hamburger"><i></i></label>
                 <section class="drawer-list">
                     <ul>
                         {% if request.user.is_staff %}
@@ -192,14 +192,14 @@
     {% block context %}
     {% endblock %}
     <!-- BEGIN FOOTER -->
-    <div class="page-footer">
+    {% comment %} <div class="page-footer">
         <div class="container-fluid container-lf-space">
             <p class="page-footer-copyright">2020 &copy; Itel-Service</p>
         </div>
         <div class="go2top">
             <i class="icon-arrow-up"></i>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 <!-- END FOOTER -->
 <!--[if lt IE 9]>
