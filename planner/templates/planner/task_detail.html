@@ -22,10 +22,13 @@
                                 <a class="nav-link active" id="pills-tab main-widget-tab_1_1-tab" data-toggle="pill" href="#tab_1_1"
                                     role="tab" aria-controls="pills-tab_1_1" aria-selected="true"> Опис </a>
                             </li>
-                            {% comment %} <li class="nav-item">
-                                <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
-                                        role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Додатково </a>
-                            </li> {% endcomment %}
+                            <!-- Only for staff members -->
+                            {% if request.user.is_staff %}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_1_2-tab" data-toggle="pill" href="#tab_1_2"
+                                            role="tab" aria-controls="pills-tab_1_2" aria-selected="false"> Додатково </a>
+                                </li>
+                            {% endif %}
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
@@ -74,22 +77,24 @@
                                     </div>
                                 </div>
                             </div>
-                            {% comment %} <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
-                                    aria-labelledby="pills-tab_1_2">
-                                <div class="widget-news margin-bottom-20">
-                                    {# <img class="widget-news-left-elem" src="../assets/layouts/layout7/img/03.jpg" alt="">#}
-                                    <div class="widget-news-right-body">
-                                        <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
-                                            <span class="label label-{% task_overdue_color task.warning %}"> {{ task.warning }} </span>
-                                        </h3>
-                                        <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
-                                        <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
-                                        <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
-                                        {% if cost.project_code %}<p>Шифр проекту: <strong>{{ cost.project_code }}</strong></p>>{% endif %}
-                                        {% if cost.comment %}<p>Коментар: <strong>{{ cost.comment }}</strong></p>>{% endif %}
+                            <!-- Only for staff members -->
+                            {% if request.user.is_staff %}
+                                <div class="tab-pane fade show" id="tab_1_2" role="tabpane2"
+                                        aria-labelledby="pills-tab_1_2">
+                                    <div class="widget-news margin-bottom-20">
+                                        <div class="widget-news-right-body">
+                                            <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
+                                                <span class="label label-{% task_overdue_color task.warning %}"> {{ task.warning }} </span>
+                                            </h3>
+                                            <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
+                                            <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
+                                            <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
+                                            {% if cost.project_code %}<p>Шифр проекту: <strong>{{ cost.project_code }}</strong></p>>{% endif %}
+                                            {% if cost.comment %}<p>Коментар: <strong>{{ cost.comment }}</strong></p>>{% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                            </div> {% endcomment %}
+                            {% endif %}
                             <a href="{{request.META.HTTP_REFERER}}"
                                 class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;"> Повернутись </a>
                         </div>
@@ -100,76 +105,82 @@
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white main-widget-tab widget-tab">
                         <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
-                                    role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
-                            </li>
-                            {% comment %} <li class="nav-item">
-                                <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
-                                role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
-                            </li> {% endcomment %}
+                            <!-- Only for staff members -->
+                            {% if request.user.is_staff %}
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                        role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                    role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
+                                </li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
                                     role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Відправки </a>
                             </li>
                         </ul>
                         <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
-                                aria-labelledby="pills-tab_2_1">
-                                {% if executors|length > 0 %}
-                                    {% for executor in executors %}
-                                        <div class="widget-media">
-                                            <div class="widget-media-elements text-center">
-                                                <img class="widget-media-avatar circle margin-bottom-15"
-                                                     src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
+                            <!-- Only for staff members -->
+                            {% if request.user.is_staff %}
+                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
+                                    aria-labelledby="pills-tab_2_1">
+                                    {% if executors|length > 0 %}
+                                        {% for executor in executors %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-elements text-center">
+                                                    <img class="widget-media-avatar circle margin-bottom-15"
+                                                        src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
+                                                </div>
+                                                <div class="widget-media-body">
+                                                    <h4 class="widget-media-body-title">
+                                                        <a href="#">{{ executor.executor.name }}</a>
+                                                    </h4>
+                                                    Назва робіт: <strong>{{ executor.part_name }}</strong><br>
+                                                    Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                                    Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
+                                                    {% if executor.finish_date %}Дата виконання: <strong>{{ executor.finish_date }}</strong><br>{% endif %}
+                                                </div>
                                             </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="widget-media">
                                             <div class="widget-media-body">
-                                                <h4 class="widget-media-body-title">
-                                                    <a href="#">{{ executor.executor.name }}</a>
-                                                </h4>
-                                                Назва робіт: <strong>{{ executor.part_name }}</strong><br>
-                                                Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
-                                                Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
-                                                {% if executor.finish_date %}Дата виконання: <strong>{{ executor.finish_date }}</strong><br>{% endif %}
+                                                <p class="widget-media-body-subtitle">Виконавці відсутні</p>
                                             </div>
                                         </div>
-                                    {% endfor %}
-                                {% else %}
+                                    {% endif %}
+                                </div>
+                                <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
+                                    aria-labelledby="pills-tab_2_2">
+                                    {% if costs|length > 0 %}
+                                    {% for cost in costs %}
                                     <div class="widget-media">
                                         <div class="widget-media-body">
-                                            <p class="widget-media-body-subtitle">Виконавці відсутні</p>
+                                            <h4 class="widget-media-body-title">
+                                                <a href="#">{{ cost.contractor.name }}</a>
+                                            </h4>
+                                            Назва робіт: <strong>{{ cost.order_name }}</strong><br>
+                                            Договір: <strong>{{ cost.deal_number }}</strong><br>
+                                            Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div>
+                                            <br>
+                                            Аванс: <strong>{{ cost.advance }}</strong><br>
+                                            Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
+                                            {% if cost.pay_date %}Дата оплати:
+                                            <strong>{{ cost.pay_date }}</strong>{% endif %}
                                         </div>
                                     </div>
-                                {% endif %}
-                            </div>
-                            {% comment %} <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
-                                aria-labelledby="pills-tab_2_2">
-                                {% if costs|length > 0 %}
-                                {% for cost in costs %}
-                                <div class="widget-media">
-                                    <div class="widget-media-body">
-                                        <h4 class="widget-media-body-title">
-                                            <a href="#">{{ cost.contractor.name }}</a>
-                                        </h4>
-                                        Назва робіт: <strong>{{ cost.order_name }}</strong><br>
-                                        Договір: <strong>{{ cost.deal_number }}</strong><br>
-                                        Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div>
-                                        <br>
-                                        Аванс: <strong>{{ cost.advance }}</strong><br>
-                                        Статус оплати: <strong>{{ cost.get_pay_status_display }}</strong><br>
-                                        {% if cost.pay_date %}Дата оплати:
-                                        <strong>{{ cost.pay_date }}</strong>{% endif %}
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Витрати відсутні</p>
+                                        </div>
                                     </div>
+                                    {% endif %}
                                 </div>
-                                {% endfor %}
-                                {% else %}
-                                <div class="widget-media">
-                                    <div class="widget-media-body">
-                                        <p class="widget-media-body-subtitle">Витрати відсутні</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div> {% endcomment %}
+                            {% endif %}
                             <div class="tab-pane fade show" id="tab_2_3" role="tabpane2"
                                 aria-labelledby="pills-tab_2_3">
                                 {% if sendings|length > 0 %}

@@ -24,9 +24,13 @@
                         <thead>
                             <tr>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'task__object_code' %}">шифр</a></th>
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">договір</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">тип проекту</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'part_name' %}">роботи</a></th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
+                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">договір</a></th>
+                                <!-- Only for staff members -->
+                                {% if request.user.is_staff %}
+                                    <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
+                                {% endif %}
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}">статус виконання</a></th>
@@ -47,9 +51,17 @@
                                 {% else %}
                                     <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
                                 {% endif %}
-                                <td>{{ task.task.deal.number }}</td>
+                                {% if request.user.is_staff %}
+                                    <td>{{ task.task.project_type.price_code }}</td>
+                                {% else %}
+                                    <td>{{ task.task.project_type.project_type }}</td>
+                                {% endif %}
                                 <td>{{ task.part_name }}</td>
-                                <td>{{ task.executor }}</td>
+                                <td>{{ task.task.deal.number }}</td>
+                                <!-- Only for staff members -->
+                                {% if request.user.is_staff %}
+                                    <td>{{ task.executor }}</td>
+                                {% endif %}
                                 <td>{% none_date_check task.planned_start %}</td>
                                 <td>{% none_date_check task.planned_finish %}</td>
                                 <td>
@@ -99,8 +111,6 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
-    {% comment %} <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{% static 'air_datepicker/main.min.css' %}"/> {% endcomment %}
 {% endblock css %}
 
 {% block extrahead %}
@@ -108,7 +118,6 @@
     <script type="text/javascript" src="{% static 'air_datepicker/main.min.js' %}"></script>
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
-    {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
     <script>
         $(function () {
@@ -127,11 +136,5 @@
                 )
         })
     </script>
-    {% comment %} $('.air-datepicker').data('datepicker').new Date('11/30/2016'); {% endcomment %}
-    {% comment %} const startDate = new Date('{{ start_date }}');
-    const finishDate = new Date(startDate);
-    finishDate.setDate(finishDate.getDate() + {{ sprint_length }})
-    let datepickerStart = $('.air-datepicker-start').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(startDate));
-    let datepickerFinish = $('.air-datepicker-finish').datepicker({language: 'ua',}).data('datepicker').selectDate(new Date(finishDate)); {% endcomment %}
 
 {% endblock extrahead %}
