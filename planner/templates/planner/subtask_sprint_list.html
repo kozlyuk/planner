@@ -52,7 +52,7 @@
                                     <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
                                 {% endif %}
                                 {% if request.user.is_staff %}
-                                    <td>{{ task.task.project_type.price_code }}</td>
+                                    <td><span data-toggle="tooltip" data-placement="right" title="{{ task.task.project_type.project_type }}">{{ task.task.project_type.price_code }}</span></td>
                                 {% else %}
                                     <td>{{ task.task.project_type.project_type }}</td>
                                 {% endif %}
