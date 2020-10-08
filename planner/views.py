@@ -34,6 +34,70 @@ class Round(Func):
     template = '%(function)s(%(expressions)s, 2)'
 
 
+def subtasks_queryset_filter(request):
+    tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
+    # filter only customer tasks
+    if request.user.groups.filter(name='Замовники').exists():
+        tasks = tasks.filter(task__deal__customer__user=request.user)
+    exec_statuses = request.GET.getlist('exec_status', '0')
+    executors = request.GET.getlist('executor', '0')
+    companies = request.GET.getlist('company', '0')
+    start_date = request.GET.get('start_date')
+    finish_date = request.GET.get('finish_date')
+    search_string = request.GET.get('filter', '').split()
+    order = request.GET.get('o', '0')
+
+    if request.user.is_superuser:
+        pass
+    elif request.user.groups.filter(name='ГІПи').exists():
+        tasks = tasks.filter(task__owner=request.user.employee)
+    elif request.user.groups.filter(name='Проектувальники').exists():
+        tasks = tasks.filter(executor=request.user.employee)
+
+    if exec_statuses != '0':
+        tasks_union = Task.objects.none()
+        for status in exec_statuses:
+            tasks_part = tasks.filter(exec_status=status)
+            tasks_union = tasks_union | tasks_part
+        tasks = tasks_union
+    if executors != '0':
+        tasks_union = Task.objects.none()
+        for executor in executors:
+            tasks_part = tasks.filter(executor=executor)
+            tasks_union = tasks_union | tasks_part
+        tasks = tasks_union
+    if companies != '0':
+        tasks_union = Task.objects.none()
+        for company in companies:
+            tasks_part = tasks.filter(task__deal__company=company)
+            tasks_union = tasks_union | tasks_part
+        tasks = tasks_union
+    if start_date:
+        start_date_value = datetime.strptime(start_date, date_format)
+    else:
+        start_date_value = date.today() - timedelta(days=date.today().weekday())
+    if finish_date:
+        finish_date_value = datetime.strptime(finish_date, date_format)
+    else:
+        finish_date_value = start_date_value + timedelta(days=4)
+    tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
+                         Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
+                         Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
+                                                                             Execution.InProgress,
+                                                                             Execution.OnChecking]))
+    for word in search_string:
+        tasks = tasks.filter(Q(part_name__icontains=word) |
+                             Q(task__object_code__icontains=word) |
+                             Q(task__project_type__project_type__icontains=word) |
+                             Q(task__object_address__icontains=word) |
+                             Q(task__deal__number__icontains=word))
+    if order != '0':
+        tasks = tasks.order_by(order)
+    else:
+        tasks = tasks.order_by('task__object_code', 'planned_finish')
+    return tasks, start_date_value, finish_date_value
+
+
 @method_decorator(login_required, name='dispatch')
 class DealCalc(TemplateView):
     """ View for displaying calculation to a deal """
@@ -506,67 +570,10 @@ class SprintList(ListView):
         raise PermissionDenied
 
     def get_queryset(self):
-        tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
-        # filter only customer tasks
-        if self.request.user.groups.filter(name='Замовники').exists():
-            tasks = tasks.filter(task__deal__customer__user=self.request.user)
-        exec_statuses = self.request.GET.getlist('exec_status', '0')
-        executors = self.request.GET.getlist('executor', '0')
-        companies = self.request.GET.getlist('company', '0')
-        start_date = self.request.GET.get('start_date')
-        finish_date = self.request.GET.get('finish_date')
-        search_string = self.request.GET.get('filter', '').split()
-        order = self.request.GET.get('o', '0')
-
-        if self.request.user.is_superuser:
-            pass
-        elif self.request.user.groups.filter(name='ГІПи').exists():
-            tasks = tasks.filter(task__owner=self.request.user.employee)
-        elif self.request.user.groups.filter(name='Проектувальники').exists():
-            tasks = tasks.filter(executor=self.request.user.employee)
-
-        if exec_statuses != '0':
-            tasks_union = Task.objects.none()
-            for status in exec_statuses:
-                tasks_part = tasks.filter(exec_status=status)
-                tasks_union = tasks_union | tasks_part
-            tasks = tasks_union
-        if executors != '0':
-            tasks_union = Task.objects.none()
-            for executor in executors:
-                tasks_part = tasks.filter(executor=executor)
-                tasks_union = tasks_union | tasks_part
-            tasks = tasks_union
-        if companies != '0':
-            tasks_union = Task.objects.none()
-            for company in companies:
-                tasks_part = tasks.filter(task__deal__company=company)
-                tasks_union = tasks_union | tasks_part
-            tasks = tasks_union
-        if start_date:
-            start_date_value = datetime.strptime(start_date, date_format)
-        else:
-            start_date_value = date.today() - timedelta(days=date.today().weekday())
-        if finish_date:
-            finish_date_value = datetime.strptime(finish_date, date_format)
-        else:
-            finish_date_value = start_date_value + timedelta(days=4)
-        tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
-                             Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
-                             Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
-                                                                                 Execution.InProgress,
-                                                                                 Execution.OnChecking]))
-        for word in search_string:
-            tasks = tasks.filter(Q(part_name__icontains=word) |
-                                 Q(task__object_code__icontains=word) |
-                                 Q(task__project_type__project_type__icontains=word) |
-                                 Q(task__object_address__icontains=word) |
-                                 Q(task__deal__number__icontains=word))
-        if order != '0':
-            tasks = tasks.order_by(order)
-        else:
-            tasks = tasks.order_by('planned_finish', 'task__object_code')
-        return tasks
+        # filtering queryset
+        queryset, _, _ = subtasks_queryset_filter(self.request)
+        # return filtered queryset
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

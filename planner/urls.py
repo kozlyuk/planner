@@ -8,6 +8,7 @@ from django.views.generic.base import RedirectView
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
 from planner import views
+from gantt.views import GetPlan
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +33,7 @@ urlpatterns = [
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
+    path('sprint/gantt/', GetPlan.as_view(), name='get_plan'),
 
     path('execution/<int:pk>/status/<str:status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
