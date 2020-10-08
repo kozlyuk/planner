@@ -19,13 +19,13 @@ from .formatChecker import ContentTypeRestrictedFileField
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
-def user_directory_path(instance, filename):
+def user_directory_path(filename, *_):
     # file will be uploaded to MEDIA_ROOT/projects/user_<id>/Year/Month/<filename>
     return 'projects/user_{0}/{1}/{2}/{3}'\
         .format(get_current_user().id, date.today().year, date.today().month, filename)
 
 
-def avatar_directory_path(instance, filename):
+def avatar_directory_path(filename, *_):
     # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
     return 'avatars/user_{0}/{1}'\
         .format(get_current_user().id, filename)
@@ -556,10 +556,13 @@ class Task(models.Model):
             if self.project_type.need_project_code:
                 self.project_code = Task.objects.aggregate(Max('project_code'))['project_code__max'] + 1
 
-        # Automatic change Executions.exec_status when Task has no copies_count
-        if self.exec_status == Task.Done and self.project_type.copies_count == 0:
-            self.exec_status = Task.Sent
-            self.sending_date = self.actual_finish
+        # Automatic changing of Task.exec_status when all sendings was sent
+        if self.exec_status in [Task.Done, Task.Sent]:
+            sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
+            if sendings >= self.project_type.copies_count:
+                self.exec_status = Task.Sent
+                if not self.sending_date:
+                    self.sending_date = date.today()
 
         # Automatic change Executions.exec_status when Task has Done
         if self.exec_status in [Task.Done, Task.Sent]:
@@ -777,17 +780,18 @@ class Sending(models.Model):
         super(Sending, self).save(*args, **kwargs)
 
         # Automatic changing of Task.exec_status when all sendings was sent
-        sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
-        changed = False
-        if sendings >= self.task.project_type.copies_count:
-            if self.task.exec_status == Task.Done:
-                self.task.exec_status = Task.Sent
-                changed = True
-            if not self.task.sending_date:
-                self.task.sending_date = self.receipt_date
-                changed = True
-            if changed:
-                self.task.save(logging=False)
+        if self.task.exec_status in [Task.Done, Task.Sent]:
+            sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
+            changed = False
+            if sendings >= self.task.project_type.copies_count:
+                if self.task.exec_status == Task.Done:
+                    self.task.exec_status = Task.Sent
+                    changed = True
+                if not self.task.sending_date:
+                    self.task.sending_date = self.receipt_date
+                    changed = True
+                if changed:
+                    self.task.save(logging=False)
 
         # Logging
         if logging:
@@ -855,6 +859,12 @@ class Execution(models.Model):
         # Automatic change Executions.exec_status when Task has Done
         if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
             self.exec_status = Execution.Done
+
+        # Automatic set start_date when exec_status has changed
+        if self.exec_status in [Execution.InProgress, Execution.OnChecking, Execution.Done] and self.start_date is None:
+            self.start_date = date.today()
+        elif self.exec_status == Execution.ToDo and self.start_date is not None:
+            self.start_date = None
 
         # Automatic set finish_date when Execution has done
         if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:

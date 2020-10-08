@@ -36,7 +36,7 @@
                     {% for task in tasks %}
                         <a href="{% url 'task_update' task.id %}"> {{ task }} </a> <br>
                     {% endfor %}
-                    <a href="{% url 'deal_update' object.id %}?{{ filters }}"
+                    <a href="{% url 'deal_update' object.id %}"
                                                 class="btn red btn-sm btn-outline sbold uppercase"
                                                 style="float: right;">Відмінити</a>
                 {% else %}

@@ -105,8 +105,6 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
-    {% comment %} <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="{% static 'air_datepicker/main.min.css' %}"/> {% endcomment %}
 {% endblock css %}
 
 {% block extrahead %}
@@ -115,7 +113,6 @@
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     <script type="text/javascript" src="/static/admin/js/core.js"></script>
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
-    {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script> {% endcomment %}
     <script>
     const makePDFButton = document.querySelector('#makePDF');
     makePDFButton.addEventListener('click', () => {
