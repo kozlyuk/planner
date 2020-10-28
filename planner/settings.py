@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'messaging.apps.MessagingConfig',
     'eventlog.apps.EventlogConfig',
     'analytics.apps.AnalyticsConfig',
+    'gantt.apps.GanttConfig',
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',

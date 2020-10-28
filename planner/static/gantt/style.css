@@ -1,0 +1,96 @@
+.task_todocomplete,
+.task_inprogresscomplete,
+.task_donecomplete,
+.task_oncheckingcomplete,
+.task_nonecomplete {
+  display: none;
+}
+
+.task_hd {
+  background: rgb(80, 193, 58);
+  /* Old browsers */
+  background: linear-gradient(
+    to bottom,
+    rgba(80, 193, 58, 1) 0%,
+    rgba(88, 209, 64, 1) 20%,
+    rgba(102, 237, 75, 1) 40%,
+    rgba(80, 193, 58, 1) 70%,
+    rgba(53, 132, 37, 1) 100%
+  );
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#66ED4B', endColorstr='#50c13a', GradientType=0);
+  /* IE6-9 */
+  height: 13px;
+  filter: alpha(opacity=90);
+  opacity: 0.9;
+  margin-top: 1px;
+}
+
+.task_oc {
+  background: rgb(247, 228, 56);
+  /* Old browsers */
+  background: linear-gradient(
+    to bottom,
+    rgba(247, 228, 56, 1) 0%,
+    rgba(239, 239, 55, 1) 20%,
+    rgba(255, 255, 58, 1) 40%,
+    rgba(242, 236, 55, 1) 70%,
+    rgba(241, 218, 54, 1) 100%
+  );
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff3a', endColorstr='#f7e438', GradientType=0);
+  /* IE6-9 */
+  height: 13px;
+  filter: alpha(opacity=90);
+  opacity: 0.9;
+  margin-top: 1px;
+}
+
+.task_iw {
+  background: rgb(27, 84, 134);
+  /* Old browsers */
+  background: linear-gradient(
+    to bottom,
+    rgba(58, 132, 195, 1) 0%,
+    rgba(65, 154, 214, 1) 20%,
+    rgb(25, 149, 211) 40%,
+    rgba(58, 139, 194, 1) 70%,
+    rgba(38, 85, 139, 1) 100%
+  );
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4bb8f0', endColorstr='#3a84c3', GradientType=0);
+  /* IE6-9 */
+  height: 13px;
+  filter: alpha(opacity=90);
+  opacity: 0.9;
+  margin-top: 1px;
+}
+.task_ip {
+  background: rgb(231, 164, 20);
+  /* Old browsers */
+  background: linear-gradient(
+    to bottom,
+    rgba(231, 164, 20, 1) 0%,
+    rgba(231, 164, 26, 1) 20%,
+    rgba(231, 164, 32, 1) 40%,
+    rgba(231, 164, 38, 1) 70%,
+    rgba(231, 164, 44, 1) 100%
+  );
+  /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7caf4', endColorstr='#fcaef7', GradientType=0);
+  /* IE6-9 */
+  height: 13px;
+  filter: alpha(opacity=90);
+  opacity: 0.9;
+  margin-top: 1px;
+}
+
+.gstartdate div{
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.gadditional-status div, .gresource div{
+  line-height: 2;
+}

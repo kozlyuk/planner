@@ -41,10 +41,10 @@ def calc_bonuses(prev_month=False):
 
             # save bonuses
             if bonuses > 0:
-                kpi, created = Kpi.objects.get_or_create(employee=employee,
-                                                         name=kpi_name[1],
-                                                         period__month=period.month,
-                                                         period__year=period.year)
+                kpi, _ = Kpi.objects.get_or_create(employee=employee,
+                                                   name=kpi_name[1],
+                                                   period__month=period.month,
+                                                   period__year=period.year)
                 kpi.value = bonuses
                 kpi.period = period
                 kpi.save()
@@ -56,10 +56,10 @@ def calc_bonuses(prev_month=False):
 
         # save inttasks bonuses
         if inttask_bonus:
-            kpi, created = Kpi.objects.get_or_create(employee=employee,
-                                                     name=Kpi.Tasks,
-                                                     period__month=period.month,
-                                                     period__year=period.year)
+            kpi, _ = Kpi.objects.get_or_create(employee=employee,
+                                               name=Kpi.Tasks,
+                                               period__month=period.month,
+                                               period__year=period.year)
             kpi.value = inttask_bonus
             kpi.period = period
             kpi.save()
@@ -133,10 +133,10 @@ def calc_kpi(prev_month=False):
 
         # save productivity
         if productivity:
-            kpi, created = Kpi.objects.get_or_create(employee=employee,
-                                                     name=Kpi.Productivity,
-                                                     period__month=period.month,
-                                                     period__year=period.year)
+            kpi, _ = Kpi.objects.get_or_create(employee=employee,
+                                               name=Kpi.Productivity,
+                                               period__month=period.month,
+                                               period__year=period.year)
             kpi.value = productivity
             kpi.period = period
             kpi.save()
