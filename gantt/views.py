@@ -1,16 +1,18 @@
-from django.views import View
+import json
+from django.views.generic.base import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.http import QueryDict
-from django.http import JsonResponse
 
-from planner.models import Task
+
+from planner.models import Task, Employee
 from planner.views import subtasks_queryset_filter
 
 
-class GetPlan(View):
+class GetPlan(TemplateView):
     """
     View create dictionary with task-subtask structure for jsgantt-improved chart
     """
+    template_name = 'gantt/main.html'
 
     def dispatch(self, request, *args, **kwargs):
         # get filter parameters from session
@@ -23,16 +25,18 @@ class GetPlan(View):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
-    def get(self, request):
-        # prepare json-coded data for gantt
+    def get_context_data(self, *args, **kwargs):
+        """ prepare json-coded data for gantt """
+        context = super().get_context_data(*args, **kwargs)
+        # get subtasks_queryset_filter
         subtasks, start_date, end_date = subtasks_queryset_filter(self.request)
         projects = subtasks.values_list('task', flat=True)
         # distinct values
         projects = list(set(projects))
         # prepare dictionary
         gantt_data = {"view_mode": "project_view",
-                      "start_date": start_date,
-                      "end_date": end_date,
+                      "start_date": str(start_date),
+                      "end_date": str(end_date),
                       "projects": []}
         for index, project_id in enumerate(projects):
             project = Task.objects.get(pk=project_id)
@@ -41,8 +45,8 @@ class GetPlan(View):
                                            "object_code": project.object_code,
                                            "owner": project.owner.name,
                                            "exec_status": project.exec_status,
-                                           "planned_start": project.planned_start,
-                                           "planned_finish": project.planned_start,
+                                           "planned_start": str(project.planned_start),
+                                           "planned_finish": str(project.planned_start),
                                            "tasks": []})
             tasks = subtasks.filter(task=project)
             # add tasks to the project
@@ -51,9 +55,9 @@ class GetPlan(View):
                                                                "executor": task.executor.name,
                                                                "part_name": task.part_name,
                                                                "exec_status": task.exec_status,
-                                                               "planned_start": task.planned_start,
-                                                               "planned_finish": task.planned_finish,
-                                                               "start_date": task.start_date,
-                                                               "finish_date": task.finish_date})
-
-        return JsonResponse(gantt_data, safe=False)
+                                                               "planned_start": str(task.planned_start),
+                                                               "planned_finish": str(task.planned_finish),
+                                                               "start_date": str(task.start_date),
+                                                               "finish_date": str(task.finish_date)})
+        context['gantt_data'] = json.dumps(gantt_data)
+        return context

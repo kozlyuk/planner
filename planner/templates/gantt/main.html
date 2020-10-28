@@ -1,0 +1,26 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="{% static 'gantt/jsgantt.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'gantt/style.css' %}" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <div style="position: relative" class="gantt" id="GanttChartDIV"></div>
+    <script>
+      const data = {{ gantt_data|safe }};
+      const resources = [
+        {
+          id: "Подобайло Андрій",
+          name: "Подобайло Андрій",
+        },
+      ];
+    </script>
+    <script src="{% static 'gantt/jsgantt.js' %}" type="text/javascript"></script>
+    <script src="{% static 'gantt/main.js' %}" type="text/javascript"></script>
+  </body>
+</html>
