@@ -157,6 +157,112 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.DrawDependencies = draw_dependencies_1.DrawDependencies.bind(this);
     this.getArrayLocationByID = draw_utils_1.getArrayLocationByID.bind(this);
     this.drawSelector = draw_utils_1.drawSelector.bind(this);
+    this.getMinDate = function (pList, pFormat, pMinDate) {
+        var vDate = new Date();
+        if (pList.length <= 0)
+            return pMinDate || vDate;
+        vDate.setTime((pMinDate && pMinDate.getTime()) || pList[0].getStart().getTime());
+        // Parse all Task Start dates to find min
+        for (var i = 0; i < pList.length; i++) {
+            if (pList[i].getStart().getTime() < vDate.getTime())
+                vDate.setTime(pList[i].getStart().getTime());
+    
+            //  set min date to plan start if it less than actual
+            if(pList[i].getPlanStart() !== null && pList[i].getPlanStart().getTime() < vDate.getTime()){
+                vDate.setTime(pList[i].getPlanStart().getTime());
+            }
+        }
+        // Adjust min date to specific format boundaries (first of week or first of month)
+        if (pFormat == 'day') {
+            vDate.setDate(vDate.getDate() - 1);
+            while (vDate.getDay() % 7 != 1)
+                vDate.setDate(vDate.getDate() - 1);
+        }
+        else if (pFormat == 'week') {
+            vDate.setDate(vDate.getDate() - 1);
+            while (vDate.getDay() % 7 != 1)
+                vDate.setDate(vDate.getDate() - 1);
+        }
+        else if (pFormat == 'month') {
+            vDate.setDate(vDate.getDate() - 15);
+            while (vDate.getDate() > 1)
+                vDate.setDate(vDate.getDate() - 1);
+        }
+        else if (pFormat == 'quarter') {
+            vDate.setDate(vDate.getDate() - 31);
+            if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
+                vDate.setFullYear(vDate.getFullYear(), 0, 1);
+            else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
+                vDate.setFullYear(vDate.getFullYear(), 3, 1);
+            else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
+                vDate.setFullYear(vDate.getFullYear(), 6, 1);
+            else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
+                vDate.setFullYear(vDate.getFullYear(), 9, 1);
+        }
+        else if (pFormat == 'hour') {
+            vDate.setHours(vDate.getHours() - 1);
+            while (vDate.getHours() % 6 != 0)
+                vDate.setHours(vDate.getHours() - 1);
+        }
+        if (pFormat == 'hour')
+            vDate.setMinutes(0, 0);
+        else
+            vDate.setHours(0, 0, 0);
+        return (vDate);
+    };
+    this.getMaxDate = function (pList, pFormat, pMaxDate) {
+        var vDate = new Date();
+        if (pList?.length <= 0)
+            return pMaxDate || vDate;
+        vDate.setTime((pMaxDate && pMaxDate.getTime()) || pList[0].getEnd().getTime());
+        // Parse all Task End dates to find max
+        for (var i = 0; i < pList.length; i++) {
+            if (pList[i].getEnd().getTime() > vDate.getTime())
+                vDate.setTime(pList[i].getEnd().getTime());
+    
+            //  set max date to plan start if it more than actual
+            if(pList[i].getPlanEnd() !== null && pList[i].getPlanEnd().getTime() > vDate.getTime()){
+                vDate.setTime(pList[i].getPlanEnd().getTime());
+            }
+        }
+        // Adjust max date to specific format boundaries (end of week or end of month)
+        if (pFormat == 'day') {
+            vDate.setDate(vDate.getDate() + 1);
+            while (vDate.getDay() % 7 != 0)
+                vDate.setDate(vDate.getDate() + 1);
+        }
+        else if (pFormat == 'week') {
+            //For weeks, what is the last logical boundary?
+            vDate.setDate(vDate.getDate() + 1);
+            while (vDate.getDay() % 7 != 0)
+                vDate.setDate(vDate.getDate() + 1);
+        }
+        else if (pFormat == 'month') {
+            // Set to last day of current Month
+            while (vDate.getDate() > 1)
+                vDate.setDate(vDate.getDate() + 1);
+            vDate.setDate(vDate.getDate() - 1);
+        }
+        else if (pFormat == 'quarter') {
+            // Set to last day of current Quarter
+            if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
+                vDate.setFullYear(vDate.getFullYear(), 2, 31);
+            else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
+                vDate.setFullYear(vDate.getFullYear(), 5, 30);
+            else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
+                vDate.setFullYear(vDate.getFullYear(), 8, 30);
+            else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
+                vDate.setFullYear(vDate.getFullYear(), 11, 31);
+        }
+        else if (pFormat == 'hour') {
+            if (vDate.getHours() == 0)
+                vDate.setDate(vDate.getDate() + 1);
+            vDate.setHours(vDate.getHours() + 1);
+            while (vDate.getHours() % 6 != 5)
+                vDate.setHours(vDate.getHours() + 1);
+        }
+        return (vDate);
+    };
     this.clearDependencies = function () {
         var parent = this.getLines();
         if (this.vEventsChange.line &&
@@ -178,7 +284,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         var vTmpDate = new Date();
         var vTaskLeftPx = 0;
         var vTaskRightPx = 0;
-        var vTaskWidth = 1;
+        var vTaskWidth = 10;
         var vTaskPlanLeftPx = 0;
         var vTaskPlanRightPx = 0;
         var vNumCols = 0;
@@ -198,8 +304,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                 task_1.processRows(this.vTaskList, 0, -1, 1, 1, this.getUseSort(), this.vDebug);
             this.vProcessNeeded = false;
             // get overall min/max dates plus padding
-            vMinDate = date_utils_1.getMinDate(this.vTaskList, this.vFormat, this.getMinDate() && date_utils_1.coerceDate(this.getMinDate()));
-            vMaxDate = date_utils_1.getMaxDate(this.vTaskList, this.vFormat, this.getMaxDate() && date_utils_1.coerceDate(this.getMaxDate()));
+            vMinDate = this.getMinDate(this.vTaskList, this.vFormat, new Date());
+            vMaxDate = this.getMaxDate(this.vTaskList, this.vFormat, new Date());
             // Calculate chart width variables.
             if (this.vFormat == 'day')
                 vColWidth = this.vDayColWidth;
@@ -276,7 +382,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                             vEventClickRow_1(task_2);
                         }
                     }, vTmpRow_1);
-                    if (this_1.vTaskList[i_1].getGroup() === 2) {
+                    if (this_1.vTaskList[i_1].getGroup() === 1) {
                         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, vCellContents);
                         var vTmpSpan = draw_utils_1.newNode(vTmpDiv, 'span', this_1.vDivId + 'group_' + vID, 'gfoldercollapse', (this_1.vTaskList[i_1].getOpen() == 1) ? '-' : '+');
                         this_1.vTaskList[i_1].setGroupSpan(vTmpSpan);
@@ -284,8 +390,9 @@ exports.GanttChart = function (pDiv, pFormat) {
                         var divTask = document.createElement('span');
                         divTask.innerHTML = '\u00A0' + this_1.vTaskList[i_1].getName();
                         vTmpDiv.appendChild(divTask);
-                        // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
-                        // vTmpDiv.appendChild(document.createNode(text));
+
+                        vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, vCellContents);
+
                         var callback = function (task, e) { return task.setName(e.target.value); };
                         events_1.addListenerInputCell(vTmpCell, this_1.vEventsChange, callback, this_1.vTaskList, i_1, 'taskname', this_1.Draw.bind(this_1));
                         events_1.addListenerClickCell(vTmpDiv, this_1.vEvents, this_1.vTaskList[i_1], 'taskname');
@@ -504,12 +611,20 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var curTaskEnd = this.vTaskList[i].getEnd() ? this.vTaskList[i].getEnd() : this.vTaskList[i].getPlanEnd();
                 vTaskLeftPx = general_utils_1.getOffset(vMinDate, curTaskStart, vColWidth, this.vFormat, this.vShowWeekends);
                 vTaskRightPx = general_utils_1.getOffset(curTaskStart, curTaskEnd, vColWidth, this.vFormat, this.vShowWeekends);
+
+                //  make longer task view actual date    
+                if(vTaskRightPx <= 1) vTaskRightPx = 15;
+
                 var curTaskPlanStart = void 0, curTaskPlanEnd = void 0;
                 curTaskPlanStart = this.vTaskList[i].getPlanStart();
                 curTaskPlanEnd = this.vTaskList[i].getPlanEnd();
                 if (curTaskPlanStart && curTaskPlanEnd) {
                     vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
-                    vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
+                    vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends) - 1;
+
+                    //  make longer task view plan date    
+                    if(vTaskPlanRightPx <= 1) vTaskPlanRightPx = 14;
+
                 }
                 else {
                     vTaskPlanLeftPx = vTaskPlanRightPx = 0;
