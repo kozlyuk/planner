@@ -125,17 +125,23 @@ td.gspanning {
 /* needed for IE8 */
 
 .gstartdate div,
-.gplanstartdate,
-.gplanenddate,
 .gstartdate,
 .genddate {
   text-align: center;
-  min-width: 105px;
-  width: 105px;
-  max-width: 105px;
+  min-width: 65px;
+  width: 65px;
+  max-width: 65px;
   font-size: 10px;
 }
 
+.gplanstartdate,
+.gplanenddate{
+  text-align: center;
+  min-width: 85px;
+  width: 85px;
+  max-width: 85px;
+  font-size: 10px;
+}
 .gtaskheading {
   text-align: center;
 }
@@ -144,9 +150,9 @@ td.gspanning {
 /* needed for IE8 */
 
 .gtaskname {
-  max-width: 170px;
-  width: 170px;
-  font-size: 9px;
+  max-width: 100px;
+  width: 100px;
+  font-size: 10px;
   border-left: none;
 }
 
@@ -196,7 +202,7 @@ span.gfoldercollapse {
 .gtasktableh,
 .gtasktable {
   border-right: #efefef 1px solid;
-  width: 120%;
+  width: 100%;
 }
 
 .gcharttableh,
@@ -760,16 +766,16 @@ td.gspanning div {
 .gpccomplete,
 .gcost {
   text-align: center;
-  width: 60px;
-  max-width: 60px;
-  min-width: 60px;
+  width: 65px;
+  max-width: 65px;
+  min-width: 65px;
   font-size: 10px;
 }
 
 .gresource{
-  width: 120px;
-  max-width: 120px;
-  min-width: 120px;
+  width: 65px;
+  max-width: 65px;
+  min-width: 65px;
 }
 
 @media print {

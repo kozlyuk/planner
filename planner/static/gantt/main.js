@@ -92,8 +92,7 @@ const status = {
 };
 
 const ganttSettings = {
-  vResources: resources,
-  vCaptionType: "Resource", // Set to Show Caption : None,Caption,Resource,Duration,Complete,
+  vCaptionType: "Caption", // Set to Show Caption : None,Caption,Resource,Duration,Complete,
   vHourColWidth: 16,
   vDayColWidth: 32,
   vWeekColWidth: 64,
@@ -110,10 +109,7 @@ const ganttSettings = {
     // Add data columns to your table
     status: {
       title: "Статус",
-    },
-    object_code: {
-      title: "Object_code",
-    },
+    }
   },
   vEvents: {
     // taskname: console.log,
@@ -126,11 +122,11 @@ const ganttSettings = {
     afterDraw: afterDrawHandler,
   },
   vEventsChange: {
-    taskname: editValue, // if you need to use the this scope, do: editValue.bind(this)
-    res: editValue,
-    dur: editValue,
-    start: editValue,
-    end: editValue,
+    // taskname: editValue, // if you need to use the this scope, do: editValue.bind(this)
+    // res: editValue,
+    // dur: editValue,
+    // start: editValue,
+    // end: editValue,
     planstart: editValue,
     planend: editValue,
   },
@@ -142,7 +138,7 @@ const ganttSettings = {
   vShowComp: false,
   vShowPlanStartDate: true,
   vShowPlanEndDate: true,
-  vUseSingleCell: 25000, // Set the threshold cell per table row (Helps performance for large data.
+  vUseSingleCell: 35000, // Set the threshold cell per table row (Helps performance for large data.
   vFormatArr: ["Day", "Week", "Month", "Quarter"], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers,
 };
 
@@ -152,16 +148,16 @@ const setup = async () => {
     "day"
   );
   g.addLang("ua", urk_lang);
+  g.setOptions(ganttSettings);
 
   data.projects.forEach((el) => {
     g.AddTaskItemObject(createTask(el, g));
   });
 
-  g.setOptions(ganttSettings);
-  g.setTotalHeight("99vh");
+  g.setTotalHeight("94vh");
   g.setShowTaskInfoComp(false);
-  g.Draw();
   g.setScrollTo("today");
+  g.Draw();
 };
 
 function editValue(list, task, event, cell, column) {
@@ -205,11 +201,11 @@ function createTask(obj, g) {
   newObject.pParent = isProject ? 0 : "";
   newObject.pOpen = 1; //  0 for rendering colapsed projects and tasks
   newObject.pNotes = obj.hasOwnProperty("warning") ? obj.warning : "";
+  newObject.pCaption = isProject ? obj.object_code : obj.part_name;
   if (isProject) {
     obj.tasks.forEach((task) => {
       const ganttObj = createTask(task, g);
       ganttObj.pParent = obj.pk; //  set parent id from project
-      ganttObj.object_code = obj.object_code;
       g.AddTaskItemObject(ganttObj);
     });
   }
@@ -225,12 +221,12 @@ function hideElementsInputBySelector(selector) {
   }
 }
 
-function addInputElementsBySelector(selector) {
+function hideInputsFromTaskName(selector){
   const allSelectorElement = document.querySelectorAll(selector);
   for (let i = 0; i < allSelectorElement?.length; i++) {
-    const inputValue = allSelectorElement[i].innerText.trim(); //  take value of input or select
-    const child = `&nbsp;&nbsp;<input class="gantt-inputtable" value="${inputValue}">`;
-    allSelectorElement[i].innerHTML = child;
+    const inputValue = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + allSelectorElement[i].lastChild.value; //  take value of input or select
+    allSelectorElement[i].lastChild.remove(); //  delete node
+    allSelectorElement[i].innerHTML = inputValue; //  paste value of input or select into div
   }
 }
 
@@ -239,7 +235,10 @@ function afterDrawHandler() {
   hideElementsInputBySelector(".gduration div"); //  hiding inputs in duration column
   hideElementsInputBySelector(".ggroupitem .gresource div"); //  hiding inputs in project resource column
   hideElementsInputBySelector(".gstartdate div, .genddate div"); //  hiding inputs in start and end date columns
-  addInputElementsBySelector(".gtaskname.gtaskeditable div span:last-child");
+  hideElementsInputBySelector(".glineitem .gresource div"); //  hiding inputs in resource column
+  hideInputsFromTaskName(".glineitem .gtaskname div");
+  swapStatusDuringColumns();
+  addingEditProjectLink(".ggroupitem .gtaskname div:first-child");
 }
 
 function setCommonPropertiesToGanttObject(incomeObject, ganntObject){
@@ -255,7 +254,43 @@ function setCommonPropertiesToGanttObject(incomeObject, ganntObject){
     }
     ganntObject[key] = incomeObject[dataProperty]; //  take dynamic key for object from properties of jsgantt value
   });
+
+  if(incomeObject.start_date === null){
+    ganntObject.pEnd = null;
+  }
+  if(incomeObject.finish_date === null && incomeObject.start_date !== null){
+    ganntObject.pEnd = incomeObject.planned_finish;
+  }
+  if(incomeObject.start_date === null){
+    ganntObject.pPlanStart = new Date();
+  }
   return ganntObject;
+}
+
+function swapStatusDuringColumns(){
+  const duringColumnSelector = ".gduration";
+  const statusColumnSelector = ".gadditional.gadditional-status";
+  const allStatusCells = document.querySelectorAll(statusColumnSelector);
+  const allDuringCells = document.querySelectorAll(duringColumnSelector);
+  for(let i = 0; i < allDuringCells.length; i++){
+    const nextToDuring = allDuringCells[i].nextSibling;
+    const prevToStatus = allStatusCells[i].previousSibling;
+    prevToStatus.after(allDuringCells[i]);
+    nextToDuring.before(allStatusCells[i]);
+  }
+}
+
+function addingEditProjectLink(selector){
+  const items = document.querySelectorAll(selector);
+  items.forEach(item => {
+    const wrapper = document.createElement("a");
+    const pk = data.projects.find(row => row.object_code === item.textContent.slice(1).trim()).pk;
+    wrapper.classList.add("edit_project_link");
+    wrapper.setAttribute("target", "_blank");
+    wrapper.setAttribute("href", `/project/${pk}/change`);
+    wrapper.innerText = "Ред.";
+    item.appendChild(wrapper);
+  });
 }
 
 setup();

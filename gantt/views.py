@@ -3,8 +3,7 @@ from django.views.generic.base import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.http import QueryDict
 
-
-from planner.models import Task, Employee
+from planner.models import Task
 from planner.views import subtasks_queryset_filter
 
 
@@ -40,13 +39,14 @@ class GetPlan(TemplateView):
                       "projects": []}
         for index, project_id in enumerate(projects):
             project = Task.objects.get(pk=project_id)
+
             # add project to the dictionary
             gantt_data["projects"].append({"pk": project.pk,
                                            "object_code": project.object_code,
                                            "owner": project.owner.name,
                                            "exec_status": project.exec_status,
                                            "planned_start": str(project.planned_start),
-                                           "planned_finish": str(project.planned_start),
+                                           "planned_finish": str(project.planned_finish),
                                            "tasks": []})
             tasks = subtasks.filter(task=project)
             # add tasks to the project
