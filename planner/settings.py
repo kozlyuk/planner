@@ -56,10 +56,6 @@ MIDDLEWARE = [
     'crum.CurrentRequestUserMiddleware',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ['silk']
-    MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
-
 ROOT_URLCONF = 'planner.urls'
 
 LOGIN_URL = '/login/'
@@ -191,3 +187,8 @@ if not DEBUG:
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True
     )
+
+# Silk settings
+# if DEBUG:
+#     INSTALLED_APPS += ['silk']
+#     MIDDLEWARE += ['silk.middleware.SilkyMiddleware']

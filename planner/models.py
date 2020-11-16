@@ -211,7 +211,7 @@ class Project(models.Model):
         ordering = ['-price_code']
 
     def __str__(self):
-        return self.price_code + ' ' + self.project_type
+        return f"{self.price_code} {self.project_type}"
 
     def net_price(self):
         net_price = self.price * self.net_price_rate / 100

@@ -109,7 +109,7 @@ const ganttSettings = {
     // Add data columns to your table
     status: {
       title: "Статус",
-    }
+    },
   },
   vEvents: {
     // taskname: console.log,
@@ -154,35 +154,56 @@ const setup = async () => {
     g.AddTaskItemObject(createTask(el, g));
   });
 
-  g.setTotalHeight("94vh");
+  g.setTotalHeight("92vh");
   g.setShowTaskInfoComp(false);
   g.setScrollTo("today");
   g.Draw();
 };
 
+function getCookie(name) {
+  if (!document.cookie) {
+    return null;
+  }
+
+  const xsrfCookies = document.cookie.split(';')
+    .map(c => c.trim())
+    .filter(c => c.startsWith(name + '='));
+
+  if (xsrfCookies.length === 0) {
+    return null;
+  }
+  return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+}
+
 function editValue(list, task, event, cell, column) {
   console.log(event);
   const pk = task.getOriginalID();
   const apiType = task.getGroup() == 1 ? "project" : "task";
-  const newValue = event.target.value.trim().replace(" ", "-");
-  let fieldName;
-  if (!commonProperties[column]) {
-    if (column === "pName" && apiType === "project") fieldName = "object_code";
-    else fieldName = "part_name";
-
-    if (column === "pRes") fieldName = "executor";
-  } else {
-    fieldName = commonProperties[column];
-  }
-  const api_request = `/${apiType}/${pk}/?${fieldName}=${newValue}`;
-  console.log(api_request);
-  //console.log(list, task, event, cell, column);
+  const newValue = event.target.value.trim();
+  let fieldName = (column === "pPlanStart") ? "planned_start" : "planned_finish";
+  var formData = new FormData();
+  formData.append("pk", pk);
+  formData.append(fieldName, newValue);
+  formData.append("task_type", apiType);
+  editPostRequest(formData);
   const found = list.find((item) => item.pID == task.getOriginalID());
   if (!found) {
     return;
   } else {
     found[column] = event ? event.target.value : "";
   }
+}
+
+function editPostRequest(object){
+  const csrfToken = getCookie('csrftoken');
+  fetch("change/", {
+    method: 'POST', 
+    body: object, 
+    headers: {
+      'X-CSRFToken': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
 }
 
 function createTask(obj, g) {
@@ -196,11 +217,9 @@ function createTask(obj, g) {
   newObject.pComp = 0; //  % of complete
   newObject.pName = isProject ? obj.object_code : obj.part_name;
   newObject.pRes = isProject ? obj.owner : obj.executor;
-  newObject.object_code = isProject ? obj.object_code : obj.task;
   newObject.pGroup = isProject ? 1 : 0; //  1 for project task, 0 for task
   newObject.pParent = isProject ? 0 : "";
   newObject.pOpen = 1; //  0 for rendering colapsed projects and tasks
-  newObject.pNotes = obj.hasOwnProperty("warning") ? obj.warning : "";
   newObject.pCaption = isProject ? obj.object_code : obj.part_name;
   if (isProject) {
     obj.tasks.forEach((task) => {
@@ -209,6 +228,7 @@ function createTask(obj, g) {
       g.AddTaskItemObject(ganttObj);
     });
   }
+
   return newObject;
 }
 
@@ -221,10 +241,12 @@ function hideElementsInputBySelector(selector) {
   }
 }
 
-function hideInputsFromTaskName(selector){
+function hideInputsFromTaskName(selector) {
   const allSelectorElement = document.querySelectorAll(selector);
   for (let i = 0; i < allSelectorElement?.length; i++) {
-    const inputValue = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + allSelectorElement[i].lastChild.value; //  take value of input or select
+    const inputValue =
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+      allSelectorElement[i].lastChild.value; //  take value of input or select
     allSelectorElement[i].lastChild.remove(); //  delete node
     allSelectorElement[i].innerHTML = inputValue; //  paste value of input or select into div
   }
@@ -241,7 +263,7 @@ function afterDrawHandler() {
   addingEditProjectLink(".ggroupitem .gtaskname div:first-child");
 }
 
-function setCommonPropertiesToGanttObject(incomeObject, ganntObject){
+function setCommonPropertiesToGanttObject(incomeObject, ganntObject) {
   Object.keys(commonProperties).forEach((key) => {
     const dataProperty = commonProperties[key]; //  incoming data key of each object
     if (key === "status") {
@@ -249,30 +271,30 @@ function setCommonPropertiesToGanttObject(incomeObject, ganntObject){
       return;
     }
     if (incomeObject.hasOwnProperty(dataProperty) === false) {
-      ganntObject[key] = "null";
+      ganntObject[key] = null;
       return;
     }
     ganntObject[key] = incomeObject[dataProperty]; //  take dynamic key for object from properties of jsgantt value
   });
 
-  if(incomeObject.start_date === null){
+  if (incomeObject.start_date === "None") {
+    ganntObject.pStart = null;    
+  }
+  if(incomeObject.finish_date === "None"){
     ganntObject.pEnd = null;
   }
-  if(incomeObject.finish_date === null && incomeObject.start_date !== null){
-    ganntObject.pEnd = incomeObject.planned_finish;
-  }
-  if(incomeObject.start_date === null){
-    ganntObject.pPlanStart = new Date();
+  if (incomeObject.planned_start === "None") {
+    ganntObject.pPlanStart = " ";    
   }
   return ganntObject;
 }
 
-function swapStatusDuringColumns(){
+function swapStatusDuringColumns() {
   const duringColumnSelector = ".gduration";
   const statusColumnSelector = ".gadditional.gadditional-status";
   const allStatusCells = document.querySelectorAll(statusColumnSelector);
   const allDuringCells = document.querySelectorAll(duringColumnSelector);
-  for(let i = 0; i < allDuringCells.length; i++){
+  for (let i = 0; i < allDuringCells.length; i++) {
     const nextToDuring = allDuringCells[i].nextSibling;
     const prevToStatus = allStatusCells[i].previousSibling;
     prevToStatus.after(allDuringCells[i]);
@@ -280,15 +302,17 @@ function swapStatusDuringColumns(){
   }
 }
 
-function addingEditProjectLink(selector){
+function addingEditProjectLink(selector) {
   const items = document.querySelectorAll(selector);
-  items.forEach(item => {
+  items.forEach((item) => {
     const wrapper = document.createElement("a");
-    const pk = data.projects.find(row => row.object_code === item.textContent.slice(1).trim()).pk;
+    const pk = data.projects.find(
+      (row) => row.object_code === item.textContent.slice(1).trim()
+    ).pk;
     wrapper.classList.add("edit_project_link");
     wrapper.setAttribute("target", "_blank");
     wrapper.setAttribute("href", `/project/${pk}/change`);
-    wrapper.innerText = "Ред.";
+    wrapper.innerHTML = `<i style="font-size: 16px;" data-toggle="tooltip" title="" data-placement="right" class="far fa-sticky-note" data-original-title="Відкрити редагування проекту"></i>`;
     item.appendChild(wrapper);
   });
 }

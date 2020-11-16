@@ -147,6 +147,12 @@
 .edit_project_link{
   text-decoration: none;
   float: right;
+  width: 20px;
+  height: 20px;
+}
+
+.gmainright{
+  height: 94vh;
 }
 
 /* status agenda */

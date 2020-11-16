@@ -85,6 +85,8 @@ def subtasks_queryset_filter(request):
                          Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
                                                                              Execution.InProgress,
                                                                              Execution.OnChecking]))
+#                 .exclude(task__exec_status__in=[Task.OnHold,
+#                                                 Task.Canceled])
     for word in search_string:
         tasks = tasks.filter(Q(part_name__icontains=word) |
                              Q(task__object_code__icontains=word) |
