@@ -393,6 +393,7 @@ exports.GanttChart = function (pDiv, pFormat) {
 
                         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, vCellContents);
 
+
                         var callback = function (task, e) { return task.setName(e.target.value); };
                         events_1.addListenerInputCell(vTmpCell, this_1.vEventsChange, callback, this_1.vTaskList, i_1, 'taskname', this_1.Draw.bind(this_1));
                         events_1.addListenerClickCell(vTmpDiv, this_1.vEvents, this_1.vTaskList[i_1], 'taskname');
@@ -3809,6 +3810,13 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
     if (pRow >= 0) {
         if (pList[pRow].getGroupMinStart() != null && pList[pRow].getGroupMinStart() < vMinDate) {
             vMinDate = pList[pRow].getGroupMinStart();
+        }
+        else{
+            let _planStart = pList[pRow].getGroupMinPlanStart();
+            if(vMinPlanDate.getTime() < _planStart.getTime()){
+                _planStart = vMinPlanDate;
+            }
+            vMinDate = (_planStart != null && _planStart != '') ? new Date(_planStart) : new Date("");
         }
         if (pList[pRow].getGroupMinEnd() != null && pList[pRow].getGroupMinEnd() > vMaxDate) {
             vMaxDate = pList[pRow].getGroupMinEnd();

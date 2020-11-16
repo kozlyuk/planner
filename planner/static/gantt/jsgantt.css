@@ -142,7 +142,6 @@ td.gspanning {
   max-width: 85px;
   font-size: 10px;
 }
-
 .gtaskheading {
   text-align: center;
 }
@@ -151,8 +150,8 @@ td.gspanning {
 /* needed for IE8 */
 
 .gtaskname {
-  max-width: 100px;
-  width: 100px;
+  max-width: 120px;
+  width: 120px;
   font-size: 10px;
   border-left: none;
 }
