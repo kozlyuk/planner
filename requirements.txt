@@ -1,4 +1,4 @@
-Django == 2.2.13
+Django == 2.2.17
 django-admin-list-filter-dropdown
 django-crum
 django-fontawesome-5
@@ -17,6 +17,7 @@ wheel
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk
+sentry-sdk          # https://docs.sentry.io/platforms/python/
 
 # django-appconf
 # django-js-asset
