@@ -887,6 +887,13 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     }; //this.draw
+    this.addListenerInputCellCustom = function (cell, column, vEventsChange, vEvents, vTaskList, index){
+        var callback = column == "planstart" 
+        ? function (task, e) { return task.setPlanStart(e.target.value); }
+        : function (task, e) { return task.setPlanEnd(e.target.value); };
+        events_1.addListenerInputCell(cell, vEventsChange, callback, vTaskList, index, column, this.Draw.bind(this));
+        events_1.addListenerClickCell(cell, vEvents, vTaskList[index], column);
+    };
     if (this.vDiv && this.vDiv.nodeName && this.vDiv.nodeName.toLowerCase() == 'div')
         this.vDivId = this.vDiv.id;
 }; //GanttChart
@@ -4843,7 +4850,7 @@ exports.AddXMLTask = function (pGanttVar, pXmlDoc) {
         project = projNode[0].getAttribute('xmlns');
     }
     if (project == 'http://schemas.microsoft.com/project') {
-        pGanttVar.setDateInputFormat('yyyy-mm-dd');
+        pGanttVar.setDateInputFormat('dd/mm/yyyy');
         Task = exports.findXMLNode(pXmlDoc, 'Task');
         if (typeof Task == 'undefined')
             n = 0;

@@ -190,6 +190,6 @@ if not DEBUG:
     )
 
 # Silk settings
-# if DEBUG:
-#     INSTALLED_APPS += ['silk']
-#     MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+if DEBUG:
+    INSTALLED_APPS += ['silk']
+    MIDDLEWARE += ['silk.middleware.SilkyMiddleware']

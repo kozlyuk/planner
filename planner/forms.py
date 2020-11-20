@@ -92,8 +92,8 @@ class EmployeeForm(forms.ModelForm):
 
         if commit:
             user.save()
-            for group_name in groups:
-                group = Group.objects.get(name=group_name)
+            for group_pk in groups:
+                group = Group.objects.get(pk=group_pk)
                 group.user_set.add(user)
             instance.user = user
             instance.save()
