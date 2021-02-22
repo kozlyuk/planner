@@ -13,12 +13,14 @@ LOGGER = get_task_logger(__name__)
 
 
 @app.task
-def calc_bonuses(prev_month=False):
+def calc_bonuses(prev_month=False, period=None):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.filter(user__is_active=True)
-    period = date.today().replace(day=1)
+    if not period:
+        period = date.today()
     if prev_month:
         period = period - relativedelta(months=1)
+    period = period.replace(day=1)
 
     for employee in employees:
         for kpi_name in [(1, Kpi.BonusItel), (2, Kpi.BonusGKP), (3, Kpi.BonusSIA)]:
@@ -68,12 +70,14 @@ def calc_bonuses(prev_month=False):
 
 
 @app.task
-def calc_kpi(prev_month=False):
+def calc_kpi(prev_month=False, period=None):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.filter(user__is_active=True, user__groups__name='Проектувальники')
-    period = date.today().replace(day=1)
+    if not period:
+        period = date.today()
     if prev_month:
         period = period - relativedelta(months=1)
+    period = period.replace(day=1)
 
     for employee in employees:
         # calculate productivity for PMs
