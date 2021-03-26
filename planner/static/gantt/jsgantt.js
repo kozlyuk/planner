@@ -166,7 +166,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         for (var i = 0; i < pList.length; i++) {
             if (pList[i].getStart().getTime() < vDate.getTime())
                 vDate.setTime(pList[i].getStart().getTime());
-    
+
             //  set min date to plan start if it less than actual
             if(pList[i].getPlanStart() !== null && pList[i].getPlanStart().getTime() < vDate.getTime()){
                 vDate.setTime(pList[i].getPlanStart().getTime());
@@ -219,7 +219,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         for (var i = 0; i < pList.length; i++) {
             if (pList[i].getEnd().getTime() > vDate.getTime())
                 vDate.setTime(pList[i].getEnd().getTime());
-    
+
             //  set max date to plan start if it more than actual
             if(pList[i].getPlanEnd() !== null && pList[i].getPlanEnd().getTime() > vDate.getTime()){
                 vDate.setTime(pList[i].getPlanEnd().getTime());
@@ -389,10 +389,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                         events_1.addFolderListeners(this_1, vTmpSpan, vID);
                         var divTask = document.createElement('span');
                         divTask.innerHTML = '\u00A0' + this_1.vTaskList[i_1].getName();
+                        divTask.setAttribute("pk", this_1.vTaskList[i_1].getOriginalID());
                         vTmpDiv.appendChild(divTask);
 
                         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, vCellContents);
-
 
                         var callback = function (task, e) { return task.setName(e.target.value); };
                         events_1.addListenerInputCell(vTmpCell, this_1.vEventsChange, callback, this_1.vTaskList, i_1, 'taskname', this_1.Draw.bind(this_1));
@@ -613,7 +613,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                 vTaskLeftPx = general_utils_1.getOffset(vMinDate, curTaskStart, vColWidth, this.vFormat, this.vShowWeekends);
                 vTaskRightPx = general_utils_1.getOffset(curTaskStart, curTaskEnd, vColWidth, this.vFormat, this.vShowWeekends);
 
-                //  make longer task view actual date    
+                //  make longer task view actual date
                 if(vTaskRightPx <= 1) vTaskRightPx = 15;
 
                 var curTaskPlanStart = void 0, curTaskPlanEnd = void 0;
@@ -623,7 +623,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
                     vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends) - 1;
 
-                    //  make longer task view plan date    
+                    //  make longer task view plan date
                     if(vTaskPlanRightPx <= 1) vTaskPlanRightPx = 14;
 
                 }
@@ -668,7 +668,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                 }
                 else {
                     vTaskWidth = vTaskRightPx;
-                    // Draw Group Bar which has outer div with inner group div 
+                    // Draw Group Bar which has outer div with inner group div
                     // and several small divs to left and right to create angled-end indicators
                     if (this.vTaskList[i].getGroup() === 2) {
                         vTaskWidth = (vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2) ? this.vMinGpLen * 2 : vTaskWidth; // Expand to show two end points
@@ -888,7 +888,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         }
     }; //this.draw
     this.addListenerInputCellCustom = function (cell, column, vEventsChange, vEvents, vTaskList, index){
-        var callback = column == "planstart" 
+        var callback = column == "planstart"
         ? function (task, e) { return task.setPlanStart(e.target.value); }
         : function (task, e) { return task.setPlanEnd(e.target.value); };
         events_1.addListenerInputCell(cell, vEventsChange, callback, vTaskList, index, column, this.Draw.bind(this));
@@ -1632,7 +1632,7 @@ exports.JSGantt.taskLink = task_1.taskLink;
 exports.JSGantt.parseDateStr = date_utils_1.parseDateStr;
 exports.JSGantt.formatDateStr = date_utils_1.formatDateStr;
 exports.JSGantt.parseDateFormatStr = date_utils_1.parseDateFormatStr;
-// XML 
+// XML
 exports.JSGantt.parseXML = xml_1.parseXML;
 exports.JSGantt.parseXMLString = xml_1.parseXMLString;
 exports.JSGantt.findXMLNode = xml_1.findXMLNode;
@@ -3174,7 +3174,7 @@ exports.taskLink = function (pRef, pWidth, pHeight) {
         vHeight = pHeight;
     else
         vHeight = 400;
-    window.open(pRef, 'newwin', 'height=' + vHeight + ',width=' + vWidth); // let OpenWindow = 
+    window.open(pRef, 'newwin', 'height=' + vHeight + ',width=' + vWidth); // let OpenWindow =
 };
 exports.sortTasks = function (pList, pID, pIdx) {
     if (pList.length < 2) {
@@ -3820,7 +3820,7 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         }
         else{
             let _planStart = pList[pRow].getGroupMinPlanStart();
-            if(vMinPlanDate.getTime() < _planStart.getTime()){
+            if(_planStart !== null && vMinPlanDate.getTime() < _planStart?.getTime()){
                 _planStart = vMinPlanDate;
             }
             vMinDate = (_planStart != null && _planStart != '') ? new Date(_planStart) : new Date("");

@@ -1,4 +1,4 @@
-Django == 2.2.18
+Django == 2.2.19
 django-admin-list-filter-dropdown
 django-crum
 django-fontawesome-5
