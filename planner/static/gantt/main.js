@@ -147,6 +147,45 @@ const setup = async () => {
     document.getElementById("GanttChartDIV"),
     "day"
   );
+  const ganttSettings = {
+    vCaptionType: "Caption", // Set to Show Caption : None,Caption,Resource,Duration,Complete,
+    vHourColWidth: 16,
+    vDayColWidth: 32,
+    vWeekColWidth: 64,
+    vMonthColWidth: 128,
+    vQuarterColWidth: 256,
+    vTooltipDelay: 1000,
+    vDateTaskDisplayFormat: "DAY dd month yyyy", // Shown in tool tip box
+    vDayMajorDateDisplayFormat: "mon yyyy - Week ww", // Set format to dates in the "Major" header of the "Day" view
+    vWeekMinorDateDisplayFormat: "dd mon", // Set format to display dates in the "Minor" header of the "Week" view
+    vLang: "ua",
+    vShowTaskInfoLink: 0, // Show link in tool tip (0/1)
+    vShowEndWeekDate: 0, // Show/Hide the date for the last day of the week in header for daily
+    vAdditionalHeaders: {
+      // Add data columns to your table
+      status: {
+        title: "Статус",
+      },
+    },
+    vEvents: {
+      beforeDraw: () => console.log("before draw listener"),
+      afterDraw: () => afterDrawHandler(g),
+    },
+    vEventsChange: {
+      planstart: editValue,
+      planend: editValue,
+    },
+    vUseSort: true,
+    vShowCost: false,
+    vShowRes: data?.view_mode == "project_view" ? 1 : 0,
+    vShowAddEntries: false,
+    vShowComp: false,
+    vShowPlanStartDate: true,
+    vShowPlanEndDate: true,
+    vUseSingleCell: 35000, // Set the threshold cell per table row (Helps performance for large data.
+    vFormatArr: ["Day", "Week", "Month", "Quarter"], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers,
+  };
+
   g.addLang("ua", urk_lang);
   g.setOptions(ganttSettings);
 
@@ -197,8 +236,8 @@ function editValue(list, task, event, cell, column) {
 function editPostRequest(object){
   const csrfToken = getCookie('csrftoken');
   fetch("change/", {
-    method: 'POST', 
-    body: object, 
+    method: 'POST',
+    body: object,
     headers: {
       'X-CSRFToken': csrfToken,
       'X-Requested-With': 'XMLHttpRequest'
@@ -278,13 +317,13 @@ function setCommonPropertiesToGanttObject(incomeObject, ganntObject) {
   });
 
   if (incomeObject.start_date === "None") {
-    ganntObject.pStart = null;    
+    ganntObject.pStart = null;
   }
   if(incomeObject.finish_date === "None"){
     ganntObject.pEnd = null;
   }
   if (incomeObject.planned_start === "None") {
-    ganntObject.pPlanStart = " ";    
+    ganntObject.pPlanStart = " ";
   }
   return ganntObject;
 }
@@ -305,10 +344,8 @@ function swapStatusDuringColumns() {
 function addingEditProjectLink(selector) {
   const items = document.querySelectorAll(selector);
   items.forEach((item) => {
+    const pk = item.lastChild.getAttribute("pk");
     const wrapper = document.createElement("a");
-    const pk = data.projects.find(
-      (row) => row.object_code === item.textContent.slice(1).trim()
-    ).pk;
     wrapper.classList.add("edit_project_link");
     wrapper.setAttribute("target", "_blank");
     wrapper.setAttribute("href", `/project/${pk}/change`);

@@ -653,14 +653,6 @@ div.gtaskbarcontainer {
 
 /* otherwise the chart disappears! */
 
-div .gantt {
-  /* _width: 1064px; ie6 fixed width */
-}
-
-div.gchartlbl,
-div.gchartgrid {
-  /* _width: 532px; */
-}
 
 /* ie6 fixed width */
 
