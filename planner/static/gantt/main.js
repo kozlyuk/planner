@@ -192,7 +192,6 @@ const setup = async () => {
   data.projects.forEach((el) => {
     g.AddTaskItemObject(createTask(el, g));
   });
-
   g.setTotalHeight("92vh");
   g.setShowTaskInfoComp(false);
   g.setScrollTo("today");
@@ -215,7 +214,7 @@ function getCookie(name) {
 }
 
 function editValue(list, task, event, cell, column) {
-  console.log(event);
+  console.log(list, task, event, cell, column);
   const pk = task.getOriginalID();
   const apiType = task.getGroup() == 1 ? "project" : "task";
   const newValue = event.target.value.trim();
@@ -291,15 +290,10 @@ function hideInputsFromTaskName(selector) {
   }
 }
 
-function afterDrawHandler() {
+function afterDrawHandler(g) {
   console.log("after draw listener");
-  hideElementsInputBySelector(".gduration div"); //  hiding inputs in duration column
-  hideElementsInputBySelector(".ggroupitem .gresource div"); //  hiding inputs in project resource column
-  hideElementsInputBySelector(".gstartdate div, .genddate div"); //  hiding inputs in start and end date columns
-  hideElementsInputBySelector(".glineitem .gresource div"); //  hiding inputs in resource column
-  hideInputsFromTaskName(".glineitem .gtaskname div");
-  swapStatusDuringColumns();
   addingEditProjectLink(".ggroupitem .gtaskname div:first-child");
+  addingEditingInputToPlanDates(".gplanstartdate div, .gplanenddate div", g)
 }
 
 function setCommonPropertiesToGanttObject(incomeObject, ganntObject) {
@@ -351,6 +345,23 @@ function addingEditProjectLink(selector) {
     wrapper.setAttribute("href", `/project/${pk}/change`);
     wrapper.innerHTML = `<i style="font-size: 16px;" data-toggle="tooltip" title="" data-placement="right" class="far fa-sticky-note" data-original-title="Відкрити редагування проекту"></i>`;
     item.appendChild(wrapper);
+  });
+}
+
+function addingEditingInputToPlanDates(selector, g){
+  const nodes = document.querySelectorAll(selector);
+  nodes.forEach(node => {
+    const nodeValueArr = node.innerText.split("/");
+    const nodeValue = `${nodeValueArr[2]}-${nodeValueArr[1]}-${nodeValueArr[0]}`;
+    const input = document.createElement("input");
+    input.setAttribute("type", "date");
+    input.setAttribute("class", "gantt-inputtable");
+    input.setAttribute("value", nodeValue);
+    node.innerText = "";
+    node.appendChild(input);
+    const id = node.parentNode.parentNode.getAttribute("id").split("_")[1];
+    const columnName = node.parentNode.getAttribute("class").replace("g", " ").replace("date", " ").trim();
+    g.addListenerInputCellCustom(node.parentNode, columnName, g.vEventsChange, g.getEventsClickCell(), g.getList(), g.getArrayLocationByID(id));
   });
 }
 

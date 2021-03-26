@@ -4,7 +4,6 @@ from django.urls import path
 from django.urls import include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
-from django.views.generic.base import RedirectView
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
 from planner import views
@@ -13,7 +12,6 @@ from gantt.views import GetPlan, ChangePlan
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
     path('notice/', include('notice.urls')),
 
     path('', views.Dashboard.as_view(), name='home_page'),
