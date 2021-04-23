@@ -19,13 +19,13 @@ from .formatChecker import ContentTypeRestrictedFileField
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
-def user_directory_path(filename, *_):
+def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/projects/user_<id>/Year/Month/<filename>
     return 'projects/user_{0}/{1}/{2}/{3}'\
         .format(get_current_user().id, date.today().year, date.today().month, filename)
 
 
-def avatar_directory_path(filename, *_):
+def avatar_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
     return 'avatars/user_{0}/{1}'\
         .format(get_current_user().id, filename)
