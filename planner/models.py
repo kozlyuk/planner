@@ -122,6 +122,14 @@ class Employee(models.Model):
         """ return queryset with tasks tasks of task owner """
         return self.task_set.filter(exec_status=Task.Done)
 
+    def is_subordinate(self):
+        user = get_current_user()
+        if user.is_superuser:
+            return True
+        elif self.head.user == user:
+            return True
+    # try if user has a permitting to edit the task
+
 
 class Customer(models.Model):
     name = models.CharField('Назва', max_length=50, unique=True)

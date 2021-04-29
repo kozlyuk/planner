@@ -170,7 +170,11 @@
                                     </div>
                                     <div class="cont-col2">
                                         <div class="desc">
-                                            {{ rating.employee.name }}
+                                            {% if rating.employee.is_subordinate %}
+                                                <a href={% url 'bonus_calc' rating.employee.id current_year current_month %}>{{ rating.employee.name }}</a>
+                                            {% else %}
+                                                {{ rating.employee.name }}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
