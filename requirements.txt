@@ -1,3 +1,4 @@
+wheel
 Django == 2.2.20
 django-admin-list-filter-dropdown
 django-crum
@@ -13,7 +14,6 @@ pandas
 Pillow
 redis
 celery
-wheel
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk
