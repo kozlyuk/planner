@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils.html import format_html
 from django.conf import settings
 
@@ -58,7 +58,10 @@ def context_general(user):
         actual_to__lte=TODAY).order_by('-created')
     events = Event.objects.filter(
         next_date__isnull=False).order_by('next_date')
-    activities = Log.objects.filter(user=user)[:50]
+    if user.is_superuser:
+        activities = Log.objects.all()[:50]
+    else:
+        activities = Log.objects.filter(Q(user=user) | Q(user__employee__head=user.employee))[:50]
 
     context = {
         'employee_id': Employee.objects.get(user=user).pk,
