@@ -59,9 +59,9 @@ def context_general(user):
     events = Event.objects.filter(
         next_date__isnull=False).order_by('next_date')
     if user.is_superuser:
-        activities = Log.objects.all()[:50]
+        activities = Log.objects.all()[:200]
     else:
-        activities = Log.objects.filter(Q(user=user) | Q(user__employee__head=user.employee))[:50]
+        activities = Log.objects.filter(Q(user=user) | Q(user__employee__head=user.employee))[:100]
 
     context = {
         'employee_id': Employee.objects.get(user=user).pk,

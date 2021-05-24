@@ -387,8 +387,9 @@ class ExecutorInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['executor'].queryset = Employee.objects.filter(
-            user__is_active=True)
+        if self.instance.pk is None or self.instance.executor.user.is_active:
+            self.fields['executor'].queryset = Employee.objects.filter(
+                user__is_active=True)
 
     def clean(self):
         super().clean()
