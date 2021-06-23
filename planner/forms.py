@@ -279,7 +279,7 @@ class SprintFilterForm(forms.Form):
                                             attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
     start_date_value = date.today() - timedelta(days=date.today().weekday())
-    finish_date_value = start_date_value + timedelta(days=4)
+    finish_date_value = start_date_value + timedelta(days=14)
     start_date = forms.DateField(label='Дата початку',
                                  widget=AdminDateWidget(attrs={"value": start_date_value.strftime(date_format)}))
     finish_date = forms.DateField(label='Дата завершення',

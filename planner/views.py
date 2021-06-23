@@ -79,14 +79,14 @@ def subtasks_queryset_filter(request):
     if finish_date:
         finish_date_value = datetime.strptime(finish_date, date_format)
     else:
-        finish_date_value = start_date_value + timedelta(days=4)
+        finish_date_value = start_date_value + timedelta(days=14)
     tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                          Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
-                         Q(planned_finish__lt=date.today(), exec_status__in=[Execution.ToDo,
-                                                                             Execution.InProgress,
-                                                                             Execution.OnChecking]))
-#                 .exclude(task__exec_status__in=[Task.OnHold,
-#                                                 Task.Canceled])
+                         Q(planned_finish__lt=date.today()),
+                         exec_status__in=[Execution.ToDo,
+                                          Execution.InProgress,
+                                          Execution.OnChecking]
+                         )
     for word in search_string:
         tasks = tasks.filter(Q(part_name__icontains=word) |
                              Q(task__object_code__icontains=word) |
@@ -96,7 +96,7 @@ def subtasks_queryset_filter(request):
     if order != '0':
         tasks = tasks.order_by(order)
     else:
-        tasks = tasks.order_by('task__object_code', 'planned_finish')
+        tasks = tasks.order_by('planned_finish', 'planned_start')
     return tasks, start_date_value, finish_date_value
 
 
@@ -564,9 +564,12 @@ class SprintList(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET == {}:
-            request.GET = request.GET.copy()
-            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
-            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
+            if self.request.session.get('execution_query_string'):
+                query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
+                del query_string['start_date']
+                del query_string['finish_date']
+                request.GET = query_string
+                request.META['QUERY_STRING'] = self.request.session.get('execution_query_string')
         if request.user.has_perm('planner.view_execution'):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
