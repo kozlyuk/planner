@@ -86,7 +86,8 @@ def subtasks_queryset_filter(request):
                          exec_status__in=[Execution.ToDo,
                                           Execution.InProgress,
                                           Execution.OnChecking]
-                         )
+                         ). \
+                  exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
     for word in search_string:
         tasks = tasks.filter(Q(part_name__icontains=word) |
                              Q(task__object_code__icontains=word) |
@@ -558,7 +559,7 @@ class TaskExchange(FormView):
 class SprintList(ListView):
     model = Execution
     template_name = "planner/subtask_sprint_list.html"
-    context_object_name = 'tasks'  # Default: object_list
+    context_object_name = 'tasks'
     paginate_by = 50
     success_url = reverse_lazy('home_page')
 
@@ -566,8 +567,10 @@ class SprintList(ListView):
         if request.GET == {}:
             if self.request.session.get('execution_query_string'):
                 query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
-                del query_string['start_date']
-                del query_string['finish_date']
+                if query_string['start_date']:
+                    del query_string['start_date']
+                if query_string['finish_date']:
+                    del query_string['finish_date']
                 request.GET = query_string
                 request.META['QUERY_STRING'] = self.request.session.get('execution_query_string')
         if request.user.has_perm('planner.view_execution'):
