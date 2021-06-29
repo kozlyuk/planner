@@ -567,9 +567,9 @@ class SprintList(ListView):
         if request.GET == {}:
             if self.request.session.get('execution_query_string'):
                 query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
-                if query_string['start_date']:
+                if 'start_date' in query_string:
                     del query_string['start_date']
-                if query_string['finish_date']:
+                if 'finish_date' in query_string:
                     del query_string['finish_date']
                 request.GET = query_string
                 request.META['QUERY_STRING'] = self.request.session.get('execution_query_string')
