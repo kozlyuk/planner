@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
-from .models import Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
+from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
 from .models import IntTask, Contractor, Order, Company
 
 
@@ -209,11 +209,7 @@ class DealForm(forms.ModelForm):
         cleaned_data = super(DealForm, self).clean()
         value = cleaned_data.get("value")
         pay_status = cleaned_data.get("pay_status")
-        pay_date = cleaned_data.get("pay_date")
-        advance = cleaned_data.get("advance")
         act_status = cleaned_data.get("act_status")
-        act_date = cleaned_data.get("act_date")
-        act_value = cleaned_data.get("act_value")
         pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__customer__ = cleaned_data.get("customer")
         self.instance.__expire_date__ = cleaned_data.get("expire_date")
@@ -221,25 +217,11 @@ class DealForm(forms.ModelForm):
         if pay_status == Deal.PaidUp:
             if not value or value == 0:
                 raise forms.ValidationError("Вкажіть Вартість робіт")
-            if not pay_date:
-                raise forms.ValidationError("Вкажіть Дату оплати")
-        if pay_status == Deal.AdvancePaid:
-            if not advance or advance == 0:
-                raise forms.ValidationError("Вкажіть Аванс")
-            if not pay_date:
-                raise forms.ValidationError("Вкажіть Дату оплати")
         if act_status == Deal.PartlyIssued or act_status == Deal.Issued:
             if not value or value == 0:
                 raise forms.ValidationError("Вкажіть Вартість робіт")
-            if not act_date:
-                raise forms.ValidationError(
-                    "Вкажіть Дату акту виконаних робіт")
-            if not act_value or act_value == 0:
-                raise forms.ValidationError(
-                    "Вкажіть Суму акту виконаних робіт")
             if not pdf_copy:
-                raise forms.ValidationError(
-                    "Підвантажте будь ласка електронний примірник")
+                raise forms.ValidationError("Підвантажте будь ласка електронний примірник")
 
 
 class TasksInlineFormSet(BaseInlineFormSet):
@@ -281,6 +263,44 @@ class TasksInline(admin.TabularInline):
         return super(TasksInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class ActOfAcceptanceInlineFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            if not form.is_valid():
+                return
+            pay_status = form.cleaned_data.get("pay_status")
+            pay_date = form.cleaned_data.get("pay_date")
+            value = form.cleaned_data.get("value")
+            if pay_status and pay_status != Order.NotPaid:
+                if not pay_date:
+                    form.add_error('pay_date', 'Вкажіть будь ласка Дату оплати')
+                if not value or value == 0:
+                    form.add_error('value', 'Вкажіть будь ласка Вартість робіт')
+            if pay_date and pay_status == Order.NotPaid:
+                form.add_error('pay_status', 'Відмітьте Статус оплати або видаліть Дату оплати')
+
+
+class ActOfAcceptanceInline(admin.TabularInline):
+
+    model = ActOfAcceptance
+    formset = ContractorOrdersInlineFormSet
+    fields = ['number', 'date', 'value', 'pdf_copy']
+    extra = 0
+    show_change_link = True
+    can_delete = False
+
+
+class PaymentsInline(admin.TabularInline):
+
+    model = Payment
+    fields = ['date', 'value']
+    extra = 0
+    show_change_link = True
+    can_delete = False
+
+
 class DealAdmin(admin.ModelAdmin):
 
     def warning_mark(self, obj):
@@ -313,10 +333,8 @@ class DealAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Інформація про договір', {'fields': [('number', 'date'),
                                                ('customer', 'company'),
-                                               ('value', 'advance', 'pay_status'),
-                                               ('pay_date', 'expire_date'),
-                                               ('act_status',
-                                                'act_date', 'act_value'),
+                                               ('value', 'expire_date'),
+                                               ('act_status', 'pay_status'),
                                                ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
                                              'costs_calc', 'pay_date_calc', 'manual_warning', 'comment'],
@@ -332,7 +350,7 @@ class DealAdmin(admin.ModelAdmin):
         if obj is None:
             self.inlines = []
         else:
-            self.inlines = [TasksInline]
+            self.inlines = [TasksInline, ActOfAcceptanceInline, PaymentsInline]
         return super(DealAdmin, self).get_inline_instances(request, obj)
 
 

@@ -11,7 +11,7 @@ from django.conf.locale.uk import formats as uk_formats
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
-from .models import Task, Customer, Execution, Order, Sending, Deal, Employee,\
+from .models import ActOfAcceptance, Payment, Task, Customer, Execution, Order, Sending, Deal, Employee,\
                     Project, Company, Receiver, Contractor
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -128,15 +128,13 @@ class DealFilterForm(forms.Form):
 class DealForm(forms.ModelForm):
     class Meta:
         model = Deal
-        fields = ['number', 'date', 'customer', 'company', 'value', 'advance',
-                  'pay_status', 'pay_date', 'expire_date', 'act_status',
-                  'act_date', 'act_value', 'pdf_copy', 'value_correction', 'comment', 'manual_warning']
+        fields = ['number', 'date', 'customer', 'company', 'value', 'expire_date',
+                  'pdf_copy', 'value_correction', 'comment', 'manual_warning']
         widgets = {
             'date': AdminDateWidget,
             'customer': Select2Widget,
-            'pay_date': AdminDateWidget,
+            'company': Select2Widget,
             'expire_date': AdminDateWidget,
-            'act_date': AdminDateWidget,
             'pdf_copy': NotClearableFileInput,
         }
 
@@ -149,36 +147,13 @@ class DealForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(DealForm, self).clean()
         value = cleaned_data.get("value")
-        pay_status = cleaned_data.get("pay_status")
-        pay_date = cleaned_data.get("pay_date")
-        advance = cleaned_data.get("advance")
-        act_status = cleaned_data.get("act_status")
-        act_value = cleaned_data.get("act_value")
-        pdf_copy = cleaned_data.get("pdf_copy")
         self.data.__customer__ = cleaned_data.get("customer")
         self.data.__expire_date__ = cleaned_data.get("expire_date")
+        self.data.__value__ = cleaned_data.get("value")
 
-        if pay_status == Deal.PaidUp:
-            if not value or value == 0:
-                self.add_error('value', "Вкажіть Вартість робіт")
-            if not pay_date:
-                self.add_error('pay_date', "Вкажіть Дату оплати")
-        if pay_status == Deal.AdvancePaid:
-            if not advance or advance == 0:
-                self.add_error('advance', "Вкажіть Аванс")
-            if not pay_date:
-                self.add_error('pay_date', "Вкажіть Дату оплати")
-        if act_status == Deal.Issued and self.instance.exec_status in [Deal.ToDo, Deal.InProgress]:
-            self.add_error('act_status', "Ви не можете закрити договір який ще не виконано")
-        if act_status != Deal.NotIssued:
-            if not value or value == 0:
-                self.add_error('value', "Вкажіть Вартість робіт")
-            if not act_value or act_value == 0:
-                self.add_error(
-                    'act_value', "Вкажіть Суму акту виконаних робіт")
-            if not pdf_copy:
-                self.add_error(
-                    'pdf_copy', "Підвантажте будь ласка електронний примірник")
+
+        if not value or value == 0:
+            self.add_error('value', "Вкажіть Вартість робіт")
         return cleaned_data
 
 
@@ -223,6 +198,59 @@ class TasksInlineForm(forms.ModelForm):
 
 
 TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
+
+
+class ActOfAcceptanceInlineForm(forms.ModelForm):
+    class Meta:
+        model = ActOfAcceptance
+        fields = ['number', 'date', 'value']
+        widgets = {
+            'date': AdminDateWidget(),
+            'DELETE': forms.HiddenInput(),
+        }
+
+
+class ActOfAcceptanceInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+
+    def clean(self):
+        super().clean()
+        value_sum = 0
+        for form in self.forms:
+            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
+                value_sum += form.cleaned_data.get('value', 0)
+        if self.instance.pk and value_sum > self.data.__value__:
+            raise ValidationError(f'Сума актів не повинна перевищувати суму договору. Наразі: {value_sum}')
+
+
+ActOfAcceptanceFormSet = inlineformset_factory(Deal, ActOfAcceptance, form=ActOfAcceptanceInlineForm,
+                                               extra=0, formset=ActOfAcceptanceInlineFormset)
+
+
+class PaymentInlineForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['date', 'value']
+        widgets = {
+            'date': AdminDateWidget(),
+            'DELETE': forms.HiddenInput(),
+        }
+
+
+class PaymentInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+
+    def clean(self):
+        super().clean()
+        value_sum = 0
+        for form in self.forms:
+            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
+                value_sum += form.cleaned_data.get('value', 0)
+        if self.instance.pk and value_sum > self.data.__value__:
+            raise ValidationError(f'Сума оплат не повинна перевищувати суму договору. Наразі: {value_sum}')
+
+
+PaymentFormSet = inlineformset_factory(Deal, Payment, form=PaymentInlineForm, extra=0, formset=PaymentInlineFormset)
 
 
 class TaskFilterForm(forms.Form):
@@ -482,8 +510,7 @@ class CostsInlineFormset(BaseInlineFormSet):
                     raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
 
 
-CostsFormSet = inlineformset_factory(
-    Task, Order, form=OrderInlineForm, extra=0, formset=CostsInlineFormset)
+CostsFormSet = inlineformset_factory(Task, Order, form=OrderInlineForm, extra=0, formset=CostsInlineFormset)
 
 
 class SendingInlineForm(forms.ModelForm):

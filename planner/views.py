@@ -271,17 +271,26 @@ class DealUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(DealUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['tasks_formset'] = forms.TasksFormSet(
-                self.request.POST, instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
+            context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, instance=self.object)
+            context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
         else:
             context['tasks_formset'] = forms.TasksFormSet(instance=self.object)
+            context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
+            context['payment_formset'] = forms.PaymentFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         tasks_formset = context['tasks_formset']
-        if tasks_formset.is_valid():
+        actofacceptance_formset = context['actofacceptance_formset']
+        payment_formset = context['payment_formset']
+        if tasks_formset.is_valid() and actofacceptance_formset.is_valid() and payment_formset.is_valid():
             with transaction.atomic():
+                actofacceptance_formset.instance = self.object
+                actofacceptance_formset.save()
+                payment_formset.instance = self.object
+                payment_formset.save()
                 form.save()
                 tasks_formset.instance = self.object
                 tasks_formset.save()

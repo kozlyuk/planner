@@ -408,6 +408,10 @@ class Deal(models.Model):
         elif self.act_status == Deal.NotIssued and self.act_date is not None:
             self.act_date = None
 
+        # Automatic changing of deal statuses
+        self.act_status = self.get_act_status()
+        self.pay_status = self.get_pay_status()
+
         # Logging
         title = self.number
         if not self.pk:
@@ -427,6 +431,24 @@ class Deal(models.Model):
     def __init__(self, *args, **kwargs):
         super(Deal, self).__init__(*args, **kwargs)
         self.__customer__ = None
+
+    def get_act_status(self):
+        # Get actual act_status
+        value_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
+        if value_sum >= self.value:
+            return self.Issued
+        elif value_sum > 0:
+            return self.PartlyIssued
+        return self.NotIssued
+
+    def get_pay_status(self):
+        # Get actual pay_status
+        value_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
+        if value_sum >= self.value:
+            return self.PaidUp
+        elif value_sum > 0:
+            return self.AdvancePaid
+        return self.NotPaid
 
     def svalue(self):
         return u'{0:,}'.format(self.value).replace(u',', u' ')
@@ -477,6 +499,95 @@ def update_deal(sender, instance, **kwargs):
     """ Update Deals status after save Deal """
     from planner.tasks import update_deal_statuses
     update_deal_statuses(instance.pk)
+
+
+class ActOfAcceptance(models.Model):
+
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    number = models.CharField('Номер акту виконаних робіт', max_length=30)
+    date = models.DateField('Дата акту виконаних робіт')
+    value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
+                                              content_types=['application/pdf',
+                                                             'application/vnd.openxmlformats-officedocument.'
+                                                             'spreadsheetml.sheet',
+                                                             'application/vnd.openxmlformats-officedocument.'
+                                                             'wordprocessingml.document'],
+                                              max_upload_size=26214400,
+                                              blank=True, null=True)
+    comment = models.TextField('Коментар', blank=True)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='act_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('number', 'deal')
+        verbose_name = 'Акт виконаних робіт'
+        verbose_name_plural = 'Акти виконаних робіт'
+        ordering = ['-creation_date', '-number']
+
+    def __str__(self):
+        return f'{self.deal} - {self.number}'
+
+    def save(self, *args, logging=True, **kwargs):
+        if not self.pk:
+            # Set creator
+            self.creator = get_current_user()
+        super().save(*args, **kwargs)
+
+        # Logging
+        if logging:
+            title = f'{self.number} - {self.date}'
+            if not self.pk:
+                log(user=get_current_user(), action='Доданий акт', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлений акт', extra={"title": title})
+
+    def delete(self, *args, **kwargs):
+        title = f'{self.number} - {self.date}'
+        log(user=get_current_user(), action='Видалений акт', extra={"title": title})
+        super().delete(*args, **kwargs)
+
+
+class Payment(models.Model):
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    date = models.DateField('Дата оплати')
+    value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
+    comment = models.TextField('Коментар', blank=True)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Оплата'
+        verbose_name_plural = 'Оплати'
+        ordering = ['-creation_date', 'deal']
+
+    def __str__(self):
+        return f'{self.deal} - {self.date}'
+
+    def save(self, *args, logging=True, **kwargs):
+        if not self.pk:
+            # Set creator
+            self.creator = get_current_user()
+        super().save(*args, **kwargs)
+
+        # Automatic changing of deal.act_status when act updated
+        value_sum = self.deal.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
+        if value_sum == self.deal.value and self.deal.pay_status != Deal.PaidUp:
+            self.deal.pay_status = Deal.PaidUp
+            self.deal.save(logging=False)
+        elif value_sum > 0 and self.deal.pay_status != Deal.AdvancePaid:
+            self.deal.pay_status = Deal.AdvancePaid
+            self.deal.save(logging=False)
+
+        # Logging
+        if logging:
+            title = f'{self.date} - {self.value}'
+            if not self.pk:
+                log(user=get_current_user(), action='Доданий акт', extra={"title": title})
+            else:
+                log(user=get_current_user(), action='Оновлений акт', extra={"title": title})
 
 
 class Receiver(models.Model):
