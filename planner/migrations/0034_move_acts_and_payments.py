@@ -23,15 +23,16 @@ class Migration(migrations.Migration):
         Payment = apps.get_model("planner", "Payment")
 
         for deal in Deal.objects.all():
+            pay_date = deal.pay_date or deal.expire_date
             if deal.pay_status == 'AP':
                 Payment.objects.create(deal=deal,
-                                       date=deal.pay_date,
+                                       date=pay_date,
                                        value=deal.advance,
                                        creator_id=2,
                                        )
             if deal.pay_status == 'PU':
                 Payment.objects.create(deal=deal,
-                                       date=deal.pay_date,
+                                       date=pay_date,
                                        value=deal.value,
                                        creator_id=2,
                                        )
