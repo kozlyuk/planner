@@ -35,10 +35,6 @@ class Round(Func):
 
 
 def subtasks_queryset_filter(request):
-    tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
-    # filter only customer tasks
-    if request.user.groups.filter(name='Замовники').exists():
-        tasks = tasks.filter(task__deal__customer__user=request.user)
     exec_statuses = request.GET.getlist('exec_status', '0')
     executors = request.GET.getlist('executor', '0')
     companies = request.GET.getlist('company', '0')
@@ -47,12 +43,19 @@ def subtasks_queryset_filter(request):
     search_string = request.GET.get('filter', '').split()
     order = request.GET.get('o', '0')
 
+    # create qs tasks
+    tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
     if request.user.is_superuser:
         pass
-    elif request.user.groups.filter(name='ГІПи').exists():
-        tasks = tasks.filter(task__owner=request.user.employee)
-    elif request.user.groups.filter(name='Проектувальники').exists():
-        tasks = tasks.filter(executor=request.user.employee)
+    else:
+        query = Q()
+        if request.user.groups.filter(name='Замовники').exists():
+            query |= Q(task__deal__customer__user=request.user)
+        if request.user.groups.filter(name='ГІПи').exists():
+            query |= Q(task__owner=request.user.employee)
+        if request.user.groups.filter(name='Проектувальники').exists():
+            query |= Q(executor=request.user.employee)
+        tasks = tasks.filter(query)
 
     if exec_statuses != '0':
         tasks_union = Task.objects.none()
