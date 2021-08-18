@@ -505,7 +505,7 @@ class CostsInlineFormset(BaseInlineFormSet):
                     costs_part = outsourcing / self.instance.__project_type__.net_price() * 100 * Decimal(1.2)
                     if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
                         raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
-                    if self.instance.__outsourcing_part__ < costs_part:
+                    if self.instance.__outsourcing_part__ < costs_part and not get_current_user().is_superuser:
                         raise ValidationError("Відсоток витрат на аутсорсинг перевищує відсоток виконання робіт аутсорсингом")
                 elif self.instance.__project_type__.net_price() == 0 and outsourcing > 0:
                     raise ValidationError("У проекту вартість якого дорівнює нулю не може бути витрат")
