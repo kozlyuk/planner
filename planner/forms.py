@@ -203,10 +203,11 @@ TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
 class ActOfAcceptanceInlineForm(forms.ModelForm):
     class Meta:
         model = ActOfAcceptance
-        fields = ['number', 'date', 'value']
+        fields = ['number', 'date', 'value', 'pdf_copy']
         widgets = {
             'date': AdminDateWidget(),
             'DELETE': forms.HiddenInput(),
+            'pdf_copy': NotClearableFileInput,
         }
 
 
@@ -643,7 +644,9 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['name', 'contact_person', 'phone', 'email',
-                  'debtor_term', 'user', 'requisites']
+                  'debtor_term', 'user', 'requisites',
+                #   'deal_template', 'act_template', 'invoice_template', 'report_template'
+                  ]
 
 
 class CompanyFilterForm(forms.Form):

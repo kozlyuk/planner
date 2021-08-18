@@ -275,7 +275,7 @@ class DealUpdate(UpdateView):
         context = super(DealUpdate, self).get_context_data(**kwargs)
         if self.request.POST:
             context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
-            context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, instance=self.object)
+            context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, self.request.FILES, instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
         else:
             context['tasks_formset'] = forms.TasksFormSet(instance=self.object)

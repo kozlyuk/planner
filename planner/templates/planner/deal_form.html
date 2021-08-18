@@ -397,9 +397,15 @@
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
-                                                        {% if form.instance.pdf_copy %}
+                                                        <!-- {% if form.instance.pdf_copy %}
                                                             <a href="{% media_url form.instance.pdf_copy %}"> Скачати акт {{form.instance.number}} </a>
-                                                        {% endif %}
+                                                        {% endif %} -->
+                                                        <div class="form-group">
+                                                            {{form.pdf_copy|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.pdf_copy.errors}}
+                                                            </div>
+                                                        </div>
                                                     </th>
                                                     <th>{{ form.id }}{{ form.DELETE }}</th>
                                                 </tr>
@@ -442,6 +448,14 @@
                                                             {{actofacceptance_formset.empty_form.value|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{actofacceptance_formset.empty_form.value.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                            {{actofacceptance_formset.empty_form.pdf_copy|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{actofacceptance_formset.empty_form.errors}}
                                                             </div>
                                                         </div>
                                                     </th>
@@ -686,7 +700,7 @@ function cliсk(formsetId, dynamicFormset) {
                     DateTimeShortcuts.addCalendar(this);
                 });
                 $(row).find('.django-select2').djangoSelect2();
-                $(row).find('.pdf_copy').html("Документ згенерується після збереження");
+                // $(row).find('.pdf_copy').html("Документ згенерується після збереження");
             }
         });
 
