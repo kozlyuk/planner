@@ -812,8 +812,9 @@ class Task(models.Model):
     # owner part
 
     def owner_bonus(self):
-        return (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
+        bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
             * self.project_type.owner_bonus / 10000
+        return bonus if bonus > 0 else 0
     owner_bonus.short_description = "Бонус"
     # owner's bonus
 
