@@ -11,6 +11,7 @@ from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
 from pandas.tseries.offsets import BDay
 from crum import get_current_user
+from decimal import Decimal
 
 from stdimage.models import StdImageField
 from eventlog.models import log
@@ -814,7 +815,7 @@ class Task(models.Model):
     def owner_bonus(self):
         bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
             * self.project_type.owner_bonus / 10000
-        return bonus if bonus > 0 else 0
+        return bonus if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
     # owner's bonus
 
