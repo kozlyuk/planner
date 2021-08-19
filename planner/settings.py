@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'eventlog.apps.EventlogConfig',
     'analytics.apps.AnalyticsConfig',
     'gantt.apps.GanttConfig',
+    'html_templates.apps.HtmlTemplatesConfig',
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',

@@ -266,7 +266,6 @@ class DealList(ListView):
 class DealUpdate(UpdateView):
     queryset = Deal.objects.select_related('company', 'customer') \
                            .prefetch_related('task_set', 'task_set__project_type', 'task_set__owner')
-    # model = Deal
     form_class = forms.DealForm
     context_object_name = 'deal'
     success_url = reverse_lazy('deal_list')

@@ -11,8 +11,10 @@ from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
 from pandas.tseries.offsets import BDay
 from crum import get_current_user
+
 from stdimage.models import StdImageField
 from eventlog.models import log
+from html_templates.models import HTMLTemplate
 from .formatChecker import ContentTypeRestrictedFileField
 
 
@@ -140,6 +142,10 @@ class Customer(models.Model):
     debtor_term = models.PositiveSmallIntegerField(
         'Термін післяоплати', blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
+    deal_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон договору', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_deals')
+    act_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон акту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_acts')
+    invoice_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон рахунку', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_invoices')
+    report_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон звіту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_reports')
 
     class Meta:
         verbose_name = 'Замовник'
