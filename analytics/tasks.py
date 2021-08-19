@@ -109,10 +109,15 @@ def calc_kpi(prev_month=False, period=None):
 
         # calculate productivity for executors
         elif employee.user.groups.filter(name='Проектувальники').exists():
-            # calculate executor bonuses
+            # calculate executor bonuses for Done subtasks
             bonuses = 0
             executions = employee.execution_set.filter(finish_date__month=period.month,
                                                        finish_date__year=period.year)
+            for query in executions:
+                bonuses += query.task.exec_bonus(query.part)
+
+            # calculate executor bonuses for OnChecking subtasks
+            executions = employee.execution_set.filter(exec_status=Execution.OnChecking)
             for query in executions:
                 bonuses += query.task.exec_bonus(query.part)
 

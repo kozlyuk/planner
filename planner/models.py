@@ -993,9 +993,9 @@ class Execution(models.Model):
             self.start_date = None
 
         # Automatic set finish_date when Execution has done
-        if self.exec_status in [Execution.OnChecking, Execution.Done] and self.finish_date is None:
+        if self.exec_status in [Execution.Done] and self.finish_date is None:
             self.finish_date = date.today()
-        elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.finish_date is not None:
+        elif self.exec_status in [Execution.ToDo, Execution.InProgress, Execution.OnChecking] and self.finish_date is not None:
             self.finish_date = None
 
         # Logging
