@@ -35,7 +35,7 @@
                             <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
-                                        <p>{{ news.text }}</p>
+                                        <p>{{ news.text|linebreaks }}</p>
                                         <p><strong>Тип новини: {{ news.get_news_type_display }}</strong></p>
                                         <p><strong>{% if news.actual_from %}Актуальна з {{ news.actual_from }}{% endif %}</strong></p>
                                         <p><strong>{% if news.actual_to %}Актуальна до {{ news.actual_to }}{% endif %}</strong></p>
