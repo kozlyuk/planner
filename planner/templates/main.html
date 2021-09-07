@@ -38,7 +38,7 @@
                                     <h4 class="widget-media-body-title">
                                         <a href="{% url 'news_detail' new.pk %}">{{ new.title }}</a>
                                     </h4>
-                                    <p class="widget-media-body-subtitle">{{ new.text|slice:":400" }}</p>
+                                    <p class="widget-media-body-subtitle">{{ new.text|slice:":500"|linebreaks }}</p>
                                 </div>
                             </div>
                             {% endfor %}
