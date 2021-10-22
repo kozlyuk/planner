@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.core.exceptions import PermissionDenied
 
 from planner.models import Deal, Employee
-from .models import HTMLTemplate
 from .context import context_deal_calculation, context_bonus_per_month
 
 
@@ -68,4 +67,7 @@ class DealRender(TemplateView):
     def render_to_response(self, context):
         template = context['deal'].customer.deal_template
 
-        return HttpResponse(template.render(context))
+        if template:
+            return HttpResponse(template.render(context))
+        else:
+            return HttpResponse('HTML template does not exist for this customer')
