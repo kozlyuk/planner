@@ -652,6 +652,16 @@ class CustomerForm(forms.ModelForm):
                   'deal_template', 'act_template', 'invoice_template', 'report_template',
                   ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['requisites'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['email'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['debtor_term'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['user'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['deal_template'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['act_template'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['invoice_template'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['report_template'].widget.attrs.update({'style': 'font-size:14px;'})
 
 class CompanyFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку',
@@ -665,6 +675,12 @@ class CompanyForm(forms.ModelForm):
                   'city', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites',
                   ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['chief'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['taxation'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['requisites'].widget.attrs.update({'style': 'font-size:14px;'})
 
 
 class ContractorFilterForm(forms.Form):
