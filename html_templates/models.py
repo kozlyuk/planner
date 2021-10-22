@@ -1,4 +1,5 @@
 from django.db import models
+from django.template import Context, Template
 
 class HTMLTemplate(models.Model):
 
@@ -25,3 +26,11 @@ class HTMLTemplate(models.Model):
 
     def __str__(self):
         return self.name
+
+    def render(self, context):
+        """
+        Template rendering, variables substitution.
+        """
+
+        tpl = Template(self.html_template)
+        return tpl.render(Context(context))

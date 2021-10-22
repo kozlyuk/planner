@@ -1,0 +1,138 @@
+from decimal import Decimal, ROUND_HALF_UP
+from django.utils.html import format_html
+from django.conf import settings
+
+from planner.models import Task, Execution, IntTask
+
+def context_bonus_per_month(employee, period):
+
+    # get owner tasks
+    labels_task = ["№",
+                   Task._meta.get_field('object_code').verbose_name,
+                   Task._meta.get_field('object_address').verbose_name,
+                   Task._meta.get_field('project_type').verbose_name,
+                   Task.owner_part.short_description,
+                   Task.owner_bonus.short_description,
+                   Task._meta.get_field('actual_finish').verbose_name,
+                   Task._meta.get_field('sending_date').verbose_name,
+                   ]
+    tasks = employee.tasks_for_period(period)
+    bonuses = 0
+    index = 0
+    task_list = []
+    for task in tasks:
+        index += 1
+        owner_bonus = task.owner_bonus().quantize(Decimal("1.00"), ROUND_HALF_UP)
+        task_list.append([index,
+                          format_html('<a href="%s%s">%s</a>'
+                                      % (settings.SITE_URL,
+                                         task.get_absolute_url(),
+                                         task.object_code)),
+                          task.object_address,
+                          task.project_type,
+                          task.owner_part(),
+                          owner_bonus,
+                          task.actual_finish,
+                          task.sending_date
+                          ])
+        bonuses += owner_bonus
+    # get executions
+    labels_execution = ["№",
+                        Task._meta.get_field('object_code').verbose_name,
+                        Task._meta.get_field('object_address').verbose_name,
+                        Task._meta.get_field('project_type').verbose_name,
+                        Execution._meta.get_field('part_name').verbose_name,
+                        Execution._meta.get_field('part').verbose_name,
+                        Task.exec_bonus.short_description,
+                        Execution._meta.get_field('finish_date').verbose_name,
+                        ]
+    executions = employee.executions_for_period(period)
+    index = 0
+    executions_list = []
+    for ex in executions:
+        index += 1
+        exec_bonus = ex.task.exec_bonus(ex.part).quantize(Decimal("1.00"), ROUND_HALF_UP)
+        executions_list.append([index,
+                                format_html('<a href="%s%s">%s</a>'
+                                            % (settings.SITE_URL,
+                                               ex.task.get_absolute_url(),
+                                               ex.task.object_code)),
+                                ex.task.object_address,
+                                ex.task.project_type,
+                                ex.part_name,
+                                ex.part,
+                                exec_bonus,
+                                ex.finish_date
+                                ])
+        bonuses += exec_bonus
+    # get inttasks
+    labels_inttask = ["№",
+                      IntTask._meta.get_field('task_name').verbose_name,
+                      IntTask._meta.get_field('bonus').verbose_name,
+                      ]
+    inttasks = employee.inttasks_for_period(period)
+    index = 0
+    inttasks_list = []
+    for task in inttasks:
+        index += 1
+        inttasks_list.append([index,
+                              format_html('<a href="%s%s">%s</a>'
+                                          % (settings.SITE_URL,
+                                             task.get_absolute_url(),
+                                             task.task_name)),
+                              task.bonus
+                              ])
+        bonuses += task.bonus
+    # creating context
+    context = {
+        'first_name': employee.user.first_name,
+        'labels_task': labels_task,
+        'labels_execution': labels_execution,
+        'labels_inttask': labels_inttask,
+        'tasks': task_list,
+        'executions': executions_list,
+        'inttasks': inttasks_list,
+        'bonuses': bonuses,
+        'month': period.month,
+        'year': period.year
+    }
+    return context
+
+
+def context_deal_calculation(deal):
+
+    # get tasks
+    tasks = Task.objects.filter(deal=deal)
+    objects = tasks.values('object_code', 'object_address').order_by().distinct()
+    project_types = tasks.values('project_type__price_code',
+                                 'project_type__project_type',
+                                 'project_type__price') \
+                         .order_by('project_type__price_code').distinct()
+    # prepare table data
+    index = 0
+    svalue = Decimal(0)
+    object_lists = []
+    for ptype in project_types:
+        if ptype['project_type__price'] != 0:
+            index += 1
+            object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                                .values_list('object_code', flat=True)
+            object_list = ''
+            for obj in object_codes:
+                object_list += obj + ' '
+            count = object_codes.count()
+            price = ptype['project_type__price'] / Decimal(1.2)
+            price = price.quantize(Decimal("1.00"), ROUND_HALF_UP)
+            value = price * count
+            svalue += value
+            object_lists.append([index, ptype['project_type__price_code'],f"{ptype['project_type__project_type']} {object_list}",
+                                 "об'єкт", count, price, value])
+    # creating context
+    context = {
+        'deal': deal,
+        'objects': objects,
+        'taxation': deal.company.taxation,
+        'object_lists': object_lists,
+        'svalue': svalue
+    }
+    return context

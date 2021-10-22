@@ -73,7 +73,14 @@ class CustomerAdmin(admin.ModelAdmin):
         (None, {'fields': [('name', 'contact_person'),
                            ('phone', 'email'),
                            ('user', 'debtor_term'),
-                           ('requisites')
+                           ('signatory_person', 'signatory_position'),
+                           ('regulations', 'city'),
+                           ('requisites'),
+                           ('legal'),
+                           ('deal_template'),
+                           ('act_template'),
+                           ('invoice_template'),
+                           ('report_template'),
                            ]})
     ]
 
@@ -89,7 +96,10 @@ class CompanyAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': [('name', 'chief'),
                            ('taxation'),
-                           ('requisites')
+                           ('signatory_person', 'signatory_position'),
+                           ('regulations', 'city'),
+                           ('requisites'),
+                           ('legal'),
                            ]})
     ]
 
@@ -337,7 +347,8 @@ class DealAdmin(admin.ModelAdmin):
                                                ('act_status', 'pay_status'),
                                                ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
-                                             'costs_calc', 'pay_date_calc', 'manual_warning', 'comment'],
+                                             'costs_calc', 'pay_date_calc', 'manual_warning', 'comment',
+                                             'parent_deal_number', 'parent_deal_date'],
                                   'classes': ['collapse']})
     ]
 

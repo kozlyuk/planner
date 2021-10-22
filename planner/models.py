@@ -134,12 +134,23 @@ class Employee(models.Model):
     # try if user has a permitting to edit the task
 
 
-class Customer(models.Model):
+class Requisites(models.Model):
+    city = models.CharField('Місто', max_length=30, blank=True)
+    legal = models.CharField('Опис контрагента', max_length=255, blank=True)
+    regulations = models.CharField('Діє на підставі', max_length=100, blank=True)
+    signatory_person = models.CharField('Підписант', max_length=50, blank=True)
+    signatory_position = models.CharField('Посада підписанта', max_length=100, blank=True)
+    requisites = models.TextField('Реквізити', blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Customer(Requisites):
     name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
-    requisites = models.TextField('Реквізити', blank=True)
     debtor_term = models.PositiveSmallIntegerField(
         'Термін післяоплати', blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -240,7 +251,7 @@ class Project(models.Model):
     turnover_calc.short_description = 'Оборот по пункту'
 
 
-class Company(models.Model):
+class Company(Requisites):
     TAXATION_CHOICES = (
         ('wvat', 'З ПДВ'),
         ('wovat', 'Без ПДВ'),
@@ -250,7 +261,6 @@ class Company(models.Model):
         Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     taxation = models.CharField(
         'Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
-    requisites = models.TextField('Реквізити', blank=True)
 
     class Meta:
         verbose_name = 'Компанія'
@@ -367,6 +377,8 @@ class Deal(models.Model):
     )
     number = models.CharField('Номер договору', max_length=30)
     date = models.DateField('Дата договору', default=now)
+    parent_deal_number = models.CharField('Номер генерального договору', max_length=30, blank=True, null=True)
+    parent_deal_date = models.DateField('Дата генерального договору', blank=True, null=True)
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)

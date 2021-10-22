@@ -177,7 +177,12 @@
                                             {% if deal.pk %}
                                             <a href="{% url 'calculation' deal.pk %}"
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                style="float: right;">Калькуляція по договору</a>
+                                                style="float: right;">Калькуляція
+                                            </a>
+                                            <a href="{% url 'deal_render' deal.pk %}"
+                                            class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                            style="float: right;">Договір
+                                            </a>
                                             {% endif %}
                                         </div>
                                     </div>

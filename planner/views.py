@@ -20,8 +20,7 @@ from django.http import QueryDict
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
-from .context import context_accounter, context_pm, context_projector, \
-                     context_bonus_per_month, context_deal_calculation
+from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     IntTask, Customer, Company, Contractor
@@ -102,45 +101,6 @@ def subtasks_queryset_filter(request):
     else:
         tasks = tasks.order_by('planned_finish', 'planned_start')
     return tasks, start_date_value, finish_date_value
-
-
-@method_decorator(login_required, name='dispatch')
-class DealCalc(TemplateView):
-    """ View for displaying calculation to a deal """
-    template_name = "deal_calc.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        deal = Deal.objects.get(id=self.kwargs['deal_id'])
-        context_deal = context_deal_calculation(deal)
-
-        return {**context, **context_deal}
-
-
-@method_decorator(login_required, name='dispatch')
-class BonusesCalc(TemplateView):
-    """ View for displaying bonuses calculation to a employee """
-    template_name = "bonuses_list.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        employee = Employee.objects.get(id=self.kwargs['employee_id'])
-        if request.user.is_superuser or request.user == employee.user or request.user == employee.head.user \
-                or request.user.groups.filter(name='Бухгалтери').exists():
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        employee = Employee.objects.get(id=self.kwargs['employee_id'])
-        period = date(year=kwargs['year'], month=kwargs['month'], day=1)
-        context_bonus = context_bonus_per_month(employee, period)
-
-        return {**context, **context_bonus}
 
 
 def login_page(request):

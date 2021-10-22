@@ -20,7 +20,6 @@ urlpatterns = [
     path('deal/<int:pk>/change/', views.DealUpdate.as_view(), name='deal_update'),
     path('deal/add/', views.DealCreate.as_view(), name='deal_add'),
     path('deal/<int:pk>/delete/', views.DealDelete.as_view(), name='deal_delete'),
-    path('deal/<int:deal_id>/calculation/', views.DealCalc.as_view(), name='calculation'),
 
     path('project/', views.TaskList.as_view(), name='task_list'),
     path('project/<int:pk>/change/', views.TaskUpdate.as_view(), name='task_update'),
@@ -75,10 +74,9 @@ urlpatterns = [
     path('employee/add', views.EmployeeCreate.as_view(), name='employee_add'),
     path('employee/<int:pk>/change/', views.EmployeeUpdate.as_view(), name='employee_update'),
     path('employee/change/', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
-    path('employee/<int:employee_id>/bonus/<int:year>/<int:month>/',
-         views.BonusesCalc.as_view(), name='bonus_calc'),
 
     path('select2/', include('django_select2.urls')),
+    path('templates/', include('html_templates.urls')),
 ]
 
 if settings.DEBUG:
