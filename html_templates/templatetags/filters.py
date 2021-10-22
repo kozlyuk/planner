@@ -8,7 +8,7 @@ register = template.Library()
 
 def get_main_units(units):
     if units == 'calendar_days':
-        return ((u'календарний день', u'календарних дня', u'календарних днів'), 'm')
+        return ((u'календарний день', u'календарних дні', u'календарних днів'), 'm')
     return ((u'', u'', u''), 'm')
 
 def get_int_units(units):

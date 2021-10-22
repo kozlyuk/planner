@@ -129,12 +129,14 @@ class DealForm(forms.ModelForm):
     class Meta:
         model = Deal
         fields = ['number', 'date', 'customer', 'company', 'value', 'expire_date',
-                  'pdf_copy', 'value_correction', 'comment', 'manual_warning']
+                  'pdf_copy', 'value_correction', 'comment', 'manual_warning',
+                  'parent_deal_number', 'parent_deal_date']
         widgets = {
             'date': AdminDateWidget,
             'customer': Select2Widget,
             'company': Select2Widget,
             'expire_date': AdminDateWidget,
+            'parent_deal_date': AdminDateWidget,
             'pdf_copy': NotClearableFileInput,
         }
 
