@@ -646,8 +646,10 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['name', 'contact_person', 'phone', 'email',
-                  'debtor_term', 'user', 'requisites',
-                #   'deal_template', 'act_template', 'invoice_template', 'report_template'
+                  'debtor_term', 'user',
+                  'city', 'legal', 'regulations',
+                  'signatory_person', 'signatory_position', 'requisites',
+                  'deal_template', 'act_template', 'invoice_template', 'report_template',
                   ]
 
 
@@ -659,7 +661,10 @@ class CompanyFilterForm(forms.Form):
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'chief', 'taxation', 'requisites']
+        fields = ['name', 'chief', 'taxation',
+                  'city', 'legal', 'regulations',
+                  'signatory_person', 'signatory_position', 'requisites',
+                  ]
 
 
 class ContractorFilterForm(forms.Form):
