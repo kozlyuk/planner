@@ -70,7 +70,8 @@ class CustomerAdmin(admin.ModelAdmin):
                     'debit_calc', 'expect_calc', 'completed_calc']
     ordering = ['name']
     fieldsets = [
-        (None, {'fields': [('name', 'contact_person'),
+        (None, {'fields': [('name', 'full_name'),
+                           'contact_person',
                            ('phone', 'email'),
                            ('user', 'debtor_term'),
                            ('signatory_person', 'signatory_position'),
@@ -94,7 +95,8 @@ class CompanyAdmin(admin.ModelAdmin):
     list_display = ['name', 'turnover_calc', 'costs_calc', 'bonuses_calc']
     ordering = ['name']
     fieldsets = [
-        (None, {'fields': [('name', 'chief'),
+        (None, {'fields': [('name', 'full_name'),
+                           'contact_person',
                            ('taxation'),
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
