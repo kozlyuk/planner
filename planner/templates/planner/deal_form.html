@@ -205,15 +205,10 @@
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                     style="float: right;">Калькуляція
                                                 </a>
-                                                {% if deal.customer.deal_template %}
-                                                    <a href="{% url 'deal_render' deal.pk %}"
-                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                    style="float: right;">Договір
-                                                    </a>
-                                                    <a href="{% url 'deal_generate_pdf' deal.pk %}"
-                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                    style="float: right;">Згенерувати PDF
-                                                    </a>
+                                                {% if deal.customer.deal_template %}<a href="{% url 'deal_render' deal.pk %}"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Договір
+                                                </a>
                                                 {% endif %}
                                             {% endif %}
                                         </div>

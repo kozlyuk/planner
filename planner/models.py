@@ -419,15 +419,15 @@ class Deal(models.Model):
 
     def save(self, *args, logging=True, **kwargs):
 
-        # Automatic changing of deal statuses
-        self.act_status = self.get_act_status()
-        self.pay_status = self.get_pay_status()
-
         # Automatic set act_date when Deals act_status has Issued
         if self.act_status != Deal.NotIssued and self.act_date is None:
             self.act_date = date.today()
         elif self.act_status == Deal.NotIssued and self.act_date is not None:
             self.act_date = None
+
+        # Automatic changing of deal statuses
+        self.act_status = self.get_act_status()
+        self.pay_status = self.get_pay_status()
 
         # Logging
         title = self.number

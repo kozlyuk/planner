@@ -14,7 +14,6 @@ pandas
 Pillow
 redis
 celery
-weasyprint
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk
