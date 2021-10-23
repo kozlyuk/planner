@@ -128,7 +128,8 @@ def context_deal_calculation(deal):
             price_code = ptype['project_type__price_code'].split('.', 1)[1]
             object_lists.append([index,
                                  price_code,
-                                 f"{ptype['project_type__project_type']} {object_list}",
+                                 ptype['project_type__project_type'],
+                                 object_list,
                                  "об'єкт",
                                  count,
                                  price,
