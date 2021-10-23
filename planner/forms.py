@@ -645,7 +645,7 @@ class CustomerFilterForm(forms.Form):
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'contact_person', 'phone', 'email',
+        fields = ['name', 'full_name', 'contact_person', 'phone', 'email',
                   'debtor_term', 'user',
                   'city', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites',
@@ -671,7 +671,7 @@ class CompanyFilterForm(forms.Form):
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'chief', 'taxation',
+        fields = ['name', 'full_name', 'chief', 'taxation',
                   'city', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites',
                   ]

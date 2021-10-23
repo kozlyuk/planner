@@ -7,7 +7,7 @@
 	<TITLE>{{ deal.number }}</TITLE>
 </HEAD>
 <BODY LANG="uk-UA" LINK="#0000ff" DIR="LTR">
-<FONT SIZE=1>
+<FONT SIZE=3>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 	<B>
 		Додаткова угода № {{ deal.number }}<br>
@@ -19,7 +19,7 @@
 			<SPAN STYLE="float:right;"><B>{{ deal.date }}</B>
 	</P>
 	<P ALIGN=JUSTIFY>
-		<B>{{ deal.customer.name }}</B>,
+		<B>{{ deal.customer.full_name }}</B>,
 		що є юридичною особою, належним чином створеною,
 		зареєстрованою та діючою згідно чинного законодавства України,
 		{{ deal.customer.legal }}, що діє на підставі {{ deal.customer.regulations }},
@@ -27,7 +27,7 @@
 	</P>
 	та
 	<P ALIGN=JUSTIFY>
-		<B>{{ deal.company.name }}</B>,
+		<B>{{ deal.company.full_name }}</B>,
 		що є юридичною особою, належним чином створеною, зареєстрованою
 		та діючою згідно з чинним законодавством України,
 		{{ deal.company.legal }}, що діє на підставі {{ deal.company.regulations }},
@@ -73,32 +73,33 @@
 				<TD WIDTH=75 ALIGN=CENTER><B>Кількість</B></TD>
 				<TD WIDTH=75 ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
 				<TD WIDTH=75 ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
-                {% for fields in object_lists %}
-                    <TR align="center">
-                        {% for field in fields %}
-                        <TD>{{field}}</TD>
-                        {% endfor %}
-                    </TR>
-                {% endfor %}
-                {% if taxation == 'wvat' %}
-                    <TR>
-                        <TD ALIGN=CENTER VALIGN=BOTTOM colspan="3" rowspan="4">Загальна вартість</TD>
-                        <TD ALIGN=CENTER colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
-                    </TR>
-                {% else %}
-                    <TR>
-                        <TD ALIGN=CENTER colspan="3">Загальна вартість</TD>
-                        <TD ALIGN=CENTER colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
-                    </TR>
-                {% endif %}
-                {% if taxation == 'wvat' %}
-                    <TR>
-                        <TD ALIGN=CENTER colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</TD>
-                    </TR>
-                    <TR>
-                        <TD ALIGN=CENTER colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</TD>
-                    </TR>
-                {% endif %}
+            </TR>
+            {% for fields in object_lists %}
+                <TR align="center">
+                    {% for field in fields %}
+                    <TD>{{field}}</TD>
+                    {% endfor %}
+                </TR>
+            {% endfor %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER VALIGN=BOTTOM colspan="3" rowspan="4">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% else %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="3">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% endif %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</TD>
+                </TR>
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</TD>
+                </TR>
+            {% endif %}
 
 		</TABLE>
 		</LI>
@@ -142,7 +143,7 @@
 						<P ALIGN=JUSTIFY><BR>
 						</P>
 						<P ALIGN=JUSTIFY>
-						______________________ <B>{{ deal.company.chief }}</B></P>
+                        <B>______________________ {{ deal.company.signatory_person }}</B></P>
 						<P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
 					</TD>
 					<TD WIDTH=375>
@@ -156,8 +157,7 @@
 						<P ALIGN=JUSTIFY><BR>
 						</P>
 						<P ALIGN=JUSTIFY>
-						<B>______________________</B>
-						<B>{{ deal.customer.contact_person }}</B></P>
+                        <B>______________________ {{ deal.customer.signatory_person }}</B></P>
 						<P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
 					</TD>
 				</TR>

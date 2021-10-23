@@ -135,6 +135,8 @@ class Employee(models.Model):
 
 
 class Requisites(models.Model):
+    name = models.CharField('Назва', max_length=50, unique=True)
+    full_name = models.CharField('Повна назва', max_length=100, blank=True)
     city = models.CharField('Місто', max_length=30, blank=True)
     legal = models.CharField('Опис контрагента', max_length=255, blank=True)
     regulations = models.CharField('Діє на підставі', max_length=100, blank=True)
@@ -147,7 +149,6 @@ class Requisites(models.Model):
 
 
 class Customer(Requisites):
-    name = models.CharField('Назва', max_length=50, unique=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
@@ -256,11 +257,8 @@ class Company(Requisites):
         ('wvat', 'З ПДВ'),
         ('wovat', 'Без ПДВ'),
     )
-    name = models.CharField('Назва', max_length=50, unique=True)
-    chief = models.ForeignKey(
-        Employee, verbose_name='Керівник', on_delete=models.PROTECT)
-    taxation = models.CharField(
-        'Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
+    chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
+    taxation = models.CharField('Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
 
     class Meta:
         verbose_name = 'Компанія'

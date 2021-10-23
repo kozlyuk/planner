@@ -126,8 +126,13 @@ def context_deal_calculation(deal):
             value = price * count
             svalue += value
             price_code = ptype['project_type__price_code'].split('.', 1)[1]
-            object_lists.append([index, price_code, f"{ptype['project_type__project_type']} {object_list}",
-                                 "об'єкт", count, price, value])
+            object_lists.append([index,
+                                 price_code,
+                                 f"{ptype['project_type__project_type']} {object_list}",
+                                 "об'єкт",
+                                 count,
+                                 price,
+                                 value])
     # creating context
     context = {
         'deal': deal,
