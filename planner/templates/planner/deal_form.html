@@ -201,14 +201,15 @@
                                             <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
                                                 style="float: right;">Зберегти</button>
                                             {% if deal.pk %}
-                                            <a href="{% url 'calculation' deal.pk %}"
+                                                <a href="{% url 'calculation' deal.pk %}"
+                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                    style="float: right;">Калькуляція
+                                                </a>
+                                                {% if deal.customer.deal_template %}<a href="{% url 'deal_render' deal.pk %}"
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                style="float: right;">Калькуляція
-                                            </a>
-                                            <a href="{% url 'deal_render' deal.pk %}"
-                                            class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                            style="float: right;">Договір
-                                            </a>
+                                                style="float: right;">Договір
+                                                </a>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
