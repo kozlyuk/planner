@@ -327,7 +327,7 @@ class TaskForm(forms.ModelForm):
                   'project_type', 'deal', 'tc_upload',
                   'owner', 'exec_status', 'pdf_copy',
                   'planned_start', 'planned_finish', 'actual_finish',
-                  'project_code', 'manual_warning', 'comment']
+                  'project_code', 'manual_warning', 'comment', 'difficulty']
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
