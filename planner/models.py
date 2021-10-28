@@ -419,15 +419,15 @@ class Deal(models.Model):
 
     def save(self, *args, logging=True, **kwargs):
 
+        # Automatic changing of deal statuses
+        self.act_status = self.get_act_status()
+        self.pay_status = self.get_pay_status()
+
         # Automatic set act_date when Deals act_status has Issued
         if self.act_status != Deal.NotIssued and self.act_date is None:
             self.act_date = date.today()
         elif self.act_status == Deal.NotIssued and self.act_date is not None:
             self.act_date = None
-
-        # Automatic changing of deal statuses
-        self.act_status = self.get_act_status()
-        self.pay_status = self.get_pay_status()
 
         # Logging
         title = self.number
@@ -670,6 +670,7 @@ class Task(models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
+    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')
@@ -824,13 +825,13 @@ class Task(models.Model):
 
     def owner_bonus(self):
         bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
-            * self.project_type.owner_bonus / 10000
+            * self.project_type.owner_bonus / 10000 * self.difficulty
         return bonus if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
     # owner's bonus
 
     def exec_bonus(self, part):
-        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000
+        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty
     exec_bonus.short_description = "Бонус"
     # executor's bonus
 

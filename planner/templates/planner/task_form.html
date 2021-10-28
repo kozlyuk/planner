@@ -222,21 +222,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="row mt-4">
-                                                            <!--alert: comment-->
-                                                            <div style="flex: 0 0 12.666667%" class="col-2">
-                                                                <label
-                                                                    for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
-                                                            </div>
-                                                            <div style="flex: 0 0 87.333333%; max-width: 87.333333%" class="col-10">
-                                                                <div class="form-group">
-                                                                    {{ form.comment|attr:"style: width:100%; height:45px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                                    <div class="invalid-feedback">
-                                                                        {{form.manual_warning.errors}}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                     <!--alert: pdf_copy-->
                                                     <div class="col-1">
@@ -246,7 +231,45 @@
                                                     <div class="col-3">
                                                         {{ form.pdf_copy|attr:"style: width:100%; border: none"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.manual_warning.errors}}
+                                                            {{form.pdf_copy.errors}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="row">
+                                                            <!--alert: comment-->
+                                                            <div class="col-1">
+                                                                <label
+                                                                    for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <div class="form-group">
+                                                                    {{ form.comment|attr:"style: width:100%; height:45px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                    <div class="invalid-feedback">
+                                                                        {{form.comment.errors}}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!--alert: difficulty-->
+                                                            <div class="col-1">
+                                                                <label
+                                                                    for="id_{{ form.difficulty.name }}">{{ form.difficulty.label }}:</label>
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <div class="form-group">
+                                                                    {% if request.user.is_superuser %}
+                                                                        {{ form.difficulty|attr:"style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                    {% else %}
+                                                                        {{ form.difficulty|attr:"readonly style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                    {% endif %}
+                                                                    <div class="invalid-feedback">
+                                                                        {{form.difficulty.errors}}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
