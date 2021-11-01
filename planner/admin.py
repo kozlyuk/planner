@@ -586,7 +586,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': [
-            'project_code', 'manual_warning', 'comment'], 'classes': ['collapse']})
+            'project_code', 'manual_warning', 'difficulty', 'comment'], 'classes': ['collapse']})
     ]
     list_display = ['object_code', 'object_address', 'project_type',
                     'deal', 'exec_status', 'owner', 'warning_mark']

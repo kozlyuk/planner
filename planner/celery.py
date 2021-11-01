@@ -13,6 +13,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'planner.settings')
 app = Celery('planner', include=['analytics.tasks',
                                  'notice.tasks',
                                  'messaging.tasks',
+                                 'html_templates.tasks'
                                  ])
 
 # Using a string here means the worker don't have to serialize
