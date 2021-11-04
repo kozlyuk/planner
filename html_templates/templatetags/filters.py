@@ -7,6 +7,8 @@ register = template.Library()
 
 
 def get_main_units(units):
+    if units == 'hrn':
+        return ((u'гривня', u'гривні', u'гривень'), 'f')
     if units == 'calendar_days':
         return ((u'календарний день', u'календарних дні', u'календарних днів'), 'm')
     return ((u'', u'', u''), 'm')
@@ -29,12 +31,18 @@ def VAT(value):
 
 @register.simple_tag
 def num_to_text(value, units):
-    return num2text(value, get_main_units(units))
+    return num2text(int(value), get_main_units(units))
 
 
 @register.simple_tag
 def decimal_to_text(value, units):
     return decimal2text(value, 2, get_int_units(units), get_exp_units(units))
+
+
+@register.filter
+def exp_part(value):
+    return str((value - int(value)))[2:]
+
 
 @register.simple_tag
 def calc_summary(summary_value, option='without_currency'):

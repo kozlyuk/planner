@@ -115,10 +115,10 @@
 		<LI><P  ALIGN=JUSTIFY>
 				За виконання усього комплексу робіт, передбачених цією Угодою, Генпідрядник здійснює оплату
                 у наступному порядку: 100% вартості	виконаних Субпідрядником Робіт, що становить
-				<B>{{ deal.value }} ({% decimal_to_text deal.value 'hrn' %})</B>
+				<B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
                 , у тому числі ПДВ
                 <B>{{ deal.value | VAT }}
-                {% with vat=deal.value|VAT %}({% decimal_to_text vat 'hrn' %})</B>{% endwith %}
+                {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
 				та сплачується Субпідряднику Генпідрядником упродовж
                 <B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
 				з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт.

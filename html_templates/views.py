@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from planner.models import Deal, Employee
 from .context import context_deal_calculation, context_bonus_per_month
-from .tasks import generate_pdf
+# from .tasks import generate_pdf
 from .context import context_deal_calculation
 
 
@@ -89,11 +89,11 @@ class DealGeneratePDF(View):
     def get(self, request, *args, **kwargs):
         try:
             deal = Deal.objects.get(pk=kwargs['deal_id'])
-            generate_pdf(deal.customer.deal_template,
-                         context_deal_calculation(deal),
-                         Deal,
-                         deal.pk
-                         )
+            # generate_pdf(deal.customer.deal_template,
+            #              context_deal_calculation(deal),
+            #              Deal,
+            #              deal.pk
+            #              )
             return redirect(reverse('deal_update', args=[deal.pk]))
         except Deal.DoesNotExist:
             return HttpResponse('Deal object does not exist')
