@@ -168,13 +168,14 @@ class TasksInlineForm(forms.ModelForm):
             'DELETE': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, deal, **kwargs):
+    def __init__(self, *args, deal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                 user__is_active=True)
         self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
-        self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
-        self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
+        if deal:
+            self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
+            self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
 
     def clean(self):
         super().clean()
