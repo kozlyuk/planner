@@ -237,7 +237,7 @@ class DealUpdate(UpdateView):
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, self.request.FILES, instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
         else:
-            context['tasks_formset'] = forms.TasksFormSet(instance=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(instance=self.object, form_kwargs={'deal': self.object})
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(instance=self.object)
         return context
@@ -256,7 +256,10 @@ class DealUpdate(UpdateView):
                 form.save()
                 tasks_formset.instance = self.object
                 tasks_formset.save()
-            return redirect(self.get_success_url())
+            if self.request.POST.get('save_add'):
+                return redirect('deal_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
@@ -268,23 +271,14 @@ class DealCreate(CreateView):
     context_object_name = 'deal'
     success_url = reverse_lazy('deal_list')
 
-    def get_context_data(self, **kwargs):
-        context = super(DealCreate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            context['tasks_formset'] = forms.TasksFormSet(self.request.POST)
-        else:
-            context['tasks_formset'] = forms.TasksFormSet()
-        return context
-
     def form_valid(self, form):
-        context = self.get_context_data()
-        tasks_formset = context['tasks_formset']
-        if form.is_valid() and tasks_formset.is_valid():
+        if form.is_valid():
             with transaction.atomic():
                 self.object = form.save()
-                tasks_formset.instance = self.object
-                tasks_formset.save()
-            return redirect(self.get_success_url())
+            if self.request.POST.get('save_add'):
+                return redirect('deal_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
