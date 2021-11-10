@@ -198,8 +198,14 @@
                                             {% else %}<button href="{% url 'deal_list' %}"
                                                 class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
                                             {% endif %}
-                                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                                style="float: right;">Зберегти</button>
+                                            <button type="submit"
+                                                class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Зберегти
+                                            </button>
+                                            <button type="submit" name="save_add" value="True"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Зберегти і продовжити редагування
+                                            </button>
                                             {% if deal.pk %}
                                                 <a href="{% url 'calculation' deal.pk %}"
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
@@ -245,6 +251,7 @@
                     </div>
                     {% endif %}
                 </div>
+                {% if deal.pk %}
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card main-widget-tab">
@@ -265,8 +272,9 @@
                                                 <th scope="col">АДРЕСА ОБ’ЄКТУ</th>
                                                 <th scope="col">ТИП ПРОЕКТУ</th>
                                                 <th width="10%" scope="col">КЕРІВНИК ПРОЕКТУ</th>
-                                                <th width="15%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
+                                                <th width="10%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                <th width="10%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
                                                 <th width="3%" scope="col">Дії</th>
                                             </tr>
                                         </thead>
@@ -323,9 +331,10 @@
                                                 <th scope="col">АДРЕСА ОБ’ЄКТУ</th>
                                                 <th scope="col">ТИП ПРОЕКТУ</th>
                                                 <th width="10%" scope="col">КЕРІВНИК ПРОЕКТУ</th>
-                                                <th width="15%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
+                                                <th width="10%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                <th width="2%" scope="col">Дії</th>
+                                                <th width="10%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
+                                                <th width="3%" scope="col">Дії</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -372,6 +381,14 @@
                                                     </div>
                                                 </div>
                                             </th>
+                                            <th class="pl-1 pr-1">
+                                                <div class="form-group">
+                                                {{ tasks_formset.empty_form.act_of_acceptance|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{tasks_formset.empty_form.act_of_acceptance.errors}}
+                                                    </div>
+                                                </div>
+                                            </th>
                                             <th class="pl-1 pr-1"> </th>
                                         </tbody>
                                     </table>
@@ -388,7 +405,6 @@
                         </div>
                     </div>
                 </div>
-                {% if deal.pk %}
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card main-widget-tab">

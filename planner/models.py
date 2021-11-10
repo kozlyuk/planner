@@ -544,7 +544,7 @@ class ActOfAcceptance(models.Model):
         ordering = ['-creation_date', '-number']
 
     def __str__(self):
-        return f'{self.deal} - {self.number}'
+        return self.number
 
     def save(self, *args, logging=True, **kwargs):
         if not self.pk:
@@ -670,7 +670,10 @@ class Task(models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
-    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1)
+    difficulty_owner = models.DecimalField('Коефіцієнт ведення', max_digits=3, decimal_places=2, default=1)
+    difficulty_executor = models.DecimalField('Коефіцієнт виконання', max_digits=3, decimal_places=2, default=1)
+    act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
+                                          blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')
@@ -825,13 +828,13 @@ class Task(models.Model):
 
     def owner_bonus(self):
         bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
-            * self.project_type.owner_bonus / 10000 * self.difficulty
+            * self.project_type.owner_bonus / 10000 * self.difficulty_owner
         return bonus if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
     # owner's bonus
 
     def exec_bonus(self, part):
-        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty
+        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty_executor
     exec_bonus.short_description = "Бонус"
     # executor's bonus
 

@@ -153,9 +153,6 @@ class DealForm(forms.ModelForm):
         self.data.__expire_date__ = cleaned_data.get("expire_date")
         self.data.__value__ = cleaned_data.get("value")
 
-
-        if not value or value == 0:
-            self.add_error('value', "Вкажіть Вартість робіт")
         return cleaned_data
 
 
@@ -163,7 +160,7 @@ class TasksInlineForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['object_code', 'object_address', 'project_type',
-                  'owner', 'planned_finish', 'exec_status']
+                  'owner', 'planned_finish', 'exec_status', 'act_of_acceptance']
         widgets = {
             'object_code': BtnWidget(),
             'project_type': Select2Widget(),
@@ -171,22 +168,16 @@ class TasksInlineForm(forms.ModelForm):
             'DELETE': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(TasksInlineForm, self).__init__(*args, **kwargs)
-        self.fields['object_address'].widget.attrs.update(
-            {'style': 'width:100%;'})
-        self.fields['project_type'].widget.attrs.update(
-            {'style': 'width:100%'})
+    def __init__(self, *args, deal, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                 user__is_active=True)
-        self.fields['object_code'].widget.attrs.update(
-            {'task_id': self.instance.id})
-        if self.instance.pk is None or self.instance.project_type.active:
-            self.fields['project_type'].queryset = Project.objects.filter(
-                active=True)
+        self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
+        self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
+        self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
 
     def clean(self):
-        super(TasksInlineForm, self).clean()
+        super().clean()
         project_type = self.cleaned_data.get("project_type")
         planned_finish = self.cleaned_data.get("planned_finish")
         if project_type and self.data.__customer__:
@@ -327,7 +318,9 @@ class TaskForm(forms.ModelForm):
                   'project_type', 'deal', 'tc_upload',
                   'owner', 'exec_status', 'pdf_copy',
                   'planned_start', 'planned_finish', 'actual_finish',
-                  'project_code', 'manual_warning', 'comment', 'difficulty']
+                  'project_code', 'manual_warning', 'comment',
+                  'difficulty_owner', 'difficulty_executor'
+                  ]
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
@@ -339,11 +332,6 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['object_address'].widget.attrs.update(
-            {'style': 'width:100%;'})
-        self.fields['comment'].widget.attrs.update(
-            {'style': 'width:100%; height:30px;'})
-
         if get_current_user().is_superuser:
             self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                     user__is_active=True)

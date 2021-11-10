@@ -239,7 +239,7 @@ class DealForm(forms.ModelForm):
 class TasksInlineFormSet(BaseInlineFormSet):
 
     def clean(self):
-        super(TasksInlineFormSet, self).clean()
+        super().clean()
         for form in self.forms:
             if not form.is_valid():
                 return
@@ -259,7 +259,7 @@ class TasksInline(admin.TabularInline):
     model = Task
     formset = TasksInlineFormSet
     fields = ['object_code', 'object_address', 'project_type',
-              'owner', 'planned_finish', 'exec_status']
+              'owner', 'planned_finish', 'exec_status', 'act_of_acceptance']
     readonly_fields = ['exec_status']
     extra = 0
     show_change_link = True
@@ -272,6 +272,8 @@ class TasksInline(admin.TabularInline):
         if request._obj_ is not None and db_field.name == "project_type":
             kwargs["queryset"] = Project.objects.filter(
                 customer=request._obj_.customer, active=True)
+        if request._obj_ is not None and db_field.name == "act_of_acceptance":
+            kwargs["queryset"] = ActOfAcceptance.objects.filter(deal=request._obj_)
         return super(TasksInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -586,7 +588,11 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': [
-            'project_code', 'manual_warning', 'difficulty', 'comment'], 'classes': ['collapse']})
+            'project_code', 'manual_warning',
+            ('difficulty_owner', 'difficulty_executor'),
+            'comment'],
+            'classes': ['collapse']
+            })
     ]
     list_display = ['object_code', 'object_address', 'project_type',
                     'deal', 'exec_status', 'owner', 'warning_mark']
