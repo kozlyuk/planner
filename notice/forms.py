@@ -21,7 +21,7 @@ class NewsForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'date', 'repeat', 'description']
+        fields = ['title', 'date', 'repeat', 'description', 'is_holiday']
 
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)

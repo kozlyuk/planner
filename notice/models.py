@@ -20,13 +20,14 @@ class Event(models.Model):
         (RepeatMonthly, 'Щомісячна подія'),
         (RepeatYearly, 'Щорічна подія')
     )
-    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
-    created = models.DateField(auto_now_add=True)
     date = models.DateField('Дата')
     next_date = models.DateField('Дата наступної події', blank=True, null=True)
     repeat = models.CharField('Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
     title = models.CharField('Назва події', max_length=100)
     description = models.TextField('Опис', blank=True)
+    is_holiday = models.BooleanField('Вихідний день', default=False)
+    creator = models.ForeignKey(User, verbose_name='Створив', on_delete=models.CASCADE)
+    created = models.DateField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Подія'
