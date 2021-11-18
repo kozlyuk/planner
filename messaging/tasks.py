@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
 from django.template.loader import render_to_string
 
+from notice.models import Event
 from planner.models import Employee, Deal
 from planner.context import context_bonus_per_month
 from planner.celery import app
@@ -16,9 +17,19 @@ from .context_email import context_actneed_deals, context_debtors_deals, \
 logger = get_task_logger(__name__)
 
 
+def public_holiday() -> bool:
+    """ check if today is public holiday """
+    return Event.objects.filter(next_date=date.today()).exists()
+
+
 @app.task
 def send_email_list(emails: EmailMessage) -> None:
     """ sends email to emails list """
+
+    if public_holiday():
+        print(f"Innore sending due to public holiday")
+        return
+
     try:
         connection = get_connection()
         connection.open()
