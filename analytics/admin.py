@@ -6,6 +6,6 @@ from analytics.models import Kpi
 
 @admin.register(Kpi)
 class KpiAdmin(admin.ModelAdmin):
-    list_display = ['employee', 'period', 'name', 'value']
+    list_display = ['employee', 'period', 'name', 'value', 'modified']
     date_hierarchy = 'period'
     list_filter = [('employee', RelatedDropdownFilter), 'name']
