@@ -554,6 +554,11 @@ class ActOfAcceptance(models.Model):
             self.creator = get_current_user()
         super().save(*args, **kwargs)
 
+        # tasks actofacceptance autofill
+        if self.deal.get_act_status() == Deal.Issued:
+            if self.deal.actofacceptance_set.count() == 1:
+                self.deal.task_set.update(act_of_acceptance=self)
+
         # Logging
         if logging:
             title = f'{self.number} - {self.date}'
