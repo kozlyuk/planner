@@ -451,20 +451,22 @@ class Deal(models.Model):
 
     def get_act_status(self):
         # Get actual act_status
-        value_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
-        if value_sum >= self.value:
-            return self.Issued
-        elif value_sum > 0:
-            return self.PartlyIssued
+        if self.actofacceptance_set.count() > 0:
+            value_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
+            if value_sum >= self.value:
+                return self.Issued
+            elif value_sum > 0:
+                return self.PartlyIssued
         return self.NotIssued
 
     def get_pay_status(self):
         # Get actual pay_status
-        value_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
-        if value_sum >= self.value:
-            return self.PaidUp
-        elif value_sum > 0:
-            return self.AdvancePaid
+        if self.payment_set.count() > 0:
+            value_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
+            if value_sum >= self.value:
+                return self.PaidUp
+            elif value_sum > 0:
+                return self.AdvancePaid
         return self.NotPaid
 
     def svalue(self):
