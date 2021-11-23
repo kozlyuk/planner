@@ -546,7 +546,7 @@ class ActOfAcceptance(models.Model):
         ordering = ['-creation_date', '-number']
 
     def __str__(self):
-        return self.number
+        return f'{self.number} від {self.date}'
 
     def save(self, *args, logging=True, **kwargs):
         if not self.pk:
