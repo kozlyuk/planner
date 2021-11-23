@@ -206,21 +206,15 @@
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Зберегти і продовжити редагування
                                             </button>
-                                            {% if deal.pk %}
-                                                <a href="{% url 'calculation' deal.pk %}"
-                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                    style="float: right;">Калькуляція
+                                            {% if deal.pk and deal.customer.deal_template %}
+                                                <a href="{% url 'deal_render' deal.pk %}"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Договір
                                                 </a>
-                                                {% if deal.customer.deal_template %}
-                                                    <a href="{% url 'deal_render' deal.pk %}"
-                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                    style="float: right;">Договір
-                                                    </a>
-                                                    <a href="{% url 'deal_generate_pdf' deal.pk %}"
-                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
-                                                    style="float: right;">Згенерувати PDF
-                                                    </a>
-                                                {% endif %}
+                                                <a href="{% url 'deal_generate_pdf' deal.pk %}"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Згенерувати PDF
+                                                </a>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -275,7 +269,7 @@
                                                 <th width="10%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
                                                 <th width="10%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
-                                                <th width="3%" scope="col">Дії</th>
+                                                <th width="2%" scope="col">Дії</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -334,7 +328,7 @@
                                                 <th width="10%" scope="col">ПЛАНОВЕ ЗАКІНЧЕННЯ</th>
                                                 <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
                                                 <th width="10%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
-                                                <th width="3%" scope="col">Дії</th>
+                                                <th width="2%" scope="col">Дії</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -416,11 +410,11 @@
                                             id="actofacceptance_formset_not_empty">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">НОМЕР АКТУ</th>
+                                                    <th width="10%" scope="col">НОМЕР АКТУ</th>
                                                     <th width="20%" scope="col">ДАТА АКТУ</th>
                                                     <th width="20%" scope="col">СУМА АКТУ</th>
                                                     <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
-                                                    <th width="3%" scope="col">Дії</th>
+                                                    <th width="4%" scope="col">Дії</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -454,13 +448,27 @@
                                                             <a href="{% media_url form.instance.pdf_copy %}"> Скачати акт {{form.instance.number}} </a>
                                                         {% endif %} -->
                                                         <div class="form-group">
-                                                            {{form.pdf_copy|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.pdf_copy|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.pdf_copy.errors}}
                                                             </div>
                                                         </div>
                                                     </th>
-                                                    <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                    <th>
+                                                        {% if deal.pk and deal.customer.act_template %}
+                                                            <a href="{% url 'act_render' form.instance.pk %}"
+                                                            class="btnLink"
+                                                            style="font-size: 20px; font-weight: 100;">
+                                                            <i style="font-size: 16px;" data-toggle="tooltip" title="Згенерувати акт" data-placement="right" class="fas fa-file-invoice"></i>
+                                                            </a>
+                                                            <a href="{% url 'act_generate_pdf' form.instance.pk %}"
+                                                            class="btnLink"
+                                                            style="font-size: 20px; font-weight: 100;">
+                                                            <i style="font-size: 16px;" data-toggle="tooltip" title="Згенерувати pdf" data-placement="right" class="fas fa-file-pdf"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                        {{ form.id }}{{ form.DELETE }}
+                                                    </th>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
@@ -475,7 +483,7 @@
                                                     <th width="10%" scope="col">НОМЕР АКТУ</th>
                                                     <th scope="col">ДАТА АКТУ</th>
                                                     <th scope="col">СУМА АКТУ</th>
-                                                    <th width="3%" scope="col">Дії</th>
+                                                    <th width="4%" scope="col">Дії</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -539,7 +547,7 @@
                                                 <tr>
                                                     <th scope="col">ДАТА ОПЛАТИ</th>
                                                     <th scope="col">СУМА ОПЛАТИ</th>
-                                                    <th width="3%" scope="col">Дії</th>
+                                                    <th width="2%" scope="col">Дії</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -574,7 +582,7 @@
                                                 <tr>
                                                     <th scope="col">ДАТА ОПЛАТИ</th>
                                                     <th scope="col">СУМА ОПЛАТИ</th>
-                                                    <th width="3%" scope="col">Дії</th>
+                                                    <th width="2%" scope="col">Дії</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -708,7 +716,7 @@ function cliсk(formsetId, dynamicFormset) {
             addText: 'Додати проект',
             deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
                 //find the fields with the calendar widget
                 $(row).find('.vDateField').each(function (i) {
@@ -726,8 +734,8 @@ function cliсk(formsetId, dynamicFormset) {
             formCssClass: 'dynamic-formset1',
             addText: 'Додати проект',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-tasks_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
                 //find the fields with the calendar widget
                 $(row).find('.vDateField').each(function (i) {
@@ -744,9 +752,9 @@ function cliсk(formsetId, dynamicFormset) {
             prefix: '{{ actofacceptance_formset.prefix }}',
             formCssClass: 'dynamic-formset2',
             addText: 'Додати акт',
-            deleteText: '<i class="far fa-trash-alt"></i>',
+            deleteText: '<i class="far fa-trash-alt" title="Відкрити редагування проекту"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
@@ -763,7 +771,7 @@ function cliсk(formsetId, dynamicFormset) {
             addText: 'Додати акт',
             keepFieldValues: '*',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-actofacceptance_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
@@ -780,7 +788,7 @@ function cliсk(formsetId, dynamicFormset) {
             addText: 'Додати оплату',
             deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
+            deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
                     $(this).parent().find('span').remove();
@@ -795,7 +803,7 @@ function cliсk(formsetId, dynamicFormset) {
             formCssClass: 'dynamic-formset3',
             addText: 'Додати оплату',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
