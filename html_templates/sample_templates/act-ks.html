@@ -7,7 +7,7 @@
 	<TITLE>{{ deal.number }}</TITLE>
 </HEAD>
 <BODY STYLE="margin-left:50px;" DIR="A4">
-<FONT SIZE=3>
+<FONT SIZE=1>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 		<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
 			<TR VALIGN=TOP>
@@ -39,7 +39,8 @@
 			телекомунікаційної мережі {{ deal.customer.name }} №{{ deal.parent_deal_number }} від {{ deal.parent_deal_date }}
 		</B>
 	<P>
-		Цей Акт приймання наданих Послуг (надалі - "Акт") складений {{ deal.date }} в м. {{ deal.customer.city }} між:
+		Цей Акт приймання наданих Послуг (надалі - "Акт") складений цього
+		{{ deal.date|date:"d" }} дня {{ deal.date|date:"E" }} місяця {{ deal.date|date:"Y" }} р. в м. {{ deal.customer.city }} між:
 	</P>
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.customer.full_name }}</B>,
