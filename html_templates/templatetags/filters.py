@@ -67,6 +67,12 @@ def calc_summary(summary_value, option='without_currency'):
         summary_value = round(summary_value / 5, 2)
         summary_value = str(summary_value).split('.')
         return summary_value[0] + ' грн. ' + summary_value[1] + ' коп.'
+    if option == 'vat_without_currency':
+        if summary_value is None or summary_value == 0:
+            return '0.00'
+        summary_value = round(summary_value / 5, 2)
+        summary_value = str(summary_value).split('.')
+        return summary_value[0] + ',' + summary_value[1]
 
 
 @register.simple_tag

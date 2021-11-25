@@ -149,43 +149,32 @@ def context_act_render(act):
 
     # get tasks
     tasks = Task.objects.filter(act_of_acceptance=act)
-    objects = tasks.values('object_code', 'object_address').order_by().distinct()
-    project_types = tasks.values('project_type__price_code',
-                                 'project_type__project_type',
-                                 'project_type__price') \
-                         .order_by('project_type__price_code').distinct()
     # prepare table data
     index = 0
     svalue = Decimal(0)
-    object_lists = []
-    for ptype in project_types:
-        if ptype['project_type__price'] != 0:
+    count = 1
+    object_list = []
+    for task in tasks:
+        if task.project_type.price != 0:
             index += 1
-            object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
-                                .values_list('object_code', flat=True)
-            object_list = ''
-            for obj in object_codes:
-                object_list += obj + ' '
-            count = object_codes.count()
-            price = ptype['project_type__price'] / Decimal(1.2)
-            price = price.quantize(Decimal("1.00"), ROUND_HALF_UP)
-            value = price * count
-            svalue += value
-            price_code = ptype['project_type__price_code'].split('.', 1)[1]
-            object_lists.append([index,
-                                 price_code,
-                                 ptype['project_type__project_type'],
-                                 object_list,
-                                 "об'єкт",
-                                 count,
-                                 price,
-                                 value])
+            price_wo_vat = task.project_type.price / Decimal(1.2)
+            price_wo_vat = price_wo_vat.quantize(Decimal("1.00"), ROUND_HALF_UP)
+            svalue += price_wo_vat * count
+            price_code = task.project_type.price_code.split('.', 1)[1]
+            object_list.append([index,
+                                task.object_code,
+                                task.object_address,
+                                f'{price_code}. {task.project_type.project_type}',
+                                count,
+                                price_wo_vat,
+                                task.project_type.price,
+                                ])
     # creating context
     context = {
         'act': act,
-        'objects': objects,
-        'taxation': act.deal.company.taxation,
-        'object_lists': object_lists,
+        'deal': act.deal,
+        'object_list': object_list,
         'svalue': svalue
     }
+
     return context
