@@ -7,29 +7,27 @@
 	<TITLE>{{ deal.number }}</TITLE>
 </HEAD>
 <BODY STYLE="margin-left:50px;" DIR="A4">
-<FONT SIZE=1>
-	<P ALIGN=CENTER STYLE="line-height: 150%">
-		<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
-			<TR VALIGN=TOP>
-				<TD WIDTH=70%>
-					<P ALIGN=LEFT>
-					<B>ПІДРЯДНИК:</B></P>
-					<P ALIGN=LEFT>
-						{{ deal.company.name }}
-						{{ deal.company.requisites|linebreaks }}
-					</P>
-				</TD>
-				<TD WIDTH=30%>
-					<P ALIGN=LEFT>
-					<B>ЗАМОВНИК:</B></P>
-					<P ALIGN=LEFT>
-						{{ deal.customer.name }}
-						{{ deal.customer.requisites|linebreaks }}
-					</P>
-				</TD>
-			</TR>
-		</TABLE>
-	</P>
+<FONT SIZE=3>
+	<TABLE WIDTH=100% STYLE='font-size:100%'>
+		<TR VALIGN=TOP>
+			<TD WIDTH=60%>
+				<P ALIGN=LEFT>
+				<B>ПІДРЯДНИК:</B></P>
+				<P ALIGN=LEFT>
+					{{ deal.company.name }}
+					{{ deal.company.requisites|linebreaks }}
+				</P>
+			</TD>
+			<TD>
+				<P ALIGN=LEFT>
+				<B>ЗАМОВНИК:</B></P>
+				<P ALIGN=LEFT>
+					{{ deal.customer.name }}
+					{{ deal.customer.requisites|linebreaks }}
+				</P>
+			</TD>
+		</TR>
+	</TABLE>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 		<B>
 			Акт приймання-передачі наданих Послуг<br>
@@ -62,7 +60,7 @@
 			<P ALIGN=JUSTIFY>
 				Підрядник надав нижче вказані Послуги:
 			</P>
-			<TABLE WIDTH=1000 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
 					<TD ALIGN=CENTER ><B>№ п/п</B></TD>
 					<TD ALIGN=CENTER><B>№ по прейскуранту / найменування послуг</B></TD>
@@ -118,15 +116,15 @@
 			Цей Акт складено українською мовою, в двох примірниках, що мають однакову юридичну силу, по одному для кожної із Сторін.
 		</P></LI>
 	</OL>
-	<TABLE WIDTH=1000 STYLE='font-size:100%'>
+	<TABLE WIDTH=100% STYLE='font-size:100%'>
 		<TR VALIGN=TOP>
-			<TD WIDTH=500>
+			<TD WIDTH=60%>
 				<P ALIGN=LEFT>
 				<B> За Підрядника:</B></P>
 				<P ALIGN=JUSTIFY>______________________ {{ deal.company.signatory_person }}</P>
 				<P CLASS="western">Діє на підставі: {{ deal.company.regulations }}</P>
 			</TD>
-			<TD WIDTH=500>
+			<TD>
 				<P ALIGN=LEFT>
 				<B>За Замовника:</B></P>
 				<P ALIGN=JUSTIFY>______________________ {{ deal.customer.signatory_person }}</P>
@@ -134,9 +132,6 @@
 			</TD>
 		</TR>
 	</TABLE>
-	<DIV TYPE=FOOTER>
-		<P ALIGN=RIGHT><B>{{ deal.number }}</B></P>
-	</DIV>
 </FONT>
 </BODY>
 </HTML>

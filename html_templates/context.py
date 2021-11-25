@@ -164,7 +164,7 @@ def context_act_render(act):
             object_list.append([index,
                                 task.object_code,
                                 task.object_address,
-                                f'{price_code}. {task.project_type.project_type}',
+                                f'{price_code}. {task.project_type.description}',
                                 count,
                                 price_wo_vat,
                                 task.project_type.price,
