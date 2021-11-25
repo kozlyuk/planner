@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 
 from notice.models import Event
 from planner.models import Employee, Deal
-from planner.context import context_bonus_per_month
+from html_templates.context import context_bonus_per_month
 from planner.celery import app
 from .context_email import context_actneed_deals, context_debtors_deals, \
                            context_overdue_tasks
