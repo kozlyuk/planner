@@ -1,0 +1,141 @@
+{% load filters %}
+
+<!DOCTYPE HTML PUBLIC "HTML">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>{{ deal.number }}</TITLE>
+</HEAD>
+<BODY STYLE="margin-left:50px;" DIR="A4">
+<FONT SIZE=3>
+	<P ALIGN=CENTER STYLE="line-height: 150%">
+		<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+			<TR VALIGN=TOP>
+				<TD WIDTH=70%>
+					<P ALIGN=LEFT>
+					<B>ПІДРЯДНИК:</B></P>
+					<P ALIGN=LEFT>
+						{{ deal.company.name }}
+						{{ deal.company.requisites|linebreaks }}
+					</P>
+				</TD>
+				<TD WIDTH=30%>
+					<P ALIGN=LEFT>
+					<B>ЗАМОВНИК:</B></P>
+					<P ALIGN=LEFT>
+						{{ deal.customer.name }}
+						{{ deal.customer.requisites|linebreaks }}
+					</P>
+				</TD>
+			</TR>
+		</TABLE>
+	</P>
+	<P ALIGN=CENTER STYLE="line-height: 150%">
+		<B>
+			Акт приймання-передачі наданих Послуг<br>
+			до Додаткової угоди № {{ deal.number }} від  {{ deal.date }}<br>
+			до Договору про надання послуг з обстеження, оцінки технічного стану,
+			паспортизації, розробки проектів підсилення антенних споруд об’єктів
+			телекомунікаційної мережі {{ deal.customer.name }} №{{ deal.parent_deal_number }} від {{ deal.parent_deal_date }}
+		</B>
+	<P>
+		Цей Акт приймання наданих Послуг (надалі - "Акт") складений {{ deal.date }} в м. {{ deal.customer.city }} між:
+	</P>
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.customer.full_name }}</B>,
+		що є юридичною особою, належним чином створеною, зареєстрованою та діючою згідно з чинним законодавства України,
+		{{ deal.customer.legal }},
+		надалі за текстом цього Акту <B>«Замовник»</B>, з однієї сторони,
+	</P>
+	та
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.company.full_name }}</B>,
+		що є юридичною особою, належним чином створеною, зареєстрованою	та діючою згідно з чинним законодавством України,
+		{{ deal.company.legal }},
+		надалі за текстом цього Акту <B>«Підрядник»</B>,
+		з іншої сторони,<br>
+		про наступне:
+	</P>
+	<OL>
+		<LI>
+			<P ALIGN=JUSTIFY>
+				Підрядник надав нижче вказані Послуги:
+			</P>
+			<TABLE WIDTH=1000 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+				<TR VALIGN=TOP>
+					<TD ALIGN=CENTER ><B>№ п/п</B></TD>
+					<TD ALIGN=CENTER><B>№ по прейскуранту / найменування послуг</B></TD>
+					<TD ALIGN=CENTER><B>Кількість</B></TD>
+					<TD ALIGN=CENTER><B>Ціна за од., без ПДВ, грн.</B></TD>
+					<TD ALIGN=CENTER><B>Вартість, з ПДВ, грн.</B></TD>
+				</TR>
+				{% for index, object_code, object_address, project_type, count, price_wo_vat, price in object_list %}
+				<TR><B>
+					<TD ALIGN=CENTER WIDTH=10%>{{ object_code }}</TD>
+					<TD ALIGN=LEFT colspan="4">{{ object_address }}</TD>
+				</B></TR>
+				<TR>
+					<TD WIDTH=10% ALIGN=CENTER>{{ index }}</TD>
+					<TD WIDTH=65%>{{ project_type }}</TD>
+					<TD WIDTH=5% ALIGN=CENTER>{{ count }}</TD>
+					<TD WIDTH=10% ALIGN=CENTER>{{ price_wo_vat }}</TD>
+					<TD WIDTH=10% ALIGN=CENTER>{{ price }}</TD>
+				</TR>
+				{% endfor %}
+				<TR>
+					<TD ALIGN=RIGHT VALIGN=BOTTOM colspan="4">Загальна вартість без ПДВ:</TD>
+					<TD ALIGN=CENTER colspan="4">{% calc_summary svalue 'without_currency' %} </TD>
+				</TR>
+				<TR>
+					<TD ALIGN=RIGHT VALIGN=BOTTOM colspan="4">ПДВ 20%:</TD>
+					<TD ALIGN=CENTER colspan="4">{% calc_summary svalue 'vat_without_currency' %}</TD>
+				</TR>
+				<TR>
+					<TD ALIGN=RIGHT VALIGN=BOTTOM colspan="4">Всього з ПДВ:</TD>
+					<TD ALIGN=CENTER colspan="4">{% calc_vat svalue 'without_currency' %}</TD>
+				</TR>
+			</TABLE>
+		</LI>
+		<LI><P  ALIGN=JUSTIFY>
+				Вартість наданих Послуг складає
+				<B>{{ deal.value }} грн ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
+                , без ПДВ.
+			</P>
+		</LI>
+		<LI><P  ALIGN=JUSTIFY>
+			Відповідно до цього належить перерахувати Підряднику, згідно цього Акту:
+			<B>{{ deal.value }} грн. ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
+			, у тому числі ПДВ 20% -
+			<B>{{ deal.value | VAT }}
+			{% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>.
+		</P>
+		</LI>
+		<LI><P ALIGN=JUSTIFY>
+			Підписанням цього Акту Підрядник та Замовник підтверджують факт надання Послуг Підрядником на суму, зазначеному у цьому Акті.
+		</P></LI>
+		<LI><P ALIGN=JUSTIFY>
+			Цей Акт складено українською мовою, в двох примірниках, що мають однакову юридичну силу, по одному для кожної із Сторін.
+		</P></LI>
+	</OL>
+	<TABLE WIDTH=1000 STYLE='font-size:100%'>
+		<TR VALIGN=TOP>
+			<TD WIDTH=500>
+				<P ALIGN=LEFT>
+				<B> За Підрядника:</B></P>
+				<P ALIGN=JUSTIFY>______________________ {{ deal.company.signatory_person }}</P>
+				<P CLASS="western">Діє на підставі: {{ deal.company.regulations }}</P>
+			</TD>
+			<TD WIDTH=500>
+				<P ALIGN=LEFT>
+				<B>За Замовника:</B></P>
+				<P ALIGN=JUSTIFY>______________________ {{ deal.customer.signatory_person }}</P>
+				<P CLASS="western">Діє на підставі: {{ deal.customer.regulations }}</P>
+			</TD>
+		</TR>
+	</TABLE>
+	<DIV TYPE=FOOTER>
+		<P ALIGN=RIGHT><B>{{ deal.number }}</B></P>
+	</DIV>
+</FONT>
+</BODY>
+</HTML>
