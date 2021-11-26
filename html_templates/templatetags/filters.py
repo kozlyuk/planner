@@ -28,6 +28,9 @@ def get_exp_units(units):
 def VAT(value):
     return round(value/6, 2)
 
+@register.filter
+def without_VAT(value):
+    return round(value/6*5, 2)
 
 @register.simple_tag
 def num_to_text(value, units):

@@ -38,7 +38,7 @@
 		</B>
 	<P>
 		Цей Акт приймання наданих Послуг (надалі - "Акт") складений цього
-		{{ deal.date|date:"d" }} дня {{ deal.date|date:"E" }} місяця {{ deal.date|date:"Y" }} р. в м. {{ deal.customer.city }} між:
+		{{ act.date|date:"d" }} дня {{ act.date|date:"E" }} місяця {{ act.date|date:"Y" }} р. в м. {{ deal.customer.city }} між:
 	</P>
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.customer.full_name }}</B>,
@@ -97,8 +97,8 @@
 		</LI>
 		<LI><P  ALIGN=JUSTIFY>
 				Вартість наданих Послуг складає
-				<B>{{ deal.value }} грн ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
-                , без ПДВ.
+				<B>{% with value_without_VAT=deal.value|without_VAT %}{{ value_without_VAT }} грн
+				({% num_to_text value_without_VAT 'hrn' %} {{ value_without_VAT | exp_part }} коп.){% endwith %}</B>, без ПДВ.
 			</P>
 		</LI>
 		<LI><P  ALIGN=JUSTIFY>
@@ -122,13 +122,13 @@
 				<P ALIGN=LEFT>
 				<B> За Підрядника:</B></P>
 				<P ALIGN=JUSTIFY>______________________ {{ deal.company.signatory_person }}</P>
-				<P CLASS="western">Діє на підставі: {{ deal.company.regulations }}</P>
+				<P CLASS="western">{{ deal.company.signatory_position }} {{ deal.company.name }}</P>
 			</TD>
 			<TD>
 				<P ALIGN=LEFT>
 				<B>За Замовника:</B></P>
 				<P ALIGN=JUSTIFY>______________________ {{ deal.customer.signatory_person }}</P>
-				<P CLASS="western">Діє на підставі: {{ deal.customer.regulations }}</P>
+				<P CLASS="western">Діє на підставі: {{ deal.customer.signatory_position }} {{ deal.customer.name }}</P>
 			</TD>
 		</TR>
 	</TABLE>
