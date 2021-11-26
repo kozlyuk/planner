@@ -482,9 +482,9 @@
                                                 <tr>
                                                     <th width="20%" scope="col">НОМЕР АКТУ</th>
                                                     <th width="20%" scope="col">ДАТА АКТУ</th>
-                                                    <th scope="col">СУМА АКТУ</th>
-                                                    <th width="5%" scope="col">Дії</th>
-
+                                                    <th width="20%" scope="col">СУМА АКТУ</th>
+                                                    <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
+                                                    <th width="2%" scope="col">Дії</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -735,7 +735,7 @@ function cliсk(formsetId, dynamicFormset) {
             formCssClass: 'dynamic-formset1',
             addText: 'Додати проект',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row-tasks_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
                 //find the fields with the calendar widget
@@ -772,7 +772,7 @@ function cliсk(formsetId, dynamicFormset) {
             addText: 'Додати акт',
             keepFieldValues: '*',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row-actofacceptance_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
@@ -804,7 +804,7 @@ function cliсk(formsetId, dynamicFormset) {
             formCssClass: 'dynamic-formset3',
             addText: 'Додати оплату',
             deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+            addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
                 $(row).find('.vDateField').each(function (i) {
