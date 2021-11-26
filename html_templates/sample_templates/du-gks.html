@@ -1,0 +1,177 @@
+{% load filters %}
+
+<!DOCTYPE HTML PUBLIC "HTML">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>{{ deal.number }}</TITLE>
+</HEAD>
+<BODY STYLE="margin-left:50px;" DIR="A4">
+<FONT SIZE=3>
+	<P ALIGN=CENTER STYLE="line-height: 150%">
+	<B>
+		Додаткова угода № {{ deal.number }}<br>
+		до Договору підряду №{{ deal.parent_deal_number }}<br>
+		з надання інжинірингових послуг для будівництва та модернізації об’єктів
+                телекомунікаційної мережі ПрАТ «Київстар» {{ deal.parent_deal_date }}
+	</B></P>
+	<P>
+			<B>{{ deal.customer.city }}</B>
+			<SPAN STYLE="float:right;"><B>{{ deal.date }}</B>
+	</P>
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.customer.full_name }}</B>,
+		що є юридичною особою, належним чином створеною,
+		зареєстрованою та діючою згідно чинного законодавства України,
+		{{ deal.customer.legal }}, що діє на підставі {{ deal.customer.regulations }},
+		надалі за текстом цієї Додаткової угоди <B>«Замовник»</B>, з однієї сторони,
+	</P>
+	та
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.company.full_name }}</B>,
+		що є юридичною особою, належним чином створеною, зареєстрованою
+		та діючою згідно з чинним законодавством України,
+		{{ deal.company.legal }}, що діє на підставі {{ deal.company.regulations }},
+		надалі за текстом цієї Додаткової угоди <B>«Підрядник»</B>,
+		з іншої сторони, уклали дану Додаткову угоду про наступне:
+	</P>
+	<P ALIGN=JUSTIFY>
+		Надалі за текстом даної Додаткової угоди Замовник та Підрядник коли вживається окремо - «<B>Сторона</B>»,
+		а спільно – «<B>Сторони</B>», склали та підписали дану Додаткову угоду № <B>{{ deal.number }}</B>
+		до Генерального договору № <B>{{ deal.parent_deal_number }}</B> субпідряду на проведення проектних та
+		пошукових робіт від <B>{{ deal.parent_deal_date }}</B>, надалі <B>Додаткова угода</B>, про нижчевикладене:
+	</P>
+	<OL>
+		<LI><P ALIGN=JUSTIFY>
+				Підрядник на умовах, викладених в даній Додатковій угоді до Генерального договору № <B>{{ deal.parent_deal_number }}</B>
+				субпідряду на проведення проектних та пошукових робіт від <B>{{ deal.parent_deal_date }}</B>
+				зобов'язується своїми силами та засобами, за завданням Замовника
+				виконати проектні та вишукувальні роботи на базові станції мобільного зв’язку (далі – БС):
+			</P>
+			<TABLE WIDTH=700 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+				<TR VALIGN=TOP>
+					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
+					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
+				</TR>
+                {% for field in objects %}
+                <TR>
+                    <TD ALIGN=CENTER>{{ field.object_code }}</TD>
+                    <TD>{{ field.object_address }}</TD>
+                </TR>
+                {% endfor %}
+			</TABLE>
+		</LI>
+		<LI><P ALIGN=JUSTIFY>
+			Вартість усього комплексу робіт передбаченого цією Угодою, визначена Сторонами згідно
+			умов договору та прейскуранту цін до нього і становить:
+		</P>
+		<TABLE WIDTH=700 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TR VALIGN=TOP>
+				<TD WIDTH=25 ALIGN=CENTER><B>№ з/п</B></TD>
+				<TD WIDTH=75 ALIGN=CENTER><B>Код робіт</B></TD>
+				<TD WIDTH=300 ALIGN=CENTER><B>Назва об’єкту та вид робіт</B></TD>
+				<TD WIDTH=75 ALIGN=CENTER><B>Одиниця виміру</B></TD>
+				<TD WIDTH=75 ALIGN=CENTER><B>Кількість</B></TD>
+				<TD WIDTH=75 ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
+				<TD WIDTH=75 ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
+            </TR>
+            {% for index, pcode, ptype, object_list, units, count, price, value in object_lists %}
+                <TR>
+                    <TD WIDTH=25 ALIGN=CENTER>{{ index }}</TD>
+                    <TD WIDTH=75 ALIGN=CENTER>{{ pcode }}</TD>
+                    <TD WIDTH=300>{{ ptype }} {{ object_list }}</TD>
+                    <TD WIDTH=75 ALIGN=CENTER>{{ units }}</TD>
+                    <TD WIDTH=75 ALIGN=CENTER>{{ count }}</TD>
+                    <TD WIDTH=75 ALIGN=CENTER>{{ price }}</TD>
+                    <TD WIDTH=75 ALIGN=CENTER>{{ value }}</TD>
+                    </TR>
+            {% endfor %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER VALIGN=BOTTOM colspan="3" rowspan="4">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% else %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="3">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% endif %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</TD>
+                </TR>
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</TD>
+                </TR>
+            {% endif %}
+
+		</TABLE>
+		</LI>
+		<LI><P ALIGN=JUSTIFY>
+			Строк виконання Робіт передбачених п. 2 цієї Угоди:</P>
+			<P> - початок {{ deal.date }}</P>
+			<P>	- закінчення {{ deal.expire_date }}</P>
+		</LI>
+		<LI><P  ALIGN=JUSTIFY>
+				За виконання усього комплексу робіт, передбачених цією Угодою, Замовник здійснює оплату
+                у наступному порядку: 100% вартості	виконаних Підрядником Робіт, що становить
+				<B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
+                , у тому числі ПДВ
+                <B>{{ deal.value | VAT }}
+                {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+				та сплачується Підряднику Замовником упродовж
+                <B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
+				з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт - до {{ deal.pay_date_calc|date:"d E Y" }} року (включно). Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником.
+			</P>
+		</LI>
+		<LI><P ALIGN=JUSTIFY>
+				Дана Додаткова Угода складена українською мовою в двох оригінальних примірниках
+				для кожної з Сторін, що мають однакову юридичну силу та набирає чинності з
+				моменту її підписання уповноваженими представниками Сторін.
+			</P>
+		</LI>
+		<LI><P>
+			Юридичні адреси і банківські реквізити Сторін:</P>
+			<TABLE WIDTH=700 CELLPADDING=7 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+				<TR VALIGN=TOP>
+					<TD WIDTH=350>
+						<P ALIGN=CENTER>
+						<B>ПІДРЯДНИК:</B></P>
+						<P ALIGN=CENTER>
+						<B>{{ deal.company.name }}</B></P>
+							{{ deal.company.requisites|linebreaks }}
+						<P><A NAME="OLE_LINK26"></A>
+						<B>За Підрядника:</B></P>
+						<P ALIGN=JUSTIFY>
+						<B>{{ deal.company.signatory_position }}</B></P>
+						<P ALIGN=JUSTIFY><BR>
+						</P>
+						<P ALIGN=JUSTIFY>
+                        <B>______________________ {{ deal.company.signatory_person }}</B></P>
+						<P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
+					</TD>
+					<TD WIDTH=350>
+						<P ALIGN=CENTER>
+						<B>ЗАМОВНИК:</B></P>
+						<P ALIGN=CENTER>
+						<B>{{ deal.customer.name }}</B></P>
+						{{ deal.customer.requisites|linebreaks }}
+						<P><B>За Замовника:</B></P>
+						<P><B>{{ deal.customer.signatory_position }}</B></P>
+						<P ALIGN=JUSTIFY><BR>
+						</P>
+						<P ALIGN=JUSTIFY>
+                        <B>______________________ {{ deal.customer.signatory_person }}</B></P>
+						<P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
+					</TD>
+				</TR>
+			</TABLE>
+		</LI>
+	</OL>
+	<DIV TYPE=FOOTER>
+		<P ALIGN=RIGHT><B>{{ deal.number }}</B></P>
+	</DIV>
+</FONT>
+</BODY>
+</HTML>

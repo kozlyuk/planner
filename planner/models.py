@@ -505,10 +505,10 @@ class Deal(models.Model):
         if self.customer.debtor_term:
             if self.act_date:
                 pay_date = self.act_date + BDay(self.customer.debtor_term)
-                return pay_date.strftime(date_format)
+                return pay_date
             if self.expire_date:
                 pay_date = self.expire_date + BDay(self.customer.debtor_term)
-                return pay_date.strftime(date_format)
+                return pay_date
         return
     pay_date_calc.short_description = 'Дата оплати'
 

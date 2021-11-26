@@ -238,7 +238,7 @@
                                             грн.</b></li>
                                     <li class="list-group-item">Витрати по договору: <b>{{ deal.costs_calc }}
                                             грн.</b></li>
-                                    <li class="list-group-item">Планова дата оплати: <b>{{ deal.pay_date_calc }}</b></li>
+                                    <li class="list-group-item">Планова дата оплати: <b> {{ deal.pay_date_calc|date:"d E Y" }} р.</b></li>
                                 </ul>
                             </div>
                         </div>
