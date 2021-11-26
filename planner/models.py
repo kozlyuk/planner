@@ -141,7 +141,7 @@ class Requisites(models.Model):
     legal = models.CharField('Опис контрагента', max_length=255, blank=True)
     regulations = models.CharField('Діє на підставі', max_length=100, blank=True)
     signatory_person = models.CharField('Підписант', max_length=50, blank=True)
-    signatory_position = models.CharField('Посада підписанта', max_length=100, blank=True)
+    signatory_position = models.CharField('Посада підписанта', max_length=255, blank=True)
     requisites = models.TextField('Реквізити', blank=True)
 
     class Meta:
