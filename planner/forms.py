@@ -13,6 +13,7 @@ from crum import get_current_user
 
 from .models import ActOfAcceptance, Payment, Task, Customer, Execution, Order, Sending, Deal, Employee,\
                     Project, Company, Receiver, Contractor
+from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
 
@@ -651,6 +652,10 @@ class CustomerForm(forms.ModelForm):
         self.fields['act_template'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['invoice_template'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['report_template'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['deal_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Deal)
+        self.fields['act_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Act)
+        self.fields['invoice_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Invoice)
+        self.fields['report_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Report)
 
 class CompanyFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку',
