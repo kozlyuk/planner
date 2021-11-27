@@ -1,0 +1,147 @@
+{% load filters %}
+
+<!DOCTYPE HTML PUBLIC "HTML">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>{{ deal.number }}</TITLE>
+</HEAD>
+<BODY STYLE="margin-left:50px;" DIR="A4">
+<FONT SIZE=3>
+	<P ALIGN=CENTER STYLE="line-height: 150%"><B>
+		Акт приймання-передачі виконаних Робіт №{{ act.number }}<br>
+		до Додаткової угоди № {{ deal.number }} від {{ deal.date }}<br>
+		до Договору підряду № {{ deal.parent_deal_number }} надання інжинірингових послуг<br>
+        для будівництва та модернізації об’єктів телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }}
+	</B></P>
+	<P>
+		Цей Акт приймання – передачі  виконаних Робіт (надалі «Акт») складений цього
+		<B>{{ act.date|date:"d" }} дня {{ act.date|date:"E" }} місяця {{ act.date|date:"Y" }}</B>
+        р. в м. {{ deal.customer.city }} між:
+	</P>
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.customer.full_name }}</B>,
+		що є юридичною особою, належним чином створеною,
+		зареєстрованою та діючою згідно чинного законодавства України,
+		{{ deal.customer.legal }}, що діє на підставі {{ deal.customer.regulations }},
+		надалі за текстом цього Акту <B>«Замовник»</B>, з однієї сторони,
+	</P>
+	та
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.company.full_name }}</B>,
+		що є юридичною особою, належним чином створеною, зареєстрованою
+		та діючою згідно з чинним законодавством України,
+		{{ deal.company.legal }}, що діє на підставі {{ deal.company.regulations }},
+		надалі за текстом цього Акту <B>«Підрядник»</B>,
+		з іншої сторони,<br>
+        про наступне:
+	</P>
+	<OL>
+		<LI>
+            <P ALIGN=JUSTIFY>
+                На умовах, що викладені в Додатковій угоді № {{ deal.number }} від {{ deal.date }}
+                до Договору підряду № {{ deal.parent_deal_number }} з надання інжинірингових послуг для будівництва та модернізації об’єктів  телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }} «Підрядник» виконав нижче вказані Роботи по об’єктам:
+			</P>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+				<TR VALIGN=TOP>
+					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
+					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
+				</TR>
+                {% for index, object_code, object_address, project_type, count, price_wo_vat, price in object_list %}
+                <TR>
+                    <TD ALIGN=CENTER>{{ object_code }}</TD>
+                    <TD>{{ object_address }}</TD>
+                </TR>
+                {% endfor %}
+			</TABLE>
+		</LI>
+		<LI><P ALIGN=JUSTIFY>
+			Вартість усього комплексу робіт передбаченого цим Актом, визначена Сторонами згідно
+			умов договору та прейскуранту цін до нього і становить:
+		</P>
+		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TR VALIGN=TOP>
+				<TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
+				<TD WIDTH=45% ALIGN=CENTER><B>Назва об’єкту та вид робіт</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Одиниця виміру</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Кількість</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
+            </TR>
+            {% for index, price_code, project_type, objects, units, count, price, value in grouped_list %}
+                <TR>
+                    <TD WIDTH=5% ALIGN=CENTER>{{ index }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ price_code }}</TD>
+                    <TD WIDTH=45%> {{ project_type }} {{ objects }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ units }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ count }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ price }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ value }}</TD>
+                    </TR>
+            {% endfor %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER VALIGN=BOTTOM colspan="3" rowspan="4">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% else %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="3">Загальна вартість</TD>
+                    <TD ALIGN=CENTER colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+                </TR>
+            {% endif %}
+            {% if taxation == 'wvat' %}
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</TD>
+                </TR>
+                <TR>
+                    <TD ALIGN=CENTER colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</TD>
+                </TR>
+            {% endif %}
+		</TABLE>
+		</LI>
+		<LI>
+            <P ALIGN=JUSTIFY>
+                Загальна вартість Робіт:
+				<B>{{ deal.value }} грн. ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
+                , у тому числі ПДВ
+                <B>{{ deal.value | VAT }} грн.
+                {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+			</P>
+		</LI>
+		<LI>
+            <P ALIGN=JUSTIFY>
+				Підписанням цього Акту Підрядник та Замовник підтверджують факт виконання Робіт Підрядником
+                на суму, зазначену в цьому Акті.
+			</P>
+		</LI>
+		<LI>
+            <P ALIGN=JUSTIFY>
+				Цей Акт складено українською мовою, в двох примірниках, що мають однакову юридичну силу,
+                по одному для кожної із Сторін.
+			</P>
+		</LI>
+	</OL>
+			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+				<TR VALIGN=TOP>
+					<TD WIDTH=60%>
+                        <P><B>За Замовника:</B></P>
+						<P><B>
+                            {{ deal.customer.signatory_position }} {{ deal.customer.name }}
+                            ______________________ {{ deal.customer.signatory_person }}
+                        </B></P>
+					</TD>
+					<TD>
+                        <P><B>За Підрядника:</B></P>
+						<P><B>
+                            {{ deal.company.signatory_position }} {{ deal.company.name }}
+                            ______________________ {{ deal.company.signatory_person }}
+
+                        </B></P>
+					</TD>
+				</TR>
+			</TABLE>
+</FONT>
+</BODY>
+</HTML>

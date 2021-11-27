@@ -28,14 +28,13 @@
 			</TD>
 		</TR>
 	</TABLE>
-	<P ALIGN=CENTER STYLE="line-height: 150%">
-		<B>
-			Акт приймання-передачі наданих Послуг<br>
-			до Додаткової угоди № {{ deal.number }} від  {{ deal.date }}<br>
-			до Договору про надання послуг з обстеження, оцінки технічного стану,
-			паспортизації, розробки проектів підсилення антенних споруд об’єктів
-			телекомунікаційної мережі {{ deal.customer.name }} №{{ deal.parent_deal_number }} від {{ deal.parent_deal_date }}
-		</B>
+	<P ALIGN=CENTER STYLE="line-height: 150%"><B>
+		Акт приймання-передачі наданих Послуг<br>
+		до Додаткової угоди № {{ deal.number }} від  {{ deal.date }}<br>
+		до Договору про надання послуг з обстеження, оцінки технічного стану,
+		паспортизації, розробки проектів підсилення антенних споруд об’єктів
+		телекомунікаційної мережі {{ deal.customer.name }} №{{ deal.parent_deal_number }} від {{ deal.parent_deal_date }}
+	</B></P>
 	<P>
 		Цей Акт приймання наданих Послуг (надалі - "Акт") складений цього
 		{{ act.date|date:"d" }} дня {{ act.date|date:"E" }} місяця {{ act.date|date:"Y" }} р. в м. {{ deal.customer.city }} між:
@@ -128,7 +127,7 @@
 				<P ALIGN=LEFT>
 				<B>За Замовника:</B></P>
 				<P ALIGN=JUSTIFY>______________________ {{ deal.customer.signatory_person }}</P>
-				<P CLASS="western">Діє на підставі: {{ deal.customer.signatory_position }} {{ deal.customer.name }}</P>
+				<P CLASS="western">{{ deal.customer.signatory_position }}</P>
 			</TD>
 		</TR>
 	</TABLE>

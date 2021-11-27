@@ -149,7 +149,7 @@ def context_act_render(act):
 
     # get tasks
     tasks = Task.objects.filter(act_of_acceptance=act)
-    # prepare table data
+    # prepare object_list data
     index = 0
     svalue = Decimal(0)
     count = 1
@@ -169,12 +169,43 @@ def context_act_render(act):
                                 price_wo_vat,
                                 task.project_type.price,
                                 ])
+
+    # prepare groped_list data
+    grouped_list = []
+    project_types = tasks.values('project_type__price_code',
+                                 'project_type__project_type',
+                                 'project_type__price') \
+                         .order_by('project_type__price_code').distinct()
+    for ptype in project_types:
+        if ptype['project_type__price'] != 0:
+            index += 1
+            object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                                .values_list('object_code', flat=True)
+            objects = ''
+            for obj in object_codes:
+                objects += obj + ' '
+            count = object_codes.count()
+            price = ptype['project_type__price'] / Decimal(1.2)
+            price = price.quantize(Decimal("1.00"), ROUND_HALF_UP)
+            value = price * count
+            price_code = ptype['project_type__price_code'].split('.', 1)[1]
+            grouped_list.append([index,
+                                 price_code,
+                                 ptype['project_type__project_type'],
+                                 objects,
+                                 "об'єкт",
+                                 count,
+                                 price,
+                                 value])
+
     # creating context
     context = {
         'act': act,
         'deal': act.deal,
         'object_list': object_list,
-        'svalue': svalue
+        'grouped_list': grouped_list,
+        'svalue': svalue,
+        'taxation': act.deal.company.taxation,
     }
 
     return context
