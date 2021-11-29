@@ -42,7 +42,7 @@
                 На умовах, що викладені в Додатковій угоді № {{ deal.number }} від {{ deal.date }}
                 до Договору підряду № {{ deal.parent_deal_number }} з надання інжинірингових послуг для будівництва та модернізації об’єктів  телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }} «Підрядник» виконав нижче вказані Роботи по об’єктам:
 			</P>
-			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
 				<TR VALIGN=TOP>
 					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
 					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
@@ -59,7 +59,7 @@
 			Вартість усього комплексу робіт передбаченого цим Актом, визначена Сторонами згідно
 			умов договору та прейскуранту цін до нього і становить:
 		</P>
-		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
 			<TR VALIGN=TOP>
 				<TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
 				<TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
@@ -123,19 +123,20 @@
 			</P>
 		</LI>
 	</OL>
-			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0>
 				<TR VALIGN=TOP>
 					<TD WIDTH=60%>
                         <P><B>За Замовника:</B></P>
 						<P><B>
-                            {{ deal.customer.signatory_position }} {{ deal.customer.name }}
+                            {{ deal.customer.signatory_position }} {{ deal.customer.name }}<BR>
                             ______________________ {{ deal.customer.signatory_person }}
                         </B></P>
 					</TD>
-					<TD>
+					<TD></TD>
+					<TD WIDTH=40%>
                         <P><B>За Підрядника:</B></P>
 						<P><B>
-                            {{ deal.company.signatory_position }} {{ deal.company.name }}
+                            {{ deal.company.signatory_position }} {{ deal.company.name }}<BR>
                             ______________________ {{ deal.company.signatory_person }}
 
                         </B></P>

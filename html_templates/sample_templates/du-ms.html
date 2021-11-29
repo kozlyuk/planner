@@ -10,8 +10,8 @@
 <FONT SIZE=3>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 	<B>
-		Додаткова угода № {{ deal.number }}<br>
-		до Генерального договору № {{ deal.parent_deal_number }} субпідряду<br>
+		Додаткова угода № {{ deal.number }}<BR>
+		до Генерального договору № {{ deal.parent_deal_number }} субпідряду<BR>
 		на проведення проектних та вишукувальних робіт від {{ deal.parent_deal_date }}
 	</B></P>
 	<P>
@@ -47,7 +47,7 @@
 				зобов'язується своїми силами та засобами, за завданням Генпідрядника
 				виконати проектні та вишукувальні роботи на базові станції мобільного зв’язку (далі – БС):
 			</P>
-			<TABLE WIDTH=700 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
 				<TR VALIGN=TOP>
 					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
 					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
@@ -64,25 +64,25 @@
 			Вартість усього комплексу робіт передбаченого цією Угодою, визначена Сторонами згідно
 			умов договору та прейскуранту цін до нього і становить:
 		</P>
-		<TABLE WIDTH=700 CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
 			<TR VALIGN=TOP>
-				<TD WIDTH=25 ALIGN=CENTER><B>№ з/п</B></TD>
-				<TD WIDTH=75 ALIGN=CENTER><B>Код робіт</B></TD>
-				<TD WIDTH=300 ALIGN=CENTER><B>Назва об’єкту та вид робіт</B></TD>
-				<TD WIDTH=75 ALIGN=CENTER><B>Одиниця виміру</B></TD>
-				<TD WIDTH=75 ALIGN=CENTER><B>Кількість</B></TD>
-				<TD WIDTH=75 ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
-				<TD WIDTH=75 ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
+				<TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
+				<TD WIDTH=45% ALIGN=CENTER><B>Назва об’єкту та вид робіт</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Одиниця виміру</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Кількість</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
+				<TD WIDTH=10% ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
             </TR>
             {% for index, pcode, ptype, object_list, units, count, price, value in object_lists %}
                 <TR>
-                    <TD WIDTH=25 ALIGN=CENTER>{{ index }}</TD>
-                    <TD WIDTH=75 ALIGN=CENTER>{{ pcode }}</TD>
-                    <TD WIDTH=300>{{ ptype }} {{ object_list }}</TD>
-                    <TD WIDTH=75 ALIGN=CENTER>{{ units }}</TD>
-                    <TD WIDTH=75 ALIGN=CENTER>{{ count }}</TD>
-                    <TD WIDTH=75 ALIGN=CENTER>{{ price }}</TD>
-                    <TD WIDTH=75 ALIGN=CENTER>{{ value }}</TD>
+                    <TD WIDTH=5% ALIGN=CENTER>{{ index }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ pcode }}</TD>
+                    <TD WIDTH=45%>{{ ptype }} {{ object_list }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ units }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ count }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ price }}</TD>
+                    <TD WIDTH=10% ALIGN=CENTER>{{ value }}</TD>
                     </TR>
             {% endfor %}
             {% if taxation == 'wvat' %}
@@ -135,9 +135,9 @@
 		</LI>
 		<LI><P>
 			Юридичні адреси і банківські реквізити Сторін:</P>
-			<TABLE WIDTH=700 CELLPADDING=7 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0>
 				<TR VALIGN=TOP>
-					<TD WIDTH=350>
+					<TD WIDTH=40%>
 						<P ALIGN=CENTER>
 						<B>СУБПІДРЯДНИК:</B></P>
 						<P ALIGN=CENTER>
@@ -153,7 +153,8 @@
                         <B>______________________ {{ deal.company.signatory_person }}</B></P>
 						<P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
 					</TD>
-					<TD WIDTH=350>
+					<TD></TD>
+					<TD WIDTH=40%>
 						<P ALIGN=CENTER>
 						<B>ГЕНПІДРЯДНИК:</B></P>
 						<P ALIGN=CENTER>

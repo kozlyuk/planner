@@ -96,7 +96,7 @@ class CompanyAdmin(admin.ModelAdmin):
     ordering = ['name']
     fieldsets = [
         (None, {'fields': [('name', 'full_name'),
-                           'contact_person',
+                           'chief',
                            ('taxation'),
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
