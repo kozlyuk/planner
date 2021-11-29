@@ -14,6 +14,7 @@ pandas
 Pillow
 redis
 celery
+django-object-actions
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk

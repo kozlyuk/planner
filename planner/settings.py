@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',
+    'django_object_actions',
 ]
 
 MIDDLEWARE = [

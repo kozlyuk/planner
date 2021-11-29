@@ -12,7 +12,6 @@ from gantt.views import GetPlan, ChangePlan
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    path('notice/', include('notice.urls')),
 
     path('', views.Dashboard.as_view(), name='home_page'),
 
@@ -76,6 +75,8 @@ urlpatterns = [
     path('employee/change/', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
 
     path('select2/', include('django_select2.urls')),
+    path('notice/', include('notice.urls')),
+    path('analytics/', include('analytics.urls')),
     path('templates/', include('html_templates.urls')),
 ]
 
