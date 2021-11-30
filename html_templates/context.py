@@ -172,6 +172,7 @@ def context_act_render(act):
 
     # prepare groped_list data
     grouped_list = []
+    index = 0
     project_types = tasks.values('project_type__price_code',
                                  'project_type__project_type',
                                  'project_type__price') \
