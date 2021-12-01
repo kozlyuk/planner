@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date, timedelta
 from django.db import models
 from django.db.models import Sum, Max
 from django.db.models.signals import post_save
@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.core.validators import MaxValueValidator
 from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
-from pandas.tseries.offsets import BDay
 from crum import get_current_user
 from decimal import Decimal
 
@@ -170,10 +169,12 @@ class Customer(Requisites):
     def debit_calc(self):
         total = 0
         for deal in self.deal_set.all():
+            acts_total = deal.actofacceptance_set.aggregate(total=Sum('value')).get('total') or 0
+            paid_total = deal.payment_set.aggregate(total=Sum('value')).get('total') or 0
             if deal.pay_status == Deal.NotPaid:
-                total += deal.act_value
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value > deal.advance:
-                total += deal.act_value - deal.advance
+                total += acts_total
+            if deal.pay_status == Deal.AdvancePaid and acts_total > paid_total:
+                total += acts_total - paid_total
         return u'{0:,}'.format(total).replace(u',', u' ')
     debit_calc.short_description = 'Дебіторська заборгованість {}'.format(
         date.today().year)
@@ -503,13 +504,11 @@ class Deal(models.Model):
     def pay_date_calc(self):
         """ total deal's costs """
         if self.customer.debtor_term:
-            if self.act_date:
-                pay_date = self.act_date + BDay(self.customer.debtor_term)
-                return pay_date
+            last_act = self.actofacceptance_set.order_by('date').last()
+            if last_act:
+                return last_act.date + timedelta(days=self.customer.debtor_term)
             if self.expire_date:
-                pay_date = self.expire_date + BDay(self.customer.debtor_term)
-                return pay_date
-        return
+                return self.expire_date + timedelta(days=self.customer.debtor_term)
     pay_date_calc.short_description = 'Дата оплати'
 
 
