@@ -169,12 +169,11 @@ class Customer(Requisites):
     def debit_calc(self):
         total = 0
         for deal in self.deal_set.all():
-            acts_total = deal.actofacceptance_set.aggregate(total=Sum('value')).get('total') or 0
-            paid_total = deal.payment_set.aggregate(total=Sum('value')).get('total') or 0
-            if deal.pay_status == Deal.NotPaid:
-                total += acts_total
-            if deal.pay_status == Deal.AdvancePaid and acts_total > paid_total:
-                total += acts_total - paid_total
+            if deal.pay_status != Deal.PaidUp:
+                acts_total = deal.acts_total()
+                paid_total = deal.paid_total()
+                if acts_total > paid_total:
+                    total += acts_total - paid_total
         return u'{0:,}'.format(total).replace(u',', u' ')
     debit_calc.short_description = 'Дебіторська заборгованість {}'.format(
         date.today().year)
@@ -182,22 +181,19 @@ class Customer(Requisites):
     def credit_calc(self):
         total = 0
         for deal in self.deal_set.all():
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value < deal.advance:
-                total += deal.advance - deal.act_value
-            if deal.pay_status == Deal.PaidUp and deal.act_value < deal.value:
-                total += deal.value - deal.act_value
+            if deal.pay_status != Deal.NotPaid:
+                acts_total = deal.acts_total()
+                paid_total = deal.paid_total()
+                if acts_total < paid_total:
+                    total += paid_total - acts_total
         return u'{0:,}'.format(total).replace(u',', u' ')
     credit_calc.short_description = 'Авансові платежі'
 
     def completed_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=date.today().year):
-            if deal.pay_status == Deal.PaidUp:
-                total += deal.act_value
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value >= deal.advance:
-                total += deal.advance
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value < deal.advance:
-                total += deal.act_value
+        for deal in self.deal_set.filter(expire_date__year=date.today().year):
+            if deal.pay_status != Deal.NotPaid or deal.act_status != Deal.NotIssued:
+                total += min(deal.acts_total(), deal.paid_total())
         return u'{0:,}'.format(total).replace(u',', u' ')
     completed_calc.short_description = 'Виконано та оплачено {}'.format(
         date.today().year)
@@ -205,12 +201,8 @@ class Customer(Requisites):
     def expect_calc(self):
         total = 0
         for deal in self.deal_set.all():
-            if deal.pay_status == Deal.NotPaid and deal.act_value < deal.value:
-                total += deal.value - deal.act_value
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value <= deal.advance:
-                total += deal.value - deal.advance
-            if deal.pay_status == Deal.AdvancePaid and deal.act_value > deal.advance:
-                total += deal.value - deal.act_value
+            if deal.pay_status != Deal.PaidUp:
+                total += deal.value - deal.paid_total()
         return u'{0:,}'.format(total).replace(u',', u' ')
     expect_calc.short_description = 'Не виконано та не оплачено'
 
@@ -383,16 +375,12 @@ class Deal(models.Model):
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     value_correction = models.DecimalField('Коригування вартості робіт, грн.',
                                            max_digits=8, decimal_places=2, default=0)
-    advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
-    pay_date = models.DateField('Дата оплати', blank=True, null=True)
     expire_date = models.DateField('Дата закінчення договору')
     act_status = models.CharField('Акт виконаних робіт', max_length=2, choices=ACT_STATUS_CHOICES, default=NotIssued)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField('Попередження', max_length=30, blank=True)
-    act_date = models.DateField('Дата акту виконаних робіт', blank=True, null=True)
-    act_value = models.DecimalField('Сума акту виконаних робіт, грн.', max_digits=8, decimal_places=2, default=0)
     pdf_copy = ContentTypeRestrictedFileField('Електронний примірник', upload_to=user_directory_path,
                                               content_types=['application/pdf',
                                                              'application/vnd.openxmlformats-officedocument.'
@@ -508,6 +496,14 @@ class Deal(models.Model):
             if last_act:
                 return last_act.date + timedelta(days=self.customer.debtor_term)
     pay_date_calc.short_description = 'Дата оплати'
+
+    def acts_total(self):
+        """ total act's value """
+        return self.actofacceptance_set.aggregate(total=Sum('value')).get('total') or 0
+
+    def paid_total(self):
+        """ total paid value """
+        return self.payment_set.aggregate(total=Sum('value')).get('total') or 0
 
 
 @receiver(post_save, sender=Deal, dispatch_uid="update_deal_status")
