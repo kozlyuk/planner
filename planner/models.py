@@ -507,8 +507,6 @@ class Deal(models.Model):
             last_act = self.actofacceptance_set.order_by('date').last()
             if last_act:
                 return last_act.date + timedelta(days=self.customer.debtor_term)
-            if self.expire_date:
-                return self.expire_date + timedelta(days=self.customer.debtor_term)
     pay_date_calc.short_description = 'Дата оплати'
 
 
