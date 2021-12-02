@@ -83,8 +83,8 @@ def update_deal_statuses(deal_id=None):
                 warning = 'Вартість по роботам %s' % value_calc
             elif deal.act_status in [deal.NotIssued, deal.PartlyIssued]:
                 warning = 'Очікує закриття акту'
-            elif deal.pay_status != deal.PaidUp and deal.pay_date:
-                warning = 'Оплата %s' % deal.pay_date.strftime(date_format)
+            elif deal.pay_status != deal.PaidUp and deal.pay_date_calc():
+                warning = 'Оплата %s' % deal.pay_date_calc().strftime(date_format)
             else:
                 warning = ''
         elif deal.expire_date < date.today():
