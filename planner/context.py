@@ -86,9 +86,8 @@ def context_accounter(user):
     unpaid_deals = deals.exclude(act_status=Deal.NotIssued) \
                         .exclude(pay_status=Deal.PaidUp) \
                         .exclude(number__icontains='загальний')
-    debtor_deals = unpaid_deals.filter(exec_status=Deal.Sent)\
-                               .exclude(pay_date__isnull=True) \
-                               .exclude(pay_date__gte=date.today())
+    debtor_deals = unpaid_deals.filter(act_status=Deal.Issued,
+                                       pay_status__in=[Deal.NotPaid, Deal.AdvancePaid])
     overdue_deals = deals.exclude(exec_status=Deal.Sent) \
                          .exclude(expire_date__gte=date.today()) \
                          .exclude(number__icontains='загальний')
