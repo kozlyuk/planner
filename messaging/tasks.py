@@ -53,7 +53,9 @@ def send_actneed_report():
     """Sending notifications about closed contracts to accountants"""
 
     template_name = "email/actneed_report.html"
-    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
+                                          user__is_active=True,
+                                          )
     deals = Deal.objects.filter(exec_status=Deal.Sent)\
                         .exclude(act_status=Deal.Issued)\
                         .exclude(number__icontains='загальний')
@@ -81,7 +83,9 @@ def send_debtors_report():
     """Sending notifications about debtors to accountants"""
 
     template_name = "email/debtors_report.html"
-    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
+                                          user__is_active=True,
+                                          )
     deals = Deal.objects.filter(exec_status=Deal.Sent)\
                         .exclude(pay_status=Deal.PaidUp) \
                         .exclude(pay_date__isnull=True) \
@@ -109,7 +113,9 @@ def send_overdue_deals_report():
     """Sending notifications about overdue deals to PMs"""
 
     template_name = "email/overdue_deals_report.html"
-    project_managers = Employee.objects.filter(user__groups__name__in=['Бухгалтери'])
+    project_managers = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
+                                               user__is_active=True,
+                                               )
     deals = Deal.objects.exclude(exec_status=Deal.Sent)\
                         .exclude(expire_date__gte=date.today()) \
                         .exclude(number__icontains='загальний') \
@@ -163,7 +169,9 @@ def send_unsent_tasks_report():
     """Sending notifications about unsent tasks to owners"""
 
     template_name = "email/unsent_tasks_report.html"
-    project_managers = Employee.objects.filter(user__groups__name__in=['ГІПи'])
+    project_managers = Employee.objects.filter(user__groups__name__in=['ГІПи'],
+                                               user__is_active=True,
+                                               )
 
     # prepearing emails
     emails = []
@@ -189,7 +197,9 @@ def send_monthly_report(period=None):
     """ Sending monthly report to employee """
 
     template_name = "email/bonuses_report.html"
-    employees = Employee.objects.exclude(user__username__startswith='outsourcing')
+    employees = Employee.objects.exclude(user__username__startswith='outsourcing',
+                                         user__is_active=True,
+                                         )
 
     # if period is None set previous month
     if not period:
