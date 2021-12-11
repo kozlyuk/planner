@@ -7,16 +7,16 @@
 	<TITLE>{{ deal.number }}</TITLE>
 </HEAD>
 <BODY STYLE="margin-left:50px;" DIR="A4">
-<FONT SIZE=3>
+<FONT SIZE=2>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 	<B>
 		Додаткова угода № {{ deal.number }}<br>
 		до Договору підряду №{{ deal.parent_deal_number }}<br>
 		з надання інжинірингових послуг для будівництва та модернізації об’єктів<BR>
-        телекомунікаційної мережі ПрАТ «Київстар» {{ deal.parent_deal_date }}
+        телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }}
 	</B></P>
 	<P>
-			<B>{{ deal.customer.city }}</B>
+			<B>м. {{ deal.customer.city }}</B>
 			<SPAN STYLE="float:right;"><B>{{ deal.date }}</B>
 	</P>
 	<P ALIGN=JUSTIFY>
@@ -38,17 +38,16 @@
 	<P ALIGN=JUSTIFY>
 		Надалі за текстом даної Додаткової угоди Замовник та Підрядник коли вживається окремо - «<B>Сторона</B>»,
 		а спільно – «<B>Сторони</B>», склали та підписали дану Додаткову угоду № <B>{{ deal.number }}</B>
-		до Генерального договору № <B>{{ deal.parent_deal_number }}</B> субпідряду на проведення проектних та
-		пошукових робіт від <B>{{ deal.parent_deal_date }}</B>, надалі <B>Додаткова угода</B>, про нижчевикладене:
+		до Договору підряду № <B>{{ deal.parent_deal_number }}</B> від <B>{{ deal.parent_deal_date }}</B>, надалі <B>Додаткова угода</B>, про нижчевикладене:
 	</P>
 	<OL>
 		<LI><P ALIGN=JUSTIFY>
-				Підрядник на умовах, викладених в даній Додатковій угоді до Генерального договору № <B>{{ deal.parent_deal_number }}</B>
-				субпідряду на проведення проектних та пошукових робіт від <B>{{ deal.parent_deal_date }}</B>
+				Підрядник на умовах, викладених в даній Додатковій угоді до Договору підряду № <B>{{ deal.parent_deal_number }}</B>
+				від <B>{{ deal.parent_deal_date }}</B>
 				зобов'язується своїми силами та засобами, за завданням Замовника
 				виконати проектні та вишукувальні роботи на базові станції мобільного зв’язку (далі – БС):
 			</P>
-			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
 					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
 					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
@@ -65,7 +64,7 @@
 			Вартість усього комплексу робіт передбаченого цією Угодою, визначена Сторонами згідно
 			умов договору та прейскуранту цін до нього і становить:
 		</P>
-		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
+		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 			<TR VALIGN=TOP>
 				<TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
 				<TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
@@ -133,9 +132,9 @@
 		</LI>
 		<LI><P>
 			Юридичні адреси і банківські реквізити Сторін:</P>
-			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0>
+			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
-					<TD WIDTH=40%>
+					<TD WIDTH=45%>
 						<P ALIGN=CENTER>
 						<B>ПІДРЯДНИК:</B></P>
 						<P ALIGN=CENTER>
@@ -152,7 +151,7 @@
 						<P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
 					</TD>
 					<TD></TD>
-					<TD WIDTH=40%>
+					<TD WIDTH=45%>
 						<P ALIGN=CENTER>
 						<B>ЗАМОВНИК:</B></P>
 						<P ALIGN=CENTER>

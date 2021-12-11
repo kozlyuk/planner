@@ -199,10 +199,13 @@ def context_act_render(act):
                                  price,
                                  value])
 
+    objects = tasks.values('object_code', 'object_address').order_by().distinct()
+
     # creating context
     context = {
         'act': act,
         'deal': act.deal,
+        'objects': objects,
         'object_list': object_list,
         'grouped_list': grouped_list,
         'svalue': svalue,
