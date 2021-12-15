@@ -564,6 +564,8 @@ class Payment(models.Model):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
+    act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
+                                          blank=True, null=True, on_delete=models.SET_NULL)
     comment = models.TextField('Коментар', blank=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)

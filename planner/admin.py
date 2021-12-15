@@ -309,7 +309,7 @@ class ActOfAcceptanceInline(admin.TabularInline):
 class PaymentsInline(admin.TabularInline):
 
     model = Payment
-    fields = ['date', 'value']
+    fields = ['date', 'value', 'act_of_acceptance']
     extra = 0
     show_change_link = True
     can_delete = False

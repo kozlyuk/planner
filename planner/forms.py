@@ -226,11 +226,16 @@ ActOfAcceptanceFormSet = inlineformset_factory(Deal, ActOfAcceptance, form=ActOf
 class PaymentInlineForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['date', 'value']
+        fields = ['date', 'value', 'act_of_acceptance']
         widgets = {
             'date': AdminDateWidget(),
             'DELETE': forms.HiddenInput(),
         }
+
+    def __init__(self, *args, deal=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if deal:
+            self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
 
 
 class PaymentInlineFormset(BaseInlineFormSet):
