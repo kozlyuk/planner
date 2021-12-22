@@ -201,10 +201,10 @@ class Customer(Requisites):
     def expect_calc(self):
         total = 0
         for deal in self.deal_set.all():
-            if deal.pay_status != Deal.PaidUp:
+            if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued:
                 total += deal.value - deal.paid_total()
         return u'{0:,}'.format(total).replace(u',', u' ')
-    expect_calc.short_description = 'Не виконано та не оплачено'
+    expect_calc.short_description = 'В роботі'
 
 
 class Project(models.Model):
