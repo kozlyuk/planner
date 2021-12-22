@@ -175,7 +175,11 @@ class TasksInlineForm(forms.ModelForm):
                                                                 user__is_active=True)
         self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
         if deal:
-            self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
+            if self.instance.project_type.active:
+                self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
+            else:
+                self.fields['project_type'].widget.attrs['disabled'] = True
+                self.fields['project_type'].required = False
             self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
 
     def clean(self):
