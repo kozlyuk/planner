@@ -27,17 +27,12 @@ def calc_bonuses(prev_month=False, period=None):
             bonuses = 0
 
             # calculate executor bonuses
-            executions = employee.execution_set.filter(task__deal__company=kpi_name[0],
-                                                       exec_status=Execution.Done,
-                                                       finish_date__month=period.month,
-                                                       finish_date__year=period.year)
+            executions = employee.executions_for_period(period).filter(task__deal__company=kpi_name[0])
             for query in executions:
                 bonuses += query.task.exec_bonus(query.part)
 
             # calculate owner bonuses
-            tasks = employee.task_set.filter(deal__company=kpi_name[0],
-                                             sending_date__month=period.month,
-                                             sending_date__year=period.year)
+            tasks = employee.tasks_for_period(period).filter(deal__company=kpi_name[0])
             for query in tasks:
                 bonuses += query.owner_bonus()
 

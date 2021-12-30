@@ -10,7 +10,7 @@ from django.core.validators import MaxValueValidator
 from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
 from crum import get_current_user
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from stdimage.models import StdImageField
 from eventlog.models import log
@@ -814,23 +814,24 @@ class Task(models.Model):
 
     def owner_part(self):
         if self.project_type.owner_bonus > 0:
-            part = int(100 + (100 - self.exec_part()) *
-                       self.project_type.executors_bonus/self.project_type.owner_bonus)
-        else:
-            part = 0
-        return part
+            if self.exec_part() > 100:
+                return int(100 + (100 - self.exec_part()) *
+                       self.project_type.executors_bonus / self.project_type.owner_bonus)
+            return 100
+        return 0
     owner_part.short_description = "Частка"
     # owner part
 
     def owner_bonus(self):
         bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
             * self.project_type.owner_bonus / 10000 * self.difficulty_owner
-        return bonus if bonus > 0 else Decimal(0)
+        return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP) if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
     # owner's bonus
 
     def exec_bonus(self, part):
-        return self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty_executor
+        bonus = self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty_executor
+        return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP)
     exec_bonus.short_description = "Бонус"
     # executor's bonus
 

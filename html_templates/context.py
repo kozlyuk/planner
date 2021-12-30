@@ -22,7 +22,7 @@ def context_bonus_per_month(employee, period):
     task_list = []
     for task in tasks:
         index += 1
-        owner_bonus = task.owner_bonus().quantize(Decimal("1.00"), ROUND_HALF_UP)
+        owner_bonus = task.owner_bonus()
         task_list.append([index,
                           format_html('<a href="%s%s">%s</a>'
                                       % (settings.SITE_URL,
@@ -51,7 +51,7 @@ def context_bonus_per_month(employee, period):
     executions_list = []
     for ex in executions:
         index += 1
-        exec_bonus = ex.task.exec_bonus(ex.part).quantize(Decimal("1.00"), ROUND_HALF_UP)
+        exec_bonus = ex.task.exec_bonus(ex.part)
         executions_list.append([index,
                                 format_html('<a href="%s%s">%s</a>'
                                             % (settings.SITE_URL,
