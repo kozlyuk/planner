@@ -33,6 +33,20 @@ def avatar_directory_path(instance, filename):
         .format(get_current_user().id, filename)
 
 
+class Construction(models.Model):
+
+    name = models.CharField('Тип конструкції', max_length=100, unique=True)
+    description = models.CharField('Опис', max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Тип конструкції'
+        verbose_name_plural = 'Типи конструкцій'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
@@ -639,6 +653,7 @@ class Task(models.Model):
     project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
     project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    construction = models.ForeignKey(Construction, verbose_name='Тип конструкції', blank=True, null=True, on_delete=models.SET_NULL)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField('Примітка', max_length=30, blank=True)

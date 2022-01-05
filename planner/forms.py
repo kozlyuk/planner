@@ -330,14 +330,17 @@ class TaskForm(forms.ModelForm):
                   'owner', 'exec_status', 'pdf_copy',
                   'planned_start', 'planned_finish', 'actual_finish',
                   'project_code', 'manual_warning', 'comment',
-                  'difficulty_owner', 'difficulty_executor'
+                  'difficulty_owner', 'difficulty_executor',
+                  'construction'
                   ]
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
             'planned_start': AdminDateWidget,
             'planned_finish': AdminDateWidget,
+            'actual_finish': AdminDateWidget,
             'tc_received': AdminDateWidget,
+            'tc_upload': NotClearableFileInput,
             'pdf_copy': NotClearableFileInput,
         }
 

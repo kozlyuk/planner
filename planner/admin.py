@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company
+from .models import IntTask, Contractor, Order, Company, Construction
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -579,7 +579,7 @@ class TaskAdmin(admin.ModelAdmin):
     warning_mark.short_description = 'Попередження'
 
     fieldsets = [
-        ('Опис', {'fields': [('object_code', 'object_address'),
+        ('Опис', {'fields': [('object_code', 'object_address', 'construction'),
                              ('project_type', 'deal')]}),
         ('Інформація про виконання', {'fields': [('exec_status', 'owner'),
                                                  ('tc_received', 'tc_upload'),
@@ -706,3 +706,4 @@ admin.site.register(Sending, SendingAdmin)
 admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
+admin.site.register(Construction)
