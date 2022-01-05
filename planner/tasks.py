@@ -61,7 +61,7 @@ def update_deal_statuses(deal_id=None):
     if deal_id:
         deals = Deal.objects.filter(pk=deal_id)
     else:
-        deals = Deal.objects.order_by('-id')[:200]
+        deals = Deal.objects.order_by('-id')[:2000]
     for deal in deals:
         tasks = deal.task_set.values_list('exec_status', flat=True)
         if Task.ToDo in tasks:
@@ -70,8 +70,10 @@ def update_deal_statuses(deal_id=None):
             exec_status = Deal.InProgress
         elif Task.Done in tasks:
             exec_status = Deal.Done
-        else:
+        elif Task.Sent in tasks:
             exec_status = Deal.Sent
+        elif Task.Canceled in tasks:
+            exec_status = Deal.Canceled
 
         if deal.manual_warning:
             warning = deal.manual_warning

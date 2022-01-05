@@ -375,17 +375,19 @@ class Deal(models.Model):
     InProgress = 'IP'
     Done = 'HD'
     Sent = 'ST'
+    Canceled = 'CL'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
         (Done, 'Виконано'),
-        (Sent, 'Надіслано')
+        (Sent, 'Надіслано'),
+        (Canceled, 'Відмінено')
     )
     SPECIFIC_STATUS_CHOICES = (
         ('WA', 'Чекають закриття актів'),
         ('PQ', 'Черга оплат'),
         ('OP', 'Протермінована опата'),
-        ('OE', 'Протермыноване виконання'),
+        ('OE', 'Протеріноване виконання'),
     )
 
     number = models.CharField('Номер договору', max_length=30)
