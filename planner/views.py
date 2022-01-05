@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 # from django.views.generic.dates import WeekArchiveView
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
@@ -239,7 +239,7 @@ class DealUpdate(UpdateView):
         else:
             context['tasks_formset'] = forms.TasksFormSet(instance=self.object, form_kwargs={'deal': self.object})
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
-            context['payment_formset'] = forms.PaymentFormSet(instance=self.object)
+            context['payment_formset'] = forms.PaymentFormSet(instance=self.object, form_kwargs={'deal': self.object})
         return context
 
     def form_valid(self, form):
@@ -318,6 +318,7 @@ class TaskList(ListView):
         exec_statuses = self.request.GET.getlist('exec_status', '0')
         owners = self.request.GET.getlist('owner', '0')
         customers = self.request.GET.getlist('customer', '0')
+        constructions = self.request.GET.getlist('construction', '0')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             tasks = tasks.filter(Q(object_code__icontains=word) |
@@ -341,6 +342,12 @@ class TaskList(ListView):
             tasks_union = Task.objects.none()
             for customer in customers:
                 tasks_segment = tasks.filter(deal__customer=customer)
+                tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if constructions != '0':
+            tasks_union = Task.objects.none()
+            for construction in constructions:
+                tasks_segment = tasks.filter(construction=construction)
                 tasks_union = tasks_union | tasks_segment
             tasks = tasks_union
         if order != '0':
@@ -860,8 +867,17 @@ class CustomerList(ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        customers = Customer.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
-            .values_list('name', 'url')
+        a_month_ago = date.today() - timedelta(days=30)
+        # deals = Deal.objects.filter(customer=OuterRef('pk'), pay_status__in=[Deal.NotPaid, Deal.AdvancePaid]) \
+        #                     .order_by().values('customer')
+        # total_debit = deals.annotate(total=Sum(F('value'), output_field=DecimalField())).values('total')
+        customers = Customer.objects.annotate(
+            url=Concat(F('pk'), Value('/change/')),
+            advance = Sum(Case(When(deal__pay_status=Deal.AdvancePaid, then=F('deal__value')), output_field=DecimalField(), default=0)),
+            debit = Sum(Case(When(deal__pay_status=Deal.NotPaid, then=F('deal__value')), output_field=DecimalField(), default=0)),
+            payments = Sum(Case(When(deal__pay_status=Deal.NotPaid, then=F('deal__payment__value')), output_field=DecimalField(), default=0)),
+            ).values_list('name', 'debit', 'payments', 'url')
+
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
         for word in search_string:
@@ -875,7 +891,7 @@ class CustomerList(ListView):
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Назва', 1],
                               ['credit_calc', 'Авансові платежі', 0],
-                              ['debit_calc', 'Дебітрська заборгованість', 0],
+                              ['debit', 'Дебітрська заборгованість', 0],
                               ['expect_calc', 'Не виконано та не оплачено', 0],
                               ['completed_calc', 'Виконано та оплачено', 0]]
         context['search'] = True
@@ -886,8 +902,7 @@ class CustomerList(ListView):
         context['header_main'] = 'Замовники'
         context['objects_count'] = Customer.objects.all().count()
         if self.request.POST:
-            context['filter_form'] = forms.CustomerFilterForm(
-                self.request.POST)
+            context['filter_form'] = forms.CustomerFilterForm(self.request.POST)
         else:
             context['filter_form'] = forms.CustomerFilterForm(self.request.GET)
 

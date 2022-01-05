@@ -11,8 +11,8 @@ from django.conf.locale.uk import formats as uk_formats
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
-from .models import ActOfAcceptance, Payment, Task, Customer, Execution, Order, Sending, Deal, Employee,\
-                    Project, Company, Receiver, Contractor
+from .models import ActOfAcceptance, Construction, Payment, Task, Customer, Execution, Order, Sending, \
+                    Deal, Employee, Project, Company, Receiver, Contractor
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -260,15 +260,17 @@ PaymentFormSet = inlineformset_factory(Deal, Payment, form=PaymentInlineForm, ex
 
 class TaskFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(TaskFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         exec_status = list(Task.EXEC_STATUS_CHOICES)
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
         customers = list(Customer.objects.all().values_list('pk', 'name'))
+        constructions = list(Construction.objects.all().values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
+        self.fields['construction'].choices = constructions
 
     exec_status = forms.MultipleChoiceField(
         label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
@@ -276,6 +278,8 @@ class TaskFilterForm(forms.Form):
                               widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
         attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    construction = forms.MultipleChoiceField(
+        label='Тип конструкції', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
