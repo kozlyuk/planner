@@ -38,96 +38,104 @@
                                                 {{ form.non_field_errors }}
                                             </small>
                                             <div class="form-group">
+
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.number.name }}">{{ form.number.label }}:</label>
+                                                        <label for="id_{{ form.number.name }}">
+                                                            {{ form.number.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.number|attr:"style: padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.number|attr:"style: height: 34px; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.number.errors}}
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.date.name }}">{{ form.date.label }}:</label>
+                                                        <label for="id_{{ form.date.name }}">
+                                                            {{ form.date.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.date|attr:"style: height: 34px; width:10%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.date.errors}}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.customer.name }}">{{ form.customer.label }}:</label>
+                                                        <label for="id_{{ form.customer.name }}">
+                                                            {{ form.customer.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.customer|attr:"style: padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.customer|attr:"style: height:34px; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.customer.errors}}
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.company.name }}">{{ form.company.label }}:</label>
+                                                        <label for="id_{{ form.company.name }}">
+                                                            {{ form.company.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.company|attr:"style: width:100%; height:28px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.company|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.company.errors}}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group">
+
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.value.name }}">{{ form.value.label }}:</label>
+                                                        <label for="id_{{ form.value.name }}">
+                                                            {{ form.value.label }}
+                                                            :</label>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.value|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.value|attr:"style: width:100%; height:34px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.value.errors}}
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.expire_date.name }}">{{ form.expire_date.label }}:</label>
+                                                        <label for="id_{{ form.expire_date.name }}">
+                                                            {{ form.expire_date.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.expire_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.expire_date|attr:"style: height:34px; width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.expire_date.errors}}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group">
+
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.pdf_copy.name }}">{{ form.pdf_copy.label }}:</label>
+                                                        <label for="id_{{ form.manual_warning.name }}">
+                                                            {{ form.manual_warning.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.pdf_copy|add_error_class:"is-invalid" }}
+                                                        {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                         <div class="invalid-feedback">
-                                                            {{form.pdf_copy.errors}}
+                                                            {{form.manual_warning.errors}}
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.value_correction.name }}">{{ form.value_correction.label }}:</label>
+                                                        <label for="id_{{ form.value_correction.name }}">
+                                                            {{ form.value_correction.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
@@ -138,38 +146,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group">
+
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.comment.name }}">{{ form.comment.label }}:</label>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <div class="form-group">
-                                                        {{ form.comment|attr:"style: width:100%; height:44px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                            <div class="invalid-feedback">
-                                                                {{form.comment.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.manual_warning.name }}">{{ form.manual_warning.label }}:</label>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                        <div class="invalid-feedback">
-                                                            {{form.manual_warning.errors}}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.parent_deal_number.name }}">{{ form.parent_deal_number.label }}:</label>
+                                                        <label for="id_{{ form.parent_deal_number.name }}">
+                                                            {{ form.parent_deal_number.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
@@ -180,13 +162,41 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.parent_deal_date.name }}">{{ form.parent_deal_date.label }}:</label>
+                                                        <label for="id_{{ form.parent_deal_date.name }}">
+                                                            {{ form.parent_deal_date.label }}:
+                                                        </label>
                                                     </div>
                                                     <div class="col-4">
                                                         {{ form.parent_deal_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                         <div class="invalid-feedback">
                                                             {{form.parent_deal_date.errors}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.comment.name }}">
+                                                            {{ form.comment.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.comment|attr:"style: width:100%; height:56px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.comment.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.pdf_copy.name }}">
+                                                            {{ form.pdf_copy.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.pdf_copy|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.pdf_copy.errors}}
                                                         </div>
                                                     </div>
                                                 </div>
