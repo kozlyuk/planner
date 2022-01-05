@@ -96,8 +96,8 @@ def context_accounter(user):
         if active_deals_count > 0 else 0
     debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) \
         if unpaid_deals_count > 0 else 0
-    # overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) \
-    #     if active_deals_count > 0 else 0
+    payment_queue_div = int(payment_queue_count / unpaid_deals_count * 100) \
+        if unpaid_deals_count > 0 else 0
 
     context = {
         'employee': user.employee,
@@ -111,8 +111,7 @@ def context_accounter(user):
         'debtor_deals_count': debtor_deals_count,
         'payment_queue_count': payment_queue_count,
         'debtor_deals_div': debtor_deals_div,
-        # 'overdue_deals_count': overdue_deals_count,
-        # 'overdue_deals_div': overdue_deals_div,
+        'payment_queue_div': payment_queue_div,
         }
 
     return {**context, **context_general(user)}
