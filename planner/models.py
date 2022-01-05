@@ -653,7 +653,7 @@ class Task(models.Model):
     project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
     project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
-    construction = models.ForeignKey(Construction, verbose_name='Тип конструкції', blank=True, null=True, on_delete=models.SET_NULL)
+    construction = models.ForeignKey(Construction, verbose_name='Тип конструкції', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField('Примітка', max_length=30, blank=True)
