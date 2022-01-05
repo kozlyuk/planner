@@ -80,45 +80,39 @@ def context_accounter(user):
 
     # Deals tab section
     deals = Deal.objects.all()
-    active_deals = deals.exclude(act_status=Deal.Issued) \
-                        .exclude(number__icontains='загальний')
-    actneed_deals = active_deals.filter(exec_status=Deal.Sent)
-    unpaid_deals = deals.exclude(act_status=Deal.NotIssued) \
-                        .exclude(pay_status=Deal.PaidUp) \
-                        .exclude(number__icontains='загальний')
-    debtor_deals = unpaid_deals.filter(act_status=Deal.Issued,
-                                       pay_status__in=[Deal.NotPaid, Deal.AdvancePaid])
-    overdue_deals = deals.exclude(exec_status=Deal.Sent) \
-                         .exclude(expire_date__gte=date.today()) \
-                         .exclude(number__icontains='загальний')
+    active_deals = deals.active_deals()
+    actneed_deals = deals.waiting_for_act()
+    debtor_deals = deals.overdue_payment()
+    payment_queue = deals.payment_queue()
 
     active_deals_count = active_deals.count()
     actneed_deals_count = actneed_deals.count()
     debtor_deals_count = debtor_deals.count()
-    unpaid_deals_count = unpaid_deals.count()
+    payment_queue_count = payment_queue.count()
+    unpaid_deals_count = debtor_deals_count + payment_queue_count
 
     # Progress bar section
     deals_div = int(actneed_deals_count / active_deals_count * 100) \
         if active_deals_count > 0 else 0
     debtor_deals_div = int(debtor_deals_count / unpaid_deals_count * 100) \
         if unpaid_deals_count > 0 else 0
-    overdue_deals_count = len(overdue_deals)
-    overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) \
-        if active_deals_count > 0 else 0
+    # overdue_deals_div = int(overdue_deals_count / active_deals_count * 100) \
+    #     if active_deals_count > 0 else 0
 
     context = {
         'employee': user.employee,
         'actneed_deals': actneed_deals,
         'debtor_deals': debtor_deals,
-        'overdue_deals': overdue_deals,
+        'payment_queue': payment_queue,
         'actneed_deals_count': actneed_deals_count,
         'active_deals_count': active_deals_count,
+        'unpaid_deals_count': unpaid_deals_count,
         'deals_div': deals_div,
         'debtor_deals_count': debtor_deals_count,
-        'unpaid_deals_count': unpaid_deals_count,
+        'payment_queue_count': payment_queue_count,
         'debtor_deals_div': debtor_deals_div,
-        'overdue_deals_count': overdue_deals_count,
-        'overdue_deals_div': overdue_deals_div,
+        # 'overdue_deals_count': overdue_deals_count,
+        # 'overdue_deals_div': overdue_deals_div,
         }
 
     return {**context, **context_general(user)}

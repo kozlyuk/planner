@@ -56,9 +56,7 @@ def send_actneed_report():
     accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                           user__is_active=True,
                                           )
-    deals = Deal.objects.filter(exec_status=Deal.Sent)\
-                        .exclude(act_status=Deal.Issued)\
-                        .exclude(number__icontains='загальний')
+    deals = Deal.objects.waiting_for_act()
 
     # prepearing emails
     emails = []
@@ -113,10 +111,8 @@ def send_overdue_deals_report():
     project_managers = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                                user__is_active=True,
                                                )
-    deals = Deal.objects.exclude(exec_status=Deal.Sent)\
-                        .exclude(expire_date__gte=date.today()) \
-                        .exclude(number__icontains='загальний') \
-                        .exclude(number__icontains='злетіли')
+    deals = Deal.objects.overdue_execution()
+
     # prepearing emails
     emails = []
     for employee in project_managers:
