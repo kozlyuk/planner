@@ -169,13 +169,21 @@ class DealList(ListView):
             raise PermissionDenied
 
     def get_queryset(self):
-        deals = Deal.objects.all().select_related('customer')
         search_string = self.request.GET.get('filter', '').split()
         customers = self.request.GET.getlist('customer', '0')
         companies = self.request.GET.getlist('company', '0')
         act_statuses = self.request.GET.getlist('act_status', '0')
         pay_statuses = self.request.GET.getlist('pay_status', '0')
+        specific_status = self.request.GET.get('specific_status', '0')
         order = self.request.GET.get('o', '0')
+
+        if specific_status == 'OP':
+            deals = Deal.objects.overdue_payment()
+        else:
+            deals = Deal.objects.all()
+
+        deals = deals.select_related('customer', 'company')
+
         for word in search_string:
             deals = deals.filter(Q(number__icontains=word) |
                                  Q(value__icontains=word))

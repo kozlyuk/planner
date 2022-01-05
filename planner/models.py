@@ -16,6 +16,7 @@ from stdimage.models import StdImageField
 from eventlog.models import log
 from html_templates.models import HTMLTemplate
 from .formatChecker import ContentTypeRestrictedFileField
+from .managers import DealQuerySet
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -380,6 +381,10 @@ class Deal(models.Model):
         (Done, 'Виконано'),
         (Sent, 'Надіслано')
     )
+    SPECIFIC_STATUS_CHOICES = (
+        ('OP', 'Протермінована опата'),
+    )
+
     number = models.CharField('Номер договору', max_length=30)
     date = models.DateField('Дата договору', default=now)
     parent_deal_number = models.CharField('Номер генерального договору', max_length=30, blank=True, null=True)
@@ -407,6 +412,9 @@ class Deal(models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
+
+    # defining custom manager
+    objects = DealQuerySet.as_manager()
 
     class Meta:
         unique_together = ('number', 'customer')

@@ -108,11 +108,13 @@ class DealFilterForm(forms.Form):
         company = list(Company.objects.all().values_list('pk', 'name'))
         act_status = list(Deal.ACT_STATUS_CHOICES)
         pay_status = list(Deal.PAYMENT_STATUS_CHOICES)
+        specific_status = list(Deal.SPECIFIC_STATUS_CHOICES)
 
         self.fields['customer'].choices = customer
         self.fields['company'].choices = company
         self.fields['act_status'].choices = act_status
         self.fields['pay_status'].choices = pay_status
+        self.fields['specific_status'].choices = specific_status
 
     customer = forms.MultipleChoiceField(label='Замовник', required=False,
         widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
@@ -122,6 +124,8 @@ class DealFilterForm(forms.Form):
         widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
         widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    specific_status = forms.ChoiceField(label='Спеціальний статус', required=False,
+        widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
         widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
