@@ -382,7 +382,10 @@ class Deal(models.Model):
         (Sent, 'Надіслано')
     )
     SPECIFIC_STATUS_CHOICES = (
+        ('WA', 'Чекають закриття актів'),
+        ('PQ', 'Черга оплат'),
         ('OP', 'Протермінована опата'),
+        ('OE', 'Протермыноване виконання'),
     )
 
     number = models.CharField('Номер договору', max_length=30)

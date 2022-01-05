@@ -177,12 +177,15 @@ class DealList(ListView):
         specific_status = self.request.GET.get('specific_status', '0')
         order = self.request.GET.get('o', '0')
 
+        deals = Deal.objects.select_related('customer', 'company')
+        if specific_status == 'WA':
+            deals = deals.waiting_for_act()
+        if specific_status == 'PQ':
+            deals = deals.payment_queue()
         if specific_status == 'OP':
-            deals = Deal.objects.overdue_payment()
-        else:
-            deals = Deal.objects.all()
-
-        deals = deals.select_related('customer', 'company')
+            deals = deals.overdue_payment()
+        if specific_status == 'OE':
+            deals = deals.overdue_execution()
 
         for word in search_string:
             deals = deals.filter(Q(number__icontains=word) |
