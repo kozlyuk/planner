@@ -86,11 +86,8 @@ def send_debtors_report():
     accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                           user__is_active=True,
                                           )
-    deals = Deal.objects.filter(exec_status=Deal.Sent)\
-                        .exclude(pay_status=Deal.PaidUp) \
-                        .exclude(pay_date__isnull=True) \
-                        .exclude(pay_date__gte=date.today()) \
-                        .exclude(number__icontains='загальний')
+    deals = Deal.objects.overdue_payment()
+
     # prepearing emails
     emails = []
     for employee in accountants:
