@@ -466,7 +466,7 @@
                                                         </div>
                                                     </th>
                                                     <th>
-                                                        {% if deal.pk and deal.customer.act_template %}
+                                                        {% if deal.pk and deal.customer.act_template and form.instance.pk %}
                                                             <a href="{% url 'act_render' form.instance.pk %}"
                                                             class="btnLink"
                                                             style="font-size: 20px; font-weight: 100;">
