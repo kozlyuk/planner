@@ -441,6 +441,10 @@ class Deal(models.Model):
         self.act_status = self.get_act_status()
         self.pay_status = self.get_pay_status()
 
+        # Update deal value
+        if self.act_status != Deal.Issued and self.exec_status != Deal.Canceled:
+            self.value = self.value_calc()
+
         # Logging
         title = self.number
         if not self.pk:
