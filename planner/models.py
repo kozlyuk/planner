@@ -216,8 +216,10 @@ class Customer(Requisites):
     def expect_calc(self):
         total = 0
         for deal in self.deal_set.all():
-            if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued:
+            if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued and deal.exec_status != Deal.Canceled:
                 total += deal.value - deal.paid_total()
+                print(deal)
+
         return u'{0:,}'.format(total).replace(u',', u' ')
     expect_calc.short_description = 'В роботі'
 
