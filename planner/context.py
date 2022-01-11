@@ -26,7 +26,7 @@ def context_general(user):
         if active_inttasks_count > 0 else 0
 
     bonus = Kpi.objects.filter(employee__user=user,
-                               name__in=[Kpi.BonusItel, Kpi.BonusGKP, Kpi.BonusSIA],
+                               name__in=[Kpi.BonusItel, Kpi.BonusGKP],
                                period__month=date.today().month,
                                period__year=date.today().year)\
                        .aggregate(Sum('value'))['value__sum'] or 0

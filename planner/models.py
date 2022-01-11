@@ -59,7 +59,7 @@ class Employee(models.Model):
                            variations={'large': (400, 400, True), 'thumbnail': (100, 100, True), })
     birthday = models.DateField('День народження', blank=True, null=True)
     salary = models.DecimalField('Заробітна плата, грн.', max_digits=8, decimal_places=2, default=0)
-    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=80,
+    coefficient = models.PositiveSmallIntegerField('Коєфіцієнт плану', default=50,
                                                    validators=[MaxValueValidator(200)])
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
@@ -140,12 +140,12 @@ class Employee(models.Model):
         return self.task_set.filter(exec_status=Task.Done)
 
     def is_subordinate(self):
+        # try if user has a permitting to edit the task
         user = get_current_user()
         if user.is_superuser:
             return True
         elif self.head.user == user:
             return True
-    # try if user has a permitting to edit the task
 
 
 class Requisites(models.Model):
@@ -218,8 +218,6 @@ class Customer(Requisites):
         for deal in self.deal_set.exclude(exec_status=Deal.Canceled):
             if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued:
                 total += deal.value - deal.paid_total()
-                print(deal)
-
         return u'{0:,}'.format(total).replace(u',', u' ')
     expect_calc.short_description = 'В роботі'
 
