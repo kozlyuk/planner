@@ -183,7 +183,7 @@ class Customer(Requisites):
 
     def debit_calc(self):
         total = 0
-        for deal in self.deal_set.all():
+        for deal in self.deal_set.exclude(exec_status=Deal.Canceled):
             if deal.pay_status != Deal.PaidUp:
                 acts_total = deal.acts_total()
                 paid_total = deal.paid_total()
@@ -195,7 +195,7 @@ class Customer(Requisites):
 
     def credit_calc(self):
         total = 0
-        for deal in self.deal_set.all():
+        for deal in self.deal_set.exclude(exec_status=Deal.Canceled):
             if deal.pay_status != Deal.NotPaid:
                 acts_total = deal.acts_total()
                 paid_total = deal.paid_total()
@@ -206,7 +206,7 @@ class Customer(Requisites):
 
     def completed_calc(self):
         total = 0
-        for deal in self.deal_set.filter(expire_date__year=date.today().year):
+        for deal in self.deal_set.exclude(exec_status=Deal.Canceled).filter(expire_date__year=date.today().year):
             if deal.pay_status != Deal.NotPaid or deal.act_status != Deal.NotIssued:
                 total += min(deal.acts_total(), deal.paid_total())
         return u'{0:,}'.format(total).replace(u',', u' ')
@@ -215,8 +215,8 @@ class Customer(Requisites):
 
     def expect_calc(self):
         total = 0
-        for deal in self.deal_set.all():
-            if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued and deal.exec_status != Deal.Canceled:
+        for deal in self.deal_set.exclude(exec_status=Deal.Canceled):
+            if deal.pay_status == Deal.NotPaid and deal.act_status == Deal.NotIssued:
                 total += deal.value - deal.paid_total()
                 print(deal)
 
@@ -442,7 +442,7 @@ class Deal(models.Model):
         self.pay_status = self.get_pay_status()
 
         # Update deal value
-        if self.act_status != Deal.Issued and self.exec_status != Deal.Canceled:
+        if self.act_status != Deal.Issued:
             self.value = self.value_calc()
 
         # Logging

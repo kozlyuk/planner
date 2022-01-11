@@ -81,6 +81,8 @@ def update_deal_statuses(deal_id=None):
             warning = deal.manual_warning
         elif deal.task_set.all().count() == 0:
             warning = 'Відсутні проекти'
+        elif exec_status == Deal.Canceled:
+                warning = 'Відмінено'
         elif exec_status == Deal.Sent:
             value_calc = deal.value_calc() + deal.value_correction
             if deal.value > 0 and deal.value != value_calc:

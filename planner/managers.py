@@ -9,7 +9,8 @@ class MysqlAddDate(Func):
 class DealQuerySet(QuerySet):
 
     def active_deals(self):
-        return  self.exclude(act_status='IS') \
+        return  self.exclude(exec_status='CL') \
+                    .exclude(act_status='IS') \
                     .exclude(number__icontains='загальний')
 
     def waiting_for_act(self):
