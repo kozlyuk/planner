@@ -22,6 +22,7 @@ class KpiAdmin(DjangoObjectActions, admin.ModelAdmin):
         if period__month and period__year:
             period = datetime(year=int(period__year), month=int(period__month), day=1).date()
 
+        Kpi.objects.filter(period=period).delete()
         calc_bonuses(period=period)
         calc_kpi(period=period)
 

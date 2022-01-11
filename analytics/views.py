@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 
 from .tasks import calc_bonuses, calc_kpi
+from .models import Kpi
 
 
 @method_decorator(login_required, name='dispatch')
@@ -24,6 +25,7 @@ class KpiRecalc(View):
         if period__month and period__year:
             period = datetime(year=int(period__year), month=int(period__month), day=1).date()
 
+        Kpi.objects.filter(period=period).delete()
         calc_bonuses(period=period)
         calc_kpi(period=period)
 
