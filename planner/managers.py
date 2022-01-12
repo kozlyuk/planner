@@ -33,3 +33,8 @@ class DealQuerySet(QuerySet):
         return  self.annotate(pay_date=MysqlAddDate(Max('actofacceptance__date'), F('customer__debtor_term'))) \
                     .filter(pay_date__gte=date.today(), act_status='IS', pay_status='NP') \
                     .order_by('pay_date')
+
+    def receivables(self):
+        return  self.filter(act_status='IS') \
+                    .exclude(pay_status='PU') \
+                    .order_by('expire_date')

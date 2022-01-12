@@ -187,6 +187,8 @@ class DealList(ListView):
             deals = deals.overdue_payment()
         if specific_status == 'OE':
             deals = deals.overdue_execution()
+        if specific_status == 'RE':
+            deals = deals.receivables()
 
         for word in search_string:
             deals = deals.filter(Q(number__icontains=word) |
