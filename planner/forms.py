@@ -108,12 +108,14 @@ class DealFilterForm(forms.Form):
         company = list(Company.objects.all().values_list('pk', 'name'))
         act_status = list(Deal.ACT_STATUS_CHOICES)
         pay_status = list(Deal.PAYMENT_STATUS_CHOICES)
+        exec_status = list(Deal.EXEC_STATUS_CHOICES)
         specific_status = list(Deal.SPECIFIC_STATUS_CHOICES)
 
         self.fields['customer'].choices = customer
         self.fields['company'].choices = company
         self.fields['act_status'].choices = act_status
         self.fields['pay_status'].choices = pay_status
+        self.fields['exec_status'].choices = exec_status
         self.fields['specific_status'].choices = specific_status
 
     customer = forms.MultipleChoiceField(label='Замовник', required=False,
@@ -123,6 +125,8 @@ class DealFilterForm(forms.Form):
     act_status = forms.MultipleChoiceField(label='Акт виконаних робіт', required=False,
         widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
+        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
         widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     specific_status = forms.ChoiceField(label='Спеціальний статус', required=False,
         widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))

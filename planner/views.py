@@ -174,6 +174,7 @@ class DealList(ListView):
         companies = self.request.GET.getlist('company', '0')
         act_statuses = self.request.GET.getlist('act_status', '0')
         pay_statuses = self.request.GET.getlist('pay_status', '0')
+        exec_statuses = self.request.GET.getlist('exec_status', '0')
         specific_status = self.request.GET.get('specific_status', '0')
         order = self.request.GET.get('o', '0')
 
@@ -213,6 +214,12 @@ class DealList(ListView):
             deals_union = Deal.objects.none()
             for pay_status in pay_statuses:
                 deals_part = deals.filter(pay_status=pay_status)
+                deals_union = deals_union | deals_part
+            deals = deals_union
+        if exec_statuses != '0':
+            deals_union = Deal.objects.none()
+            for exec_status in exec_statuses:
+                deals_part = deals.filter(exec_status=exec_status)
                 deals_union = deals_union | deals_part
             deals = deals_union
         if order != '0':
