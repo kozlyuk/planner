@@ -84,7 +84,8 @@ def subtasks_queryset_filter(request):
         finish_date_value = start_date_value + timedelta(days=14)
     tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
                          Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
-                         Q(planned_finish__lt=date.today()),
+                         Q(planned_start__lte=date.today()) |
+                         Q(planned_finish__lte=date.today()),
                          exec_status__in=[Execution.ToDo,
                                           Execution.InProgress,
                                           Execution.OnChecking]
@@ -540,9 +541,7 @@ class TaskExchange(FormView):
                 task.save()
                 deals_old.add(deal_old)
             for deal in deals_old:
-                deal.value = deal.value_calc()
                 deal.save()
-            deal_new.value = deal_new.value_calc()
             deal_new.save()
         return super(TaskExchange, self).form_valid(form)
 
@@ -884,19 +883,17 @@ class CustomerList(ListView):
     model = Customer
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 50
 
     def get_queryset(self):
-        a_month_ago = date.today() - timedelta(days=30)
-        # deals = Deal.objects.filter(customer=OuterRef('pk'), pay_status__in=[Deal.NotPaid, Deal.AdvancePaid]) \
-        #                     .order_by().values('customer')
-        # total_debit = deals.annotate(total=Sum(F('value'), output_field=DecimalField())).values('total')
+        debit_qry = Q(deal__act_status=Deal.Issued, deal__pay_status=Deal.NotPaid)
         customers = Customer.objects.annotate(
             url=Concat(F('pk'), Value('/change/')),
-            advance = Sum(Case(When(deal__pay_status=Deal.AdvancePaid, then=F('deal__value')), output_field=DecimalField(), default=0)),
-            debit = Sum(Case(When(deal__pay_status=Deal.NotPaid, then=F('deal__value')), output_field=DecimalField(), default=0)),
-            payments = Sum(Case(When(deal__pay_status=Deal.NotPaid, then=F('deal__payment__value')), output_field=DecimalField(), default=0)),
-            ).values_list('name', 'debit', 'payments', 'url')
+            advance = Sum(Case(When(deal__pay_status=Deal.AdvancePaid, then=F('deal__value')),
+                                    output_field=DecimalField(), default=0)),
+            debit = Sum(Case(When(debit_qry, then=F('deal__value')),
+                                  output_field=DecimalField(), default=0)),
+            ).values_list('name', 'advance', 'debit', 'url')
 
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
@@ -911,9 +908,7 @@ class CustomerList(ListView):
         context = super().get_context_data(**kwargs)
         context['headers'] = [['name', 'Назва', 1],
                               ['credit_calc', 'Авансові платежі', 0],
-                              ['debit', 'Дебітрська заборгованість', 0],
-                              ['expect_calc', 'Не виконано та не оплачено', 0],
-                              ['completed_calc', 'Виконано та оплачено', 0]]
+                              ['debit', 'Дебітрська заборгованість', 0]]
         context['search'] = True
         context['filter'] = []
         if request.user.has_perm('planner.add_customer'):
