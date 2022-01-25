@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from celery.utils.log import get_task_logger
 from django.db.models import Sum
+from weasyprint import HTML, CSS
 
 from planner.celery import app
 from planner.models import Employee, Execution
@@ -38,13 +39,11 @@ def calc_bonuses(prev_month=False, period=None):
 
             # save bonuses
             if bonuses > 0:
-                kpi, _ = Kpi.objects.get_or_create(employee=employee,
-                                                   name=kpi_name[1],
-                                                   period__month=period.month,
-                                                   period__year=period.year)
-                kpi.value = bonuses
-                kpi.period = period
-                kpi.save()
+                Kpi.objects.create(employee=employee,
+                                   name=kpi_name[1],
+                                   value=bonuses,
+                                   period=period
+                                   )
 
         # calculate inttask bonuses
         inttask_bonus = employee.inttask_set.filter(actual_finish__month=period.month,
@@ -53,13 +52,11 @@ def calc_bonuses(prev_month=False, period=None):
 
         # save inttasks bonuses
         if inttask_bonus:
-            kpi, _ = Kpi.objects.get_or_create(employee=employee,
-                                               name=Kpi.Tasks,
-                                               period__month=period.month,
-                                               period__year=period.year)
-            kpi.value = inttask_bonus
-            kpi.period = period
-            kpi.save()
+            Kpi.objects.create(employee=employee,
+                               name=Kpi.Tasks,
+                               value=inttask_bonus,
+                               period=period
+                               )
 
     LOGGER.info("Employee bonuses for %s.%s saved", period.month, period.year)
 
@@ -77,8 +74,8 @@ def calc_kpi(prev_month=False, period=None):
     for employee in employees:
         bonus = Kpi.objects.filter(employee=employee,
                                    name__in=[Kpi.BonusItel, Kpi.BonusGKP, Kpi.Tasks],
-                                   period__month=date.today().month,
-                                   period__year=date.today().year)\
+                                   period__month=period.month,
+                                   period__year=period.year)\
                            .aggregate(Sum('value'))['value__sum'] or 0
 
         if employee.salary > 0:
@@ -88,12 +85,28 @@ def calc_kpi(prev_month=False, period=None):
 
         # save productivity
         if productivity:
-            kpi, _ = Kpi.objects.get_or_create(employee=employee,
-                                               name=Kpi.Productivity,
-                                               period__month=period.month,
-                                               period__year=period.year)
-            kpi.value = productivity
-            kpi.period = period
-            kpi.save()
+            Kpi.objects.create(employee=employee,
+                               name=Kpi.Productivity,
+                               value=productivity,
+                               period=period
+                               )
 
     LOGGER.info("Employee KPIs for %s.%s saved", period.month, period.year)
+
+
+@app.task
+def recalc_kpi(prev_month=False, period=None):
+    """ Clear existing KPIs and generate new """
+    Kpi.objects.filter(period=period).delete()
+    calc_bonuses(prev_month, period)
+    calc_kpi(prev_month, period)
+
+
+@app.task
+def generate_pdf(template, context):
+    """ Generate pdf file of template """
+
+    rendered_html = template.render(context)
+    pdf_file = HTML(string=rendered_html).write_pdf()
+
+    return pdf_file

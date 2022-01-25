@@ -5,8 +5,8 @@ from django_object_actions import DjangoObjectActions
 from urllib.parse import parse_qs
 from django.shortcuts import HttpResponseRedirect
 
-from .models import Kpi
-from .tasks import calc_bonuses, calc_kpi
+from .models import Kpi, Report
+from .tasks import recalc_kpi
 
 @admin.register(Kpi)
 class KpiAdmin(DjangoObjectActions, admin.ModelAdmin):
@@ -22,11 +22,14 @@ class KpiAdmin(DjangoObjectActions, admin.ModelAdmin):
         if period__month and period__year:
             period = datetime(year=int(period__year), month=int(period__month), day=1).date()
 
-        Kpi.objects.filter(period=period).delete()
-        calc_bonuses(period=period)
-        calc_kpi(period=period)
+        recalc_kpi(period=period)
 
         return HttpResponseRedirect(f"/admin/analytics/kpi/?period__month={period__month}&period__year={period__year}")
 
     kpi_recalc.label = "Перерахувати КПЕ"
     changelist_actions = ('kpi_recalc', )
+
+
+@admin.register(Report)
+class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
+    list_display = ['name', 'template']

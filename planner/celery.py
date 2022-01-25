@@ -73,25 +73,14 @@ app.conf.beat_schedule = {
         # on 10th of month at 17-00
         'schedule': crontab(day_of_month=10, hour=17, minute=00),
     },
-    'calc_bonuses': {
-        'task': 'analytics.tasks.calc_bonuses',
+    'recalc_kpi': {
+        'task': 'analytics.tasks.recalc_kpi',
         # on 10th of month at 07-00
-        'schedule': crontab(hour=7, minute=00),
+        'schedule': crontab(day_of_month="1-20", hour=7, minute=00),
         'args': (True,)
     },
-    'calc_bonuses_ed': {
-        'task': 'analytics.tasks.calc_bonuses',
+    'recalc_kpi_ed': {
+        'task': 'analytics.tasks.recalc_kpi',
         # everyhour
         'schedule': crontab(hour="8-19", minute=5),
-    },
-    'calc_kpi': {
-        'task': 'analytics.tasks.calc_kpi',
-        # on 10th of month at 07-10
-        'schedule': crontab(hour=7, minute=10),
-        'args': (True,)
-    },
-    'calc_kpi_ed': {
-        'task': 'analytics.tasks.calc_kpi',
-        # everyhour
-        'schedule': crontab(hour="8-19", minute=2),
     },}
