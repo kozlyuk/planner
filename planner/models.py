@@ -173,6 +173,7 @@ class Customer(Requisites):
     act_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон акту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_acts')
     invoice_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон рахунку', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_invoices')
     report_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон звіту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_reports')
+    active = models.BooleanField('Активний', default=True)
 
     class Meta:
         verbose_name = 'Замовник'

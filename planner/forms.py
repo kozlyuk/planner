@@ -663,7 +663,7 @@ class CustomerForm(forms.ModelForm):
                   'debtor_term', 'user',
                   'city', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites',
-                  'deal_template', 'act_template', 'invoice_template', 'report_template',
+                  'deal_template', 'act_template', 'invoice_template', 'report_template', 'active',
                   ]
 
     def __init__(self, *args, **kwargs):
@@ -680,6 +680,8 @@ class CustomerForm(forms.ModelForm):
         self.fields['act_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Act)
         self.fields['invoice_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Invoice)
         self.fields['report_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Report)
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
+
 
 class CompanyFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку',

@@ -82,6 +82,7 @@ class CustomerAdmin(admin.ModelAdmin):
                            ('act_template'),
                            ('invoice_template'),
                            ('report_template'),
+                           ('active'),
                            ]})
     ]
 
