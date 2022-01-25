@@ -9,29 +9,31 @@
 </head>
 
 <body>
-    Дебіторська заборгованість по компанії {{ customer }}:<br><br>
     {% if deal_list %}
-        <table>
-            <thead>
-                <tr>
-                    {% for label in labels %}
-                        <th scope="col">{{ label }}</th>
+        Дебіторська заборгованість по компанії {{ customer }}:<br><br>
+            <table>
+                <thead>
+                    <tr>
+                        {% for label in labels %}
+                            <th scope="col">{{ label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deal in deal_list %}
+                    <tr>
+                        {% for field in deal %}
+                            <td>{{ field }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for deal in deal_list %}
-                <tr>
-                    {% for field in deal %}
-                        <td>{{ field }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        <br>
+        Всього дебіторська заборгованість {{ svalue }} грн.
+    {% else %}
+        По {{ customer }} відсутня дебіторська заборгованість
     {% endif %}
-    <br>
-    Всього дебіторська заборгованість {{ svalue }} грн.
 
 </body>
 </html>

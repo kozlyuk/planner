@@ -14,7 +14,6 @@ def receivables_context(company, customer, from_date, to_date):
     # prepare table data
     labels = ["№",
               Deal._meta.get_field('number').verbose_name,
-              Deal._meta.get_field('customer').verbose_name,
               Deal._meta.get_field('value').verbose_name,
               Deal._meta.get_field('pay_status').verbose_name,
               Deal._meta.get_field('act_status').verbose_name,
@@ -35,7 +34,6 @@ def receivables_context(company, customer, from_date, to_date):
                                       % (settings.SITE_URL,
                                          deal.get_absolute_url(),
                                          deal.number)),
-                          deal.customer,
                           deal.value,
                           deal.get_pay_status_display(),
                           deal.get_act_status_display(),
@@ -43,7 +41,7 @@ def receivables_context(company, customer, from_date, to_date):
                           ])
     # creating context
     context = {
-        'customer': deal.customer,
+        'customer': customer,
         'labels': labels,
         'deal_list': deal_list,
         'svalue': svalue
