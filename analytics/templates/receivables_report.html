@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+        border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    Дебіторська заборгованість по компанії {{ customer }}:<br><br>
+    {% if deal_list %}
+        <table>
+            <thead>
+                <tr>
+                    {% for label in labels %}
+                        <th scope="col">{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in deal_list %}
+                <tr>
+                    {% for field in deal %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <br>
+    Всього дебіторська заборгованість {{ svalue }} грн.
+
+</body>
+</html>
