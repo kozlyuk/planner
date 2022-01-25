@@ -10,7 +10,7 @@ LOGGER = get_task_logger(__name__)
 
 @app.task
 def generate_pdf(template, context, model, object_pk):
-    """ Save monthly bonuses of Employees """
+    """ Generate pdf file of template """
 
     rendered_html = template.render(context)
     pdf_file = HTML(string=rendered_html).write_pdf()

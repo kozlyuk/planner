@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load static %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <form id="ReportForm" action="render/" method="get">
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2>Оберіть звіт, компанію та період</h2><br>
+                <div class="row">
+                    <div class="col-2">{{ form.report.label }}:</div>
+                    <div class="col-3">{{ form.report|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.company.label }}:</div>
+                    <div class="col-3">{{ form.company|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.customer.label }}:</div>
+                    <div class="col-3">{{ form.customer|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.from_date.label }}:</div>
+                    <div class="col-3">{{ form.from_date|attr:"style: height: 34px; width:30%; display: inline-block; padding-left: 8px;" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.to_date.label }}:</div>
+                    <div class="col-3">{{ form.to_date|attr:"style: height: 34px; width:30%; display: inline-block; padding-left: 8px;" }}</div>
+                    <br><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
+                        style="float: left;">Сформувати
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- END CONTAINER -->
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
+{% endblock css %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+{% endblock extrahead %}
