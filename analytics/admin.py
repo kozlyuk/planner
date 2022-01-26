@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from django.contrib import admin
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from django_object_actions import DjangoObjectActions
@@ -17,14 +17,18 @@ class KpiAdmin(DjangoObjectActions, admin.ModelAdmin):
     def kpi_recalc(modeladmin, request, queryset):
         period = None
         changelist_filters = parse_qs(request.GET.get('_changelist_filters'))
-        period__month = changelist_filters['period__month'][0]
-        period__year = changelist_filters['period__year'][0]
+        period__month = changelist_filters.get('period__month')
+        period__year = changelist_filters.get('period__year')
         if period__month and period__year:
-            period = datetime(year=int(period__year), month=int(period__month), day=1).date()
+            period = datetime(year=int(period__year[0]), month=int(period__month[0]), day=1).date()
 
         recalc_kpi(period=period)
 
-        return HttpResponseRedirect(f"/admin/analytics/kpi/?period__month={period__month}&period__year={period__year}")
+        if period:
+            return HttpResponseRedirect(f"/admin/analytics/kpi/?period__month={period.month}&period__year={period.year}")
+        else:
+            return HttpResponseRedirect(f"/admin/analytics/kpi/?period__month={date.today().month}&period__year={date.today().year}")
+
 
     kpi_recalc.label = "Перерахувати КПЕ"
     changelist_actions = ('kpi_recalc', )

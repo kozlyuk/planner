@@ -14,14 +14,9 @@ LOGGER = get_task_logger(__name__)
 
 
 @app.task
-def calc_bonuses(prev_month=False, period=None):
+def calc_bonuses(period):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.filter(user__is_active=True)
-    if not period:
-        period = date.today()
-    if prev_month:
-        period = period - relativedelta(months=1)
-    period = period.replace(day=1)
 
     for employee in employees:
         for kpi_name in [(1, Kpi.BonusItel), (2, Kpi.BonusGKP), (3, Kpi.BonusSIA)]:
@@ -62,14 +57,9 @@ def calc_bonuses(prev_month=False, period=None):
 
 
 @app.task
-def calc_kpi(prev_month=False, period=None):
+def calc_kpi(period):
     """ Save monthly bonuses of Employees """
     employees = Employee.objects.filter(user__is_active=True, user__groups__name='Проектувальники')
-    if not period:
-        period = date.today()
-    if prev_month:
-        period = period - relativedelta(months=1)
-    period = period.replace(day=1)
 
     for employee in employees:
         bonus = Kpi.objects.filter(employee=employee,
@@ -97,9 +87,15 @@ def calc_kpi(prev_month=False, period=None):
 @app.task
 def recalc_kpi(prev_month=False, period=None):
     """ Clear existing KPIs and generate new """
+    if not period:
+        period = date.today()
+    if prev_month:
+        period = period - relativedelta(months=1)
+    period = period.replace(day=1)
+
     Kpi.objects.filter(period=period).delete()
-    calc_bonuses(prev_month, period)
-    calc_kpi(prev_month, period)
+    calc_bonuses(period)
+    calc_kpi(period)
 
 
 @app.task
