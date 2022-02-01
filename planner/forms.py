@@ -693,7 +693,8 @@ class CompanyForm(forms.ModelForm):
         model = Company
         fields = ['name', 'full_name', 'chief', 'taxation',
                   'city', 'legal', 'regulations',
-                  'signatory_person', 'signatory_position', 'requisites',
+                  'signatory_person', 'signatory_position',
+                  'requisites', 'active',
                   ]
 
     def __init__(self, *args, **kwargs):
@@ -701,6 +702,7 @@ class CompanyForm(forms.ModelForm):
         self.fields['chief'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['taxation'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['requisites'].widget.attrs.update({'style': 'font-size:14px;'})
+        self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
 
 
 class ContractorFilterForm(forms.Form):

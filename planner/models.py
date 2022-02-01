@@ -268,6 +268,7 @@ class Company(Requisites):
     )
     chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     taxation = models.CharField('Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
+    active = models.BooleanField('Активний', default=True)
 
     class Meta:
         verbose_name = 'Компанія'

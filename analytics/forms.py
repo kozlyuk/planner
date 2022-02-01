@@ -14,7 +14,7 @@ class ReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         report = [(report.id, report.name) for report in Report.objects.all()]
-        company = [(company.id, company.name) for company in Company.objects.all()]
+        company = [(company.id, company.name) for company in Company.objects.filter(active=True)]
         customer = [(customer.id, customer.name) for customer in Customer.objects.filter(active=True)]
         self.fields['report'].choices = report
         self.fields['company'].choices = company

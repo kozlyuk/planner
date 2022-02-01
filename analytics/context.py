@@ -9,7 +9,9 @@ from .models import Report
 def receivables_context(company, customer, from_date, to_date):
 
     # get deals
-    deals = Deal.objects.receivables().filter(customer=customer)
+    deals = Deal.objects.receivables().filter(company=company,
+                                              customer=customer,
+                                              )
 
     # prepare table data
     labels = ["№",
@@ -52,7 +54,9 @@ def receivables_context(company, customer, from_date, to_date):
 def waiting_for_act_context(company, customer, from_date, to_date):
 
     # get deals
-    deals = Deal.objects.waiting_for_act().filter(customer=customer)
+    deals = Deal.objects.waiting_for_act().filter(company=company,
+                                                  customer=customer,
+                                                  )
 
     # prepare table data
     labels = ["№",
@@ -95,7 +99,9 @@ def waiting_for_act_context(company, customer, from_date, to_date):
 def payment_queue_context(company, customer, from_date, to_date):
 
     # get deals
-    deals = Deal.objects.payment_queue().filter(customer=customer)
+    deals = Deal.objects.payment_queue().filter(company=company,
+                                                customer=customer,
+                                                )
 
     # prepare table data
     labels = ["№",
@@ -138,7 +144,9 @@ def payment_queue_context(company, customer, from_date, to_date):
 def overdue_payment_context(company, customer, from_date, to_date):
 
     # get deals
-    deals = Deal.objects.overdue_payment().filter(customer=customer)
+    deals = Deal.objects.overdue_payment().filter(company=company,
+                                                  customer=customer,
+                                                  )
 
     # prepare table data
     labels = ["№",
@@ -181,7 +189,9 @@ def overdue_payment_context(company, customer, from_date, to_date):
 def overdue_execution_context(company, customer, from_date, to_date):
 
     # get deals
-    deals = Deal.objects.overdue_execution().filter(customer=customer)
+    deals = Deal.objects.overdue_execution().filter(company=company,
+                                                    customer=customer,
+                                                    )
 
     # prepare table data
     labels = ["№",

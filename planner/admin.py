@@ -103,6 +103,7 @@ class CompanyAdmin(admin.ModelAdmin):
                            ('regulations', 'city'),
                            ('requisites'),
                            ('legal'),
+                           ('active'),
                            ]})
     ]
 
