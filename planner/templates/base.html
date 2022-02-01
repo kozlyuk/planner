@@ -130,6 +130,10 @@
                         {% if perms.planner.view_employee %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{%     endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
                         {% endif %}
+                        {% if perms.analytics.view_report %}
+                            <a class="dropdown-item {% if request.resolver_match.url_name == 'report_form' %}active{%     endif %} uppercase" href="{% url 'report_form' %}">Звіти</a>
+                        {% endif %}
+
                     </div>
                 {% endif %}
                 {% if request.user.is_superuser %}
