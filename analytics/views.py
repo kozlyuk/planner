@@ -15,6 +15,9 @@ from .models import Report
 from .forms import ReportForm
 from .context import context_report_render
 
+from django.conf.locale.uk import formats as uk_formats
+date_format = uk_formats.DATE_INPUT_FORMATS[0]
+
 
 @method_decorator(login_required, name='dispatch')
 class KpiRecalc(View):
@@ -66,8 +69,10 @@ class ReportRender(TemplateView):
         context['report'] = Report.objects.get(pk=self.request.GET.get('report'))
         context['company'] = Company.objects.get(pk=self.request.GET.get('company'))
         context['customer'] = Customer.objects.get(pk=self.request.GET.get('customer'))
-        context['from_date'] = self.request.GET.get('from_date')
-        context['to_date'] = self.request.GET.get('to_date')
+        from_date = self.request.GET.get('from_date')
+        to_date = self.request.GET.get('to_date')
+        context['from_date'] = datetime.strptime(from_date, date_format) if from_date else None
+        context['to_date'] = datetime.strptime(to_date, date_format) if to_date else None
         context_report = context_report_render(context['report'], context['customer'], context['company'],
                                                context['from_date'], context['to_date']
                                                )
@@ -93,9 +98,16 @@ class ReportGeneratePDF(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            report = Report.objects.get(pk=kwargs['report_id'])
+            report = Report.objects.get(pk=self.request.GET.get('report'))
+            company = Company.objects.get(pk=self.request.GET.get('company'))
+            customer = Customer.objects.get(pk=self.request.GET.get('customer'))
+            from_date = self.request.GET.get('from_date')
+            to_date = self.request.GET.get('to_date')
+            context_report = context_report_render(report, customer, company,
+                                                   from_date, to_date
+                                                   )
             generate_pdf(report.template,
-                         context_report_render(report),
+                         context_report,
                          )
             return redirect(reverse('report_form'))
         except Report.DoesNotExist:
