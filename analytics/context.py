@@ -23,7 +23,6 @@ def receivables_context(company, customer, from_date, to_date):
               Deal._meta.get_field('value').verbose_name,
               Deal._meta.get_field('pay_status').verbose_name,
               Deal._meta.get_field('act_status').verbose_name,
-              Deal._meta.get_field('exec_status').verbose_name,
               Deal._meta.get_field('date').verbose_name,
               ]
     index = 0
@@ -44,7 +43,6 @@ def receivables_context(company, customer, from_date, to_date):
                           deal.value,
                           deal.get_pay_status_display(),
                           deal.get_act_status_display(),
-                          deal.get_exec_status_display(),
                           deal.date
                           ])
     # creating context
@@ -73,7 +71,6 @@ def waiting_for_act_context(company, customer, from_date, to_date):
     labels = ["№",
               Deal._meta.get_field('number').verbose_name,
               Deal._meta.get_field('value').verbose_name,
-              Deal._meta.get_field('pay_status').verbose_name,
               Deal._meta.get_field('act_status').verbose_name,
               Deal._meta.get_field('exec_status').verbose_name,
               Deal._meta.get_field('date').verbose_name,
@@ -94,7 +91,6 @@ def waiting_for_act_context(company, customer, from_date, to_date):
                                          deal.get_absolute_url(),
                                          deal.number)),
                           deal.value,
-                          deal.get_pay_status_display(),
                           deal.get_act_status_display(),
                           deal.get_exec_status_display(),
                           deal.date
@@ -225,7 +221,6 @@ def overdue_execution_context(company, customer, from_date, to_date):
     labels = ["№",
               Deal._meta.get_field('number').verbose_name,
               Deal._meta.get_field('value').verbose_name,
-              Deal._meta.get_field('pay_status').verbose_name,
               Deal._meta.get_field('act_status').verbose_name,
               Deal._meta.get_field('exec_status').verbose_name,
               Deal._meta.get_field('expire_date').verbose_name,
@@ -246,7 +241,6 @@ def overdue_execution_context(company, customer, from_date, to_date):
                                          deal.get_absolute_url(),
                                          deal.number)),
                           deal.value,
-                          deal.get_pay_status_display(),
                           deal.get_act_status_display(),
                           deal.get_exec_status_display(),
                           deal.expire_date

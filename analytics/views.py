@@ -80,35 +80,17 @@ class ReportRender(TemplateView):
 
     def render_to_response(self, context):
         template = context['report'].template
-
         if template:
-            return HttpResponse(template.render(context))
+            if self.request.GET.get('generate_pdf'):
+                response = HttpResponse(content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+                pdf_file =  generate_pdf(template,
+                                         context,
+                                         )
+                response.write(pdf_file)
+                return response
+
+            else:
+                return HttpResponse(template.render(context))
         else:
             return HttpResponse('HTML template does not exist for this customer')
-
-
-@method_decorator(login_required, name='dispatch')
-class ReportGeneratePDF(View):
-    """ Generating PDF copy for eport """
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
-    def get(self, request, *args, **kwargs):
-        try:
-            report = Report.objects.get(pk=self.request.GET.get('report'))
-            company = Company.objects.get(pk=self.request.GET.get('company'))
-            customer = Customer.objects.get(pk=self.request.GET.get('customer'))
-            from_date = self.request.GET.get('from_date')
-            to_date = self.request.GET.get('to_date')
-            context_report = context_report_render(report, customer, company,
-                                                   from_date, to_date
-                                                   )
-            generate_pdf(report.template,
-                         context_report,
-                         )
-            return redirect(reverse('report_form'))
-        except Report.DoesNotExist:
-            return HttpResponse('Deal object does not exist')

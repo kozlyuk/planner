@@ -33,10 +33,15 @@
                 <div class="row">
                     <div class="col-2">{{ form.to_date.label }}:</div>
                     <div class="col-3">{{ form.to_date|attr:"style: height: 34px; width:30%; display: inline-block; padding-left: 8px;" }}</div>
-                    <br><button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                        style="float: left;">Сформувати
-                    </button>
                 </div>
+                <button type="submit" name="generate_pdf" value="True"
+                    class="btn dark btn-sm btn-outline sbold uppercase"
+                    style="float: right;">Сформувати PDF
+                </button>
+                <button type="submit"
+                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                    style="float: right;">Сформувати звіт
+                </button>
             </div>
         </div>
     </form>
