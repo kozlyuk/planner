@@ -39,7 +39,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'owner_count', 'task_count', 'inttask_count']
+    list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'salary']
     fieldsets = [
         (None, {'fields': [('user', 'name'),
                            ('position', 'head'),
@@ -709,3 +709,4 @@ admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(Construction)
+# admin.site.register(SubTask)
