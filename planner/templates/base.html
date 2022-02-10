@@ -87,7 +87,7 @@
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'colleague_list' %}">Колеги</a></li>
                         {% endif %}
-                        {% if request.user.is_superuser %}
+                        {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
                         {% endif %}
                     </ul>
@@ -109,7 +109,7 @@
                 {% if request.user.is_staff %}
                     <a class="link {% if request.resolver_match.url_name == 'colleague_list' %}active{% endif %} uppercase" href="{% url 'colleague_list' %}">Колеги</a>
                 {% endif %}
-                {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
+                {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" %}
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Адміністрування <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         {% if perms.planner.view_receiver %}
