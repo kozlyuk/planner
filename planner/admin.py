@@ -383,7 +383,6 @@ class TaskForm(forms.ModelForm):
         project_type = cleaned_data.get("project_type")
         deal = cleaned_data.get("deal")
         exec_status = cleaned_data.get("exec_status")
-        actual_finish = cleaned_data.get("actual_finish")
         planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__exec_status__ = exec_status

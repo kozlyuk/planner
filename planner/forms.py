@@ -157,7 +157,6 @@ class DealForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(DealForm, self).clean()
-        value = cleaned_data.get("value")
         self.data.__customer__ = cleaned_data.get("customer")
         self.data.__expire_date__ = cleaned_data.get("expire_date")
         self.data.__value__ = cleaned_data.get("value")
@@ -432,7 +431,8 @@ class ExecutorInlineForm(forms.ModelForm):
 
     def __init__(self, *args, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if employees:
+
+        if employees and self.instance.executor.user.is_active == True:
             self.fields['executor'].queryset = employees
         if subtasks:
             self.fields['subtask'].queryset = subtasks
@@ -495,7 +495,8 @@ class OrderInlineForm(forms.ModelForm):
 
     def __init__(self, *args, contractors=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if contractors:
+
+        if contractors and self.instance.contractor.active == True:
             self.fields['contractor'].queryset = contractors
         if subtasks:
             self.fields['subtask'].queryset = subtasks
