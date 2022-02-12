@@ -15,6 +15,12 @@ from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Recei
 from .models import IntTask, Contractor, Order, Company, Construction, SubTask
 
 
+class OrdersInline(admin.TabularInline):
+    model = SubTask
+    extra = 0
+    show_change_link = True
+
+
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['project_type', 'customer', 'price_code',
                     'net_price', 'copies_count', 'active']  # 'turnover_calc']
@@ -30,6 +36,7 @@ class ProjectAdmin(admin.ModelAdmin):
                            ('active')
                            ]})
     ]
+    inlines = [OrdersInline]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
