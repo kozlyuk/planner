@@ -429,9 +429,11 @@ class TaskUpdate(UpdateView):
         else:
             employees = Employee.objects.filter(user__is_active=True)
             subtasks = SubTask.objects.filter(project_type=self.object.project_type)
+            contractors = Contractor.objects.filter(active=True)
             context['executors_formset'] = forms.ExecutorsFormSet(
                 instance=self.object, form_kwargs={'employees': employees, 'subtasks': subtasks})
-            context['costs_formset'] = forms.CostsFormSet(instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(
+                instance=self.object, form_kwargs={'contractors': contractors, 'subtasks': subtasks})
             context['sending_formset'] = forms.SendingFormSet(instance=self.object)
         return context
 

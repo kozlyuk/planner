@@ -887,6 +887,24 @@ def update_task(sender, instance, **kwargs):
     update_task_statuses(instance.pk)
 
 
+class SubTask(models.Model):
+
+    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
+    name = models.CharField('Назва робіт', max_length=100)
+    part = models.PositiveSmallIntegerField('Частка від проекту', default=0, validators=[MaxValueValidator(100)])
+    duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
+    base = models.BooleanField('Базова', default=False)
+
+    class Meta:
+        unique_together = ('project_type', 'name')
+        verbose_name = 'Підзадача'
+        verbose_name_plural = 'Підзадачі'
+        ordering = ['project_type']
+
+    def __str__(self):
+        return self.name
+
+
 class Order(models.Model):
     NotPaid = 'NP'
     AdvancePaid = 'AP'
@@ -898,6 +916,7 @@ class Order(models.Model):
     )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
+    subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT, blank=True, null=True)
     order_name = models.CharField('Назва робіт', max_length=30)
     deal_number = models.CharField('Номер договору', max_length=30)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
@@ -988,24 +1007,6 @@ class Sending(models.Model):
         title = f"{self.task.object_code} {self.task.project_type.price_code}"
         log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
         super(Sending, self).delete(*args, **kwargs)
-
-
-class SubTask(models.Model):
-
-    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
-    name = models.CharField('Назва робіт', max_length=100)
-    part = models.PositiveSmallIntegerField('Частка від проекту', default=0, validators=[MaxValueValidator(100)])
-    duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
-    base = models.BooleanField('Базова', default=True)
-
-    class Meta:
-        unique_together = ('project_type', 'name')
-        verbose_name = 'Підзадача'
-        verbose_name_plural = 'Підзадачі'
-        ordering = ['project_type']
-
-    def __str__(self):
-        return self.name
 
 
 class Execution(models.Model):

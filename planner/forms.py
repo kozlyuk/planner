@@ -432,7 +432,6 @@ class ExecutorInlineForm(forms.ModelForm):
 
     def __init__(self, *args, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
-
         if employees:
             self.fields['executor'].queryset = employees
         if subtasks:
@@ -485,13 +484,21 @@ ExecutorsFormSet = inlineformset_factory(
 class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['contractor', 'order_name', 'deal_number', 'value',
+        fields = ['contractor', 'subtask', 'deal_number', 'value',
                   'advance', 'pay_status', 'pay_date']
         widgets = {
             'contractor': Select2Widget(),
+            'subtask': Select2Widget(),
             'pay_date': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
+
+    def __init__(self, *args, contractors=None, subtasks=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if contractors:
+            self.fields['contractor'].queryset = contractors
+        if subtasks:
+            self.fields['subtask'].queryset = subtasks
 
     def clean(self):
         super(OrderInlineForm, self).clean()

@@ -340,7 +340,7 @@
                                             <thead>
                                                 <tr align="center">
                                                     <th width="15%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                    <th width="15%" scope="col">РОБОТИ</th>
+                                                    <th width="15%" scope="col">НАЗВА РОБІТ</th>
                                                     <th width="5%" scope="col">ЧАСТКА</th>
                                                     <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
                                                     <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
@@ -423,7 +423,7 @@
                                             <thead>
                                                 <tr align="center">
                                                     <th width="15%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                    <th width="15%" scope="col">РОБОТИ</th>
+                                                    <th width="15%" scope="col">НАЗВА РОБІТ</th>
                                                     <th width="5%" scope="col">ЧАСТКА</th>
                                                     <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
                                                     <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
@@ -544,9 +544,9 @@
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
-                                                        {{ form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.subtask|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.order_name.errors}}
+                                                            {{form.subtask.errors}}
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
@@ -580,7 +580,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
-                                                        {{ form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.pay_date|attr:"style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.pay_date.errors}}
                                                         </div>
@@ -619,9 +619,9 @@
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ costs_formset.empty_form.subtask|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.order_name.errors}}
+                                                            {{costs_formset.empty_form.subtask.errors}}
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
@@ -655,7 +655,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">
-                                                        {{ costs_formset.empty_form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ costs_formset.empty_form.pay_date|attr:"style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{costs_formset.empty_form.pay_date.errors}}
                                                         </div>
