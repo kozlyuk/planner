@@ -990,6 +990,24 @@ class Sending(models.Model):
         super(Sending, self).delete(*args, **kwargs)
 
 
+class SubTask(models.Model):
+
+    project_type = models.ForeignKey(Project, verbose_name='Тип проекту', on_delete=models.PROTECT)
+    name = models.CharField('Назва робіт', max_length=100)
+    part = models.PositiveSmallIntegerField('Частка від проекту', default=0, validators=[MaxValueValidator(100)])
+    duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
+    base = models.BooleanField('Базова', default=True)
+
+    class Meta:
+        unique_together = ('project_type', 'name')
+        verbose_name = 'Підзадача'
+        verbose_name_plural = 'Підзадачі'
+        ordering = ['project_type']
+
+    def __str__(self):
+        return self.name
+
+
 class Execution(models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
@@ -1003,7 +1021,8 @@ class Execution(models.Model):
     )
     executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
-    part_name = models.CharField('Роботи', max_length=100)
+    subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
+    part_name = models.CharField('Роботи', max_length=100, blank=True, null=True)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateField('Плановий початок', blank=True, null=True)
@@ -1014,7 +1033,7 @@ class Execution(models.Model):
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('executor', 'task', 'part_name')
+        unique_together = ('executor', 'task', 'subtask')
         verbose_name = 'Виконавець'
         verbose_name_plural = 'Виконавці'
         ordering = ['creation_date']

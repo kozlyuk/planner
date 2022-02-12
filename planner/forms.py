@@ -357,25 +357,24 @@ class TaskForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(TaskForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if get_current_user().is_superuser:
             self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
                                                                     user__is_active=True)
         elif self.instance.pk is None or self.instance.owner.user == get_current_user():
-            self.fields['owner'].queryset = Employee.objects.filter(
-                user=get_current_user())
+            self.fields['owner'].queryset = Employee.objects.filter(user=get_current_user())
 
         if self.instance.pk is None or self.instance.deal.act_status == Deal.NotIssued:
-            self.fields['deal'].queryset = Deal.objects.filter(
-                act_status=Deal.NotIssued).select_related('customer')
+            self.fields['deal'].queryset = Deal.objects.filter(act_status=Deal.NotIssued).select_related('customer')
         else:
+            self.fields['deal'].queryset = Deal.objects.filter(pk=self.instance.deal.pk).select_related('customer')
             self.fields['deal'].widget.attrs['disabled'] = True
             self.fields['deal'].required = False
 
         if self.instance.pk is None or self.instance.project_type.active:
-            self.fields['project_type'].queryset = Project.objects.filter(
-                active=True)
+            self.fields['project_type'].queryset = Project.objects.filter(active=True)
         else:
+            self.fields['project_type'].queryset = Project.objects.filter(pk=self.instance.project_type.pk)
             self.fields['project_type'].widget.attrs['disabled'] = True
             self.fields['project_type'].required = False
 
@@ -421,20 +420,23 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'part_name', 'part', 'exec_status',
+        fields = ['executor', 'subtask', 'part', 'exec_status',
                   'finish_date', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
+            'subtask': Select2Widget(),
             'planned_start': AdminDateWidget(),
             'planned_finish': AdminDateWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk is None or self.instance.executor.user.is_active:
-            self.fields['executor'].queryset = Employee.objects.filter(
-                user__is_active=True)
+
+        if employees:
+            self.fields['executor'].queryset = employees
+        if subtasks:
+            self.fields['subtask'].queryset = subtasks
 
     def clean(self):
         super().clean()
@@ -448,7 +450,7 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
 
     def clean(self):
         """forces each clean() method on the ChildCounts to be called"""
-        super(ExecutorsInlineFormset, self).clean()
+        super().clean()
         # Calculating outsourcing part
         percent = 0
         outsourcing_part = 0

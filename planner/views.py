@@ -23,7 +23,7 @@ from crum import get_current_user
 from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                    IntTask, Customer, Company, Contractor
+                    IntTask, Customer, Company, Contractor, SubTask
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
@@ -418,7 +418,7 @@ class TaskUpdate(UpdateView):
         return reverse_lazy('task_list')
 
     def get_context_data(self, **kwargs):
-        context = super(TaskUpdate, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if self.request.POST:
             context['executors_formset'] = forms.ExecutorsFormSet(
                 self.request.POST, instance=self.object)
@@ -427,11 +427,12 @@ class TaskUpdate(UpdateView):
             context['sending_formset'] = forms.SendingFormSet(
                 self.request.POST, instance=self.object)
         else:
+            employees = Employee.objects.filter(user__is_active=True)
+            subtasks = SubTask.objects.filter(project_type=self.object.project_type)
             context['executors_formset'] = forms.ExecutorsFormSet(
-                instance=self.object)
+                instance=self.object, form_kwargs={'employees': employees, 'subtasks': subtasks})
             context['costs_formset'] = forms.CostsFormSet(instance=self.object)
-            context['sending_formset'] = forms.SendingFormSet(
-                instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -448,7 +449,10 @@ class TaskUpdate(UpdateView):
                 costs_formset.save()
                 sending_formset.instance = self.object
                 sending_formset.save()
-            return redirect(self.get_success_url())
+            if self.request.POST.get('save_add'):
+                return redirect('task_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
@@ -459,36 +463,15 @@ class TaskCreate(CreateView):
     form_class = forms.TaskForm
     success_url = reverse_lazy('task_list')
 
-    def get_context_data(self, **kwargs):
-        context = super(TaskCreate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            context['executors_formset'] = forms.ExecutorsFormSet(
-                self.request.POST)
-            context['costs_formset'] = forms.CostsFormSet(self.request.POST)
-            context['sending_formset'] = forms.SendingFormSet(
-                self.request.POST)
-        else:
-            context['executors_formset'] = forms.ExecutorsFormSet()
-            context['costs_formset'] = forms.CostsFormSet()
-            context['sending_formset'] = forms.SendingFormSet()
-        return context
-
     def form_valid(self, form):
         context = self.get_context_data()
-        executors_formset = context['executors_formset']
-        costs_formset = context['costs_formset']
-        sending_formset = context['sending_formset']
-        if form.is_valid() and executors_formset.is_valid()\
-                and costs_formset.is_valid() and sending_formset.is_valid():
+        if form.is_valid():
             with transaction.atomic():
                 self.object = form.save()
-                executors_formset.instance = self.object
-                executors_formset.save()
-                costs_formset.instance = self.object
-                costs_formset.save()
-                sending_formset.instance = self.object
-                sending_formset.save()
-            return redirect(self.get_success_url())
+            if self.request.POST.get('save_add'):
+                return redirect('task_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 

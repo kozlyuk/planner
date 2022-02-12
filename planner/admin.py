@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company, Construction
+from .models import IntTask, Contractor, Order, Company, Construction, SubTask
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -510,6 +510,11 @@ class ExecutersInline(admin.TabularInline):
         self.max_num = 0
         return fields
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "subtask":
+            kwargs["queryset"] = SubTask.objects.filter(project_type=request._obj_.project_type)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class SendingsInline(admin.TabularInline):
     model = Sending
@@ -692,6 +697,15 @@ class IntTaskAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
+class SubTaskAdmin(admin.ModelAdmin):
+
+    list_display = ['name', 'project_type', 'part', 'base']
+    list_per_page = 100
+    list_filter = ['project_type']
+    search_fields = ['name']
+
+
+
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
 admin.site.disable_action('delete_selected')
@@ -707,4 +721,4 @@ admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(Construction)
-# admin.site.register(SubTask)
+admin.site.register(SubTask, SubTaskAdmin)

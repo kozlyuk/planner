@@ -306,8 +306,14 @@
                                             {% else %}<button href="{% url 'task_list' %}"
                                                 class="btn deal-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
                                             {% endif %}
-                                            <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase"
-                                                style="float: right;">Зберегти</button>
+                                            <button type="submit"
+                                                class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Зберегти
+                                            </button>
+                                            <button type="submit" name="save_add" value="True"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Зберегти і продовжити редагування
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -316,366 +322,419 @@
                         <!-- END WIDGET -->
                     </div>
                 </div>
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card main-widget-tab">
-                            <h6 class="task-header center-block text-center">Виконавці</h6>
-                            <div class="card-body pb-1">
-                                <small class="text-danger">
-                                {{ executors_formset.non_form_errors }}
-                                </small>
-                                <!--check the length of the formset-->
-                                <!--if formset is not empty-->
-                                {% if executors_formset|length %}
-                                <div class="row">
-                                    <table class="table table-hover mb-0 table-responsive-xl"
-                                        id="executor_formset_not_empty">
-                                        <thead>
-                                            <tr align="center">
-                                                <th width="20%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                <th scope="col">РОБОТИ</th>
-                                                <th width="5%" scope="col">ЧАСТКА</th>
-                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
-                                                <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
-                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ПОПЕРЕДЖЕННЯ <a href="#" data-toggle="modal" data-target=".bd-example-modal-sm"><i class="far fa-question-circle"></i></a></th>
-                                                <th width="1%">ДІЇ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for form in executors_formset %}
-                                            <tr>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.executor|attr:"style: width:100%; height:34px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.executor.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.part_name|attr:"style: height:34px; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.part_name.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                {% if task.pk %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card main-widget-tab">
+                                <h6 class="task-header center-block text-center">Виконавці</h6>
+                                <div class="card-body pb-1">
+                                    <small class="text-danger">
+                                    {{ executors_formset.non_form_errors }}
+                                    </small>
+                                    <!--check the length of the formset-->
+                                    <!--if formset is not empty-->
+                                    {% if executors_formset|length %}
+                                    <div class="row">
+                                        <table class="table table-hover mb-0 table-responsive-xl"
+                                            id="executor_formset_not_empty">
+                                            <thead>
+                                                <tr align="center">
+                                                    <th width="15%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                    <th width="15%" scope="col">РОБОТИ</th>
+                                                    <th width="5%" scope="col">ЧАСТКА</th>
+                                                    <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                    <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
+                                                    <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
+                                                    <th width="10%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                    <th scope="col">ПОПЕРЕДЖЕННЯ </th>
+                                                    <th width="1%">ДІЇ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for form in executors_formset %}
+                                                <tr>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.executor|attr:"style: width:100%; height:34px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.part.errors}}
+                                                            {{form.executor.errors}}
                                                         </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.subtask|attr:"style: height:34px; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.exec_status.errors}}
+                                                            {{form.subtask.errors}}
                                                         </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.planned_start|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.planned_start.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.planned_finish|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.planned_finish.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {% if request.user.is_superuser %}
-                                                        {{ form.finish_date|attr:"style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% else %}
-                                                        {{ form.finish_date|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% endif %}
-                                                    <div class="invalid-feedback">
-                                                        {{form.finish_date.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.warning|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.warning.errors}}
-                                                    </div>
-                                                </th>
-                                                <th>{{ form.DELETE }}{{ form.id }} </th>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    {{ executors_formset.management_form }}
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.part.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.exec_status.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.planned_start|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.planned_start.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.planned_finish|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.planned_finish.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {% if request.user.is_superuser %}
+                                                            {{ form.finish_date|attr:"style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {% else %}
+                                                            {{ form.finish_date|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {% endif %}
+                                                        <div class="invalid-feedback">
+                                                            {{form.finish_date.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.warning|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.warning.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th>{{ form.DELETE }}{{ form.id }} </th>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {{ executors_formset.management_form }}
+                                    </div>
+                                    {% else %}
+                                    <div class="row" style="display:none" id="executors_formset">
+                                        <table class="table table-hover mb-0 table-responsive-xl"
+                                            id="executor_formset_empty">
+                                            <thead>
+                                                <tr align="center">
+                                                    <th width="15%" scope="col">ВИКОНАВЕЦЬ</th>
+                                                    <th width="15%" scope="col">РОБОТИ</th>
+                                                    <th width="5%" scope="col">ЧАСТКА</th>
+                                                    <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
+                                                    <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
+                                                    <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
+                                                    <th width="10%" scope="col">ДАТА ВИКОНАННЯ</th>
+                                                    <th scope="col">ПОПЕРЕДЖЕННЯ </th>
+                                                    <th width="1%">ДІЇ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for hidden_field in form.hidden_fields %}
+                                                {{ hidden_field }}
+                                                {% endfor %}
+                                                <tr>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ executors_formset.empty_form.executor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{executors_formset.empty_form.executor.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ executors_formset.empty_form.subtask|attr:"style: height:34px; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{executors_formset.empty_form.subtask.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ executors_formset.empty_form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{executors_formset.empty_form.part.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ executors_formset.empty_form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{executors_formset.empty_form.exec_status.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ executors_formset.empty_form.planned_start|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{executors_formset.empty_form.planned_start.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ executors_formset.empty_form.planned_finish|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{executors_formset.empty_form.planned_finish.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {% if request.user.is_superuser %}
+                                                            {{ form.finish_date|attr:"style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {% else %}
+                                                            {{ form.finish_date|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {% endif %}
+                                                        <div class="invalid-feedback">
+                                                            {{executors_formset.empty_form.finish_date.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ executors_formset.empty_form.warning|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{executors_formset.empty_form.warning.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th>{{ form.DELETE }}</th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        {{ executors_formset.management_form }}
+                                    </div>
+                                    <button style="width: 100%" type="button"
+                                        class="add-formset add-executors-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                        виконавця</button>
+                                    {% endif %}
                                 </div>
-                                {% else %}
-                                <div class="row" style="display:none" id="executors_formset">
-                                    <table class="table table-hover mb-0 table-responsive-xl"
-                                        id="executor_formset_empty">
-                                        <thead>
-                                            <tr align="center">
-                                                <th width="20%" scope="col">ВИКОНАВЕЦЬ</th>
-                                                <th scope="col">РОБОТИ</th>
-                                                <th width="5%" scope="col">ЧАСТКА</th>
-                                                <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
-                                                <th width="15%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
-                                                <th width="15%" scope="col">ДАТА ВИКОНАННЯ</th>
-                                                <th width="15%" scope="col">ПОПЕРЕДЖЕННЯ <a href="#" data-toggle="modal" data-target=".bd-example-modal-sm"><i class="far fa-question-circle"></i></a></th>
-                                                <th width="1%">ДІЇ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for hidden_field in form.hidden_fields %}
-                                            {{ hidden_field }}
-                                            {% endfor %}
-                                            <tr>
-                                                <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.executor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{executors_formset.empty_form.executor.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ executors_formset.empty_form.part_name|attr:"style: height:34px; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{executors_formset.empty_form.part_name.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ executors_formset.empty_form.part|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{executors_formset.empty_form.part.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ executors_formset.empty_form.exec_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{executors_formset.empty_form.exec_status.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.planned_start|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{executors_formset.empty_form.planned_start.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.planned_finish|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{executors_formset.empty_form.planned_finish.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {% if request.user.is_superuser %}
-                                                        {{ form.finish_date|attr:"style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% else %}
-                                                        {{ form.finish_date|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% endif %}
-                                                    <div class="invalid-feedback">
-                                                        {{executors_formset.empty_form.finish_date.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ executors_formset.empty_form.warning|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{executors_formset.empty_form.warning.errors}}
-                                                    </div>
-                                                </th>
-                                                <th>{{ form.DELETE }}</th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    {{ executors_formset.management_form }}
-                                </div>
-                                <button style="width: 100%" type="button"
-                                    class="add-formset add-executors-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
-                                    виконавця</button>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card main-widget-tab">
-                            <h6 class="task-header center-block text-center">Витрати</h6>
-                            <div class="card-body pb-1">
-                                {% if costs_formset|length %}
-                                <div class="row">
-                                    <table class="table table-hover mb-0 table-responsive-xl"
-                                        id="costs_formset_not_empty">
-                                        <thead>
-                                            <tr align="center">
-                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
-                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="2%">ДІЇ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <small class="text-danger">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card main-widget-tab">
+                                <h6 class="task-header center-block text-center">Витрати</h6>
+                                <div class="card-body pb-1">
+                                    {% if costs_formset|length %}
+                                    <div class="row">
+                                        <table class="table table-hover mb-0 table-responsive-xl"
+                                            id="costs_formset_not_empty">
+                                            <thead>
+                                                <tr align="center">
+                                                    <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                    <th width="23%" scope="col">НАЗВА РОБІТ</th>
+                                                    <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                    <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                    <th width="10%" scope="col">АВАНС, ГРН.</th>
+                                                    <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                    <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                    <th width="2%">ДІЇ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <small class="text-danger">
+                                                    {{ costs_formset.non_form_errors }}
+                                                </small>
+                                                {% for form in costs_formset %}
+                                                <tr>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.contractor.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.order_name.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.deal_number.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.advance.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.pay_status.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.pay_date.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {{ costs_formset.management_form }}
+                                    </div>
+                                    {% else %}
+                                    <div class="row" style="display:none" id="costs_formset">
+                                        <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
+                                            <thead>
+                                                <tr align="center">
+                                                    <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                    <th width="23%" scope="col">НАЗВА РОБІТ</th>
+                                                    <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                    <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
+                                                    <th width="10%" scope="col">АВАНС, ГРН.</th>
+                                                    <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
+                                                    <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
+                                                    <th width="2%">ДІЇ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <small class="text-danger">
                                                 {{ costs_formset.non_form_errors }}
-                                            </small>
-                                            {% for form in costs_formset %}
-                                            <tr>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.contractor.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.order_name.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.deal_number.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                </small>
+                                                <tr>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ costs_formset.empty_form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.value.errors}}
+                                                            {{costs_formset.empty_form.contractor.errors}}
                                                         </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ costs_formset.empty_form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.advance.errors}}
+                                                            {{costs_formset.empty_form.order_name.errors}}
                                                         </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ costs_formset.empty_form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{form.pay_status.errors}}
+                                                            {{costs_formset.empty_form.deal_number.errors}}
                                                         </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{form.pay_date.errors}}
-                                                    </div>
-                                                </th>
-                                                <th>{{ form.id }}{{ form.DELETE }}</th>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    {{ costs_formset.management_form }}
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ costs_formset.empty_form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{costs_formset.empty_form.value.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ costs_formset.empty_form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{costs_formset.empty_form.advance.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ costs_formset.empty_form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{costs_formset.empty_form.pay_status.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ costs_formset.empty_form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{costs_formset.empty_form.pay_date.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        {{ costs_formset.management_form }}
+                                    </div>
+                                    <button style="width: 100%" type="button"
+                                        class="add-formset add-costs-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                        підрядника</button>
+                                    {% endif %}
                                 </div>
-                                {% else %}
-                                <div class="row" style="display:none" id="costs_formset">
-                                    <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
-                                        <thead>
-                                            <tr align="center">
-                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
-                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                <th width="15%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="2%">ДІЇ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <small class="text-danger">
-                                            {{ costs_formset.non_form_errors }}
-                                            </small>
-                                            <tr>
-                                                <th class="pl-1 pr-1">
-                                                    {{ costs_formset.empty_form.contractor|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{costs_formset.empty_form.contractor.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ costs_formset.empty_form.order_name|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{costs_formset.empty_form.order_name.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ costs_formset.empty_form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{costs_formset.empty_form.deal_number.errors}}
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ costs_formset.empty_form.value|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.value.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ costs_formset.empty_form.advance|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.advance.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ costs_formset.empty_form.pay_status|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.pay_status.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    {{ costs_formset.empty_form.pay_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    <div class="invalid-feedback">
-                                                        {{costs_formset.empty_form.pay_date.errors}}
-                                                    </div>
-                                                </th>
-                                                <th>{{ form.id }}{{ form.DELETE }}</th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    {{ costs_formset.management_form }}
-                                </div>
-                                <button style="width: 100%" type="button"
-                                    class="add-formset add-costs-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
-                                    підрядника</button>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card main-widget-tab">
-                            <h6 class="task-header center-block text-center">Відправки</h6>
-                            <div class="card-body pb-1">
-                                {% if sending_formset|length %}
-                                <div class="row">
-                                    <table class="table table-hover mb-0 table-responsive-xl"
-                                        id="sending_formset_not_empty">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card main-widget-tab">
+                                <h6 class="task-header center-block text-center">Відправки</h6>
+                                <div class="card-body pb-1">
+                                    {% if sending_formset|length %}
+                                    <div class="row">
+                                        <table class="table table-hover mb-0 table-responsive-xl"
+                                            id="sending_formset_not_empty">
+                                            <thead>
+                                                <tr align="center">
+                                                    <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
+                                                    <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
+                                                    <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
+                                                    <th width="30%" scope="col">РЕЄСТР</th>
+                                                    <th width="1%">ДІЇ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <small class="text-danger">
+                                                {{ sending_formset.non_form_errors }}
+                                                </small>
+                                                {% for form in sending_formset %}
+                                                <tr>
+                                                    <th class="pl-1 pr-1">
+                                                        {{form.receiver|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        <div class="invalid-feedback">
+                                                            {{form.receiver.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{form.receipt_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        <div class="invalid-feedback">
+                                                            {{form.receipt_date.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.copies_count.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{form.register_num|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        <div class="invalid-feedback">
+                                                            {{form.register_num.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {{ sending_formset.management_form }}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="row" style="display:none" id="sending_formset">
+                                    <table class="table table-hover mb-0 table-responsive-xl" id="sending_formset_empty">
                                         <thead>
                                             <tr align="center">
                                                 <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
@@ -689,156 +748,52 @@
                                             <small class="text-danger">
                                             {{ sending_formset.non_form_errors }}
                                             </small>
-                                            {% for form in sending_formset %}
                                             <tr>
                                                 <th class="pl-1 pr-1">
-                                                    {{form.receiver|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                    {{sending_formset.empty_form.receiver|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                     <div class="invalid-feedback">
-                                                        {{form.receiver.errors}}
+                                                        {{sending_formset.empty_form.receiver.errors}}
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{form.receipt_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                    {{sending_formset.empty_form.receipt_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                     <div class="invalid-feedback">
-                                                        {{form.receipt_date.errors}}
+                                                        {{sending_formset.empty_form.receipt_date.errors}}
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                    {{sending_formset.empty_form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                         <div class="invalid-feedback">
-                                                            {{form.copies_count.errors}}
+                                                            {{sending_formset.empty_form.copies_count.errors}}
                                                         </div>
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{form.register_num|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                    {{sending_formset.empty_form.register_num|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                     <div class="invalid-feedback">
-                                                        {{form.register_num.errors}}
+                                                        {{sending_formset.empty_form.register_num.errors}}
                                                     </div>
                                                 </th>
-                                                <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                <th>{{ sending_formset.empty_form.DELETE }} {{ sending_formset.empty_form.id }}</th>
                                             </tr>
-                                            {% endfor %}
                                         </tbody>
                                     </table>
                                     {{ sending_formset.management_form }}
                                 </div>
+                                <button style="width: 100%" type="button"
+                                    class="add-formset add-sending-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
+                                    відправку</button>
                             </div>
-                            {% else %}
-                            <div class="row" style="display:none" id="sending_formset">
-                                <table class="table table-hover mb-0 table-responsive-xl" id="sending_formset_empty">
-                                    <thead>
-                                        <tr align="center">
-                                            <th width="30%" scope="col">ОТРИМУВАЧ ПРОЕКТУ</th>
-                                            <th width="20%" scope="col">ДАТА ВІДПРАВКИ</th>
-                                            <th width="15%" scope="col">КІЛЬКІСТЬ ПРИМІРНИКІВ</th>
-                                            <th width="30%" scope="col">РЕЄСТР</th>
-                                            <th width="1%">ДІЇ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <small class="text-danger">
-                                        {{ sending_formset.non_form_errors }}
-                                        </small>
-                                        <tr>
-                                            <th class="pl-1 pr-1">
-                                                {{sending_formset.empty_form.receiver|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                <div class="invalid-feedback">
-                                                    {{sending_formset.empty_form.receiver.errors}}
-                                                </div>
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                {{sending_formset.empty_form.receipt_date|attr:"style: width:60%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                <div class="invalid-feedback">
-                                                    {{sending_formset.empty_form.receipt_date.errors}}
-                                                </div>
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                <div class="form-group">
-                                                {{sending_formset.empty_form.copies_count|attr:"style: height:34px; width:100%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                    <div class="invalid-feedback">
-                                                        {{sending_formset.empty_form.copies_count.errors}}
-                                                    </div>
-                                                </div>
-                                            </th>
-                                            <th class="pl-1 pr-1">
-                                                {{sending_formset.empty_form.register_num|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                <div class="invalid-feedback">
-                                                    {{sending_formset.empty_form.register_num.errors}}
-                                                </div>
-                                            </th>
-                                            <th>{{ sending_formset.empty_form.DELETE }} {{ sending_formset.empty_form.id }}</th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {{ sending_formset.management_form }}
-                            </div>
-                            <button style="width: 100%" type="button"
-                                class="add-formset add-sending-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати
-                                відправку</button>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
-                </div>
+                {% endif %}
             </form>
         </div>
     </div>
-
-<!-- info modal start -->
-<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog " role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Список ключових слів</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Як пишеться</th>
-                            <th scope="col">Як виглядатиме</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Друк ...</td>
-                            <td><span class="badge badge-pill badge-{% task_overdue_color 'Друк' %} label-mini">Друк
-                                    ...</span></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Терміново ..</td>
-                            <td><span
-                                    class="badge badge-pill badge-{% task_overdue_color 'Терміново' %} label-mini">Терміново
-                                    ...</span></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Коригування ...</td>
-                            <td><span
-                                    class="badge badge-pill badge-{% task_overdue_color 'Коригування' %} label-mini">Коригування
-                                    ...</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer text-muted">
-                <p class="text-small">Ключове слово має стояти на початку</p>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- info modal end -->
-
     {% else %}
-    Ви не маєте доступу до редагування даного проекту<br><br>
+        Ви не маєте доступу до редагування даного проекту<br><br>
     {% endif %}
 </div>
 <!-- END PAGE BASE CONTENT -->
