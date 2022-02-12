@@ -176,18 +176,15 @@ class TasksInlineForm(forms.ModelForm):
             'DELETE': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, deal=None, **kwargs):
+    def __init__(self, *args, owners=None, project_types=None, acts=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['owner'].queryset = Employee.objects.filter(user__groups__name__contains="ГІПи",
-                                                                user__is_active=True)
         self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
-        if deal:
-            if self.instance.project_type.active:
-                self.fields['project_type'].queryset = Project.objects.filter(customer=deal.customer, active=True)
-            else:
-                self.fields['project_type'].widget.attrs['disabled'] = True
-                self.fields['project_type'].required = False
-            self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
+        if owners:
+            self.fields['owner'].queryset = owners
+        if project_types and self.instance.project_type.active:
+            self.fields['project_type'].queryset = project_types
+        if acts:
+            self.fields['act_of_acceptance'].queryset = acts
 
     def clean(self):
         super().clean()
@@ -243,10 +240,10 @@ class PaymentInlineForm(forms.ModelForm):
             'DELETE': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, deal=None, **kwargs):
+    def __init__(self, *args, acts=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if deal:
-            self.fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=deal)
+        if acts:
+            self.fields['act_of_acceptance'].queryset = acts
 
 
 class PaymentInlineFormset(BaseInlineFormSet):

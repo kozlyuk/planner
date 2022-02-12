@@ -23,7 +23,7 @@ from crum import get_current_user
 from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                    IntTask, Customer, Company, Contractor, SubTask
+                    IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
@@ -258,9 +258,13 @@ class DealUpdate(UpdateView):
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, self.request.FILES, instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
         else:
-            context['tasks_formset'] = forms.TasksFormSet(instance=self.object, form_kwargs={'deal': self.object})
+            owners = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
+            project_types = Project.objects.filter(customer=self.object.customer, active=True)
+            acts = ActOfAcceptance.objects.filter(deal=self.object)
+            context['tasks_formset'] = forms.TasksFormSet(
+                instance=self.object, form_kwargs={'owners': owners, 'project_types': project_types, 'acts': acts})
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
-            context['payment_formset'] = forms.PaymentFormSet(instance=self.object, form_kwargs={'deal': self.object})
+            context['payment_formset'] = forms.PaymentFormSet(instance=self.object, form_kwargs={'acts': acts})
         return context
 
     def form_valid(self, form):
