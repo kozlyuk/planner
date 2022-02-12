@@ -15,7 +15,7 @@ from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Recei
 from .models import IntTask, Contractor, Order, Company, Construction, SubTask
 
 
-class OrdersInline(admin.TabularInline):
+class SubTasksInline(admin.TabularInline):
     model = SubTask
     extra = 0
     show_change_link = True
@@ -36,7 +36,7 @@ class ProjectAdmin(admin.ModelAdmin):
                            ('active')
                            ]})
     ]
-    inlines = [OrdersInline]
+    inlines = [SubTasksInline]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
