@@ -899,7 +899,7 @@ class SubTask(models.Model):
         unique_together = ('project_type', 'name')
         verbose_name = 'Підзадача'
         verbose_name_plural = 'Підзадачі'
-        ordering = ['project_type']
+        ordering = ['project_type', '-base']
 
     def __str__(self):
         return self.name
