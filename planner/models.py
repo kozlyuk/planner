@@ -1068,7 +1068,7 @@ class Execution(models.Model):
         # Logging
         if logging:
             title = self.task.object_code + ' ' + \
-                self.task.project_type.price_code + ' ' + self.part_name
+                self.task.project_type.price_code + ' ' + self.subtask.name
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана частина проекту', extra={"title": title})
@@ -1080,7 +1080,7 @@ class Execution(models.Model):
 
     def delete(self, *args, **kwargs):
         title = self.task.object_code + ' ' + \
-            self.task.project_type.price_code + ' ' + self.part_name
+            self.task.project_type.price_code + ' ' + self.subtask.name
         log(user=get_current_user(),
             action='Видалена частина проекту', extra={"title": title})
         super(Execution, self).delete(*args, **kwargs)
