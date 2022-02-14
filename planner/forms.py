@@ -429,7 +429,7 @@ class ExecutorInlineForm(forms.ModelForm):
     def __init__(self, *args, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if employees and self.instance.executor.user.is_active == True:
+        if employees and not (self.instance.pk and self.instance.executor.user.is_active == False):
             self.fields['executor'].queryset = employees
         if subtasks:
             self.fields['subtask'].queryset = subtasks
@@ -493,7 +493,7 @@ class OrderInlineForm(forms.ModelForm):
     def __init__(self, *args, contractors=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if contractors and self.instance.contractor.active == True:
+        if contractors and not (self.instance.pk and self.instance.contractor.active == False):
             self.fields['contractor'].queryset = contractors
         if subtasks:
             self.fields['subtask'].queryset = subtasks
