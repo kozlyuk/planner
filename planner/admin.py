@@ -705,7 +705,7 @@ class IntTaskAdmin(admin.ModelAdmin):
 
 class SubTaskAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'project_type', 'part', 'base']
+    list_display = ['name', 'project_type', 'part', 'base', 'add_to_schedule']
     list_per_page = 100
     list_filter = ['project_type']
     search_fields = ['name']
