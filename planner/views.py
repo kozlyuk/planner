@@ -92,7 +92,7 @@ def subtasks_queryset_filter(request):
                          ). \
                   exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
     for word in search_string:
-        tasks = tasks.filter(Q(part_name__icontains=word) |
+        tasks = tasks.filter(Q(subtask__name__icontains=word) |
                              Q(task__object_code__icontains=word) |
                              Q(task__project_type__project_type__icontains=word) |
                              Q(task__object_address__icontains=word) |

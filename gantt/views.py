@@ -65,7 +65,7 @@ class GetPlan(TemplateView):
             for task in tasks:
                 gantt_data["projects"][index]["tasks"].append({"pk": task.pk,
                                                                "executor": task.executor.name,
-                                                               "part_name": task.part_name,
+                                                               "subtask": task.subtask.name,
                                                                "exec_status": task.exec_status,
                                                                "planned_start": str(task.planned_start),
                                                                "planned_finish": str(task.planned_finish),

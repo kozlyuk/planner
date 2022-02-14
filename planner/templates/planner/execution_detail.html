@@ -100,7 +100,7 @@
                                         <col width="25%">
                                         <tr>
                                             <td> Роботи: </td>
-                                            <td> {{ execution.part_name }} </td>
+                                            <td> {{ execution.subtask.name }} </td>
                                         </tr>
                                         <tr>
                                             <td> Частка: </td>
@@ -146,7 +146,7 @@
                                                 <h4 class="widget-media-body-title">
                                                     <a href="#">{{ executor.executor.name }}</a>
                                                 </h4>
-                                                Назва робіт: <strong>{{ executor.part_name }}</strong><br>
+                                                Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
                                                 Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div><br>
                                                 Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
                                                 {% if executor.finish_date %}Дата виконання: <strong>{{ executor.finish_date }}</strong><br>{% endif %}

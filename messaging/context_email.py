@@ -145,7 +145,7 @@ def context_overdue_tasks(employee):
                         Task._meta.get_field('object_code').verbose_name,
                         Task._meta.get_field('object_address').verbose_name,
                         Task._meta.get_field('project_type').verbose_name,
-                        Execution._meta.get_field('part_name').verbose_name,
+                        Execution._meta.get_field('subtask').verbose_name,
                         Execution._meta.get_field('planned_finish').verbose_name,
                         Execution._meta.get_field('warning').verbose_name,
                         ]
@@ -161,7 +161,7 @@ def context_overdue_tasks(employee):
                                                ex.task.object_code)),
                                 ex.task.object_address,
                                 ex.task.project_type,
-                                ex.part_name,
+                                ex.subtask.name,
                                 ex.planned_finish,
                                 ex.warning
                                 ])

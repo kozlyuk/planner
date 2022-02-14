@@ -253,12 +253,12 @@ function createTask(obj, g) {
   newObject = setCommonPropertiesToGanttObject(obj, newObject);
   newObject.pClass = `task_${obj.exec_status.toLowerCase()}`; //  set custom class for task
   newObject.pComp = 0; //  % of complete
-  newObject.pName = isProject ? obj.object_code : obj.part_name;
+  newObject.pName = isProject ? obj.object_code : obj.subtask;
   newObject.pRes = isProject ? obj.owner : obj.executor;
   newObject.pGroup = isProject ? 1 : 0; //  1 for project task, 0 for task
   newObject.pParent = isProject ? 0 : "";
   newObject.pOpen = 1; //  0 for rendering colapsed projects and tasks
-  newObject.pCaption = isProject ? obj.object_code : obj.part_name;
+  newObject.pCaption = isProject ? obj.object_code : obj.subtask;
   if (isProject) {
     obj.tasks.forEach((task) => {
       const ganttObj = createTask(task, g);
