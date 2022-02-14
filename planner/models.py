@@ -720,7 +720,9 @@ class Task(models.Model):
         return reverse('task_detail', args=[self.pk])
 
     def save(self, *args, logging=True, **kwargs):
+        is_new_object = False
         if not self.pk:
+            is_new_object = True
             # Set creator
             self.creator = get_current_user()
             # Automatic set project_code
@@ -759,7 +761,15 @@ class Task(models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений проект', extra={"title": title})
-        super(Task, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+        # Automatic create basic subtasks
+        if is_new_object:
+            for subtask in self.project_type.subtask_set.filter(base=True):
+                Execution.objects.create(task=self,
+                                         subtask=subtask,
+                                         part = subtask.part,
+                                         )
 
     def delete(self, *args, **kwargs):
         title = self.object_code + ' ' + self.project_type.price_code
@@ -894,6 +904,7 @@ class SubTask(models.Model):
     part = models.PositiveSmallIntegerField('Частка від проекту', default=0, validators=[MaxValueValidator(100)])
     duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
     base = models.BooleanField('Базова', default=False)
+    add_to_schedule = models.BooleanField('Додавати в календар', default=True)
 
     class Meta:
         unique_together = ('project_type', 'name')
@@ -1020,7 +1031,7 @@ class Execution(models.Model):
         (OnChecking, 'На перевірці'),
         (Done, 'Виконано')
     )
-    executor = models.ForeignKey(Employee, verbose_name='Виконавець', on_delete=models.PROTECT)
+    executor = models.ForeignKey(Employee, verbose_name='Виконавець', blank=True, null=True, on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
     part_name = models.CharField('Роботи', max_length=100, blank=True, null=True)

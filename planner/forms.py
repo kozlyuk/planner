@@ -429,7 +429,7 @@ class ExecutorInlineForm(forms.ModelForm):
     def __init__(self, *args, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if employees and not (self.instance.pk and self.instance.executor.user.is_active == False):
+        if employees and not (self.instance.executor and self.instance.executor.user.is_active == False):
             self.fields['executor'].queryset = employees
         if subtasks:
             self.fields['subtask'].queryset = subtasks
@@ -458,6 +458,8 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                 percent += part
                 if executor and executor.user.username.startswith('outsourcing'):
                     outsourcing_part += part
+            if self.instance.__exec_status__ in [Task.Done, Task.Sent] and not executor:
+                raise ValidationError('Зазначте усіх виконавців')
         self.instance.__outsourcing_part__ = outsourcing_part
         # Check if sum of executions parts more than 100% and less then 150%
         if self.instance.pk:
