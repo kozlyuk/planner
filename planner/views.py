@@ -262,7 +262,11 @@ class DealUpdate(UpdateView):
             project_types = Project.objects.filter(customer=self.object.customer, active=True)
             acts = ActOfAcceptance.objects.filter(deal=self.object)
             context['tasks_formset'] = forms.TasksFormSet(
-                instance=self.object, form_kwargs={'owners': owners, 'project_types': project_types, 'acts': acts})
+                instance=self.object, form_kwargs={'method': self.request.method,
+                                                   'owners': owners,
+                                                   'project_types': project_types,
+                                                   'acts': acts}
+                                                   )
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(instance=self.object, form_kwargs={'acts': acts})
         return context
@@ -435,9 +439,15 @@ class TaskUpdate(UpdateView):
             subtasks = SubTask.objects.filter(project_type=self.object.project_type)
             contractors = Contractor.objects.filter(active=True)
             context['executors_formset'] = forms.ExecutorsFormSet(
-                instance=self.object, form_kwargs={'employees': employees, 'subtasks': subtasks})
+                instance=self.object, form_kwargs={'method': self.request.method,
+                                                   'employees': employees,
+                                                   'subtasks': subtasks}
+                                                   )
             context['costs_formset'] = forms.CostsFormSet(
-                instance=self.object, form_kwargs={'contractors': contractors, 'subtasks': subtasks})
+                instance=self.object, form_kwargs={'method': self.request.method,
+                                                   'contractors': contractors,
+                                                   'subtasks': subtasks}
+                                                   )
             context['sending_formset'] = forms.SendingFormSet(instance=self.object)
         return context
 
@@ -843,6 +853,7 @@ class ProjectUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'project_type_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['formset'] = forms.SubTasksFormSet(instance=self.object)
         return context
 
 

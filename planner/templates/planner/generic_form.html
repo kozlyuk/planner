@@ -48,6 +48,54 @@
                         <!-- END WIDGET -->
                     </div>
                 </div>
+
+                <!-- INLINEFACTORY -->
+                {% if formset %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">Підзадачі</h6>
+                            <div class="card-body pb-1">
+                                {{ formset.non_form_errors }}
+                                <!--check the length of the formset-->
+                                {% if formset|length %}
+                                    <div class="row">
+                                        <table class="table table-hover mb-0 table-responsive-xl" id="formset_not_empty">
+                                            <thead><tr>
+                                                {% for field in formset.0 %}
+                                                    {% if field.name == 'id' or field.name == 'DELETE' or field.name == 'project_type' %}
+                                                    {% else %}
+                                                        <th scope="col">{{ field.label }}</th>
+                                                        {% endif %}
+                                                {% endfor %}
+                                            </tr></thead>
+                                            <tbody>
+                                                {% for form in formset %}
+                                                <tr>
+                                                    {% for field in form %}
+                                                        {% if field.name == 'id' or field.name == 'DELETE' %}
+                                                        {% else %}
+                                                        <th class="pl-1 pr-1">
+                                                            <div class="form-group">
+                                                            {{ field|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                <div class="invalid-feedback">
+                                                                    {{field.errors}}
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+                                {{ tasks_formset.management_form }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </form>
         </div>
     </div>

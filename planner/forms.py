@@ -11,7 +11,7 @@ from django.conf.locale.uk import formats as uk_formats
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
-from .models import ActOfAcceptance, Construction, Payment, Task, Customer, Execution, Order, Sending, \
+from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
                     Deal, Employee, Project, Company, Receiver, Contractor
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
@@ -152,8 +152,7 @@ class DealForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DealForm, self).__init__(*args, **kwargs)
         self.fields['number'].widget.attrs.update({'style': 'width:100%'})
-        self.fields['comment'].widget.attrs.update(
-            {'style': 'width:100%; height:44px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width:100%; height:44px;'})
 
     def clean(self):
         cleaned_data = super(DealForm, self).clean()
@@ -176,14 +175,12 @@ class TasksInlineForm(forms.ModelForm):
             'DELETE': forms.HiddenInput(),
         }
 
-    def __init__(self, *args, owners=None, project_types=None, acts=None, **kwargs):
+    def __init__(self, *args, method=None, owners=None, project_types=None, acts=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['object_code'].widget.attrs.update({'task_id': self.instance.id})
-        if owners:
+        if method == 'GET':
             self.fields['owner'].queryset = owners
-        if project_types and self.instance.project_type.active:
             self.fields['project_type'].queryset = project_types
-        if acts:
             self.fields['act_of_acceptance'].queryset = acts
 
     def clean(self):
@@ -426,12 +423,12 @@ class ExecutorInlineForm(forms.ModelForm):
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
-    def __init__(self, *args, employees=None, subtasks=None, **kwargs):
+    def __init__(self, *args, method=None, employees=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if employees and not (self.instance.executor and self.instance.executor.user.is_active == False):
-            self.fields['executor'].queryset = employees
-        if subtasks:
+        if method == 'GET':
+            if not (self.instance.executor and self.instance.executor.user.is_active == False):
+                self.fields['executor'].queryset = employees
             self.fields['subtask'].queryset = subtasks
 
     def clean(self):
@@ -492,12 +489,12 @@ class OrderInlineForm(forms.ModelForm):
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
-    def __init__(self, *args, contractors=None, subtasks=None, **kwargs):
+    def __init__(self, *args, method=None, contractors=None, subtasks=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if contractors and not (self.instance.pk and self.instance.contractor.active == False):
-            self.fields['contractor'].queryset = contractors
-        if subtasks:
+        if method == 'GET':
+            if not (self.instance.pk and self.instance.contractor.active == False):
+                self.fields['contractor'].queryset = contractors
             self.fields['subtask'].queryset = subtasks
 
     def clean(self):
@@ -654,8 +651,7 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
-        self.fields['description'].widget.attrs.update(
-            {'style': 'height:50px;'})
+        self.fields['description'].widget.attrs.update({'style': 'height:100px;'})
         self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
         self.fields['need_project_code'].widget.attrs.update({'style': 'height:15px;'})
 
@@ -735,3 +731,17 @@ class ContractorForm(forms.ModelForm):
 class EmployeeFilterForm(forms.Form):
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False)
+
+
+class SubTasksInlineForm(forms.ModelForm):
+    class Meta:
+        model = SubTask
+        fields = ['name', 'part', 'duration', 'base', 'add_to_schedule']
+        widgets = {
+            'part': forms.TextInput(attrs={'style' : 'height:34px'}),
+            'base': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
+            'add_to_schedule': forms.CheckboxInput(attrs={'style' : 'height:15px'})
+        }
+
+
+SubTasksFormSet = inlineformset_factory(Project, SubTask, form=SubTasksInlineForm, extra=0)

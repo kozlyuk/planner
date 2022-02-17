@@ -46,3 +46,39 @@ from analytics.models import Kpi
 kpies = Kpi.objects.all()
 for kpi in kpies:
     kpi.delete()
+
+
+from planner.models import Execution, SubTask
+
+for execution in Execution.objects.all().order_by('-pk'):
+    try:
+        subtask = SubTask.objects.get(project_type=execution.task.project_type,
+                                      name=execution.subtask.name)
+    except:
+        subtask = SubTask.objects.create(project_type=execution.task.project_type,
+                                         name=execution.subtask.name,
+                                         part=execution.part
+                                         )
+    execution.subtask = subtask
+    execution.save()
+
+
+from planner.models import Order, SubTask
+
+for order in Order.objects.all().order_by('-pk'):
+    try:
+        subtask = SubTask.objects.get(project_type=order.task.project_type,
+                                      name=order.order_name)
+    except:
+        subtask = SubTask.objects.create(project_type=order.task.project_type,
+                                         name=order.order_name,
+                                         part=0
+                                         )
+    order.subtask = subtask
+    order.save()
+
+
+from planner.models import Order, Execution
+
+Execution.objects.filter(subtask__pk=2457).update(subtask=2349)
+Order.objects.filter(subtask__pk=2457).update(subtask=2349)
