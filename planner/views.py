@@ -853,6 +853,7 @@ class ProjectUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'project_type_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['formset_name'] = 'Підзадачі'
         context['formset'] = forms.SubTasksFormSet(instance=self.object)
         return context
 
