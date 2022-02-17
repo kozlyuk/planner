@@ -144,7 +144,7 @@ class Employee(models.Model):
         user = get_current_user()
         if user.is_superuser:
             return True
-        elif self.head.user == user:
+        elif self.head and self.head.user == user:
             return True
 
 
