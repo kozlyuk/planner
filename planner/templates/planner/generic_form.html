@@ -63,7 +63,7 @@
                                         <table class="table table-hover mb-0 table-responsive-xl" id="formset_not_empty">
                                             <thead><tr>
                                                 {% for field in formset.0 %}
-                                                    {% if field.name == 'id' or field.name == 'DELETE' or field.name == 'project_type' %}
+                                                    {% if field.name == 'id' or field.name == 'project_type' %}
                                                     {% else %}
                                                         <th scope="col">{{ field.label }}</th>
                                                         {% endif %}
@@ -73,7 +73,7 @@
                                                 {% for form in formset %}
                                                 <tr>
                                                     {% for field in form %}
-                                                        {% if field.name == 'id' or field.name == 'DELETE' %}
+                                                        {% if field.name == 'id' or field.name == 'project_type' %}
                                                         {% else %}
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
@@ -85,25 +85,53 @@
                                                         </th>
                                                         {% endif %}
                                                     {% endfor %}
+                                                    {{ form.id }}
+                                                </tr>
                                                 {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>
+                                {% else %}
+                                    <div class="row">
+                                        <table class="table table-hover mb-0 table-responsive-xl" id="formset_empty">
+                                            <thead><tr>
+                                                {% for field in formset.empty_form %}
+                                                    {% if field.name == 'id' or field.name == 'project_type' %}
+                                                    {% else %}
+                                                        <th scope="col">{{ field.label }}</th>
+                                                        {% endif %}
+                                                {% endfor %}
+                                            </tr></thead>
+                                            <tbody><tr>
+                                                {% for field in formset.empty_form %}
+                                                    {% if field.name == 'id' or field.name == 'project_type' %}
+                                                    {% else %}
+                                                        <th class="pl-1 pr-1">
+                                                        <div class="form-group">
+                                                        {{ field|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{field.errors}}
+                                                            </div>
+                                                        </div>
+                                                        </th>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <th>{{ formset.empty_form.DELETE }}</th>
+                                            </tr></tbody>
+                                        </table>
+                                    </div>
                                 {% endif %}
-                                {{ tasks_formset.management_form }}
+                                {{ formset.management_form }}
                             </div>
                         </div>
                     </div>
                 </div>
                 {% endif %}
             </form>
+        <!-- END PAGE BASE CONTENT -->
         </div>
+    <!-- END CONTENT -->
     </div>
-    </form>
-</div>
-<!-- END PAGE BASE CONTENT -->
-</div>
-<!-- END CONTENT -->
 </div>
 <!-- END CONTAINER -->
 {% endblock %}
@@ -124,27 +152,11 @@
 <script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
 
-const addBtnExec = document.querySelector('.add-executors-formset');
-const addBtnCost = document.querySelector('.add-costs-formset');
-const addBtnSend = document.querySelector('.add-sending-formset');
-if (document.querySelector('#executors_formset')) {
+const addBtnExec = document.querySelector('.add-formset');
+if (document.querySelector('#formset')) {
     addBtnExec.addEventListener('click', () => {
-        addInitialFormset('executors_formset', addBtnExec);
-        cliсk('executors_formset', 'dynamic-formset1');
-    })
-};
-
-if (document.querySelector('#costs_formset')) {
-    addBtnCost.addEventListener('click', () => {
-        addInitialFormset('costs_formset', addBtnCost);
-        cliсk('costs_formset', 'dynamic-formset2');
-    })
-};
-
-if (document.querySelector('#sending_formset')) {
-    addBtnSend.addEventListener('click', () => {
-        addInitialFormset('sending_formset', addBtnSend);
-        cliсk('sending_formset', 'dynamic-formset3');
+        addInitialFormset('formset', addBtnExec);
+        cliсk('formset', 'dynamic-formset1');
     })
 };
 
@@ -166,107 +178,24 @@ function cliсk(formsetId, dynamicFormset) {
         setTimeout(function () {
             $('span.select2-container.select2-container--bootstrap').width('auto');
         }, 100);
-        $('#executor_formset_not_empty tbody tr').formset({
-            prefix: '{{ executors_formset.prefix }}',
+        $('#formset_not_empty tbody tr').formset({
+            prefix: '{{ formset.prefix }}',
             formCssClass: 'dynamic-formset1',
-            addText: 'Додати Виконавця',
-            deleteText: ' - ',
+            addText: 'Додати Підзадачу',
+            deleteText: 'i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function (i) {
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
-                $(row).find('.django-select2').djangoSelect2();
-            }
         });
 
-        $('#executor_formset_empty tbody tr').formset({
-            prefix: '{{ executors_formset.prefix }}',
+        $('#formset_empty tbody tr').formset({
+            prefix: '{{ formset.prefix }}',
             formCssClass: 'dynamic-formset1',
-            addText: 'Додати Виконавця',
-            deleteText: ' - ',
-            addCssClass: 'add-row-executors_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function (i) {
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-
-        $('#costs_formset_not_empty tbody tr').formset({
-            prefix: '{{ costs_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Підрядника',
-            deleteText: ' - ',
+            addText: 'Додати Підзадачу',
+            deleteText: '<i class="far fa-trash-alt"></i>',
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
-                $(row).find('.django-select2').djangoSelect2();
-            }
         });
 
-        $('#costs_formset_empty tbody tr').formset({
-            prefix: '{{ costs_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати Підрядника',
-            deleteText: ' - ',
-            addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-
-        $('#sending_formset_not_empty tbody tr').formset({
-            prefix: '{{ sending_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати Відправку',
-            deleteText: ' - ',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-
-        $('#sending_formset_empty tbody tr').formset({
-            prefix: '{{ sending_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати Відправку',
-            deleteText: ' - ',
-            addCssClass: 'add-row-sending_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
     })
 </script>
 

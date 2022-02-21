@@ -740,8 +740,9 @@ class SubTasksInlineForm(forms.ModelForm):
         widgets = {
             'part': forms.TextInput(attrs={'style' : 'height:34px'}),
             'base': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
-            'add_to_schedule': forms.CheckboxInput(attrs={'style' : 'height:15px'})
+            'add_to_schedule': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
         }
 
 
-SubTasksFormSet = inlineformset_factory(Project, SubTask, form=SubTasksInlineForm, extra=0)
+SubTasksFormSet = inlineformset_factory(Project, SubTask, form=SubTasksInlineForm,
+                                        extra=0, can_delete=False)

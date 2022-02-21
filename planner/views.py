@@ -850,13 +850,28 @@ class ProjectUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         name = context['project']
         context['header_main'] = 'Вид робіт'
-        context['back_btn_url'] = reverse(
-            'project_type_delete', kwargs={'pk': name.pk})
+        context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
         context['formset_name'] = 'Підзадачі'
-        context['formset'] = forms.SubTasksFormSet(instance=self.object)
+
+        if self.request.POST:
+            context['formset'] = forms.SubTasksFormSet(self.request.POST, instance=self.object)
+        else:
+            context['formset'] = forms.SubTasksFormSet(instance=self.object)
+
         return context
 
+    def form_valid(self, form):
+        context = self.get_context_data()
+        subtasks_formset = context['formset']
+        if subtasks_formset.is_valid():
+            with transaction.atomic():
+                form.save()
+                subtasks_formset.instance = self.object
+                subtasks_formset.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
 
 @method_decorator(login_required, name='dispatch')
 class ProjectDelete(DeleteView):
