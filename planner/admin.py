@@ -140,8 +140,8 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
 class ContractorOrdersInline(admin.TabularInline):
     model = Order
     formset = ContractorOrdersInlineFormSet
-    fields = ['order_name', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date', 'exec_status', 'actual_finish']
-    readonly_fields = ['exec_status', 'actual_finish']
+    fields = ['subtask', 'deal_number', 'value', 'advance', 'pay_status', 'pay_date', 'exec_status', 'actual_finish']
+    readonly_fields = ['subtask', 'exec_status', 'actual_finish']
     ordering = ['pay_status', '-pay_date']
     extra = 0
     can_delete = False
