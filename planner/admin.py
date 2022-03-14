@@ -137,6 +137,14 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
                 form.add_error('pay_status', 'Відмітьте Статус оплати або видаліть Дату оплати')
 
 
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['contractor', 'subtask', 'value', 'pay_status']
+    search_fields = ['contractor__name', 'subtask__name']
+    list_filter = ['task__deal__company', 'pay_status', 'task__exec_status', 'contractor']
+    date_hierarchy = 'pay_date'
+    ordering = ['-pay_date']
+
+
 class ContractorOrdersInline(admin.TabularInline):
     model = Order
     formset = ContractorOrdersInlineFormSet
@@ -721,6 +729,7 @@ admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(Contractor, ContractorAdmin)
+admin.site.register(Order, OrderAdmin)
 admin.site.register(Receiver, ReceiverAdmin)
 admin.site.register(Sending, SendingAdmin)
 admin.site.register(Deal, DealAdmin)
