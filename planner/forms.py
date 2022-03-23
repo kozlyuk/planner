@@ -8,7 +8,6 @@ from django.contrib.admin.widgets import AdminDateWidget
 from .DateTimeWidgets import SplitDateTimeWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-from django.conf.locale.uk import formats as uk_formats
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
@@ -17,8 +16,6 @@ from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Custo
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
-
-date_format = uk_formats.DATE_INPUT_FORMATS[0]
 
 
 class UserLoginForm(forms.ModelForm):

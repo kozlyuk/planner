@@ -17,15 +17,12 @@ from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
 from django.http import QueryDict
-from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
 from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
-
-date_format = uk_formats.DATE_INPUT_FORMATS[2]
 
 
 class Round(Func):
@@ -75,11 +72,11 @@ def subtasks_queryset_filter(request):
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
     if start_date:
-        start_date_value = datetime.strptime(start_date, date_format)
+        start_date_value = datetime.strptime(start_date, '%Y-%m-%d')
     else:
         start_date_value = date.today() - timedelta(days=date.today().weekday())
     if finish_date:
-        finish_date_value = datetime.strptime(finish_date, date_format)
+        finish_date_value = datetime.strptime(finish_date, '%Y-%m-%d')
     else:
         finish_date_value = start_date_value + timedelta(days=14)
     tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |

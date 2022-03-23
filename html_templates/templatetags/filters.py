@@ -1,5 +1,4 @@
 from django import template
-from django.conf.locale.uk import formats as uk_formats
 
 from ..number_to_text import num2text, decimal2text
 

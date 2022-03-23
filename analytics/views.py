@@ -15,9 +15,6 @@ from .models import Report
 from .forms import ReportForm
 from .context import context_report_render
 
-from django.conf.locale.uk import formats as uk_formats
-date_format = uk_formats.DATE_INPUT_FORMATS[2]
-
 
 @method_decorator(login_required, name='dispatch')
 class KpiRecalc(View):
@@ -71,8 +68,8 @@ class ReportRender(TemplateView):
         context['customer'] = Customer.objects.get(pk=self.request.GET.get('customer'))
         from_date = self.request.GET.get('from_date')
         to_date = self.request.GET.get('to_date')
-        context['from_date'] = datetime.strptime(from_date, date_format) if from_date else None
-        context['to_date'] = datetime.strptime(to_date, date_format) if to_date else None
+        context['from_date'] = datetime.strptime(from_date, '%Y-%m-%d') if from_date else None
+        context['to_date'] = datetime.strptime(to_date, '%Y-%m-%d') if to_date else None
         context_report = context_report_render(context['report'], context['customer'], context['company'],
                                                context['from_date'], context['to_date']
                                                )

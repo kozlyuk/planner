@@ -62,8 +62,8 @@
                                 {% if request.user.is_staff %}
                                     <td>{{ task.executor }}</td>
                                 {% endif %}
-                                <td>{% none_datetime_check task.planned_start %}</td>
-                                <td>{% none_datetime_check task.planned_finish %}</td>
+                                <td>{% none_date_check task.planned_start %}</td>
+                                <td>{% none_date_check task.planned_finish %}</td>
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>

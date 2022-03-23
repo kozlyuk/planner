@@ -115,10 +115,6 @@ USE_TZ = False
 
 USE_L10N = True
 
-# from django.conf.locale.uk import formats as uk_formats
-# uk_formats.DATE_FORMAT = 'd.m.Y'
-# uk_formats.DATE_INPUT_FORMATS = ('%d.%m.%Y',)
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 

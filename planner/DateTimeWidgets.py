@@ -1,10 +1,6 @@
 from datetime import datetime
 from django import forms
 
-from django.conf.locale.uk import formats as uk_formats
-date_format = uk_formats.DATE_INPUT_FORMATS[0]
-time_format = uk_formats.TIME_INPUT_FORMATS[0]
-
 
 class SplitDateTimeWidget(forms.SplitDateTimeWidget):
     """
