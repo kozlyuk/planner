@@ -147,7 +147,7 @@ def none_date_check(date):
     ''' Return date in rigth format if it exist '''
     if date:
         return date.strftime(date_format)
-    return 'Дата не вказана'
+    return 'Не вказано'
 
 
 @register.simple_tag()
@@ -155,7 +155,7 @@ def none_datetime_check(date):
     ''' Return date in rigth format if it exist '''
     if date:
         return date.strftime(time_format)
-    return 'Дата не вказана'
+    return 'Не вказано'
 
 
 @register.simple_tag()
