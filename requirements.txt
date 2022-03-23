@@ -15,6 +15,7 @@ Pillow
 redis
 celery
 django-object-actions
+businesstimedelta
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk
