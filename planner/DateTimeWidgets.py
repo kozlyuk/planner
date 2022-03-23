@@ -32,14 +32,14 @@ class SplitDateTimeWidget(forms.SplitDateTimeWidget):
         date_str, time_str = super().value_from_datadict(data, files, name)
         # DateField expects a single string that it can parse into a date.
 
-        if date_str == time_str == '':
+        if date_str == '':
             return None
 
         if time_str == '':
-            time_str = '00:00'
+            time_str = '09:00'
 
         my_datetime = datetime.strptime(date_str + ' ' + time_str, "%Y-%m-%d %H:%M")
-        # making timezone aware
+
         return my_datetime
 
 
