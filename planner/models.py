@@ -1062,6 +1062,11 @@ class Execution(models.Model):
 
     def save(self, *args, logging=True, **kwargs):
 
+        # Remove planned_start planned_finish when executor field empty
+        if self.executor is None:
+            self.planned_start = None
+            self.planned_finish = None
+
         # Automatic change Task.exec_status when Execution has changed
         if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.task.exec_status == Task.ToDo:
             self.task.exec_status = Task.InProgress
