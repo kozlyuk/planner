@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from django.db import models
 from django.db.models import Sum, Max
 from django.db.models.signals import post_save
@@ -15,8 +15,10 @@ from decimal import Decimal, ROUND_HALF_UP
 from stdimage.models import StdImageField
 from eventlog.models import log
 from html_templates.models import HTMLTemplate
+
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
+from .timeplanning import recalc_queue
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -166,8 +168,7 @@ class Customer(Requisites):
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
-    debtor_term = models.PositiveSmallIntegerField(
-        'Термін післяоплати', blank=True, null=True)
+    debtor_term = models.PositiveSmallIntegerField('Термін післяоплати', blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
     deal_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон договору', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_deals')
     act_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон акту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_acts')
@@ -743,7 +744,7 @@ class Task(models.Model):
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
                     if execution.finish_date is None:
-                        execution.finish_date = date.today()
+                        execution.finish_date = datetime.now()
                     execution.save()
 
          # Automatic set finish_date when Task has done
@@ -928,6 +929,7 @@ class Order(models.Model):
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
+    # TODO remove order_name
     order_name = models.CharField('Назва робіт', max_length=30, blank=True, null=True)
     deal_number = models.CharField('Номер договору', max_length=30)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
@@ -937,8 +939,8 @@ class Order(models.Model):
 
     class Meta:
         unique_together = ('contractor', 'task', 'order_name')
-        verbose_name = 'Підрядники'
-        verbose_name_plural = 'Підрядник'
+        verbose_name = 'Замовлення'
+        verbose_name_plural = 'Замовлення'
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
@@ -959,6 +961,10 @@ class Order(models.Model):
         log(user=get_current_user(),
             action='Видалений підрядник по проекту', extra={"title": title})
         super(Order, self).delete(*args, **kwargs)
+
+    def get_exec_status(self):
+        return self.task.get_exec_status_display()
+    get_exec_status.short_description = 'Статус виконання'
 
 
 class Sending(models.Model):
@@ -1034,13 +1040,14 @@ class Execution(models.Model):
     executor = models.ForeignKey(Employee, verbose_name='Виконавець', blank=True, null=True, on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
+    # TODO remove part_name
     part_name = models.CharField('Роботи', max_length=100, blank=True, null=True)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    planned_start = models.DateField('Плановий початок', blank=True, null=True)
-    planned_finish = models.DateField('Планове закінчення', blank=True, null=True)
-    start_date = models.DateField('Початок виконання', blank=True, null=True)
-    finish_date = models.DateField('Кінець виконання', blank=True, null=True)
+    planned_start = models.DateTimeField('Плановий початок', blank=True, null=True)
+    planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
+    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
+    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
@@ -1066,13 +1073,13 @@ class Execution(models.Model):
 
         # Automatic set start_date when exec_status has changed
         if self.exec_status in [Execution.InProgress, Execution.OnChecking, Execution.Done] and self.start_date is None:
-            self.start_date = date.today()
+            self.start_date = datetime.now()
         elif self.exec_status == Execution.ToDo and self.start_date is not None:
             self.start_date = None
 
         # Automatic set finish_date when Execution has done
         if self.exec_status in [Execution.Done] and self.finish_date is None:
-            self.finish_date = date.today()
+            self.finish_date = datetime.now()
         elif self.exec_status in [Execution.ToDo, Execution.InProgress, Execution.OnChecking] and self.finish_date is not None:
             self.finish_date = None
 
@@ -1087,21 +1094,24 @@ class Execution(models.Model):
                 log(user=get_current_user(),
                     action='Оновлена частина проекту', extra={"title": title})
 
-        super(Execution, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        # Recal employee execution queue
+        if self.executor:
+            recalc_queue(self.executor)
 
     def delete(self, *args, **kwargs):
         title = self.task.object_code + ' ' + \
             self.task.project_type.price_code + ' ' + self.subtask.name
         log(user=get_current_user(),
             action='Видалена частина проекту', extra={"title": title})
-        super(Execution, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def warning_select(self):
         """Show subtask warning if it exist. Else show task warning"""
         if self.warning:
             return self.warning
         if self.planned_finish and self.exec_status != self.Done:
-            if self.planned_finish < date.today():
+            if self.planned_finish.date() < date.today():
                 return 'Протерміновано %s' % self.planned_finish.strftime(date_format)
             return 'Завершити до %s' % self.planned_finish.strftime(date_format)
         return self.task.warning
@@ -1121,7 +1131,7 @@ class Execution(models.Model):
         if self.finish_date.month == date.today().month and self.finish_date.year == date.today().year:
             return True
         # if date less than 10 days from today return True
-        date_delta = date.today() - self.finish_date
+        date_delta = datetime.now() - self.finish_date
         if date_delta.days < 10:
             return True
         return False
