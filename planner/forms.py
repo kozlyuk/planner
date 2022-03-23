@@ -5,6 +5,7 @@ from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
+from .DateTimeWidgets import SplitDateTimeWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from django.conf.locale.uk import formats as uk_formats
@@ -341,10 +342,10 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'project_type': Select2Widget,
             'deal': Select2Widget,
-            'planned_start': AdminDateWidget,
-            'planned_finish': AdminDateWidget,
-            'actual_finish': AdminDateWidget,
-            'tc_received': AdminDateWidget,
+            'planned_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'planned_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'actual_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'tc_received': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'tc_upload': NotClearableFileInput,
             'pdf_copy': NotClearableFileInput,
         }
@@ -418,8 +419,9 @@ class ExecutorInlineForm(forms.ModelForm):
         widgets = {
             'executor': Select2Widget(),
             'subtask': Select2Widget(),
-            'planned_start': AdminDateWidget(),
-            'planned_finish': AdminDateWidget(),
+            'planned_start': SplitDateTimeWidget(),
+            'planned_finish': SplitDateTimeWidget(),
+            'finish_date': SplitDateTimeWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
@@ -485,7 +487,7 @@ class OrderInlineForm(forms.ModelForm):
         widgets = {
             'contractor': Select2Widget(),
             'subtask': Select2Widget(),
-            'pay_date': AdminDateWidget(),
+            'pay_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
@@ -542,7 +544,7 @@ class SendingInlineForm(forms.ModelForm):
         fields = ['receiver', 'receipt_date', 'copies_count', 'register_num']
         widgets = {
             'receiver': Select2Widget(),
-            'receipt_date': AdminDateWidget(),
+            'receipt_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 

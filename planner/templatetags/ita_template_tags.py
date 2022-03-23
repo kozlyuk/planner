@@ -9,6 +9,7 @@ from planner.models import Execution
 
 register = template.Library()
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
+time_format = uk_formats.DATETIME_INPUT_FORMATS[0]
 
 
 @register.filter(name='has_group')
@@ -147,6 +148,15 @@ def none_date_check(date):
     if date:
         return date.strftime(date_format)
     return 'Дата не вказана'
+
+
+@register.simple_tag()
+def none_datetime_check(date):
+    ''' Return date in rigth format if it exist '''
+    if date:
+        return date.strftime(time_format)
+    return 'Дата не вказана'
+
 
 @register.simple_tag()
 def status_change(user, pk, status):
