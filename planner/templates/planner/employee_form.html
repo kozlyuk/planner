@@ -138,16 +138,3 @@ div.fakefile {
     </div>
 </div>
 {% endblock %}
-
-{% block extrahead %}
-<script>
-$(document).ready( function() {
-$(".custom-file input[type=file]").change(function(){
-var filename = $(this).val().replace(/.*\\/, "");
-$("#filename").val(filename);
-});
-});
-        </script>
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-<script type="text/javascript" src="/static/admin/js/core.js"></script>
-{% endblock %}

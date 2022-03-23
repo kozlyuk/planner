@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 from django import forms
 from django_select2.forms import Select2Widget
-from django.contrib.admin.widgets import AdminDateWidget
 from django.conf.locale.uk import formats as uk_formats
 
 from planner.models import Company, Customer
@@ -23,5 +22,11 @@ class ReportForm(forms.Form):
     report = forms.ChoiceField(label='Звіт', widget=Select2Widget())
     company = forms.ChoiceField(label='Компанія', widget=Select2Widget())
     customer = forms.ChoiceField(label='Замовник', widget=Select2Widget())
-    from_date = forms.DateField(label='Дата початку', widget=AdminDateWidget(), required=False)
-    to_date = forms.DateField(label='Дата завершення', widget=AdminDateWidget(), required=False)
+    from_date = forms.DateField(label='Дата початку',
+                                widget=forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+                                required=False
+                                )
+    to_date = forms.DateField(label='Дата завершення',
+                              widget=forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+                              required=False
+                              )

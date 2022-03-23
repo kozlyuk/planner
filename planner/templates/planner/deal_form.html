@@ -46,7 +46,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.number|attr:"style: height: 34px; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.number|attr:"style: padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.number.errors}}
                                                         </div>
@@ -57,7 +57,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.date|attr:"style: height: 34px; width:10%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.date|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.date.errors}}
                                                         </div>
@@ -72,7 +72,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.customer|attr:"style: height:34px; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.customer|attr:"style:  padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.customer.errors}}
                                                         </div>
@@ -84,7 +84,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.company|attr:"style: height:34px; width:100%; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.company|attr:"style:  width:100%; padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.company.errors}}
                                                             </div>
@@ -100,7 +100,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.value|attr:"style: width:100%; height:34px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.value|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.value.errors}}
                                                             </div>
@@ -112,7 +112,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.expire_date|attr:"style: height:34px; width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.expire_date|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.expire_date.errors}}
                                                         </div>
@@ -138,7 +138,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.value_correction|attr:"style: width:100%; height:28px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        {{ form.value_correction|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.value_correction.errors}}
                                                             </div>
@@ -154,7 +154,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.parent_deal_number|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        {{ form.parent_deal_number|attr:"style: width:100%; padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.parent_deal_number.errors}}
                                                             </div>
@@ -166,7 +166,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.parent_deal_date|attr:"style: width:60%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        {{ form.parent_deal_date|attr:"style:  width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                         <div class="invalid-feedback">
                                                             {{form.parent_deal_date.errors}}
                                                         </div>
@@ -181,7 +181,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                        {{ form.comment|attr:"style: width:100%; height:56px; padding-left: 8px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                        {{ form.comment|attr:"style: width:100%; height:56px; padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.comment.errors}}
                                                             </div>
@@ -290,28 +290,12 @@
                                                     {% if field.name == 'deal' or field.name == 'id' or field.name == 'DELETE'  %}
                                                     {% else %}
                                                     <th class="pl-1 pr-1">
-                                                        {% comment %} <div class="col {{field.name}}">
-                                                            <label
-                                                                for="id_{{ form.prefix }}-{{field.name}}">{{ field.label }}:</label>
-                                                        </div> {% endcomment %}
-                                                        {% if field.name == 'planned_finish' %}
-                                                        {{ field|attr:"style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{field.errors}}
-                                                        </div>
-                                                        {% elif field.name == 'object_code' %}
-                                                        {{ field|attr:"style: width:50%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{field.errors}}
-                                                        </div>
-                                                        {% elif field %}
                                                         <div class="form-group">
-                                                        {{ field|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ field|attr:"style: width:100%;  padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{field.errors}}
                                                             </div>
                                                         </div>
-                                                        {% endif %}
                                                     </th>
                                                     {% endif %}
                                                     {% endfor %}
@@ -366,21 +350,21 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{ tasks_formset.empty_form.owner|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ tasks_formset.empty_form.owner|attr:"style: width:100%;  padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{tasks_formset.empty_form.owner.errors}}
                                                         </div>
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {{ tasks_formset.empty_form.planned_finish|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ tasks_formset.empty_form.planned_finish|attr:"style: width:100%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{tasks_formset.empty_form.owner.errors}}
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{ tasks_formset.empty_form.exec_status|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ tasks_formset.empty_form.exec_status|attr:"style: width:100%;  padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{tasks_formset.empty_form.exec_status.errors}}
                                                         </div>
@@ -388,7 +372,7 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{ tasks_formset.empty_form.act_of_acceptance|attr:"style: width:100%; height:34px; padding-left: 5px; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ tasks_formset.empty_form.act_of_acceptance|attr:"style: width:100%;  padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{tasks_formset.empty_form.act_of_acceptance.errors}}
                                                         </div>
@@ -441,14 +425,14 @@
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.date|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{form.value|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{form.value|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
                                                                     {{form.value.errors}}
                                                                 </div>
@@ -470,12 +454,12 @@
                                                                 <a href="{% url 'act_render' form.instance.pk %}"
                                                                 class="btnLink"
                                                                 style="font-size: 20px; font-weight: 100;">
-                                                                <i style="font-size: 16px;" data-toggle="tooltip" title="Згенерувати акт" data-placement="right" class="fas fa-file-invoice"></i>
+                                                                <i style="" data-toggle="tooltip" title="Згенерувати акт" data-placement="right" class="fas fa-file-invoice"></i>
                                                                 </a>
                                                                 <a href="{% url 'act_generate_pdf' form.instance.pk %}"
                                                                 class="btnLink"
                                                                 style="font-size: 20px; font-weight: 100;">
-                                                                <i style="font-size: 16px;" data-toggle="tooltip" title="Згенерувати pdf" data-placement="right" class="fas fa-file-pdf"></i>
+                                                                <i style="" data-toggle="tooltip" title="Згенерувати pdf" data-placement="right" class="fas fa-file-pdf"></i>
                                                                 </a>
                                                             {% endif %}
                                                             {{ form.id }}{{ form.DELETE }}
@@ -511,14 +495,14 @@
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{actofacceptance_formset.empty_form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{actofacceptance_formset.empty_form.date|attr:"style: width:100%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{actofacceptance_formset.empty_form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{actofacceptance_formset.empty_form.value|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{actofacceptance_formset.empty_form.value|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
                                                                     {{actofacceptance_formset.empty_form.value.errors}}
                                                                 </div>
@@ -526,7 +510,7 @@
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{actofacceptance_formset.empty_form.pdf_copy|attr:"style: width:50%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{actofacceptance_formset.empty_form.pdf_copy|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
                                                                     {{actofacceptance_formset.empty_form.errors}}
                                                                 </div>
@@ -570,20 +554,20 @@
                                                     {% for form in payment_formset %}
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.date|attr:"style: width:20%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.value|attr:"style: width:30%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.value|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.value.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{ form.act_of_acceptance|attr:"style: width:30%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                {{ form.act_of_acceptance|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                                 <div class="invalid-feedback">
                                                                     {{form.act_of_acceptance.errors}}
                                                                 </div>
@@ -614,20 +598,20 @@
 
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{payment_formset.empty_form.date|attr:"style: width:20%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{payment_formset.empty_form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{payment_formset.empty_form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{payment_formset.empty_form.value|attr:"style: width:30%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{payment_formset.empty_form.value|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{payment_formset.empty_form.value.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{ payment_formset.empty_form.act_of_acceptance|attr:"style: width:30%; font-size: 14px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                                {{ payment_formset.empty_form.act_of_acceptance|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                                 <div class="invalid-feedback">
                                                                     {{payment_formset.empty_form.act_of_acceptance.errors}}
                                                                 </div>
@@ -680,10 +664,6 @@
 <!-- END CONTAINER -->
 {% endblock %}
 
-{% block css %}
-<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
-{% endblock css %}
-
 {% block extrahead %}
 <script type="text/javascript">
     window.onerror = function (msg) {
@@ -694,8 +674,6 @@
     })
 </script>
 <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-<script type="text/javascript" src="/static/admin/js/core.js"></script>
 <script type="text/javascript">
 
 const addBtnExec = document.querySelector('.add-tasks-formset');
@@ -748,13 +726,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function (i) {
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
@@ -767,13 +738,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row-tasks_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
-                //find the fields with the calendar widget
-                $(row).find('.vDateField').each(function (i) {
-                    //remove the cloned spam element: it links to an incorrect calendar
-                    $(this).parent().find('span').remove();
-                    //DateTimeShortcuts is in the django admin widgets
-                    DateTimeShortcuts.addCalendar(this);
-                })
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
@@ -786,10 +750,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
                 $(row).find('.django-select2').djangoSelect2();
                 // $(row).find('.pdf_copy').html("Документ згенерується після збереження");
             }
@@ -804,10 +764,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row-actofacceptance_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
@@ -820,10 +776,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge-pill badge-danger',
             'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });
@@ -836,10 +788,6 @@ function cliсk(formsetId, dynamicFormset) {
             addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
             deleteCssClass: 'delete-row badge badge-pill badge-danger',
             'added': function (row) {
-                $(row).find('.vDateField').each(function (i) {
-                    $(this).parent().find('span').remove();
-                    DateTimeShortcuts.addCalendar(this);
-                });
                 $(row).find('.django-select2').djangoSelect2();
             }
         });

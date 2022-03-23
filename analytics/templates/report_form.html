@@ -16,23 +16,23 @@
                 <h2>Оберіть звіт, компанію та період</h2><br>
                 <div class="row">
                     <div class="col-2">{{ form.report.label }}:</div>
-                    <div class="col-3">{{ form.report|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                    <div class="col-3">{{ form.report|attr:"style: padding-left: 8px;"|add_class:"form-control" }}</div>
                 </div><br>
                 <div class="row">
                     <div class="col-2">{{ form.company.label }}:</div>
-                    <div class="col-3">{{ form.company|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                    <div class="col-3">{{ form.company|attr:"style: padding-left: 8px;"|add_class:"form-control" }}</div>
                 </div><br>
                 <div class="row">
                     <div class="col-2">{{ form.customer.label }}:</div>
-                    <div class="col-3">{{ form.customer|attr:"style: height: 34px; width:100%; display: inline-block; padding-left: 8px;" }}</div>
+                    <div class="col-3">{{ form.customer|attr:"style: padding-left: 8px;"|add_class:"form-control" }}</div>
                 </div><br>
                 <div class="row">
                     <div class="col-2">{{ form.from_date.label }}:</div>
-                    <div class="col-3">{{ form.from_date|attr:"style: height: 34px; width:30%; display: inline-block; padding-left: 8px;" }}</div>
+                    <div class="col-3">{{ form.from_date|attr:"style: height: 28px; width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control" }}</div>
                 </div><br>
                 <div class="row">
                     <div class="col-2">{{ form.to_date.label }}:</div>
-                    <div class="col-3">{{ form.to_date|attr:"style: height: 34px; width:30%; display: inline-block; padding-left: 8px;" }}</div>
+                    <div class="col-3">{{ form.to_date|attr:"style: height: 28px; width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control" }}</div>
                 </div>
                 <button type="submit" name="generate_pdf" value="True"
                     class="btn dark btn-sm btn-outline sbold uppercase"
@@ -48,12 +48,3 @@
 </div>
 <!-- END CONTAINER -->
 {% endblock %}
-
-{% block css %}
-<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
-{% endblock css %}
-
-{% block extrahead %}
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-<script type="text/javascript" src="/static/admin/js/core.js"></script>
-{% endblock extrahead %}

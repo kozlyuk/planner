@@ -110,15 +110,12 @@
 </script>
 {% endblock %}
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css"/>
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
 {% endblock css %}
 
 {% block extrahead %}
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script type="text/javascript" src="{% static 'air_datepicker/main.min.js' %}"></script>
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-    <script type="text/javascript" src="/static/admin/js/core.js"></script>
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
     <script>
         $(function () {

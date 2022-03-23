@@ -25,7 +25,7 @@ from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
 
-date_format = uk_formats.DATE_INPUT_FORMATS[0]
+date_format = uk_formats.DATE_INPUT_FORMATS[2]
 
 
 class Round(Func):

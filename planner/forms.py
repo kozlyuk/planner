@@ -43,8 +43,8 @@ class EmployeeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['vacation_date'].widget = AdminDateWidget()
-        self.fields['birthday'].widget = AdminDateWidget()
+        self.fields['vacation_date'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
+        self.fields['birthday'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
         groups = [(group.id, group.name) for group in Group.objects.all()]
         self.fields['groups'].choices = groups
 
@@ -142,11 +142,11 @@ class DealForm(forms.ModelForm):
                   'pdf_copy', 'value_correction', 'comment', 'manual_warning',
                   'parent_deal_number', 'parent_deal_date']
         widgets = {
-            'date': AdminDateWidget,
+            'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'customer': Select2Widget,
             'company': Select2Widget,
-            'expire_date': AdminDateWidget,
-            'parent_deal_date': AdminDateWidget,
+            'expire_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'parent_deal_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'pdf_copy': NotClearableFileInput,
         }
 
@@ -172,7 +172,7 @@ class TasksInlineForm(forms.ModelForm):
         widgets = {
             'object_code': BtnWidget(),
             'project_type': Select2Widget(),
-            'planned_finish': AdminDateWidget(),
+            'planned_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'DELETE': forms.HiddenInput(),
         }
 
@@ -206,7 +206,7 @@ class ActOfAcceptanceInlineForm(forms.ModelForm):
         model = ActOfAcceptance
         fields = ['number', 'date', 'value', 'pdf_copy']
         widgets = {
-            'date': AdminDateWidget(),
+            'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'DELETE': forms.HiddenInput(),
             'pdf_copy': NotClearableFileInput,
         }
@@ -234,7 +234,7 @@ class PaymentInlineForm(forms.ModelForm):
         model = Payment
         fields = ['date', 'value', 'act_of_acceptance']
         widgets = {
-            'date': AdminDateWidget(),
+            'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'DELETE': forms.HiddenInput(),
         }
 
@@ -320,9 +320,11 @@ class SprintFilterForm(forms.Form):
     start_date_value = date.today() - timedelta(days=date.today().weekday())
     finish_date_value = start_date_value + timedelta(days=14)
     start_date = forms.DateField(label='Дата початку',
-                                 widget=AdminDateWidget(attrs={"value": start_date_value.strftime(date_format)}))
+                                 widget=forms.DateInput(format=('%d.%m.%Y'),
+                                 attrs={'type': 'date', "value": start_date_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
     finish_date = forms.DateField(label='Дата завершення',
-                                  widget=AdminDateWidget(attrs={"value": finish_date_value.strftime(date_format)}))
+                                 widget=forms.DateInput(format=('%d.%m.%Y'),
+                                 attrs={'type': 'date', "value": finish_date_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
@@ -675,14 +677,6 @@ class CustomerForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['requisites'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['email'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['debtor_term'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['user'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['deal_template'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['act_template'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['invoice_template'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['report_template'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['deal_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Deal)
         self.fields['act_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Act)
         self.fields['invoice_template'].queryset = HTMLTemplate.objects.filter(document_type=HTMLTemplate.Invoice)
@@ -706,9 +700,6 @@ class CompanyForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['chief'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['taxation'].widget.attrs.update({'style': 'font-size:14px;'})
-        self.fields['requisites'].widget.attrs.update({'style': 'font-size:14px;'})
         self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
 
 

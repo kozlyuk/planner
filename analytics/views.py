@@ -16,7 +16,7 @@ from .forms import ReportForm
 from .context import context_report_render
 
 from django.conf.locale.uk import formats as uk_formats
-date_format = uk_formats.DATE_INPUT_FORMATS[0]
+date_format = uk_formats.DATE_INPUT_FORMATS[2]
 
 
 @method_decorator(login_required, name='dispatch')
