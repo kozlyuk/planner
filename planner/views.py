@@ -590,21 +590,25 @@ class ExecutionStatusChange(View):
     """ View change Execution exec_status to given in url """
 
     def dispatch(self, request, *args, **kwargs):
-        obj = Execution.objects.filter(pk=kwargs['pk']).first()
-        if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
-            if request.user.is_superuser or request.user == obj.task.owner.user:
-                return super().dispatch(request, *args, **kwargs)
-            if request.user == obj.executor.user:
-                if kwargs['status'] != Execution.Done:
+        try:
+            obj = Execution.objects.get(pk=kwargs['pk'])
+            if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
+                if request.user == obj.executor.user and kwargs['status'] != Execution.Done:
                     return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
+                if request.user.is_superuser or request.user == obj.task.owner.user:
+                    return super().dispatch(request, *args, **kwargs)
+            raise PermissionDenied
+        except:
+            raise Execution.DoesNotExist
 
     def get(self, request, *args, **kwargs):
-        obj = Execution.objects.filter(pk=kwargs['pk']).first()
-        if obj:
+        try:
+            obj = Execution.objects.get(pk=kwargs['pk'])
             obj.exec_status = kwargs['status']
             obj.save()
-        return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
+            return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
+        except:
+            raise Execution.DoesNotExist
 
 
 # @method_decorator(login_required, name='dispatch')
