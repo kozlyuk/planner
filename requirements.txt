@@ -9,6 +9,7 @@ django-mptt-admin
 django-select2
 django-stdimage
 django-widget-tweaks
+django-dotenv
 mysqlclient
 pandas
 Pillow
@@ -16,6 +17,11 @@ redis
 celery
 django-object-actions
 businesstimedelta
+
+# Rest API
+djangorestframework
+django-cors-headers
+
 
 # Debuging tools
 django-silk         # https://github.com/jazzband/django-silk
