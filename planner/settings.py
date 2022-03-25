@@ -13,14 +13,23 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from planner.settings_local import *
 from planner.settings_appearance import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get("DEBUG") == 'TRUE'
+
+SITE_URL = os.environ.get("SITE_URL")
+
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
 
 # Application definition
 
@@ -46,6 +55,8 @@ INSTALLED_APPS = [
     'django_admin_listfilter_dropdown',
     'fontawesome_5',
     'django_object_actions',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +92,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'planner.wsgi.application'
 
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': os.environ.get("ENGINE"),
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
+        'OPTIONS': {'charset': 'utf8mb4'},
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -107,8 +132,6 @@ LANGUAGE_CODE = 'uk'
 
 TIME_ZONE = 'Europe/Kiev'
 
-DATE_FORMAT = "d.m.Y"
-
 USE_I18N = True
 
 USE_TZ = False
@@ -122,6 +145,28 @@ STATIC_ROOT = os.path.join(BASE_DIR, "planner/static/")
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = '/media/'
+
+# CORS settings
+CORS_ORIGIN_ALLOW_ALL = os.environ.get("CORS_ORIGIN_ALLOW_ALL") == 'TRUE'
+CORS_ORIGIN_WHITELIST = os.environ.get("CORS_ORIGIN_WHITELIST").split(" ")
+CORS_ALLOW_HEADERS = os.environ.get("CORS_ALLOW_HEADERS").split(" ")
+CORS_ALLOW_CREDENTIALS = False
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication' #need to disable
+        ),
+
+    'PAGE_SIZE': 100,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+}
 
 # SELECT2 settings
 SELECT2_JS = 'django_select2/select2.min.js'
@@ -175,11 +220,41 @@ LOGGING = {
     },
 }
 
+# REDIS and CELERY related settings
+CELERY_BROKER_URL = os.environ.get("REDIS_SERVER")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Email related settings
+EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED") == 'TRUE'
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS") == 'TRUE'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+
+# SMS related settings
+SMS_ENABLED = os.environ.get("SMS_ENABLED") == 'TRUE'
+SMS_SERVER_URL = os.environ.get("SMS_SERVER_URL")
+SMS_TOKEN = os.environ.get("SMS_TOKEN")
+SMS_SENDER = os.environ.get("SMS_SENDER")
+OTP_SECRET = os.environ.get("OTP_SECRET")
+
 # Sentry settings
 if not DEBUG:
+    SENTRY_DSN = os.environ.get("SENTRY_DSN")
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(), RedisIntegration()],
+        integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
         traces_sample_rate=0,
 
         # If you wish to associate users to errors (assuming you are using
