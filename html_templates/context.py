@@ -44,7 +44,7 @@ def context_bonus_per_month(employee, period):
                         Execution._meta.get_field('subtask').verbose_name,
                         Execution._meta.get_field('part').verbose_name,
                         Task.exec_bonus.short_description,
-                        Execution._meta.get_field('finish_date').verbose_name,
+                        Execution._meta.get_field('actual_finish').verbose_name,
                         ]
     executions = employee.executions_for_period(period)
     index = 0
@@ -62,7 +62,7 @@ def context_bonus_per_month(employee, period):
                                 ex.subtask.name,
                                 ex.part,
                                 exec_bonus,
-                                ex.finish_date
+                                ex.actual_finish
                                 ])
         bonuses += exec_bonus
     # get inttasks

@@ -172,8 +172,8 @@ def context_projector(user):
     ip_executions = user_executions.filter(exec_status=Execution.InProgress)
     oc_executions = user_executions.filter(exec_status=Execution.OnChecking)
     hd_executions = user_executions.filter(exec_status=Execution.Done,
-                                           finish_date__month=date.today().month,
-                                           finish_date__year=date.today().year)
+                                           actual_finish__month=date.today().month,
+                                           actual_finish__year=date.today().year)
     td_executions_count = td_executions.count()
     ip_executions_count = ip_executions.count()
     oc_executions_count = oc_executions.count()

@@ -37,7 +37,7 @@
                                 {% if request.user.is_staff %}
                                     <th class="print-ignore uppercase">змінити статус</th>
                                 {% endif %}
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'finish_date' %}">дата виконання</a></th>
+                                <th class="uppercase"><a href="?{% url_replace request 'o' 'actual_finish' %}">дата виконання</a></th>
                                 <th class="uppercase"> попередження </th>
                             </tr>
                         </thead>
@@ -62,8 +62,8 @@
                                 {% if request.user.is_staff %}
                                     <td>{{ task.executor }}</td>
                                 {% endif %}
-                                <td>{% none_date_check task.planned_start %}</td>
-                                <td>{% none_date_check task.planned_finish %}</td>
+                                <td>{% none_datetime_check task.planned_start %}</td>
+                                <td>{% none_datetime_check task.planned_finish %}</td>
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>
@@ -72,7 +72,7 @@
                                         {% status_change request.user task.pk task.exec_status %}
                                     </td>
                                 {% endif %}
-                                <td>{% none_date_check task.finish_date %}</td>
+                                <td>{% none_date_check task.actual_finish %}</td>
                                 <td>
                                     <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
                                         {{task.warning_select}}

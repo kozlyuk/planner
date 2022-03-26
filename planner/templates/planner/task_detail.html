@@ -140,7 +140,7 @@
                                                     Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
                                                     Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
                                                     Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
-                                                    {% if executor.finish_date %}Дата виконання: <strong>{{ executor.finish_date }}</strong><br>{% endif %}
+                                                    {% if executor.actual_finish %}Дата виконання: <strong>{{ executor.actual_finish }}</strong><br>{% endif %}
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -161,7 +161,7 @@
                                             <h4 class="widget-media-body-title">
                                                 <a href="#">{{ cost.contractor.name }}</a>
                                             </h4>
-                                            Назва робіт: <strong>{{ cost.order_name }}</strong><br>
+                                            Назва робіт: <strong>{{ cost.subtask.name }}</strong><br>
                                             Договір: <strong>{{ cost.deal_number }}</strong><br>
                                             Вартість робіт: <div class="widget-btn-blue circle"> {{ cost.value }} грн.</div>
                                             <br>

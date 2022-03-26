@@ -82,35 +82,3 @@ from planner.models import Order, Execution
 
 Execution.objects.filter(subtask__pk=2823).update(subtask=2989)
 Order.objects.filter(subtask__pk=2823).update(subtask=2989)
-
-
-from planner.models import Execution
-from datetime import timedelta
-
-objs = []
-for exec in Execution.objects.filter(start_date__isnull=False):
-    exec.start_date = exec.start_date + timedelta(hours=9)
-    objs.append(exec)
-
-Execution.objects.bulk_update(objs, ['start_date'])
-
-objs = []
-for exec in Execution.objects.filter(finish_date__isnull=False):
-    exec.finish_date = exec.finish_date + timedelta(hours=9)
-    objs.append(exec)
-
-Execution.objects.bulk_update(objs, ['finish_date'])
-
-objs = []
-for exec in Execution.objects.filter(planned_start__isnull=False):
-    exec.planned_start = exec.planned_start + timedelta(hours=9)
-    objs.append(exec)
-
-Execution.objects.bulk_update(objs, ['planned_start'])
-
-objs = []
-for exec in Execution.objects.filter(planned_finish__isnull=False):
-    exec.planned_finish = exec.planned_finish + timedelta(hours=9)
-    objs.append(exec)
-
-Execution.objects.bulk_update(objs, ['planned_finish'])
