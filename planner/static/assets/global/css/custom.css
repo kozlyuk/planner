@@ -253,10 +253,6 @@ hidden {
     color: red;
 }
 
-#id_finish_date, #id_start_date {
-    width: 70px;
-}
-
 /* Custom badge colors start */
 
 .badge--color1 {

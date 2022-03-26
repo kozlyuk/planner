@@ -40,13 +40,13 @@ class GetPlan(TemplateView):
         """ prepare json-coded data for gantt """
         context = super().get_context_data(*args, **kwargs)
         # get subtasks_queryset_filter
-        subtasks, start_date, end_date = subtasks_queryset_filter(self.request)
+        subtasks, actual_start, end_date = subtasks_queryset_filter(self.request)
         projects = subtasks.values_list('task', flat=True)
         # distinct values
         projects = list(set(projects))
         # prepare dictionary
         gantt_data = {"view_mode": "project_view",
-                      "start_date": str(start_date),
+                      "start_date": str(actual_start),
                       "end_date": str(end_date),
                       "projects": []}
         for index, project_id in enumerate(projects):
@@ -69,8 +69,8 @@ class GetPlan(TemplateView):
                                                                "exec_status": task.exec_status,
                                                                "planned_start": str(task.planned_start),
                                                                "planned_finish": str(task.planned_finish),
-                                                               "start_date": str(task.start_date),
-                                                               "finish_date": str(task.finish_date)})
+                                                               "start_date": str(task.actual_start),
+                                                               "finish_date": str(task.actual_finish)})
         context['gantt_data'] = json.dumps(gantt_data)
         return context
 

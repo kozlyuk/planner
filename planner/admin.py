@@ -428,11 +428,11 @@ class ExecutersInlineFormSet(BaseInlineFormSet):
             if executor and executor.user.username.startswith('outsourcing'):
                 outsourcing_part += part
             exec_status = form.cleaned_data.get('exec_status')
-            finish_date = form.cleaned_data.get('finish_date')
-            if finish_date and exec_status != Execution.Done:
+            actual_finish = form.cleaned_data.get('actual_finish')
+            if actual_finish and exec_status != Execution.Done:
                 raise ValidationError(
                     "Будь ласка відмітьте Статус виконання або видаліть Дату виконання")
-            elif exec_status == Execution.Done and not finish_date:
+            elif exec_status == Execution.Done and not actual_finish:
                 raise ValidationError(
                     "Вкажіть будь ласка Дату виконання робіт")
         self.instance.__outsourcing_part__ = outsourcing_part

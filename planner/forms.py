@@ -314,14 +314,14 @@ class SprintFilterForm(forms.Form):
                                         widget=Select2MultipleWidget(
                                             attrs={"onChange": 'submit()', "style": 'width: 100%'}))
 
-    start_date_value = date.today() - timedelta(days=date.today().weekday())
-    finish_date_value = start_date_value + timedelta(days=14)
-    start_date = forms.DateField(label='Дата початку',
+    actual_start_value = date.today() - timedelta(days=date.today().weekday())
+    actual_finish_value = actual_start_value + timedelta(days=14)
+    actual_start = forms.DateField(label='Дата початку',
                                  widget=forms.DateInput(format=('%d.%m.%Y'),
-                                 attrs={'type': 'date', "value": start_date_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
-    finish_date = forms.DateField(label='Дата завершення',
+                                 attrs={'type': 'date', "value": actual_start_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
+    actual_finish = forms.DateField(label='Дата завершення',
                                  widget=forms.DateInput(format=('%d.%m.%Y'),
-                                 attrs={'type': 'date', "value": finish_date_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
+                                 attrs={'type': 'date', "value": actual_finish_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
@@ -414,13 +414,13 @@ class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
         fields = ['executor', 'subtask', 'part', 'exec_status',
-                  'finish_date', 'planned_start', 'planned_finish', 'warning']
+                  'actual_finish', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
             'subtask': Select2Widget(),
             'planned_start': SplitDateTimeWidget(),
             'planned_finish': SplitDateTimeWidget(),
-            'finish_date': SplitDateTimeWidget(),
+            'actual_finish': SplitDateTimeWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 

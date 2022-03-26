@@ -54,7 +54,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ForeignKey('self', verbose_name='Кервіник', blank=True, null=True, on_delete=models.PROTECT)
+    head = models.ForeignKey('self', verbose_name='Керівник', blank=True, null=True, on_delete=models.PROTECT)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
@@ -110,8 +110,8 @@ class Employee(models.Model):
     def executions_for_period(self, period):
         """ return queryset with executions for given month """
         return self.execution_set.filter(exec_status=Execution.Done,
-                                         finish_date__month=period.month,
-                                         finish_date__year=period.year)
+                                         actual_finish__month=period.month,
+                                         actual_finish__year=period.year)
 
     def inttasks_for_period(self, period):
         """ return queryset with inttasks for given month """
@@ -743,11 +743,11 @@ class Task(models.Model):
             for execution in self.execution_set.all():
                 if execution.exec_status != Execution.Done:
                     execution.exec_status = Execution.Done
-                    if execution.finish_date is None:
-                        execution.finish_date = datetime.now()
+                    if execution.actual_finish is None:
+                        execution.actual_finish = datetime.now()
                     execution.save()
 
-         # Automatic set finish_date when Task has done
+         # Automatic set actual_finish when Task has done
         if self.exec_status in [Task.Done, Task.Sent] and self.actual_finish is None:
             self.actual_finish = date.today()
         elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.actual_finish is not None:
@@ -929,8 +929,6 @@ class Order(models.Model):
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
-    # TODO remove order_name
-    order_name = models.CharField('Назва робіт', max_length=30, blank=True, null=True)
     deal_number = models.CharField('Номер договору', max_length=30)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
@@ -938,7 +936,6 @@ class Order(models.Model):
     pay_date = models.DateField('Дата оплати', blank=True, null=True)
 
     class Meta:
-        unique_together = ('contractor', 'task', 'order_name')
         verbose_name = 'Замовлення'
         verbose_name_plural = 'Замовлення'
 
@@ -1040,19 +1037,16 @@ class Execution(models.Model):
     executor = models.ForeignKey(Employee, verbose_name='Виконавець', blank=True, null=True, on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
-    # TODO remove part_name
-    part_name = models.CharField('Роботи', max_length=100, blank=True, null=True)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateTimeField('Плановий початок', blank=True, null=True)
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
-    start_date = models.DateTimeField('Початок виконання', blank=True, null=True)
-    finish_date = models.DateTimeField('Кінець виконання', blank=True, null=True)
+    actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)
+    actual_finish = models.DateTimeField('Кінець виконання', blank=True, null=True)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('executor', 'task', 'subtask')
         verbose_name = 'Виконавець'
         verbose_name_plural = 'Виконавці'
         ordering = ['creation_date']
@@ -1076,17 +1070,17 @@ class Execution(models.Model):
         if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
             self.exec_status = Execution.Done
 
-        # Automatic set start_date when exec_status has changed
-        if self.exec_status in [Execution.InProgress, Execution.OnChecking, Execution.Done] and self.start_date is None:
-            self.start_date = datetime.now()
-        elif self.exec_status == Execution.ToDo and self.start_date is not None:
-            self.start_date = None
+        # Automatic set actual_start when exec_status has changed
+        if self.exec_status in [Execution.InProgress, Execution.OnChecking, Execution.Done] and self.actual_start is None:
+            self.actual_start = datetime.now()
+        elif self.exec_status == Execution.ToDo and self.actual_start is not None:
+            self.actual_start = None
 
-        # Automatic set finish_date when Execution has done
-        if self.exec_status in [Execution.Done] and self.finish_date is None:
-            self.finish_date = datetime.now()
-        elif self.exec_status in [Execution.ToDo, Execution.InProgress, Execution.OnChecking] and self.finish_date is not None:
-            self.finish_date = None
+        # Automatic set actual_finish when Execution has done
+        if self.exec_status in [Execution.Done] and self.actual_finish is None:
+            self.actual_finish = datetime.now()
+        elif self.exec_status in [Execution.ToDo, Execution.InProgress, Execution.OnChecking] and self.actual_finish is not None:
+            self.actual_finish = None
 
         # Logging
         if logging:
@@ -1130,13 +1124,13 @@ class Execution(models.Model):
         if self.exec_status != Execution.Done:
             return True
         # if execution doesn't have date return True
-        if not self.finish_date:
+        if not self.actual_finish:
             return True
         # if date in current month return True
-        if self.finish_date.month == date.today().month and self.finish_date.year == date.today().year:
+        if self.actual_finish.month == date.today().month and self.actual_finish.year == date.today().year:
             return True
         # if date less than 10 days from today return True
-        date_delta = datetime.now() - self.finish_date
+        date_delta = datetime.now() - self.actual_finish
         if date_delta.days < 10:
             return True
         return False
@@ -1172,7 +1166,7 @@ class IntTask(models.Model):
 
     def save(self, *args, logging=True, **kwargs):
 
-        # Automatic set finish_date when IntTask has done
+        # Automatic set actual_finish when IntTask has done
         if self.exec_status == Task.Done and self.actual_finish is None:
             self.actual_finish = date.today()
         elif self.exec_status != Execution.Done and self.actual_finish is not None:

@@ -34,8 +34,8 @@ def subtasks_queryset_filter(request):
     exec_statuses = request.GET.getlist('exec_status', '0')
     executors = request.GET.getlist('executor', '0')
     companies = request.GET.getlist('company', '0')
-    start_date = request.GET.get('start_date')
-    finish_date = request.GET.get('finish_date')
+    actual_start = request.GET.get('actual_start')
+    actual_finish = request.GET.get('actual_finish')
     search_string = request.GET.get('filter', '').split()
     order = request.GET.get('o', '0')
 
@@ -71,16 +71,16 @@ def subtasks_queryset_filter(request):
             tasks_part = tasks.filter(task__deal__company=company)
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
-    if start_date:
-        start_date_value = datetime.strptime(start_date, '%Y-%m-%d')
+    if actual_start:
+        actual_start_value = datetime.strptime(actual_start, '%Y-%m-%d')
     else:
-        start_date_value = date.today() - timedelta(days=date.today().weekday())
-    if finish_date:
-        finish_date_value = datetime.strptime(finish_date, '%Y-%m-%d')
+        actual_start_value = date.today() - timedelta(days=date.today().weekday())
+    if actual_finish:
+        actual_finish_value = datetime.strptime(actual_finish, '%Y-%m-%d')
     else:
-        finish_date_value = start_date_value + timedelta(days=14)
-    tasks = tasks.filter(Q(planned_start__gte=start_date_value, planned_start__lte=finish_date_value) |
-                         Q(planned_finish__gte=start_date_value, planned_finish__lte=finish_date_value) |
+        actual_finish_value = actual_start_value + timedelta(days=14)
+    tasks = tasks.filter(Q(planned_start__gte=actual_start_value, planned_start__lte=actual_finish_value) |
+                         Q(planned_finish__gte=actual_start_value, planned_finish__lte=actual_finish_value) |
                          Q(planned_start__lte=date.today()) |
                          Q(planned_finish__lte=date.today()),
                          exec_status__in=[Execution.ToDo,
@@ -98,7 +98,7 @@ def subtasks_queryset_filter(request):
         tasks = tasks.order_by(order)
     else:
         tasks = tasks.order_by('planned_finish', 'planned_start')
-    return tasks, start_date_value, finish_date_value
+    return tasks, actual_start_value, actual_finish_value
 
 
 def login_page(request):
@@ -554,10 +554,10 @@ class SprintList(ListView):
         if request.GET == {}:
             if self.request.session.get('execution_query_string'):
                 query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
-                if 'start_date' in query_string:
-                    del query_string['start_date']
-                if 'finish_date' in query_string:
-                    del query_string['finish_date']
+                if 'actual_start' in query_string:
+                    del query_string['actual_start']
+                if 'actual_finish' in query_string:
+                    del query_string['actual_finish']
                 request.GET = query_string
                 request.META['QUERY_STRING'] = self.request.session.get('execution_query_string')
         if request.user.has_perm('planner.view_execution'):
