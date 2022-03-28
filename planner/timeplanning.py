@@ -54,12 +54,14 @@ def queue_task(task, current_task_finish):
 def recalc_queue(employee):
     """ recalc queue for executors whem subtask changed"""
     execution_model = apps.get_model('planner.Execution')
-    tasks_to_do = employee.execution_set.filter(exec_status=ToDo)
+    tasks_to_do = employee.execution_set.filter(exec_status=ToDo,
+                                                subtask__add_to_schedule=True)
     task_in_progress = employee.execution_set.filter(exec_status=InProgress,
                                                      task__exec_status__in=[ToDo,InProgress]) \
                                              .order_by('planned_finish').last()
     current_task_finish = task_in_progress.planned_finish \
-        if task_in_progress and task_in_progress.planned_finish else datetime.now().replace(hour=9,minute=0,second=0)
+        if task_in_progress and task_in_progress.planned_finish else datetime.now() \
+            .replace(hour=9,minute=0,second=0,microsecond=0)
 
     tasks = []
     # plan queued tasks

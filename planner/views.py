@@ -40,7 +40,8 @@ def subtasks_queryset_filter(request):
     order = request.GET.get('o', '0')
 
     # create qs tasks
-    tasks = Execution.objects.all().select_related('executor', 'task', 'task__deal')
+    tasks = Execution.objects.filter(subtask__add_to_schedule=True) \
+                             .select_related('executor', 'task', 'task__deal')
     if request.user.is_superuser:
         pass
     else:
