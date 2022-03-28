@@ -59,7 +59,7 @@ def recalc_queue(employee):
                                                      task__exec_status__in=[ToDo,InProgress]) \
                                              .order_by('planned_finish').last()
     current_task_finish = task_in_progress.planned_finish \
-        if task_in_progress and task_in_progress.planned_finish else datetime.now()
+        if task_in_progress and task_in_progress.planned_finish else datetime.now().replace(hour=9,minute=0,second=0)
 
     tasks = []
     # plan queued tasks
