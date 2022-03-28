@@ -86,7 +86,7 @@ class EmployeeForm(forms.ModelForm):
         groups = self.cleaned_data.get('groups')
 
         user = User(username=username, email=email, is_staff=True,
-                    first_name=pib_name[0], last_name=pib_name[1])
+                    last_name=pib_name[0], first_name=pib_name[1])
         user.set_password(password)
 
         if commit:

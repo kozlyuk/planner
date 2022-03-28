@@ -55,7 +55,9 @@ def recalc_queue(employee):
     """ recalc queue for executors whem subtask changed"""
     execution_model = apps.get_model('planner.Execution')
     tasks_to_do = employee.execution_set.filter(exec_status=ToDo)
-    task_in_progress = employee.execution_set.filter(exec_status=InProgress).order_by('planned_finish').last()
+    task_in_progress = employee.execution_set.filter(exec_status=InProgress,
+                                                     task__exec_status__in=[ToDo,InProgress]) \
+                                             .order_by('planned_finish').last()
     current_task_finish = task_in_progress.planned_finish \
         if task_in_progress and task_in_progress.planned_finish else datetime.now()
 
