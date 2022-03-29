@@ -292,13 +292,13 @@ class SprintFilterForm(forms.Form):
         companies = list(Company.objects.all().values_list('pk', 'name'))
 
         # what executors is available in filter
-        if user.is_superuser or user.groups.filter(name='Замовники').exists():
-            executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
-        elif user.groups.filter(name='ГІПи').exists():
-            executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
-                             .values_list('pk', 'name'))
-        elif user.groups.filter(name='Проектувальники').exists():
-            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
+        # if user.is_superuser or user.groups.filter(name='Замовники').exists():
+        executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+        # elif user.groups.filter(name='ГІПи').exists():
+        #     executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
+        #                      .values_list('pk', 'name'))
+        # elif user.groups.filter(name='Проектувальники').exists():
+        #     executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
