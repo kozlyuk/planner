@@ -82,8 +82,10 @@ def subtasks_queryset_filter(request):
         actual_finish_value = actual_start_value + timedelta(days=14)
     tasks = tasks.filter(Q(planned_start__gte=actual_start_value, planned_start__lte=actual_finish_value) |
                          Q(planned_finish__gte=actual_start_value, planned_finish__lte=actual_finish_value) |
-                         Q(planned_finish__lte=date.today(),
-                           exec_status__in=[Execution.ToDo,Execution.InProgress,Execution.OnChecking])
+                         Q(planned_start__lt=actual_start_value,
+                           exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking]) |
+                         Q(planned_finish__lt=actual_start_value,
+                           exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking])
                          ) \
                  .exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
     for word in search_string:
