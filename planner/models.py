@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime, timedelta
+import businesstimedelta
 from django.db import models
 from django.db.models import Sum, Max
 from django.db.models.signals import post_save
@@ -18,7 +19,7 @@ from html_templates.models import HTMLTemplate
 
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
-from .timeplanning import recalc_queue
+from .timeplanning import recalc_queue, businesshrs
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -54,7 +55,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ForeignKey('self', verbose_name='Керівник', blank=True, null=True, on_delete=models.PROTECT)
+    head = models.ManyToManyField('self', verbose_name='Керівники', blank=True, null=True)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
@@ -1053,6 +1054,11 @@ class Execution(models.Model):
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
+
+    @property
+    def duration(self):
+        businesshrsdelta = businesshrs.difference(self.planned_start, self.planned_finish)
+        return businesshrsdelta.hours, int(businesshrsdelta.seconds/60)
 
     def save(self, *args, logging=True, **kwargs):
 

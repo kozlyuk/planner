@@ -49,7 +49,7 @@ def subtasks_queryset_filter(request):
         if request.user.groups.filter(name='Замовники').exists():
             query |= Q(task__deal__customer__user=request.user)
         if request.user.groups.filter(name='ГІПи').exists():
-            query |= Q(task__owner=request.user.employee)
+            query |= Q(executor__head=request.user.employee)
         if request.user.groups.filter(name='Проектувальники').exists():
             query |= Q(executor=request.user.employee)
         tasks = tasks.filter(query)

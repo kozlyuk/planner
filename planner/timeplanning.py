@@ -56,7 +56,7 @@ def recalc_queue(employee):
     execution_model = apps.get_model('planner.Execution')
     tasks_to_do = employee.execution_set.filter(exec_status=ToDo,
                                                 subtask__add_to_schedule=True)
-    last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done],
+    last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
                                               task__exec_status__in=[ToDo,InProgress]) \
                                       .order_by('planned_finish').last()
     last_task_finish = last_task.planned_finish \
