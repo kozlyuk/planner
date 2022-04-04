@@ -55,7 +55,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ManyToManyField('self', verbose_name='Керівники', blank=True, null=True)
+    head = models.ManyToManyField('self', verbose_name='Керівники', symmetrical=False)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',
@@ -145,7 +145,10 @@ class Employee(models.Model):
     def is_subordinate(self):
         # try if user has a permitting to edit the task
         user = get_current_user()
-        if user.is_superuser or user.employee in self.head.all() or user.employee == self:
+        head = self.head.all()
+        if user.is_superuser or user.employee == self:
+            return True
+        elif user.employee in head:
             return True
 
 
