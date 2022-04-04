@@ -62,7 +62,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         qs = super(EmployeeAdmin, self).get_queryset(request)
         if request.user.is_superuser or request.user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():
             return qs.filter(user__is_active=True)
-        return qs.filter(Q(user=request.user) | Q(head__user=request.user), user__is_active=True)
+        return qs.filter(Q(user=request.user) | Q(head__user=request.user), user__is_active=True).distinct()
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():

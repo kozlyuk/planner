@@ -55,7 +55,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
     position = models.CharField('Посада', max_length=50)
-    head = models.ManyToManyField('self', verbose_name='Керівники', symmetrical=False)
+    head = models.ManyToManyField('self', verbose_name='Керівники', symmetrical=False, blank=True)
     phone = models.CharField('Телефон', max_length=13, blank=True)
     mobile_phone = models.CharField('Мобільний телефон', max_length=13, blank=True)
     avatar = StdImageField('Фото', upload_to=avatar_directory_path, default='avatars/no_image.jpg',

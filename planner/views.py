@@ -98,7 +98,7 @@ def subtasks_queryset_filter(request):
         tasks = tasks.order_by(order)
     else:
         tasks = tasks.order_by('planned_finish', 'planned_start')
-    return tasks, actual_start_value, actual_finish_value
+    return tasks.distinct(), actual_start_value, actual_finish_value
 
 
 def login_page(request):
