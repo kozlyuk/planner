@@ -145,9 +145,7 @@ class Employee(models.Model):
     def is_subordinate(self):
         # try if user has a permitting to edit the task
         user = get_current_user()
-        if user.is_superuser:
-            return True
-        elif self.head and self.head.user == user:
+        if user.is_superuser or user.employee in self.head.all() or user.employee == self:
             return True
 
 
