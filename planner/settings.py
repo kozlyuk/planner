@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_object_actions',
     'rest_framework',
     'corsheaders',
+    'admin_totals',
 ]
 
 MIDDLEWARE = [

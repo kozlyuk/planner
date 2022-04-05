@@ -3,13 +3,14 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from django.contrib import admin
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
+from admin_totals.admin import ModelAdminTotals
 
 from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
 from .models import IntTask, Contractor, Order, Company, Construction, SubTask
@@ -137,12 +138,13 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
                 form.add_error('pay_status', 'Відмітьте Статус оплати або видаліть Дату оплати')
 
 
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ModelAdminTotals):
     list_display = ['contractor', 'task', 'subtask', 'value', 'pay_status', 'get_exec_status']
     search_fields = ['contractor__name', 'subtask__name']
-    list_filter = ['task__deal__company', 'pay_status', 'task__exec_status', 'contractor']
+    list_filter = ['task__deal__company', 'pay_status', 'task__exec_status', ('contractor', RelatedDropdownFilter)]
     date_hierarchy = 'pay_date'
     ordering = ['-pay_date']
+    list_totals = [('value', Sum)]
 
 
 class ContractorOrdersInline(admin.TabularInline):
