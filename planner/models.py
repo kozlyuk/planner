@@ -145,10 +145,10 @@ class Employee(models.Model):
     def is_subordinate(self):
         # try if user has a permitting to edit the task
         user = get_current_user()
-        head = self.head.all()
-        if user.is_superuser or user.employee == self:
-            return True
-        elif user.employee in head:
+        if user.is_superuser or \
+            user.groups.filter(name='Бухгалтери').exists() or \
+            user.employee == self or \
+            user.employee in self.head.all():
             return True
 
 
