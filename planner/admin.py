@@ -138,7 +138,7 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['contractor', 'subtask', 'value', 'pay_status', 'get_exec_status']
+    list_display = ['contractor', 'task', 'subtask', 'value', 'pay_status', 'get_exec_status']
     search_fields = ['contractor__name', 'subtask__name']
     list_filter = ['task__deal__company', 'pay_status', 'task__exec_status', 'contractor']
     date_hierarchy = 'pay_date'
