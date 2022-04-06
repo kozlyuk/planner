@@ -9,6 +9,7 @@ ToDo = 'IW'
 InProgress = 'IP'
 Done = 'HD'
 OnChecking = 'OC'
+Sent = 'ST'
 
 # Define a working day
 workday = businesstimedelta.WorkDayRule(
@@ -55,9 +56,10 @@ def recalc_queue(employee):
     """ recalc queue for executors whem subtask changed"""
     execution_model = apps.get_model('planner.Execution')
     tasks_to_do = employee.execution_set.filter(exec_status=ToDo,
-                                                subtask__add_to_schedule=True)
+                                                subtask__add_to_schedule=True,
+                                                task__exec_status__in=[ToDo,InProgress])
     last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
-                                              task__exec_status__in=[ToDo,InProgress]) \
+                                              task__exec_status__in=[InProgress,Done,Sent]) \
                                       .order_by('planned_finish').last()
     last_task_finish = last_task.planned_finish \
         if last_task and last_task.planned_finish else datetime.now() \
