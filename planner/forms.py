@@ -433,10 +433,19 @@ class ExecutorInlineForm(forms.ModelForm):
             self.fields['subtask'].queryset = subtasks
 
     def clean(self):
-        super().clean()
+        cleaned_data = super().clean()
+        executor = cleaned_data.get("executor")
+        exec_status = cleaned_data.get("exec_status")
         if self.instance.pk and self.changed_data:
             if self.instance.is_active() == False and not get_current_user().is_superuser:
                 self.add_error('executor', "Ця підзадача виконана більше 10 днів тому")
+        if executor and exec_status==Execution.InProgress:
+            inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
+                                                         exec_status=Execution.InProgress,
+                                                         task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
+                                                 .exists()
+            if inprogress_exists:
+                self.add_error('exec_status', "Виконавець виконує іншу задачу")
 
 
 class ExecutorsInlineFormset(BaseInlineFormSet):

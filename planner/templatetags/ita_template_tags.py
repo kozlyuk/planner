@@ -160,14 +160,19 @@ def none_datetime_check(date):
 
 @register.simple_tag()
 def status_change(user, pk, status):
-    if status == Execution.ToDo:
+    execution = Execution.objects.get(pk=pk)
+    inprogress_exists = Execution.objects.filter(executor=execution.executor,
+                                                 exec_status=Execution.InProgress,
+                                                 task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
+                                         .exists()
+    if status == Execution.ToDo and not inprogress_exists:
         redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.InProgress})
 
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['InProgress'] + '!important'
         redo_btn = '<a href="' + redo_url + '"  style="' + redo_styles + '" class="btn btn-sm mx-0">Виконується</a>'
         return format_html(redo_btn)
 
-    elif status == Execution.InProgress:
+    if status == Execution.InProgress:
         undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.ToDo})
         redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking})
 
@@ -180,20 +185,25 @@ def status_change(user, pk, status):
         if user.groups.filter(name="Проектувальники").exists():
             return format_html(redo_btn)
 
-    elif status == Execution.OnChecking:
-        undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.InProgress})
-        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.Done})
+    if status == Execution.OnChecking:
 
-        undo_styles = 'color: black!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo'] + '!important'
+        if not inprogress_exists:
+            undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.InProgress})
+            undo_styles = 'color: black!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo'] + '!important'
+            undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Виконується</a>'
+        else:
+            undo_btn = ''
+
+        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.Done})
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking'] + '!important'
-        undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Виконується</a>'
         redo_btn = '<a href="' + redo_url + '" style="' + redo_styles + '" class="btn btn-sm mx-0">Виконано</a>'
+
         if user.groups.filter(name="ГІПи").exists():
             return format_html('<div class="btn-group" role="group">' + undo_btn + redo_btn + '</div>')
         if user.groups.filter(name="Проектувальники").exists():
             return 'Підзадача на перевірці'
 
-    else:   #status == Execution.Done:
+    if status == Execution.Done:
         undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking})
 
         undo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking'] + '!important'
@@ -202,3 +212,5 @@ def status_change(user, pk, status):
             return format_html('<div class="btn-group" role="group">' + undo_btn + '</div>')
         if user.groups.filter(name="Проектувальники").exists():
             return 'Підзадача закрита'
+
+    return ""

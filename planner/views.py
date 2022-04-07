@@ -15,6 +15,7 @@ from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func,
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
+
 from django.utils.html import format_html
 from django.http import QueryDict
 from crum import get_current_user
@@ -603,9 +604,9 @@ class ExecutionStatusChange(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            obj = Execution.objects.get(pk=kwargs['pk'])
-            obj.exec_status = kwargs['status']
-            obj.save()
+            execution = Execution.objects.get(pk=kwargs['pk'])
+            execution.exec_status = kwargs['status']
+            execution.save()
             return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
         except:
             raise Execution.DoesNotExist
