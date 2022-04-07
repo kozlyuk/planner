@@ -83,7 +83,7 @@
                         {% endif %}
                         {% if perms.planner.view_execution %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'sprint_list' %}">Планування спринтів</a></li>
+                            href="{% url 'sprint_list' %}">Планування</a></li>
                         {% endif %}
                         {% if perms.planner.view_employee %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
@@ -106,7 +106,7 @@
                     <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
                 {% endif %}
                 {% if perms.planner.view_execution %}
-                    <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування спринтів</a>
+                    <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування</a>
                 {% endif %}
                 {% if request.user.is_staff %}
                     <a class="link {% if request.resolver_match.url_name == 'colleague_list' %}active{% endif %} uppercase" href="{% url 'colleague_list' %}">Колеги</a>

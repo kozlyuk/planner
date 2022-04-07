@@ -1138,7 +1138,7 @@ class Execution(models.Model):
             return True
         # if date less than 10 days from today return True
         date_delta = datetime.now() - self.actual_finish
-        if date_delta.days < 10:
+        if date_delta.days < 20:
             return True
         return False
 
