@@ -443,6 +443,7 @@ class ExecutorInlineForm(forms.ModelForm):
             inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
                                                          exec_status=Execution.InProgress,
                                                          task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
+                                                 .exclude(pk=self.instance.pk) \
                                                  .exists()
             if inprogress_exists:
                 self.add_error('exec_status', "Виконавець виконує іншу задачу")

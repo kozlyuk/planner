@@ -1095,10 +1095,10 @@ class Execution(models.Model):
                 self.task.project_type.price_code + ' ' + self.subtask.name
             if not self.pk:
                 log(user=get_current_user(),
-                    action='Додана частина проекту', extra={"title": title})
+                    action='Додана задача', extra={"title": title})
             else:
                 log(user=get_current_user(),
-                    action='Оновлена частина проекту', extra={"title": title})
+                    action='Оновлена задача', extra={"title": title})
 
         super().save(*args, **kwargs)
         # Recal employee execution queue
@@ -1109,7 +1109,7 @@ class Execution(models.Model):
         title = self.task.object_code + ' ' + \
             self.task.project_type.price_code + ' ' + self.subtask.name
         log(user=get_current_user(),
-            action='Видалена частина проекту', extra={"title": title})
+            action='Видалена задача', extra={"title": title})
         super().delete(*args, **kwargs)
 
     def warning_select(self):
