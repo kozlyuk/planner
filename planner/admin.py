@@ -24,9 +24,9 @@ class SubTasksInline(admin.TabularInline):
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['project_type', 'customer', 'price_code',
-                    'net_price', 'copies_count', 'active']  # 'turnover_calc']
+                    'net_price', 'owner_bonus', 'executors_bonus', 'active']
     ordering = ['-price_code']
-    list_filter = ['customer']
+    list_filter = ['active', 'customer']
     fieldsets = [
         (None, {'fields': [('project_type', 'price_code'),
                            ('customer'),
