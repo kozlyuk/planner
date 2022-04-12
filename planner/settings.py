@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'analytics.apps.AnalyticsConfig',
     'gantt.apps.GanttConfig',
     'html_templates.apps.HtmlTemplatesConfig',
+    'django_celery_beat',
+    # 'django_celery_results',
     'django_select2',
     'django_admin_listfilter_dropdown',
     'fontawesome_5',
@@ -228,6 +230,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+DJANGO_CELERY_BEAT_TZ_AWARE = False
 
 # Email related settings
 EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED") == 'TRUE'
