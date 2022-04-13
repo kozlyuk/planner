@@ -16,7 +16,6 @@ Pillow
 redis
 celery
 django-celery-beat
-# django-celery-results
 django-object-actions
 businesstimedelta
 admin-totals

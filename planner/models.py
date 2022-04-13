@@ -1125,7 +1125,7 @@ class Execution(models.Model):
 
     def is_active(self):
         """ Show if subtask edit period is not expired
-            Return False if subtask Done more than 10 days ago
+            Return False if subtask Done more than 20 days ago
         """
         # if execution is not Done return True
         if self.exec_status != Execution.Done:
