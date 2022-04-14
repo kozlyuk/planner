@@ -282,21 +282,22 @@ class Company(Requisites):
 
     def turnover_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=date.today().year):
-            total += deal.act_value
+        for deal in self.deal_set.filter(date__year=date.today().year):
+            acts_total = deal.acts_total()
+            total += acts_total
         return u'{0:,}'.format(total).replace(u',', u' ')
     turnover_calc.short_description = 'Оборот {}'.format(date.today().year)
 
     def costs_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=date.today().year):
+        for deal in self.deal_set.filter(date__year=date.today().year):
             total += deal.costs_calc()
         return u'{0:,}'.format(total).replace(u',', u' ')
     costs_calc.short_description = 'Витрати {}'.format(date.today().year)
 
     def bonuses_calc(self):
         total = 0
-        for deal in self.deal_set.filter(act_date__year=date.today().year):
+        for deal in self.deal_set.filter(date__year=date.today().year):
             total += deal.bonuses_calc()
         return u'{0:,}'.format(total).replace(u',', u' ')
     bonuses_calc.short_description = 'Бонуси {}'.format(date.today().year)
