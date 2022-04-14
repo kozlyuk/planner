@@ -31,7 +31,7 @@ businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak])
 
 def queue_task(task, current_task_finish):
     # get task duration in hours
-    if task.planned_start and task.planned_finish:
+    if task.planned_start and task.planned_finish and task.planned_start < task.planned_finish:
         businesshrsdelta = businesshrs.difference(task.planned_start, task.planned_finish)
         task_duration = timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
     elif task.subtask.add_to_schedule:
