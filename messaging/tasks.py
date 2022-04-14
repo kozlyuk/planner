@@ -39,6 +39,7 @@ def send_email_list(emails: EmailMessage) -> None:
         print(f"Sent { message_count} messages")
     except SMTPException as error:
         logger.warning("Connection error while sending emails: %s", error)
+        print(error)
 
 
 def change_content_type_to_html(emails: EmailMessage) -> EmailMessage:
