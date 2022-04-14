@@ -33,8 +33,9 @@ class Round(Func):
 
 def subtasks_queryset_filter(request):
     exec_statuses = request.GET.getlist('exec_status', '0')
-    executors = request.GET.getlist('executor', '0')
-    companies = request.GET.getlist('company', '0')
+    owner = request.GET.get('owner')
+    executor = request.GET.get('executor')
+    company = request.GET.get('company')
     actual_start = request.GET.get('actual_start')
     actual_finish = request.GET.get('actual_finish')
     search_string = request.GET.get('filter', '').split()
@@ -61,18 +62,12 @@ def subtasks_queryset_filter(request):
             tasks_part = tasks.filter(exec_status=status)
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
-    if executors != '0':
-        tasks_union = Task.objects.none()
-        for executor in executors:
-            tasks_part = tasks.filter(executor=executor)
-            tasks_union = tasks_union | tasks_part
-        tasks = tasks_union
-    if companies != '0':
-        tasks_union = Task.objects.none()
-        for company in companies:
-            tasks_part = tasks.filter(task__deal__company=company)
-            tasks_union = tasks_union | tasks_part
-        tasks = tasks_union
+    if owner:
+        tasks = tasks.filter(task__owner=owner)
+    if executor:
+        tasks = tasks.filter(executor=executor)
+    if company:
+        tasks = tasks.filter(task__deal__company=company)
     if actual_start:
         actual_start_value = datetime.strptime(actual_start, '%Y-%m-%d')
     else:

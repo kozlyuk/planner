@@ -289,7 +289,8 @@ class SprintFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         user = get_current_user()
         exec_status = list(Execution.EXEC_STATUS_CHOICES)
-        companies = list(Company.objects.all().values_list('pk', 'name'))
+        companies = list(Company.objects.filter(active=True).values_list('pk', 'name'))
+        owners = list(Employee.objects.filter(user__groups__name='ГІПи', user__is_active=True).values_list('pk', 'name'))
 
         # what executors is available in filter
         if user.is_superuser or user.groups.filter(name='Замовники').exists():
@@ -303,16 +304,20 @@ class SprintFilterForm(forms.Form):
         self.fields['exec_status'].choices = exec_status
         self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
+        self.fields['owner'].choices = owners
 
     exec_status = forms.MultipleChoiceField(label='Статус', required=False,
-                                            widget=Select2MultipleWidget(
-                                                attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    executor = forms.MultipleChoiceField(label='Виконавець', required=False,
-                                         widget=Select2MultipleWidget(
-                                             attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    company = forms.MultipleChoiceField(label='Компанія', required=False,
-                                        widget=Select2MultipleWidget(
-                                            attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                            widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
+                                            )
+    owner = forms.ChoiceField(label='Керівник', required=False,
+                              widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
+                             )
+    executor = forms.ChoiceField(label='Виконавець', required=False,
+                                 widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
+                                 )
+    company = forms.ChoiceField(label='Компанія', required=False,
+                                widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
+                                )
 
     actual_start_value = date.today() - timedelta(days=date.today().weekday())
     actual_finish_value = actual_start_value + timedelta(days=14)
