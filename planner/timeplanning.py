@@ -61,9 +61,11 @@ def recalc_queue(employee):
     last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
                                               task__exec_status__in=[InProgress,Done,Sent]) \
                                       .order_by('planned_finish').last()
-    last_task_finish = last_task.planned_finish \
-        if last_task and last_task.planned_finish else datetime.now() \
-            .replace(hour=9,minute=0,second=0,microsecond=0)
+    # calculate last task finish time
+    if last_task and last_task.planned_finish:
+        last_task_finish = last_task.planned_finish
+    else:
+        last_task_finish = datetime.now().replace(hour=9,minute=0,second=0,microsecond=0)
 
     tasks = []
     # plan queued tasks

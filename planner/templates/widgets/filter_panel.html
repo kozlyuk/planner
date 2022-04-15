@@ -12,8 +12,12 @@
             {{ filter_form.as_p }}
             {% if submit_button_text %}
             <div class="row">
+                <a href="?clear=true"
+                class="btn btn-sm uppercase mx-auto">Скинути
+                </a>
                 <button type="submit" class="btn btn-sm btn-primary uppercase mx-auto">
-                    {{ submit_icon }} {{ submit_button_text }} </button>
+                    {{ submit_icon }} {{ submit_button_text }}
+                </button>
             </div>
             {% endif %}
             </div>
