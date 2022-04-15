@@ -227,7 +227,7 @@ class DealList(ListView):
         context['deals_count'] = Deal.objects.all().count()
         context['deals_filtered'] = self.object_list.count()
         context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
-        context['submit_button_text'] = 'Пошук'
+        context['submit_button_text'] = 'Застосувати фільтр'
         self.request.session['deal_query_string'] = self.request.META['QUERY_STRING']
         if self.request.POST:
             context['filter_form'] = forms.DealFilterForm(self.request.POST)
@@ -384,7 +384,7 @@ class TaskList(ListView):
         context['tasks_filtered'] = self.object_list.count()
         context['form_action'] = reverse('task_list')
         context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
-        context['submit_button_text'] = 'Пошук'
+        context['submit_button_text'] = 'Застосувати фільтр'
         self.request.session['task_query_string'] = self.request.META['QUERY_STRING']
         self.request.session['task_success_url'] = 'task'
         if self.request.POST:
