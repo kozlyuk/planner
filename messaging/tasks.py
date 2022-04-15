@@ -19,7 +19,7 @@ logger = get_task_logger(__name__)
 
 def public_holiday() -> bool:
     """ check if today is public holiday """
-    return Event.objects.filter(next_date=date.today()).exists()
+    return Event.objects.filter(next_date=date.today(), is_holiday=True).exists()
 
 
 @app.task
