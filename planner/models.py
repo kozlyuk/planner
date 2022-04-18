@@ -804,19 +804,17 @@ class Task(models.Model):
     sending_status.short_description = 'Статус відправки'
 
     def is_active(self):
+        # check if task edit period is not expired
         if not self.actual_finish:
             return True
-        if self.deal.act_status == Deal.Issued:
-            return False
-        if self.actual_finish.month >= (date.today().month + 12*(date.today().year-self.actual_finish.year)-1):
-            if self.actual_finish.month == date.today().month:
-                return True
-            if date.today().day < 6:
-                return True
+        if self.actual_finish.month == date.today().month and self.actual_finish.year == date.today().year:
+            return True
+        if (date.today() - self.actual_finish).days < 7:
+            return True
         return False
-    # try if task edit period is not expired
 
     def is_viewable(self):
+        # check if user has a permitting to view the task
         user = get_current_user()
         if user.is_superuser:
             return True
@@ -831,9 +829,9 @@ class Task(models.Model):
             return True
         else:
             return False
-    # try if user has a permitting to view the task
 
     def is_editable(self):
+        # check if user has a permitting to edit the task
         user = get_current_user()
         if user.is_superuser:
             return True
@@ -843,7 +841,6 @@ class Task(models.Model):
             return True
         else:
             return False
-    # try if user has a permitting to edit the task
 
     def costs_total(self):
         costs = self.costs.all().aggregate(Sum('order__value')).get('order__value__sum')
