@@ -416,14 +416,14 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'subtask', 'part', 'exec_status',
+        fields = ['executor', 'subtask', 'part', 'exec_status', # 'fixed_date',
                   'actual_finish', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
             'subtask': Select2Widget(),
             'planned_start': SplitDateTimeWidget(),
             'planned_finish': SplitDateTimeWidget(),
-            'actual_finish': SplitDateTimeWidget(),
+            # 'actual_finish': SplitDateTimeWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
@@ -436,13 +436,13 @@ class ExecutorInlineForm(forms.ModelForm):
             self.fields['subtask'].queryset = subtasks
 
     def clean(self):
-        cleaned_data = super().clean()
-        executor = cleaned_data.get("executor")
-        exec_status = cleaned_data.get("exec_status")
         if self.instance.pk and self.changed_data:
             if self.instance.is_active() == False and not get_current_user().is_superuser:
                 self.add_error('executor', "Ця підзадача виконана більше 20 днів тому")
         # TODO Enable in the future
+        # cleaned_data = super().clean()
+        # executor = cleaned_data.get("executor")
+        # exec_status = cleaned_data.get("exec_status")
         # if executor and exec_status==Execution.InProgress:
         #     inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
         #                                                  exec_status=Execution.InProgress,

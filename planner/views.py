@@ -93,7 +93,7 @@ def subtasks_queryset_filter(request):
     if order != '0':
         tasks = tasks.order_by(order)
     else:
-        tasks = tasks.order_by('planned_finish', 'planned_start')
+        tasks = tasks.order_by('planned_start')
     return tasks.distinct(), actual_start_value, actual_finish_value
 
 
