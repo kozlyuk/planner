@@ -1,5 +1,5 @@
 wheel
-Django == 2.2.27
+Django == 2.2.28
 django-admin-list-filter-dropdown
 django-crum
 django-fontawesome-5
