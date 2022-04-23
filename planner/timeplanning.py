@@ -29,56 +29,99 @@ lunchbreak = businesstimedelta.LunchTimeRule(
 
 businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak])
 
-def queue_task(task, current_task_finish):
-    # get task duration in hours
-    if task.planned_start and task.planned_finish and task.planned_start < task.planned_finish:
-        businesshrsdelta = businesshrs.difference(task.planned_start, task.planned_finish)
-        task_duration = timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
-    elif task.subtask.add_to_schedule:
-        task_duration = task.subtask.duration
-    else:
-        task_duration = timedelta(0)
-    # set planned start and finish
-    business_hour = businesstimedelta.BusinessTimeDelta(businesshrs, hours=1)
-    task.planned_start = current_task_finish + business_hour - business_hour
-    task.planned_finish = task.planned_start + businesstimedelta.BusinessTimeDelta(
-                                                businesshrs,
-                                                hours=task_duration.days*24+task_duration.seconds/3600
-                                                )
-    # remove tzinfo
-    task.planned_start = task.planned_start.replace(tzinfo=None)
-    task.planned_finish = task.planned_finish.replace(tzinfo=None)
+def merge_fixed_periods(tasks_to_do_fixed):
+    """ merge fixed periods from tasks_to_do_fixed """
+    fixed_periods = []
+    for task in tasks_to_do_fixed:
+        if not fixed_periods:
+            fixed_periods.append((task['planned_start'], task['planned_finish']))
+            continue
+        for period in fixed_periods:
+            if period[0] <= task['planned_start'] < period[1]:
+                period[0] = task['planned_start']
+            elif period[0] < task['planned_finish'] <= period[1]:
+                period[1] = task['planned_finish']
+            else:
+                fixed_periods.append(task['planned_start'], task['planned_finish'])
+    return fixed_periods
 
+def calc_planned_finish(planned_start, task_duration):
+    return planned_start + businesstimedelta.BusinessTimeDelta(
+                           businesshrs,
+                           hours=task_duration.days*24+task_duration.seconds/3600
+                           )
+
+def add_interruption(task, fixed_periods, task_duration):
+    """ check if task overlap with tasks_to_do_fixed """
+    for period in fixed_periods:
+        if period[0] <= task.planned_start < period[1]:
+            task.planned_start = period[1]
+            task.planned_finish = calc_planned_finish(task.planned_start, task_duration)
+            return task
+        elif period[0] < task.planned_finish <= period[1]:
+            task.interruption = period[1] - period[0]
+            return task
     return task
 
+def get_task_duration(task):
+    """ get task duration in hours """
+    if task.planned_start and task.planned_finish and task.planned_start < task.planned_finish:
+        businesshrsdelta = businesshrs.difference(task.planned_start, task.planned_finish)
+        return timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
+    elif task.subtask.add_to_schedule:
+        return task.subtask.duration
+    return timedelta(0)
+
+def remove_tzinfo(task):
+    """ remove tzinfo """
+    task.planned_start = task.planned_start.replace(tzinfo=None)
+    task.planned_finish = task.planned_finish.replace(tzinfo=None)
+    return task
+
+def queue_task(task, last_task_finish, fixed_periods):
+    """ set planned start and finish """
+    task_duration = get_task_duration(task)
+    business_hour = businesstimedelta.BusinessTimeDelta(businesshrs, hours=1)
+    task.planned_start = last_task_finish + business_hour - business_hour
+    task.planned_finish = calc_planned_finish(task.planned_start, task_duration)
+
+    task = add_interruption(remove_tzinfo(task), fixed_periods, task_duration)
+    return remove_tzinfo(task)
+
+def get_last_task_finish(employee):
+    """ calculate last task finish time """
+    last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
+                                              task__exec_status__in=[InProgress,Done,Sent]
+                                              ) \
+                                      .order_by('planned_finish').last()
+    if last_task and last_task.planned_finish:
+        return last_task.planned_finish
+    return datetime.now().replace(hour=9,minute=0,second=0,microsecond=0)
 
 def recalc_queue(employee):
     """ recalc queue for executors whem subtask changed"""
     execution_model = apps.get_model('planner.Execution')
     tasks_to_do = employee.execution_set.filter(exec_status=ToDo,
                                                 subtask__add_to_schedule=True,
-                                                task__exec_status__in=[ToDo,InProgress])
-    last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
-                                              task__exec_status__in=[InProgress,Done,Sent]) \
-                                      .order_by('planned_finish').last()
-    # calculate last task finish time
-    if last_task and last_task.planned_finish:
-        last_task_finish = last_task.planned_finish
-    else:
-        last_task_finish = datetime.now().replace(hour=9,minute=0,second=0,microsecond=0)
+                                                task__exec_status__in=[ToDo,InProgress]
+                                                )
+    tasks_to_do_fixed = tasks_to_do.filter(fixed_date=True).values('planned_start', 'planned_finish')
+    fixed_periods = merge_fixed_periods(tasks_to_do_fixed)
+    tasks_to_do_not_fixed = tasks_to_do.filter(fixed_date=False)
+    last_task_finish = get_last_task_finish(employee)
 
     tasks = []
     # plan queued tasks
-    for task in tasks_to_do.filter(planned_start__isnull=False).order_by('planned_start'):
-        queued_task = queue_task(task, last_task_finish)
+    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=False).order_by('planned_start'):
+        queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
-        last_task_finish = queued_task.planned_finish
+        last_task_finish = queued_task.planned_finish_with_interruption
 
     # plan not queued tasks
-    for task in tasks_to_do.filter(planned_start__isnull=True):
-        queued_task = queue_task(task, last_task_finish)
+    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=True):
+        queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
-        last_task_finish = queued_task.planned_finish
+        last_task_finish = queued_task.planned_finish_with_interruption
 
     # perform bulk_update
-    execution_model.objects.bulk_update(tasks, ['planned_start', 'planned_finish'])
+    execution_model.objects.bulk_update(tasks, ['planned_start', 'planned_finish', 'interruption'])
