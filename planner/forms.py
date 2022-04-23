@@ -416,7 +416,7 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'subtask', 'part', 'exec_status', # 'fixed_date',
+        fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date',
                   'actual_finish', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),

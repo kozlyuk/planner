@@ -345,6 +345,7 @@
                                                     <th width="10%" scope="col">СТАТУС ВИКОНАННЯ</th>
                                                     <th width="10%" scope="col">ПЛАНОВИЙ ПОЧАТОК</th>
                                                     <th width="10%" scope="col">ПЛАНОВИЙ КІНЕЦЬ</th>
+                                                    <th width="1%" scope="col"><i class="fa fa-lock"></i></th>
                                                     <th width="10%" scope="col">ЗАВЕРШЕНО</th>
                                                     <th scope="col">ПОПЕРЕДЖЕННЯ </th>
                                                     <th width="1%">ДІЇ</th>
@@ -391,6 +392,12 @@
                                                         {{ form.planned_finish|attr:"style: height:28px; text-align: center; width:100%; padding-left: 5px;"| add_class:"form-control"| add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.planned_finish.errors}}
+                                                        </div>
+                                                    </th>
+                                                    <th class="pl-1 pr-1">
+                                                        {{ form.fixed_date|attr:"style: height:14px; text-align: center; width:100%;" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.fixed_date.errors}}
                                                         </div>
                                                     </th>
                                                     <th class="pl-1 pr-1">

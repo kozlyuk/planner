@@ -1043,6 +1043,9 @@ class Execution(models.Model):
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)
     actual_finish = models.DateTimeField('Кінець виконання', blank=True, null=True)
+    fixed_date = models.BooleanField('Зафіксувати дату', default=False)
+    interruption = models.DurationField('Тривалысть переривання', default=timedelta(0))
+    actual_duration = models.DurationField('Тривалість виконання', default=timedelta(0))
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
@@ -1055,9 +1058,13 @@ class Execution(models.Model):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
 
     @property
-    def duration(self):
+    def planned_duration(self):
         businesshrsdelta = businesshrs.difference(self.planned_start, self.planned_finish)
         return businesshrsdelta.hours, int(businesshrsdelta.seconds/60)
+
+    @property
+    def planned_finish_with_interruption(self):
+        return self.planned_finish + self.interruption
 
     def save(self, *args, logging=True, **kwargs):
 
