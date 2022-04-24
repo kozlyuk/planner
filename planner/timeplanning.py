@@ -42,7 +42,7 @@ def merge_fixed_periods(tasks_to_do_fixed):
             elif period[0] < task['planned_finish'] <= period[1]:
                 period[1] = task['planned_finish']
             else:
-                fixed_periods.append(task['planned_start'], task['planned_finish'])
+                fixed_periods.append((task['planned_start'], task['planned_finish']))
     return fixed_periods
 
 def calc_planned_finish(planned_start, task_duration):
