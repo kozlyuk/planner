@@ -32,14 +32,14 @@ class Round(Func):
 
 
 def subtasks_queryset_filter(request):
-    exec_statuses = request.GET.getlist('exec_status', '0')
+    exec_statuses = request.GET.getlist('exec_status')
     owner = request.GET.get('owner')
     executor = request.GET.get('executor')
     company = request.GET.get('company')
     actual_start = request.GET.get('actual_start')
     actual_finish = request.GET.get('actual_finish')
     search_string = request.GET.get('filter', '').split()
-    order = request.GET.get('o', '0')
+    order = request.GET.get('o')
 
     # create qs tasks
     tasks = Execution.objects.filter(subtask__add_to_schedule=True) \
@@ -56,7 +56,7 @@ def subtasks_queryset_filter(request):
             query |= Q(executor=request.user.employee)
         tasks = tasks.filter(query)
 
-    if exec_statuses != '0':
+    if exec_statuses:
         tasks_union = Task.objects.none()
         for status in exec_statuses:
             tasks_part = tasks.filter(exec_status=status)
@@ -90,8 +90,8 @@ def subtasks_queryset_filter(request):
                              Q(task__project_type__project_type__icontains=word) |
                              Q(task__object_address__icontains=word) |
                              Q(task__deal__number__icontains=word))
-    if order != '0':
-        tasks = tasks.order_by(order)
+    if order:
+        tasks = tasks.order_by(order, 'planned_start')
     else:
         tasks = tasks.order_by('planned_start')
     return tasks.distinct(), actual_start_value, actual_finish_value
