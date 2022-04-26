@@ -33,7 +33,7 @@
                                 {% endif %}
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
-                                <th class="hidden-xs uppercase"><i class="fa fa-clock-o" aria-hidden="true"></i></th>
+                                <th class="hidden-xs uppercase"><i class="fa fa-calendar-check-o"></i></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}">статус виконання</a></th>
                                 {% if request.user.is_staff %}
                                     <th class="print-ignore uppercase">змінити статус</th>
