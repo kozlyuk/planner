@@ -33,7 +33,7 @@
                                 {% endif %}
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
                                 <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
-                                <th class="hidden-xs uppercase"><i class="fa fa-lock"></i></th>
+                                <th class="hidden-xs uppercase"><i class="fa fa-clock-o" aria-hidden="true"></i></th>
                                 <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}">статус виконання</a></th>
                                 {% if request.user.is_staff %}
                                     <th class="print-ignore uppercase">змінити статус</th>
@@ -65,7 +65,7 @@
                                 {% endif %}
                                 <td>{% none_datetime_check task.planned_start %}</td>
                                 <td>{% none_datetime_check task.planned_finish_with_interruption %}</td>
-                                <td>{% boolean_to_icon task.fixed_date 'far fa-check-circle' 'far fa-times-circle' %}</td>
+                                <td>{% if task.fixed_date %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}</td>
                                 <td>
                                         {{ task.get_exec_status_display }}
                                 </td>
