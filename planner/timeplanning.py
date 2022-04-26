@@ -27,7 +27,10 @@ lunchbreak = businesstimedelta.LunchTimeRule(
     end_time=time(14),
     working_days=[0, 1, 2, 3, 4])
 
-businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak])
+ua_holidays = pyholidays.country_holidays('UA')
+holidays = businesstimedelta.HolidayRule(ua_holidays)
+
+businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak, holidays])
 
 def merge_fixed_periods(tasks_to_do_fixed):
     """ merge fixed periods from tasks_to_do_fixed """
