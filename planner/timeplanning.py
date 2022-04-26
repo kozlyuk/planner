@@ -23,8 +23,8 @@ friday = businesstimedelta.WorkDayRule(
     working_days=[4])
 
 lunchbreak = businesstimedelta.LunchTimeRule(
-    start_time=time(12),
-    end_time=time(13),
+    start_time=time(13),
+    end_time=time(14),
     working_days=[0, 1, 2, 3, 4])
 
 businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak])
@@ -34,31 +34,37 @@ def merge_fixed_periods(tasks_to_do_fixed):
     fixed_periods = []
     for task in tasks_to_do_fixed:
         if not fixed_periods:
-            fixed_periods.append((task['planned_start'], task['planned_finish']))
+            fixed_periods.append([task['planned_start'], task['planned_finish']])
             continue
         for period in fixed_periods:
-            if period[0] <= task['planned_start'] < period[1]:
+            start_in_period = period[0] <= task['planned_start'] <= period[1]
+            finish_in_period = period[0] <= task['planned_finish'] <= period[1]
+            if start_in_period and finish_in_period:
+                break
+            elif start_in_period and not finish_in_period:
+                period[1] = task['planned_finish']
+            elif not start_in_period and finish_in_period:
                 period[0] = task['planned_start']
-            elif period[0] < task['planned_finish'] <= period[1]:
+            elif task['planned_start'] < period[0] and task['planned_finish'] > period[1]:
+                period[0] = task['planned_start']
                 period[1] = task['planned_finish']
             else:
-                fixed_periods.append((task['planned_start'], task['planned_finish']))
+                fixed_periods.append([task['planned_start'], task['planned_finish']])
+                break
     return fixed_periods
-
-def calc_planned_finish(planned_start, task_duration):
-    return planned_start + businesstimedelta.BusinessTimeDelta(
-                           businesshrs,
-                           hours=task_duration.days*24+task_duration.seconds/3600
-                           )
 
 def add_interruption(task, fixed_periods, task_duration):
     """ check if task overlap with tasks_to_do_fixed """
+    task.interruption = timedelta(0)
     for period in fixed_periods:
-        if period[0] <= task.planned_start < period[1]:
+        start_in_period = period[0] <= task.planned_start < period[1]
+        finish_in_period = period[0] < task.planned_finish <= period[1]
+        if start_in_period:
             task.planned_start = period[1]
-            task.planned_finish = calc_planned_finish(task.planned_start, task_duration)
+            task.planned_finish = task.calc_businesstimedelta(task.planned_start, task_duration)
             return task
-        elif period[0] < task.planned_finish <= period[1]:
+        elif finish_in_period or \
+            task.planned_start < period[0] and task.planned_finish > period[1]:
             task.interruption = period[1] - period[0]
             return task
     return task
@@ -83,7 +89,7 @@ def queue_task(task, last_task_finish, fixed_periods):
     task_duration = get_task_duration(task)
     business_hour = businesstimedelta.BusinessTimeDelta(businesshrs, hours=1)
     task.planned_start = last_task_finish + business_hour - business_hour
-    task.planned_finish = calc_planned_finish(task.planned_start, task_duration)
+    task.planned_finish = task.calc_businesstimedelta(task.planned_start, task_duration)
 
     task = add_interruption(remove_tzinfo(task), fixed_periods, task_duration)
     return remove_tzinfo(task)

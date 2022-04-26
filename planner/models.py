@@ -1062,9 +1062,18 @@ class Execution(models.Model):
         businesshrsdelta = businesshrs.difference(self.planned_start, self.planned_finish)
         return businesshrsdelta.hours, int(businesshrsdelta.seconds/60)
 
+    def calc_businesstimedelta(self, start_time, task_duration):
+        return start_time + businesstimedelta.BusinessTimeDelta(
+            businesshrs,
+            hours=task_duration.days*24+task_duration.seconds/3600
+            )
+
     @property
     def planned_finish_with_interruption(self):
-        return self.planned_finish + self.interruption
+        if self.planned_finish and self.interruption > timedelta(0):
+            return self.calc_businesstimedelta(self.planned_finish, self.interruption)
+        else:
+            return self.planned_finish
 
     def save(self, *args, logging=True, **kwargs):
 
