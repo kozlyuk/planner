@@ -100,7 +100,7 @@ def queue_task(task, last_task_finish, fixed_periods):
 
 def get_last_task_finish(employee):
     """ calculate last task finish time """
-    last_task = employee.execution_set.filter(exec_status__in=[InProgress,Done,OnChecking],
+    last_task = employee.execution_set.filter(exec_status__in=[Done,OnChecking],
                                               task__exec_status__in=[InProgress,Done,Sent]
                                               ) \
                                       .order_by('planned_finish').last()
@@ -111,7 +111,7 @@ def get_last_task_finish(employee):
 def recalc_queue(employee):
     """ recalc queue for executors whem subtask changed"""
     execution_model = apps.get_model('planner.Execution')
-    tasks_to_do = employee.execution_set.filter(exec_status=ToDo,
+    tasks_to_do = employee.execution_set.filter(exec_status__in=[ToDo, InProgress],
                                                 subtask__add_to_schedule=True,
                                                 task__exec_status__in=[ToDo,InProgress]
                                                 )
@@ -122,13 +122,13 @@ def recalc_queue(employee):
 
     tasks = []
     # plan queued tasks
-    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=False).order_by('planned_start'):
+    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=False).order_by('exec_status', 'planned_start'):
         queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
         last_task_finish = queued_task.planned_finish_with_interruption
 
     # plan not queued tasks
-    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=True):
+    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=True).order_by('exec_status'):
         queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
         last_task_finish = queued_task.planned_finish_with_interruption
