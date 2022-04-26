@@ -65,7 +65,8 @@ def add_interruption(task, fixed_periods, task_duration):
             return task
         elif finish_in_period or \
             task.planned_start < period[0] and task.planned_finish > period[1]:
-            task.interruption = period[1] - period[0]
+            interruption = businesshrs.difference(period[0], period[1])
+            task.interruption = timedelta(hours=interruption.hours, seconds=interruption.seconds)
             return task
     return task
 
