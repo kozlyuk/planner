@@ -177,7 +177,7 @@ def status_change(user, pk, status):
         redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking})
         undo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnHold']
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking']
-        undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Призупинено</a>'
+        undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Зупинити</a>'
         redo_btn = '<a href="' + redo_url + '" style="' + redo_styles + '" class="btn btn-sm mx-0">На перевірку</a>'
 
         return format_html('<div class="btn-group" role="group">' + undo_btn + redo_btn + '</div>')
