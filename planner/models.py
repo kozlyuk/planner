@@ -19,7 +19,7 @@ from html_templates.models import HTMLTemplate
 
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
-from .timeplanning import recalc_queue, businesshrs
+from .timeplanning import OnChecking, recalc_queue, calc_businesshrsdiff, calc_businesstimedelta
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -1026,11 +1026,13 @@ class Sending(models.Model):
 class Execution(models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
-    Done = 'HD'
+    OnHold = 'OH'
     OnChecking = 'OC'
+    Done = 'HD'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
+        (OnHold, 'Призупинено'),
         (OnChecking, 'На перевірці'),
         (Done, 'Виконано')
     )
@@ -1043,6 +1045,7 @@ class Execution(models.Model):
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)
     actual_finish = models.DateTimeField('Кінець виконання', blank=True, null=True)
+    work_started = models.DateTimeField('Початок роботи', blank=True, null=True)
     fixed_date = models.BooleanField('Зафіксувати дату', default=False)
     interruption = models.DurationField('Тривалість переривання', default=timedelta(0))
     actual_duration = models.DurationField('Тривалість виконання', default=timedelta(0))
@@ -1059,19 +1062,13 @@ class Execution(models.Model):
 
     @property
     def planned_duration(self):
-        businesshrsdelta = businesshrs.difference(self.planned_start, self.planned_finish)
-        return businesshrsdelta.hours, int(businesshrsdelta.seconds/60)
-
-    def calc_businesstimedelta(self, start_time, task_duration):
-        return start_time + businesstimedelta.BusinessTimeDelta(
-            businesshrs,
-            hours=task_duration.days*24+task_duration.seconds/3600
-            )
+        if self.planned_start and self.planned_finish:
+            return calc_businesshrsdiff(self.planned_start, self.planned_finish)
 
     @property
     def planned_finish_with_interruption(self):
         if self.planned_finish and self.interruption > timedelta(0):
-            return self.calc_businesstimedelta(self.planned_finish, self.interruption)
+            return calc_businesstimedelta(self.planned_finish, self.interruption)
         else:
             return self.planned_finish
 
@@ -1083,7 +1080,7 @@ class Execution(models.Model):
             self.planned_finish = None
 
         # Automatic change Task.exec_status when Execution has changed
-        if self.exec_status in [Execution.InProgress, Execution.OnChecking] and self.task.exec_status == Task.ToDo:
+        if self.exec_status == [self.InProgress, self.OnChecking] and self.task.exec_status == Task.ToDo:
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
@@ -1092,15 +1089,20 @@ class Execution(models.Model):
             self.exec_status = Execution.Done
 
         # Automatic set actual_start when exec_status has changed
-        if self.exec_status in [Execution.InProgress, Execution.OnChecking, Execution.Done] and self.actual_start is None:
+        if self.exec_status == self.ToDo and self.work_started:
+            self.work_started = None
+        if self.exec_status == self.InProgress and not self.actual_start:
             self.actual_start = datetime.now()
-        elif self.exec_status == Execution.ToDo and self.actual_start is not None:
-            self.actual_start = None
+        if self.exec_status == self.InProgress and not self.work_started:
+            self.work_started = datetime.now()
+        if self.exec_status == [self.OnHold, self.OnChecking, self.Done] and self.work_started:
+            self.actual_duration += calc_businesstimedelta(datetime.now(), self.work_started)
+            self.work_started = None
 
         # Automatic set actual_finish when Execution has done
-        if self.exec_status in [Execution.Done] and self.actual_finish is None:
+        if self.exec_status == self.Done and not self.actual_finish:
             self.actual_finish = datetime.now()
-        elif self.exec_status in [Execution.ToDo, Execution.InProgress, Execution.OnChecking] and self.actual_finish is not None:
+        else:
             self.actual_finish = None
 
         # Logging

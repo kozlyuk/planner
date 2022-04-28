@@ -434,23 +434,33 @@ class ExecutorInlineForm(forms.ModelForm):
             if not (self.instance.executor and self.instance.executor.user.is_active == False):
                 self.fields['executor'].queryset = employees
             self.fields['subtask'].queryset = subtasks
+            if self.instance.exec_status == Execution.ToDo:
+                self.fields['exec_status'].choices = [('IW', 'В черзі'), ('IP', 'Виконується')]
+            elif self.instance.exec_status == Execution.InProgress:
+                self.fields['exec_status'].choices = [('IP', 'Виконується'), ('OC', 'На перевірці'), ('OH', 'Призупинено')]
+            elif self.instance.exec_status == Execution.OnHold:
+                self.fields['exec_status'].choices = [('OH', 'Призупинено'), ('IW', 'В черзі')]
+            elif self.instance.exec_status == Execution.OnChecking:
+                self.fields['exec_status'].choices = [('OC', 'На перевірці'), ('HD', 'Виконано'), ('IW', 'Коригувати')]
+            elif self.instance.exec_status == Execution.Done:
+                self.fields['exec_status'].choices = [('HD', 'Виконано'), ('IW', 'Коригувати')]
+
 
     def clean(self):
         if self.instance.pk and self.changed_data:
             if self.instance.is_active() == False and not get_current_user().is_superuser:
                 self.add_error('executor', "Ця підзадача виконана більше 20 днів тому")
-        # TODO Enable in the future
-        # cleaned_data = super().clean()
-        # executor = cleaned_data.get("executor")
-        # exec_status = cleaned_data.get("exec_status")
-        # if executor and exec_status==Execution.InProgress:
-        #     inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
-        #                                                  exec_status=Execution.InProgress,
-        #                                                  task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
-        #                                          .exclude(pk=self.instance.pk) \
-        #                                          .exists()
-        #     if inprogress_exists:
-        #         self.add_error('exec_status', "Виконавець виконує іншу задачу")
+        cleaned_data = super().clean()
+        executor = cleaned_data.get("executor")
+        exec_status = cleaned_data.get("exec_status")
+        if executor and exec_status==Execution.InProgress:
+            inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
+                                                         exec_status=Execution.InProgress,
+                                                         task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
+                                                 .exclude(pk=self.instance.pk) \
+                                                 .exists()
+            if inprogress_exists:
+                self.add_error('exec_status', "Виконавець виконує іншу задачу")
 
 
 class ExecutorsInlineFormset(BaseInlineFormSet):
