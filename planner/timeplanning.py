@@ -32,6 +32,16 @@ holidays = businesstimedelta.HolidayRule(ua_holidays)
 
 businesshrs = businesstimedelta.Rules([workday, friday, lunchbreak, holidays])
 
+def calc_businesshrsdiff(start_time, finish_time):
+    businesshrsdelta = businesshrs.difference(start_time, finish_time)
+    return timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
+
+def calc_businesstimedelta(start_time, task_duration):
+    return start_time + businesstimedelta.BusinessTimeDelta(
+        businesshrs,
+        hours=task_duration.days*24+task_duration.seconds/3600
+        )
+
 def merge_fixed_periods(tasks_to_do_fixed):
     """ merge fixed periods from tasks_to_do_fixed """
     fixed_periods = []
@@ -64,20 +74,18 @@ def add_interruption(task, fixed_periods, task_duration):
         finish_in_period = period[0] < task.planned_finish <= period[1]
         if start_in_period:
             task.planned_start = period[1]
-            task.planned_finish = task.calc_businesstimedelta(task.planned_start, task_duration)
+            task.planned_finish = calc_businesstimedelta(task.planned_start, task_duration)
             return task
         elif finish_in_period or \
             task.planned_start < period[0] and task.planned_finish > period[1]:
-            interruption = businesshrs.difference(period[0], period[1])
-            task.interruption = timedelta(hours=interruption.hours, seconds=interruption.seconds)
+            task.interruption = calc_businesshrsdiff(period[0], period[1])
             return task
     return task
 
 def get_task_duration(task):
     """ get task duration in hours """
     if task.planned_start and task.planned_finish and task.planned_start < task.planned_finish:
-        businesshrsdelta = businesshrs.difference(task.planned_start, task.planned_finish)
-        return timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
+        return calc_businesshrsdiff(task.planned_start, task.planned_finish)
     elif task.subtask.add_to_schedule:
         return task.subtask.duration
     return timedelta(0)
@@ -93,7 +101,7 @@ def queue_task(task, last_task_finish, fixed_periods):
     task_duration = get_task_duration(task)
     business_hour = businesstimedelta.BusinessTimeDelta(businesshrs, hours=1)
     task.planned_start = last_task_finish + business_hour - business_hour
-    task.planned_finish = task.calc_businesstimedelta(task.planned_start, task_duration)
+    task.planned_finish = calc_businesstimedelta(task.planned_start, task_duration)
 
     task = add_interruption(remove_tzinfo(task), fixed_periods, task_duration)
     return remove_tzinfo(task)

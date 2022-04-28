@@ -1,8 +1,9 @@
 EXECUTION_BADGE_COLORS = {
-    'ToDo': '#ffc107',
-    'InProgress': '#17a2b8',
-    'Done': '#28a745',
-    'OnChecking': '#007bff'
+    'ToDo': '#8797de',
+    'InProgress': '#6875b0',
+    'Done': '#3c4b8c',
+    'OnChecking': '#1a2b75',
+    'OnHold': '#525561'
 }
 
 TASK_BADGE_COLORS = {
