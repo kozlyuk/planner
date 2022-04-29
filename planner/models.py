@@ -741,19 +741,21 @@ class Task(models.Model):
                 if not self.sending_date:
                     self.sending_date = date.today()
 
-        # Automatic change Executions.exec_status when Task has Done
-        if self.exec_status in [Task.Done, Task.Sent]:
-            for execution in self.execution_set.all():
-                if execution.exec_status != Execution.Done:
-                    execution.exec_status = Execution.Done
-                    if execution.actual_finish is None:
-                        execution.actual_finish = datetime.now()
-                    execution.save()
+        # Automatic change Executions.exec_status when Task status changed
+        for execution in self.execution_set.all():
+            if self.exec_status in [self.Done, self.Sent] \
+                and execution.exec_status != Execution.Done:
+                execution.exec_status = Execution.Done
+                execution.save()
+            elif self.exec_status in [self.OnHold, self.Canceled] \
+                and execution.exec_status not in [Execution.OnHold, Execution.Done]:
+                execution.exec_status = Execution.OnHold
+                execution.save()
 
          # Automatic set actual_finish when Task has done
-        if self.exec_status in [Task.Done, Task.Sent] and self.actual_finish is None:
+        if self.exec_status in [self.Done, self.Sent] and self.actual_finish is None:
             self.actual_finish = date.today()
-        elif self.exec_status in [Execution.ToDo, Execution.InProgress] and self.actual_finish is not None:
+        elif self.exec_status not in [self.Done, self.Sent] and self.actual_finish is not None:
             self.actual_finish = None
 
         # Logging
@@ -1082,7 +1084,7 @@ class Execution(models.Model):
             self.planned_finish = None
 
         # Automatic change Task.exec_status when Execution has changed
-        if self.exec_status == [self.InProgress, self.OnChecking] and self.task.exec_status == Task.ToDo:
+        if self.exec_status in [self.InProgress, self.OnChecking] and self.task.exec_status == Task.ToDo:
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
