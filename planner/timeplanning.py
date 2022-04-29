@@ -108,7 +108,7 @@ def get_last_task_finish(employee):
                                               ) \
                                       .order_by('planned_finish').last()
     if last_task and last_task.planned_finish:
-        return last_task.planned_finish
+        return last_task.planned_finish_with_interruption
     return datetime.now().replace(hour=9,minute=0,second=0,microsecond=0)
 
 def recalc_queue(employee):
