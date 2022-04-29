@@ -204,7 +204,7 @@ def status_change(user, pk, status):
 
     if status == Execution.Done:
         undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.ToDo})
-        undo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo']
+        undo_styles = 'color: black!important; background-color:' + EXECUTION_BADGE_COLORS['ToDo']
         undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Коригувати</a>'
 
         if user.groups.filter(name="ГІПи").exists():
