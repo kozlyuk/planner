@@ -1042,6 +1042,7 @@ class Execution(models.Model):
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    prev_exec_status = models.CharField('Попередный статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     planned_start = models.DateTimeField('Плановий початок', blank=True, null=True)
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)
@@ -1089,15 +1090,23 @@ class Execution(models.Model):
         if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
             self.exec_status = Execution.Done
 
-        # Automatic set actual_start when exec_status has changed
-        if self.exec_status == self.ToDo and self.work_started:
-            self.work_started = None
+        # Automatic add execution first to employee queue with duration 1 hour
+        if self.exec_status == self.ToDo and self.prev_exec_status == self.OnChecking and self.warning != "На коригуванні":
+            self.warning = "На коригуванні"
+            self.planned_start = datetime.now()
+            self.planned_finish = calc_businesstimedelta(self.planned_start, timedelta(hours=1))
+        if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
+            self.warning = ""
+
+        # Automatic set actual_start and work_started when exec_status has changed
         if self.exec_status == self.InProgress and not self.actual_start:
             self.actual_start = datetime.now()
         if self.exec_status == self.InProgress and not self.work_started:
             self.work_started = datetime.now()
+
+        # Automatic set actual_duration when exec_status has changed
         if self.exec_status == [self.OnHold, self.OnChecking, self.Done] and self.work_started:
-            self.actual_duration += calc_businesstimedelta(datetime.now(), self.work_started)
+            self.actual_duration += calc_businesshrsdiff(self.work_started, datetime.now())
             self.work_started = None
 
         # Automatic set actual_finish when Execution has done

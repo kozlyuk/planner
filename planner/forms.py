@@ -416,7 +416,7 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date',
+        fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date', 'prev_exec_status',
                   'actual_finish', 'planned_start', 'planned_finish', 'warning']
         widgets = {
             'executor': Select2Widget(),
@@ -424,7 +424,8 @@ class ExecutorInlineForm(forms.ModelForm):
             'planned_start': SplitDateTimeWidget(),
             'planned_finish': SplitDateTimeWidget(),
             # 'actual_finish': SplitDateTimeWidget(),
-            'DELETION_FIELD_NAME': forms.HiddenInput()
+            'DELETION_FIELD_NAME': forms.HiddenInput(),
+            'prev_exec_status': forms.HiddenInput()
         }
 
     def __init__(self, *args, method=None, employees=None, subtasks=None, **kwargs):
@@ -461,6 +462,10 @@ class ExecutorInlineForm(forms.ModelForm):
                                                      .exists()
                 if not self.instance.subtask.simultaneous_execution and inprogress_exists:
                     self.add_error('exec_status', "Виконавець виконує іншу задачу")
+
+            if 'exec_status' in self.changed_data:
+                cleaned_data['prev_exec_status'] = self.instance.exec_status
+            return cleaned_data
 
 
 class ExecutorsInlineFormset(BaseInlineFormSet):

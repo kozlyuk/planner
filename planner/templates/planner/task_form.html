@@ -353,6 +353,7 @@
                                             </thead>
                                             <tbody>
                                                 {% for form in executors_formset %}
+                                                {{ form.prev_exec_status }}
                                                 <tr>
                                                     <th class="pl-1 pr-1">
                                                         {{ form.executor|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}

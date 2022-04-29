@@ -37,10 +37,11 @@ def calc_businesshrsdiff(start_time, finish_time):
     return timedelta(hours=businesshrsdelta.hours, seconds=businesshrsdelta.seconds)
 
 def calc_businesstimedelta(start_time, task_duration):
-    return start_time + businesstimedelta.BusinessTimeDelta(
+    finish_time = start_time + businesstimedelta.BusinessTimeDelta(
         businesshrs,
         hours=task_duration.days*24+task_duration.seconds/3600
         )
+    return finish_time.replace(tzinfo=None)
 
 def merge_fixed_periods(tasks_to_do_fixed):
     """ merge fixed periods from tasks_to_do_fixed """
@@ -90,21 +91,15 @@ def get_task_duration(task):
         return task.subtask.duration
     return timedelta(0)
 
-def remove_tzinfo(task):
-    """ remove tzinfo """
-    task.planned_start = task.planned_start.replace(tzinfo=None)
-    task.planned_finish = task.planned_finish.replace(tzinfo=None)
-    return task
-
 def queue_task(task, last_task_finish, fixed_periods):
     """ set planned start and finish """
     task_duration = get_task_duration(task)
     business_hour = businesstimedelta.BusinessTimeDelta(businesshrs, hours=1)
     task.planned_start = last_task_finish + business_hour - business_hour
+    task.planned_start = task.planned_start.replace(tzinfo=None)
     task.planned_finish = calc_businesstimedelta(task.planned_start, task_duration)
 
-    task = add_interruption(remove_tzinfo(task), fixed_periods, task_duration)
-    return remove_tzinfo(task)
+    return add_interruption(task, fixed_periods, task_duration)
 
 def get_last_task_finish(employee):
     """ calculate last task finish time """

@@ -13,6 +13,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 
+    # path('api/gantt/', include('gantt.urls')),
+
     path('', views.Dashboard.as_view(), name='home_page'),
 
     path('deal/', views.DealList.as_view(), name='deal_list'),
@@ -32,7 +34,7 @@ urlpatterns = [
     path('sprint/gantt/', GetPlan.as_view(), name='get_plan'),
     path('sprint/gantt/change/', ChangePlan.as_view(), name='change_plan'),
 
-    path('execution/<int:pk>/status/<str:status>/',
+    path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
 
     path('receiver/', views.ReceiverList.as_view(), name='receiver_list'),

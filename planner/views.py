@@ -588,23 +588,23 @@ class ExecutionStatusChange(View):
     def dispatch(self, request, *args, **kwargs):
         try:
             obj = Execution.objects.get(pk=kwargs['pk'])
-            if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
-                if request.user == obj.executor.user and kwargs['status'] != Execution.Done:
-                    return super().dispatch(request, *args, **kwargs)
-                if request.user.is_superuser or request.user == obj.task.owner.user:
-                    return super().dispatch(request, *args, **kwargs)
-            raise PermissionDenied
         except:
             raise Execution.DoesNotExist
 
+        if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
+            if request.user == obj.executor.user and kwargs['status'] != Execution.Done:
+                return super().dispatch(request, *args, **kwargs)
+            if request.user.is_superuser or request.user == obj.task.owner.user:
+                return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+
     def get(self, request, *args, **kwargs):
-        try:
-            execution = Execution.objects.get(pk=kwargs['pk'])
-            execution.exec_status = kwargs['status']
-            execution.save()
-            return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
-        except:
-            raise Execution.DoesNotExist
+        execution = Execution.objects.get(pk=kwargs['pk'])
+        execution.exec_status = kwargs['status']
+        execution.prev_exec_status = kwargs['prev_status']
+        execution.save()
+        return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
 
 
 # @method_decorator(login_required, name='dispatch')
