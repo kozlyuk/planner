@@ -165,7 +165,7 @@ def status_change(user, pk, status):
                                                  exec_status=Execution.InProgress,
                                                  task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
                                          .exists()
-    if status == Execution.ToDo and not inprogress_exists:
+    if status == Execution.ToDo and (execution.subtask.simultaneous_execution or not inprogress_exists):
         redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.InProgress})
         redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['InProgress']
         redo_btn = '<a href="' + redo_url + '"  style="' + redo_styles + '" class="btn btn-sm mx-0">Виконується</a>'

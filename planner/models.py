@@ -906,6 +906,7 @@ class SubTask(models.Model):
     duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
     base = models.BooleanField('Базова', default=False)
     add_to_schedule = models.BooleanField('Додавати в календар', default=True)
+    simultaneous_execution = models.BooleanField('Одночасне виконання', default=False)
 
     class Meta:
         unique_together = ('project_type', 'name')
