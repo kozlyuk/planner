@@ -1114,7 +1114,7 @@ class Execution(models.Model):
         # Automatic set actual_finish when Execution has done
         if self.exec_status == self.Done and not self.actual_finish:
             self.actual_finish = datetime.now()
-        else:
+        elif self.exec_status != self.Done and self.actual_finish:
             self.actual_finish = None
 
         # Logging
