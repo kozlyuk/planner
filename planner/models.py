@@ -1084,7 +1084,7 @@ class Execution(models.Model):
             self.planned_finish = None
 
         # Automatic change Task.exec_status when Execution has changed
-        if self.exec_status in [self.InProgress, self.OnChecking] and self.task.exec_status == Task.ToDo:
+        if self.exec_status in [self.InProgress, self.OnChecking, self.Done] and self.task.exec_status == Task.ToDo:
             self.task.exec_status = Task.InProgress
             self.task.save(logging=False)
 
