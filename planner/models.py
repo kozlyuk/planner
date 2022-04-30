@@ -1044,7 +1044,7 @@ class Execution(models.Model):
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    prev_exec_status = models.CharField('Попередный статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
+    prev_exec_status = models.CharField('Попередный статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, blank=True, null=True)
     planned_start = models.DateTimeField('Плановий початок', blank=True, null=True)
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)

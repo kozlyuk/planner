@@ -444,7 +444,7 @@ class ExecutorInlineForm(forms.ModelForm):
             elif self.instance.exec_status == Execution.OnChecking:
                 self.fields['exec_status'].choices = [('OC', 'На перевірці'), ('HD', 'Виконано'), ('IW', 'Коригувати')]
             elif self.instance.exec_status == Execution.Done:
-                self.fields['exec_status'].choices = [('HD', 'Виконано'), ('IW', 'Коригувати')]
+                self.fields['exec_status'].choices = [('HD', 'Виконано'), ('IW', 'В черзі')]
 
 
     def clean(self):
