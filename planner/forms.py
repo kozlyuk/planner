@@ -437,8 +437,10 @@ class ExecutorInlineForm(forms.ModelForm):
             self.fields['subtask'].queryset = subtasks
             if self.instance.exec_status == Execution.ToDo:
                 self.fields['exec_status'].choices = [('IW', 'В черзі'), ('IP', 'Виконується')]
-            elif self.instance.exec_status == Execution.InProgress:
+            elif self.instance.exec_status == Execution.InProgress and self.instance.subtask.check_required:
                 self.fields['exec_status'].choices = [('IP', 'Виконується'), ('OC', 'На перевірці'), ('OH', 'Призупинено')]
+            elif self.instance.exec_status == Execution.InProgress:
+                self.fields['exec_status'].choices = [('IP', 'Виконується'), ('HD', 'Виконано'), ('OH', 'Призупинено')]
             elif self.instance.exec_status == Execution.OnHold:
                 self.fields['exec_status'].choices = [('OH', 'Призупинено'), ('IW', 'В черзі')]
             elif self.instance.exec_status == Execution.OnChecking:

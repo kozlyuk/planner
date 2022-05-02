@@ -712,9 +712,16 @@ class IntTaskAdmin(admin.ModelAdmin):
 
 class SubTaskAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'project_type', 'part', 'base', 'add_to_schedule', 'simultaneous_execution']
+    list_display = ['name', 'project_type', 'part', 'base', 'add_to_schedule',
+                    'check_required', 'simultaneous_execution']
     list_per_page = 100
-    list_filter = ['project_type__active', ('project_type__customer', RelatedDropdownFilter), ('project_type', RelatedDropdownFilter)]
+    list_filter = ['project_type__active',
+                   'base',
+                   'add_to_schedule',
+                   'check_required',
+                   'simultaneous_execution',
+                   ('project_type__customer', RelatedDropdownFilter),
+                   ('project_type', RelatedDropdownFilter)]
     search_fields = ['name', 'project_type__project_type', 'project_type__price_code']
 
 

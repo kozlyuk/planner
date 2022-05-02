@@ -174,11 +174,17 @@ def status_change(user, pk, status):
 
     if status == Execution.InProgress:
         undo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnHold, 'prev_status': Execution.InProgress})
-        redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking, 'prev_status': Execution.InProgress})
         undo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnHold']
-        redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking']
         undo_btn = '<a href="' + undo_url + '" style="' + undo_styles + '" class="btn btn-sm mx-0">Зупинити</a>'
-        redo_btn = '<a href="' + redo_url + '" style="' + redo_styles + '" class="btn btn-sm mx-0">На перевірку</a>'
+
+        if execution.subtask.check_required:
+            redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.OnChecking, 'prev_status': Execution.InProgress})
+            redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['OnChecking']
+            redo_btn = '<a href="' + redo_url + '" style="' + redo_styles + '" class="btn btn-sm mx-0">На перевірку</a>'
+        else:
+            redo_url = reverse('execution_status_change', kwargs={'pk': pk, 'status': Execution.Done, 'prev_status': Execution.InProgress})
+            redo_styles = 'color: white!important; background-color:' + EXECUTION_BADGE_COLORS['Done']
+            redo_btn = '<a href="' + redo_url + '" style="' + redo_styles + '" class="btn btn-sm mx-0">Виконано</a>'
 
         return format_html('<div class="btn-group" role="group">' + undo_btn + redo_btn + '</div>')
 
