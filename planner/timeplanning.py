@@ -104,7 +104,8 @@ def queue_task(task, last_task_finish, fixed_periods):
 def get_last_task_finish(employee):
     """ calculate last task finish time """
     last_task = employee.execution_set.filter(exec_status__in=[Done,OnChecking],
-                                              task__exec_status__in=[InProgress,Done,Sent]
+                                              task__exec_status__in=[InProgress,Done,Sent],
+                                              subtask__add_to_schedule=True
                                               ) \
                                       .order_by('planned_finish').last()
     if last_task and last_task.planned_finish:
