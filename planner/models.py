@@ -1094,9 +1094,9 @@ class Execution(models.Model):
             self.exec_status = Execution.Done
 
         # Automatic add execution first to employee queue with duration 1 hour
-        if self.exec_status == self.ToDo and self.prev_exec_status == self.OnChecking and self.warning != "На коригуванні":
+        if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
+                and self.warning != "На коригуванні":
             self.warning = "На коригуванні"
-            self.planned_start = datetime.now()
             self.planned_finish = calc_businesstimedelta(self.planned_start, timedelta(hours=1))
         if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
             self.warning = ""

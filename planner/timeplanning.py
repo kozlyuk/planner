@@ -127,12 +127,8 @@ def recalc_queue(employee):
 
     tasks = []
     # plan queued tasks
-    for task in tasks_to_do_not_fixed.annotate(correction=Case(When(warning = "На коригуванні", then=Value(True)),
-                                                               default=Value(False),
-                                                               output_field=BooleanField()
-                                                               )) \
-                                     .filter(planned_start__isnull=False) \
-                                     .order_by('exec_status', '-correction', 'planned_start'):
+    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=False) \
+                                     .order_by('exec_status', 'planned_start'):
         queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
         last_task_finish = queued_task.planned_finish_with_interruption
