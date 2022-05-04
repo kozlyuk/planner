@@ -51,6 +51,20 @@ class Construction(models.Model):
         return self.name
 
 
+class WorkType(models.Model):
+
+    name = models.CharField('Вид будівництва', max_length=100, unique=True)
+    description = models.CharField('Опис', max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Вид будівництва'
+        verbose_name_plural = 'Види будівництва'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     name = models.CharField('ПІБ', max_length=30, unique=True)
@@ -679,6 +693,7 @@ class Task(models.Model):
     project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     construction = models.ForeignKey(Construction, verbose_name='Тип конструкції', on_delete=models.PROTECT)
+    work_type = models.ForeignKey(WorkType, verbose_name='Вид будівництва', on_delete=models.PROTECT, blank=True, null=True)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField('Примітка', max_length=30, blank=True)

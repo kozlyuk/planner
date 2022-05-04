@@ -12,8 +12,9 @@ from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from admin_totals.admin import ModelAdminTotals
 
-from .models import ActOfAcceptance, Payment, Project, Employee, Customer, Receiver, Sending, Deal, Task, Execution
-from .models import IntTask, Contractor, Order, Company, Construction, SubTask
+from .models import ActOfAcceptance, Payment, Project, Employee, Customer, \
+                    Receiver, Sending, Deal, Task, Execution, WorkType, \
+                    IntTask, Contractor, Order, Company, Construction, SubTask
 
 
 class SubTasksInline(admin.TabularInline):
@@ -742,4 +743,5 @@ admin.site.register(Deal, DealAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(Construction)
+admin.site.register(WorkType)
 admin.site.register(SubTask, SubTaskAdmin)
