@@ -12,7 +12,7 @@ from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
 from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
-                    Deal, Employee, Project, Company, Receiver, Contractor
+                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -266,11 +266,13 @@ class TaskFilterForm(forms.Form):
                                       .values_list('pk', 'name'))
         customers = list(Customer.objects.all().values_list('pk', 'name'))
         constructions = list(Construction.objects.all().values_list('pk', 'name'))
+        work_types = list(WorkType.objects.all().values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
         self.fields['customer'].choices = customers
         self.fields['construction'].choices = constructions
+        self.fields['work_type'].choices = work_types
 
     exec_status = forms.MultipleChoiceField(
         label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
@@ -280,6 +282,8 @@ class TaskFilterForm(forms.Form):
         attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     construction = forms.MultipleChoiceField(
         label='Тип конструкції', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    work_type = forms.MultipleChoiceField(
+        label='Вид будівництва', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
@@ -306,6 +310,9 @@ class SprintFilterForm(forms.Form):
         self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
         self.fields['owner'].choices = owners
+
+        self.fields['actual_start'].required = False
+        self.fields['actual_finish'].required = False
 
     exec_status = forms.MultipleChoiceField(label='Статус', required=False,
                                             widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
@@ -342,7 +349,7 @@ class TaskForm(forms.ModelForm):
                   'planned_start', 'planned_finish', 'actual_finish',
                   'project_code', 'manual_warning', 'comment',
                   'difficulty_owner', 'difficulty_executor',
-                  'construction'
+                  'construction', 'work_type',
                   ]
         widgets = {
             'project_type': Select2Widget,
