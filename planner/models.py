@@ -927,6 +927,7 @@ class SubTask(models.Model):
     add_to_schedule = models.BooleanField('Додавати в календар', default=True)
     simultaneous_execution = models.BooleanField('Одночасне виконання', default=False)
     check_required = models.BooleanField('Потрібна перевірка', default=True)
+    show_to_customer = models.BooleanField('Показувати замовнику', default=False)
 
     class Meta:
         unique_together = ('project_type', 'name')
