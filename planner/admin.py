@@ -56,7 +56,8 @@ class EmployeeAdmin(admin.ModelAdmin):
                            ('vacation_count', 'vacation_date'),
                            ('salary', 'coefficient'),
                            ('birthday'),
-                           ('avatar')
+                           ('avatar'),
+                           ('comment'),
                            ]})
     ]
 

@@ -81,6 +81,7 @@ class Employee(models.Model):
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
     vacation_date = models.DateField('Дата нарахування відпустки', blank=True, null=True)
+    comment = models.TextField('Коментар', blank=True)
 
     class Meta:
         verbose_name = 'Працівник'
@@ -693,7 +694,7 @@ class Task(models.Model):
     project_code = models.IntegerField('Шифр проекту', blank=True, null=True)
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     construction = models.ForeignKey(Construction, verbose_name='Тип конструкції', on_delete=models.PROTECT)
-    work_type = models.ForeignKey(WorkType, verbose_name='Вид будівництва', on_delete=models.PROTECT, blank=True, null=True)
+    work_type = models.ForeignKey(WorkType, verbose_name='Вид будівництва', on_delete=models.PROTECT)
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     manual_warning = models.CharField('Примітка', max_length=30, blank=True)
