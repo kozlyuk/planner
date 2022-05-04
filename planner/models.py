@@ -81,6 +81,7 @@ class Employee(models.Model):
     vacation_count = models.PositiveSmallIntegerField('Кількість днів відпустки', blank=True, null=True,
                                                       validators=[MaxValueValidator(100)])
     vacation_date = models.DateField('Дата нарахування відпустки', blank=True, null=True)
+    card_number = models.CharField('Номер карти', max_length=19, blank=True)
     comment = models.TextField('Коментар', blank=True)
 
     class Meta:

@@ -48,7 +48,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'salary']
+    list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'card_number', 'salary']
     fieldsets = [
         (None, {'fields': [('user', 'name'),
                            ('position', 'head'),
@@ -57,6 +57,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                            ('salary', 'coefficient'),
                            ('birthday'),
                            ('avatar'),
+                           ('card_number'),
                            ('comment'),
                            ]})
     ]
