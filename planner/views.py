@@ -33,6 +33,7 @@ class Round(Func):
 
 def subtasks_queryset_filter(request):
     exec_statuses = request.GET.getlist('exec_status')
+    work_types = request.GET.getlist('work_type')
     owner = request.GET.get('owner')
     executor = request.GET.get('executor')
     company = request.GET.get('company')
@@ -57,9 +58,15 @@ def subtasks_queryset_filter(request):
         tasks = tasks.filter(query)
 
     if exec_statuses:
-        tasks_union = Task.objects.none()
+        tasks_union = Execution.objects.none()
         for status in exec_statuses:
             tasks_part = tasks.filter(exec_status=status)
+            tasks_union = tasks_union | tasks_part
+        tasks = tasks_union
+    if work_types:
+        tasks_union = Execution.objects.none()
+        for work_type in work_types:
+            tasks_part = tasks.filter(task__work_type=work_type)
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
     if owner:
@@ -341,6 +348,7 @@ class TaskList(ListView):
         owners = self.request.GET.getlist('owner', '0')
         customers = self.request.GET.getlist('customer', '0')
         constructions = self.request.GET.getlist('construction', '0')
+        work_types = self.request.GET.getlist('work_type')
         order = self.request.GET.get('o', '0')
         for word in search_string:
             tasks = tasks.filter(Q(object_code__icontains=word) |
@@ -371,6 +379,12 @@ class TaskList(ListView):
             for construction in constructions:
                 tasks_segment = tasks.filter(construction=construction)
                 tasks_union = tasks_union | tasks_segment
+            tasks = tasks_union
+        if work_types:
+            tasks_union = Task.objects.none()
+            for work_type in work_types:
+                tasks_part = tasks.filter(work_type=work_type)
+                tasks_union = tasks_union | tasks_part
             tasks = tasks_union
         if order != '0':
             tasks = tasks.order_by(order)

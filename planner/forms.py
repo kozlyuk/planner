@@ -296,6 +296,7 @@ class SprintFilterForm(forms.Form):
         exec_status = list(Execution.EXEC_STATUS_CHOICES)
         companies = list(Company.objects.filter(active=True).values_list('pk', 'name'))
         owners = list(Employee.objects.filter(user__groups__name='ГІПи', user__is_active=True).values_list('pk', 'name'))
+        work_types = list(WorkType.objects.all().values_list('pk', 'name'))
 
         # what executors is available in filter
         if user.is_superuser or user.groups.filter(name='Замовники').exists():
@@ -310,6 +311,7 @@ class SprintFilterForm(forms.Form):
         self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
         self.fields['owner'].choices = owners
+        self.fields['work_type'].choices = work_types
 
         self.fields['actual_start'].required = False
         self.fields['actual_finish'].required = False
@@ -330,11 +332,13 @@ class SprintFilterForm(forms.Form):
     actual_start_value = date.today() - timedelta(days=date.today().weekday())
     actual_finish_value = actual_start_value + timedelta(days=14)
     actual_start = forms.DateField(label='Дата початку',
-                                 widget=forms.DateInput(format=('%d.%m.%Y'),
-                                 attrs={'type': 'date', "value": actual_start_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
+                                   widget=forms.DateInput(format=('%d.%m.%Y'),
+                                       attrs={'type': 'date', "value": actual_start_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
     actual_finish = forms.DateField(label='Дата завершення',
-                                 widget=forms.DateInput(format=('%d.%m.%Y'),
-                                 attrs={'type': 'date', "value": actual_finish_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
+                                    widget=forms.DateInput(format=('%d.%m.%Y'),
+                                        attrs={'type': 'date', "value": actual_finish_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
+    work_type = forms.MultipleChoiceField(label='Вид будівництва', required=False, widget=Select2MultipleWidget(
+                                              attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
