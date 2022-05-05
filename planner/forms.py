@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.admin.widgets import AdminDateWidget
 from .DateTimeWidgets import SplitDateTimeWidget
 from django.contrib.auth.models import User, Group
-from django.db.models import Q
+from django.db.models import Q, F
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
 
@@ -517,9 +517,11 @@ class ExecutorsInlineFormset(BaseInlineFormSet):
                                        'Зараз : %(percent).0f%%') % {'bonuses_max': bonuses_max, 'percent': percent})
 
 
-ExecutorsFormSet = inlineformset_factory(
-    Task, Execution, form=ExecutorInlineForm, extra=0, formset=ExecutorsInlineFormset)
-
+class ExecutorsFormSet(inlineformset_factory(Task, Execution, form=ExecutorInlineForm,
+                                             extra=0, formset=ExecutorsInlineFormset)):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.queryset = self.queryset.order_by(F('planned_start').asc(nulls_last=True))
 
 class OrderInlineForm(forms.ModelForm):
     class Meta:

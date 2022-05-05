@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, time
 import businesstimedelta
-from django.db.models import Case, When, Value, BooleanField
+from django.db.models import F
 import holidays as pyholidays
 from django.apps import apps
 
@@ -122,19 +122,14 @@ def recalc_queue(employee):
                                                 )
     tasks_to_do_fixed = tasks_to_do.filter(fixed_date=True).values('planned_start', 'planned_finish')
     fixed_periods = merge_fixed_periods(tasks_to_do_fixed)
-    tasks_to_do_not_fixed = tasks_to_do.filter(fixed_date=False)
+    tasks_to_do_not_fixed = tasks_to_do.filter(fixed_date=False) \
+                                       .order_by('exec_status', F('planned_start').asc(nulls_last=True))
+
     last_task_finish = get_last_task_finish(employee)
 
     tasks = []
     # plan queued tasks
-    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=False) \
-                                     .order_by('exec_status', 'planned_start'):
-        queued_task = queue_task(task, last_task_finish, fixed_periods)
-        tasks.append(queued_task)
-        last_task_finish = queued_task.planned_finish_with_interruption
-
-    # plan not queued tasks
-    for task in tasks_to_do_not_fixed.filter(planned_start__isnull=True).order_by('exec_status'):
+    for task in tasks_to_do_not_fixed:
         queued_task = queue_task(task, last_task_finish, fixed_periods)
         tasks.append(queued_task)
         last_task_finish = queued_task.planned_finish_with_interruption
