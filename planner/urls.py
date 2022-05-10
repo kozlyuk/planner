@@ -13,7 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 
-    # path('api/gantt/', include('gantt.urls')),
+    path('api/gantt/', include('gantt.urls')),
 
     path('', views.Dashboard.as_view(), name='home_page'),
 

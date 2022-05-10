@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 
 from planner.models import Task, Execution
-from planner.views import subtasks_queryset_filter
+from planner.views import execuition_queryset_filter
 
 
 @method_decorator(login_required, name='dispatch')
@@ -40,7 +40,7 @@ class GetPlan(TemplateView):
         """ prepare json-coded data for gantt """
         context = super().get_context_data(*args, **kwargs)
         # get subtasks_queryset_filter
-        subtasks, actual_start, end_date = subtasks_queryset_filter(self.request)
+        subtasks, actual_start, end_date = execuition_queryset_filter(self.request)
         projects = subtasks.values_list('task', flat=True)
         # distinct values
         projects = list(set(projects))
@@ -86,7 +86,6 @@ class ChangePlan(View):
         planned_finish ([date]): [task or project planned_finish]
 
     Raises:
-        PermissionDenied: [if user does not have permission to change data]
         PermissionDenied: [if user does not have permission to change data]
 
     Returns:
