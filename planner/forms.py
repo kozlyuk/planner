@@ -479,6 +479,18 @@ class ExecutorInlineForm(forms.ModelForm):
 
             if 'exec_status' in self.changed_data:
                 cleaned_data['prev_exec_status'] = self.instance.exec_status
+
+            # validate planned dates
+            fixed_date = cleaned_data.get("fixed_date")
+            planned_start = cleaned_data.get("planned_start")
+            planned_finish = cleaned_data.get("planned_finish")
+            if planned_start and planned_finish and planned_start >= planned_finish:
+                self.add_error('planned_start', "Плановий початок має бути до планового кінця")
+            if fixed_date and not planned_start:
+                self.add_error('planned_start', "Для того щоб зафіксувати дату - вкажіть її")
+            if fixed_date and not planned_finish:
+                self.add_error('planned_finish', "Для того щоб зафіксувати дату - вкажіть її")
+
             return cleaned_data
 
 
