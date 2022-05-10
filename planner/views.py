@@ -31,14 +31,72 @@ class Round(Func):
     template = '%(function)s(%(expressions)s, 2)'
 
 
-def subtasks_queryset_filter(request):
+def task_queryset_filter(request):
+
+    search_string = request.GET.get('filter', '').split()
+    exec_statuses = request.GET.getlist('exec_status', '0')
+    owners = request.GET.getlist('owner', '0')
+    customers = request.GET.getlist('customer', '0')
+    constructions = request.GET.getlist('construction', '0')
+    work_types = request.GET.getlist('work_type')
+    order = request.GET.get('o', '0')
+
+
+    tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
+    # filter only customer tasks
+    if request.user.groups.filter(name='Замовники').exists():
+        tasks = tasks.filter(deal__customer__user=request.user)
+    for word in search_string:
+        tasks = tasks.filter(Q(object_code__icontains=word) |
+                                Q(object_address__icontains=word) |
+                                Q(deal__number__icontains=word) |
+                                Q(project_type__price_code__icontains=word) |
+                                Q(project_type__project_type__icontains=word))
+    if exec_statuses != '0':
+        tasks_union = Task.objects.none()
+        for status in exec_statuses:
+            tasks_segment = tasks.filter(exec_status=status)
+            tasks_union = tasks_union | tasks_segment
+        tasks = tasks_union
+    if owners != '0':
+        tasks_union = Task.objects.none()
+        for owner in owners:
+            tasks_segment = tasks.filter(owner=owner)
+            tasks_union = tasks_union | tasks_segment
+        tasks = tasks_union
+    if customers != '0':
+        tasks_union = Task.objects.none()
+        for customer in customers:
+            tasks_segment = tasks.filter(deal__customer=customer)
+            tasks_union = tasks_union | tasks_segment
+        tasks = tasks_union
+    if constructions != '0':
+        tasks_union = Task.objects.none()
+        for construction in constructions:
+            tasks_segment = tasks.filter(construction=construction)
+            tasks_union = tasks_union | tasks_segment
+        tasks = tasks_union
+    if work_types:
+        tasks_union = Task.objects.none()
+        for work_type in work_types:
+            tasks_part = tasks.filter(work_type=work_type)
+            tasks_union = tasks_union | tasks_part
+        tasks = tasks_union
+    if order != '0':
+        tasks = tasks.order_by(order)
+    else:
+        tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
+    return tasks
+
+
+def execuition_queryset_filter(request):
     exec_statuses = request.GET.getlist('exec_status')
     work_types = request.GET.getlist('work_type')
     owner = request.GET.get('owner')
     executor = request.GET.get('executor')
     company = request.GET.get('company')
-    actual_start = request.GET.get('actual_start')
-    actual_finish = request.GET.get('actual_finish')
+    planned_start = request.GET.get('actual_start')
+    planned_finish = request.GET.get('actual_finish')
     search_string = request.GET.get('filter', '').split()
     order = request.GET.get('o')
 
@@ -75,19 +133,19 @@ def subtasks_queryset_filter(request):
         tasks = tasks.filter(executor=executor)
     if company:
         tasks = tasks.filter(task__deal__company=company)
-    if actual_start:
-        actual_start_value = datetime.strptime(actual_start, '%Y-%m-%d')
+    if planned_start:
+        planned_start_value = datetime.strptime(planned_start, '%Y-%m-%d')
     else:
-        actual_start_value = date.today() - timedelta(days=date.today().weekday())
-    if actual_finish:
-        actual_finish_value = datetime.strptime(actual_finish, '%Y-%m-%d')
+        planned_start_value = date.today() - timedelta(days=date.today().weekday())
+    if planned_finish:
+        planned_finish_value = datetime.strptime(planned_finish, '%Y-%m-%d')
     else:
-        actual_finish_value = actual_start_value + timedelta(days=14)
-    tasks = tasks.filter(Q(planned_start__gte=actual_start_value, planned_start__lte=actual_finish_value) |
-                         Q(planned_finish__gte=actual_start_value, planned_finish__lte=actual_finish_value) |
-                         Q(planned_start__lt=actual_start_value,
+        planned_finish_value = planned_start_value + timedelta(days=14)
+    tasks = tasks.filter(Q(planned_start__gte=planned_start_value, planned_start__lte=planned_finish_value) |
+                         Q(planned_finish__gte=planned_start_value, planned_finish__lte=planned_finish_value) |
+                         Q(planned_start__lt=planned_start_value,
                            exec_status=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold]) |
-                         Q(planned_finish__lt=actual_start_value,
+                         Q(planned_finish__lt=planned_start_value,
                            exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold])
                          ) \
                  .exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
@@ -101,7 +159,7 @@ def subtasks_queryset_filter(request):
         tasks = tasks.order_by(order, 'planned_start')
     else:
         tasks = tasks.order_by('planned_start')
-    return tasks.distinct(), actual_start_value, actual_finish_value
+    return tasks.distinct(), planned_start_value, planned_finish_value
 
 
 def login_page(request):
@@ -164,8 +222,8 @@ class DealList(ListView):
             request.GET = request.GET.copy()
             request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
             request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
-        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
-            return super(DealList, self).dispatch(request, *args, **kwargs)
+        if request.user.is_superuser or request.user.groups.filter(name_in=['Бухгалтери', 'Секретарі']).exists():
+            return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
@@ -339,58 +397,10 @@ class TaskList(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
-        # filter only customer tasks
-        if self.request.user.groups.filter(name='Замовники').exists():
-            tasks = tasks.filter(deal__customer__user=self.request.user)
-        search_string = self.request.GET.get('filter', '').split()
-        exec_statuses = self.request.GET.getlist('exec_status', '0')
-        owners = self.request.GET.getlist('owner', '0')
-        customers = self.request.GET.getlist('customer', '0')
-        constructions = self.request.GET.getlist('construction', '0')
-        work_types = self.request.GET.getlist('work_type')
-        order = self.request.GET.get('o', '0')
-        for word in search_string:
-            tasks = tasks.filter(Q(object_code__icontains=word) |
-                                 Q(object_address__icontains=word) |
-                                 Q(deal__number__icontains=word) |
-                                 Q(project_type__price_code__icontains=word) |
-                                 Q(project_type__project_type__icontains=word))
-        if exec_statuses != '0':
-            tasks_union = Task.objects.none()
-            for status in exec_statuses:
-                tasks_segment = tasks.filter(exec_status=status)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if owners != '0':
-            tasks_union = Task.objects.none()
-            for owner in owners:
-                tasks_segment = tasks.filter(owner=owner)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if customers != '0':
-            tasks_union = Task.objects.none()
-            for customer in customers:
-                tasks_segment = tasks.filter(deal__customer=customer)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if constructions != '0':
-            tasks_union = Task.objects.none()
-            for construction in constructions:
-                tasks_segment = tasks.filter(construction=construction)
-                tasks_union = tasks_union | tasks_segment
-            tasks = tasks_union
-        if work_types:
-            tasks_union = Task.objects.none()
-            for work_type in work_types:
-                tasks_part = tasks.filter(work_type=work_type)
-                tasks_union = tasks_union | tasks_part
-            tasks = tasks_union
-        if order != '0':
-            tasks = tasks.order_by(order)
-        else:
-            tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
-        return tasks
+        # filtering queryset
+        queryset = task_queryset_filter(self.request)
+        # return filtered queryset
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -465,13 +475,13 @@ class TaskUpdate(UpdateView):
         sending_formset = context['sending_formset']
         if executors_formset.is_valid() and costs_formset.is_valid() and sending_formset.is_valid():
             with transaction.atomic():
-                form.save()
                 executors_formset.instance = self.object
                 executors_formset.save()
                 costs_formset.instance = self.object
                 costs_formset.save()
                 sending_formset.instance = self.object
                 sending_formset.save()
+                form.save()
             if self.request.POST.get('save_add'):
                 return redirect('task_update', self.object.pk)
             else:
@@ -576,7 +586,7 @@ class SprintList(ListView):
 
     def get_queryset(self):
         # filtering queryset
-        queryset, _, _ = subtasks_queryset_filter(self.request)
+        queryset, _, _ = execuition_queryset_filter(self.request)
         # return filtered queryset
         return queryset
 
