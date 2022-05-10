@@ -2,7 +2,7 @@
 from datetime import date, datetime, timedelta
 import businesstimedelta
 from django.db import models
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Min
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -483,10 +483,6 @@ class Deal(models.Model):
         log(user=get_current_user(), action='Видалений договір', extra={"title": title})
         super(Deal, self).delete(*args, **kwargs)
 
-    def __init__(self, *args, **kwargs):
-        super(Deal, self).__init__(*args, **kwargs)
-        self.__customer__ = None
-
     def get_act_status(self):
         # Get actual act_status
         if self.actofacceptance_set.count() > 0:
@@ -750,13 +746,25 @@ class Task(models.Model):
             if self.project_type.need_project_code:
                 self.project_code = Task.objects.aggregate(Max('project_code'))['project_code__max'] + 1
 
+        # Automatic change Task.exec_status when Execution has changed
+        if self.execution_set.filter(exec_status__in=[Execution.InProgress, Execution.OnChecking, Execution.Done]).exists() \
+                and self.exec_status == self.ToDo:
+            self.exec_status = self.InProgress
+
+         # Automatic set actual_finish when Task has done
+        if self.exec_status in [self.Done, self.Sent] and self.actual_finish is None:
+            self.actual_finish = date.today()
+        elif self.exec_status not in [self.Done, self.Sent] and self.actual_finish is not None:
+            self.actual_finish = None
+
         # Automatic changing of Task.exec_status when all sendings was sent
-        if self.exec_status in [Task.Done, Task.Sent]:
+        if self.exec_status == self.Done:
             sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
             if sendings >= self.project_type.copies_count:
-                self.exec_status = Task.Sent
-                if not self.sending_date:
-                    self.sending_date = date.today()
+                self.exec_status = self.Sent
+                self.sending_date = self.sending_set.aggregate(Min('receipt_date'))['receipt_date__min']
+
+        super().save(*args, **kwargs)
 
         # Automatic change Executions.exec_status when Task status changed
         for execution in self.execution_set.all():
@@ -769,11 +777,13 @@ class Task(models.Model):
                 execution.exec_status = Execution.OnHold
                 execution.save()
 
-         # Automatic set actual_finish when Task has done
-        if self.exec_status in [self.Done, self.Sent] and self.actual_finish is None:
-            self.actual_finish = date.today()
-        elif self.exec_status not in [self.Done, self.Sent] and self.actual_finish is not None:
-            self.actual_finish = None
+        # Automatic create basic subtasks
+        if is_new_object:
+            for subtask in self.project_type.subtask_set.filter(base=True):
+                Execution.objects.create(task=self,
+                                         subtask=subtask,
+                                         part = subtask.part,
+                                         )
 
         # Logging
         if logging:
@@ -784,15 +794,6 @@ class Task(models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений проект', extra={"title": title})
-        super().save(*args, **kwargs)
-
-        # Automatic create basic subtasks
-        if is_new_object:
-            for subtask in self.project_type.subtask_set.filter(base=True):
-                Execution.objects.create(task=self,
-                                         subtask=subtask,
-                                         part = subtask.part,
-                                         )
 
     def delete(self, *args, **kwargs):
         title = self.object_code + ' ' + self.project_type.price_code
@@ -1005,21 +1006,7 @@ class Sending(models.Model):
     def save(self, *args, logging=True, **kwargs):
 
         # saving object
-        super(Sending, self).save(*args, **kwargs)
-
-        # Automatic changing of Task.exec_status when all sendings was sent
-        if self.task.exec_status in [Task.Done, Task.Sent]:
-            sendings = self.task.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
-            changed = False
-            if sendings >= self.task.project_type.copies_count:
-                if self.task.exec_status == Task.Done:
-                    self.task.exec_status = Task.Sent
-                    changed = True
-                if not self.task.sending_date:
-                    self.task.sending_date = self.receipt_date
-                    changed = True
-                if changed:
-                    self.task.save(logging=False)
+        super().save(*args, **kwargs)
 
         # Logging
         if logging:
@@ -1101,15 +1088,6 @@ class Execution(models.Model):
         if self.executor is None:
             self.planned_start = None
             self.planned_finish = None
-
-        # Automatic change Task.exec_status when Execution has changed
-        if self.exec_status in [self.InProgress, self.OnChecking, self.Done] and self.task.exec_status == Task.ToDo:
-            self.task.exec_status = Task.InProgress
-            self.task.save(logging=False)
-
-        # Automatic change Executions.exec_status when Task has Done
-        if self.task.exec_status in [Task.Done, Task.Sent] and self.exec_status != Execution.Done:
-            self.exec_status = Execution.Done
 
         # Automatic add execution first to employee queue with duration 1 hour
         if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
