@@ -54,10 +54,10 @@ def update_task_statuses(task_id=None):
                 date_format)
 
         # update planned_start and planner_finish
-        # if task.exec_status in [Task.ToDo, Task.InProgress] and task.execution_set.exists():
-        #     task.planned_start = task.execution_set.order_by(F('planned_start').asc(nulls_last=True)).first().planned_start.date()
-        #     if not task.execution_set.filter(planned_finish__isnull=True).exists():
-        #         task.planned_finish = task.execution_set.order_by('planned_finish').last().planned_finish.date()
+        if task.exec_status in [Task.ToDo, Task.InProgress] and task.execution_set.exists():
+            task.planned_start = task.execution_set.order_by(F('planned_start').asc(nulls_last=True)).first().planned_start.date()
+            if not task.execution_set.filter(planned_finish__isnull=True).exists():
+                task.planned_finish = task.execution_set.order_by('planned_finish').last().planned_finish.date()
 
         task_list.append(task)
 
