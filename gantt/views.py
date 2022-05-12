@@ -40,7 +40,7 @@ class GetPlan(TemplateView):
         """ prepare json-coded data for gantt """
         context = super().get_context_data(*args, **kwargs)
         # get subtasks_queryset_filter
-        subtasks, actual_start, end_date = execuition_queryset_filter(self.request)
+        subtasks, actual_start, end_date = execuition_queryset_filter(self.request.user, self.request.GET)
         projects = subtasks.values_list('task', flat=True)
         # distinct values
         projects = list(set(projects))

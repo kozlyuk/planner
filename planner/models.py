@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime, timedelta
-import businesstimedelta
 from django.db import models
 from django.db.models import Sum, Max, Min
 from django.db.models.signals import post_save
@@ -19,7 +18,7 @@ from html_templates.models import HTMLTemplate
 
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
-from .timeplanning import OnChecking, recalc_queue, calc_businesshrsdiff, calc_businesstimedelta
+from .timeplanning import recalc_queue, calc_businesshrsdiff, calc_businesstimedelta
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -857,7 +856,7 @@ class Task(models.Model):
             return True
         elif self.is_active() and user == self.owner.user:
             return True
-        elif self.deal.act_status != Deal.Issued and user.groups.filter(name='Бухгалтери').exists():
+        elif user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():
             return True
         else:
             return False

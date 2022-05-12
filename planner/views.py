@@ -1,4 +1,3 @@
-from datetime import datetime, date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
@@ -24,142 +23,12 @@ from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
+from .filters import task_queryset_filter, execuition_queryset_filter
 
 
 class Round(Func):
     function = 'ROUND'
     template = '%(function)s(%(expressions)s, 2)'
-
-
-def task_queryset_filter(request):
-
-    search_string = request.GET.get('filter', '').split()
-    exec_statuses = request.GET.getlist('exec_status', '0')
-    owners = request.GET.getlist('owner', '0')
-    customers = request.GET.getlist('customer', '0')
-    constructions = request.GET.getlist('construction', '0')
-    work_types = request.GET.getlist('work_type')
-    order = request.GET.get('o', '0')
-
-
-    tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
-    # filter only customer tasks
-    if request.user.groups.filter(name='Замовники').exists():
-        tasks = tasks.filter(deal__customer__user=request.user)
-    for word in search_string:
-        tasks = tasks.filter(Q(object_code__icontains=word) |
-                                Q(object_address__icontains=word) |
-                                Q(deal__number__icontains=word) |
-                                Q(project_type__price_code__icontains=word) |
-                                Q(project_type__project_type__icontains=word))
-    if exec_statuses != '0':
-        tasks_union = Task.objects.none()
-        for status in exec_statuses:
-            tasks_segment = tasks.filter(exec_status=status)
-            tasks_union = tasks_union | tasks_segment
-        tasks = tasks_union
-    if owners != '0':
-        tasks_union = Task.objects.none()
-        for owner in owners:
-            tasks_segment = tasks.filter(owner=owner)
-            tasks_union = tasks_union | tasks_segment
-        tasks = tasks_union
-    if customers != '0':
-        tasks_union = Task.objects.none()
-        for customer in customers:
-            tasks_segment = tasks.filter(deal__customer=customer)
-            tasks_union = tasks_union | tasks_segment
-        tasks = tasks_union
-    if constructions != '0':
-        tasks_union = Task.objects.none()
-        for construction in constructions:
-            tasks_segment = tasks.filter(construction=construction)
-            tasks_union = tasks_union | tasks_segment
-        tasks = tasks_union
-    if work_types:
-        tasks_union = Task.objects.none()
-        for work_type in work_types:
-            tasks_part = tasks.filter(work_type=work_type)
-            tasks_union = tasks_union | tasks_part
-        tasks = tasks_union
-    if order != '0':
-        tasks = tasks.order_by(order)
-    else:
-        tasks = tasks.order_by('-creation_date', '-deal', 'object_code')
-    return tasks
-
-
-def execuition_queryset_filter(request):
-    exec_statuses = request.GET.getlist('exec_status')
-    work_types = request.GET.getlist('work_type')
-    owner = request.GET.get('owner')
-    executor = request.GET.get('executor')
-    company = request.GET.get('company')
-    planned_start = request.GET.get('actual_start')
-    planned_finish = request.GET.get('actual_finish')
-    search_string = request.GET.get('filter', '').split()
-    order = request.GET.get('o')
-
-    # create qs tasks
-    tasks = Execution.objects.filter(subtask__add_to_schedule=True) \
-                             .select_related('executor', 'task', 'task__deal')
-    if request.user.is_superuser:
-        pass
-    else:
-        query = Q()
-        if request.user.groups.filter(name='Замовники').exists():
-            query |= Q(task__deal__customer__user=request.user)
-        if request.user.groups.filter(name='ГІПи').exists():
-            query |= Q(executor__head=request.user.employee)
-        if request.user.groups.filter(name='Проектувальники').exists():
-            query |= Q(executor=request.user.employee)
-        tasks = tasks.filter(query)
-
-    if exec_statuses:
-        tasks_union = Execution.objects.none()
-        for status in exec_statuses:
-            tasks_part = tasks.filter(exec_status=status)
-            tasks_union = tasks_union | tasks_part
-        tasks = tasks_union
-    if work_types:
-        tasks_union = Execution.objects.none()
-        for work_type in work_types:
-            tasks_part = tasks.filter(task__work_type=work_type)
-            tasks_union = tasks_union | tasks_part
-        tasks = tasks_union
-    if owner:
-        tasks = tasks.filter(task__owner=owner)
-    if executor:
-        tasks = tasks.filter(executor=executor)
-    if company:
-        tasks = tasks.filter(task__deal__company=company)
-    if planned_start:
-        planned_start_value = datetime.strptime(planned_start, '%Y-%m-%d')
-    else:
-        planned_start_value = date.today() - timedelta(days=date.today().weekday())
-    if planned_finish:
-        planned_finish_value = datetime.strptime(planned_finish, '%Y-%m-%d')
-    else:
-        planned_finish_value = planned_start_value + timedelta(days=14)
-    tasks = tasks.filter(Q(planned_start__gte=planned_start_value, planned_start__lte=planned_finish_value) |
-                         Q(planned_finish__gte=planned_start_value, planned_finish__lte=planned_finish_value) |
-                         Q(planned_start__lt=planned_start_value,
-                           exec_status=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold]) |
-                         Q(planned_finish__lt=planned_start_value,
-                           exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold])
-                         ) \
-                 .exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
-    for word in search_string:
-        tasks = tasks.filter(Q(subtask__name__icontains=word) |
-                             Q(task__object_code__icontains=word) |
-                             Q(task__project_type__project_type__icontains=word) |
-                             Q(task__object_address__icontains=word) |
-                             Q(task__deal__number__icontains=word))
-    if order:
-        tasks = tasks.order_by(order, 'planned_start')
-    else:
-        tasks = tasks.order_by('planned_start')
-    return tasks.distinct(), planned_start_value, planned_finish_value
 
 
 def login_page(request):
@@ -398,7 +267,7 @@ class TaskList(ListView):
 
     def get_queryset(self):
         # filtering queryset
-        queryset = task_queryset_filter(self.request)
+        queryset = task_queryset_filter(self.request.user, self.request.GET)
         # return filtered queryset
         return queryset
 
@@ -586,7 +455,7 @@ class SprintList(ListView):
 
     def get_queryset(self):
         # filtering queryset
-        queryset, _, _ = execuition_queryset_filter(self.request)
+        queryset, _, _ = execuition_queryset_filter(self.request.user, self.request.GET)
         # return filtered queryset
         return queryset
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from planner.models import Task, Employee, Execution
+from planner.filters import execuition_queryset_filter
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -43,7 +44,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class EmployeeSerializer(serializers.ModelSerializer):
 
-    tasks = TaskSerializer(source='execution_set', many=True, read_only=True)
+    tasks = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
@@ -52,3 +53,11 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "name",
             "tasks",
         ]
+
+    def get_tasks(self, instance):
+        # get tasks for employee using request data
+        request_user = self.context['request'].user
+        query_dict = self.context['request'].GET.copy()
+        query_dict['executor'] = instance.pk
+        executor_tasks, _, _ = execuition_queryset_filter(request_user, query_dict)
+        return TaskSerializer(executor_tasks, many=True).data
