@@ -91,7 +91,7 @@ class DealList(ListView):
             request.GET = request.GET.copy()
             request.GET = QueryDict(self.request.session.get('deal_query_string', ''))
             request.META['QUERY_STRING'] = self.request.session.get('deal_query_string', '')
-        if request.user.is_superuser or request.user.groups.filter(name_in=['Бухгалтери', 'Секретарі']).exists():
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied

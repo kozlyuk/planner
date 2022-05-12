@@ -163,7 +163,8 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication' #need to disable
+        'rest_framework.authentication.BasicAuthentication', #need to remove
+        'rest_framework.authentication.SessionAuthentication', #need to remove
         ),
 
     'PAGE_SIZE': 100,

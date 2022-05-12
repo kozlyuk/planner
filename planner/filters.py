@@ -5,6 +5,15 @@ from .models import Employee, Task, Execution
 
 
 def task_queryset_filter(request_user, query_dict):
+    """Filter for the Task class
+    Filter queryset by search_string ('filter' get parameter)
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by owners ('owner' get parameters list)
+    Filter queryset by customers ('customer' get parameters list)
+    Filter queryset by constructions ('construction' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Order queryset by any given field ('o' get parameter)
+    """
 
     search_string = query_dict.get('filter', '').split()
     exec_statuses = query_dict.getlist('exec_status')
@@ -63,6 +72,18 @@ def task_queryset_filter(request_user, query_dict):
 
 
 def execuition_queryset_filter(request_user, query_dict):
+    """Filter for the Execution class
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Filter queryset by owner ('owner' get parameter)
+    Filter queryset by executor ('executor' get parameter)
+    Filter queryset by company ('company' get parameter)
+    Filter queryset by planned_start ('planned_start' get parameter)
+    Filter queryset by planned_finish ('planned_finish' get parameter)
+    Filter queryset by search_string ('filter' get parameter)
+    Order queryset by any given field ('o' get parameter)
+    """
+
     exec_statuses = query_dict.getlist('exec_status')
     work_types = query_dict.getlist('work_type')
     owner = query_dict.get('owner')
@@ -136,6 +157,17 @@ def execuition_queryset_filter(request_user, query_dict):
 
 
 def employee_queryset_filter(request_user, query_dict):
+    """
+    Filter for the Execution class grouped by emplyees
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Filter queryset by owner ('owner' get parameter)
+    Filter queryset by company ('company' get parameter)
+    Filter queryset by planned_start ('planned_start' get parameter)
+    Filter queryset by planned_finish ('planned_finish' get parameter)
+    Filter queryset by search_string ('filter' get parameter)
+    Order queryset by any given field ('o' get parameter)
+    """
 
     # create qs employees
     employees = Employee.objects.filter(user__is_active=True)

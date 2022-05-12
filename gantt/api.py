@@ -5,11 +5,17 @@ from planner.filters import employee_queryset_filter, task_queryset_filter, exec
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Task class
-    Filter queryset by car_id field ('car_id' get parameters list)
-    Filter queryset by from_date field ('from_date' get parameter)
-    Filter queryset by end_date field ('end_date' get parameter)
-    Order queryset by any given field ('order' get parameter)
+    """
+    ViewSet for the Task class
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Filter queryset by owner ('owner' get parameter)
+    Filter queryset by executor ('executor' get parameter)
+    Filter queryset by company ('company' get parameter)
+    Filter queryset by planned_start ('planned_start' get parameter)
+    Filter queryset by planned_finish ('planned_finish' get parameter)
+    Filter queryset by search_string ('filter' get parameter)
+    Order queryset by any given field ('o' get parameter)
     """
 
     serializer_class = serializers.TaskSerializer
@@ -24,11 +30,15 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Task class
-    Filter queryset by car_id field ('car_id' get parameters list)
-    Filter queryset by from_date field ('from_date' get parameter)
-    Filter queryset by end_date field ('end_date' get parameter)
-    Order queryset by any given field ('order' get parameter)
+    """
+    ViewSet for the Project class
+    Filter queryset by search_string ('filter' get parameter)
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by owners ('owner' get parameters list)
+    Filter queryset by customers ('customer' get parameters list)
+    Filter queryset by constructions ('construction' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Order queryset by any given field ('o' get parameter)
     """
 
     serializer_class = serializers.ProjectSerializer
@@ -43,11 +53,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Task class
-    Filter queryset by car_id field ('car_id' get parameters list)
-    Filter queryset by from_date field ('from_date' get parameter)
-    Filter queryset by end_date field ('end_date' get parameter)
-    Order queryset by any given field ('order' get parameter)
+    """
+    ViewSet for the Execution class grouped by emplyees
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Filter queryset by owner ('owner' get parameter)
+    Filter queryset by company ('company' get parameter)
+    Filter queryset by planned_start ('planned_start' get parameter)
+    Filter queryset by planned_finish ('planned_finish' get parameter)
+    Filter queryset by search_string ('filter' get parameter)
+    Order queryset by any given field ('o' get parameter)
     """
 
     serializer_class = serializers.EmployeeSerializer
