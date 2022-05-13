@@ -17,6 +17,8 @@ class TaskSerializer(serializers.ModelSerializer):
             "exec_status",
             "planned_start",
             "planned_finish",
+            "actual_start",
+            "actual_finish",
             "planned_duration"
         ]
         extra_kwargs = {
@@ -35,6 +37,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "object_code",
             "planned_start",
             "planned_finish",
+            "actual_start",
+            "actual_finish",
             "tasks",
         ]
         extra_kwargs = {
