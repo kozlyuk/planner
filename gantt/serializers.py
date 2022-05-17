@@ -6,6 +6,7 @@ from planner.filters import execuition_queryset_filter
 
 class TaskSerializer(serializers.ModelSerializer):
 
+    subtask_name = serializers.ReadOnlyField(source='subtask.name')
     executor_name = serializers.ReadOnlyField(source='executor.name')
     exec_status = serializers.ReadOnlyField(source='get_exec_status_display')
 
@@ -13,6 +14,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Execution
         fields = [
             "id",
+            "subtask_name",
             "executor_name",
             "exec_status",
             "planned_start",
