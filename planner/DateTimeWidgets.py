@@ -32,7 +32,10 @@ class SplitDateTimeWidget(forms.SplitDateTimeWidget):
             return None
 
         if not time_str:
-            time_str = '09:00'
+            if name.split('-')[-1] == "planned_finish":
+                time_str = '18:00'
+            else:
+                time_str = '09:00'
 
         my_datetime = datetime.strptime(date_str + ' ' + time_str, "%Y-%m-%d %H:%M")
 
