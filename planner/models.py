@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date, datetime, timedelta
 from django.db import models
-from django.db.models import Sum, Max, Min
+from django.db.models import Sum, Max
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -761,7 +761,7 @@ class Task(models.Model):
             sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
             if sendings >= self.project_type.copies_count:
                 self.exec_status = self.Sent
-                self.sending_date = self.sending_set.aggregate(Min('receipt_date'))['receipt_date__min']
+                self.sending_date = self.sending_set.aggregate(Max('receipt_date'))['receipt_date__max']
 
         super().save(*args, **kwargs)
 
