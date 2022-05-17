@@ -441,14 +441,15 @@ class SprintList(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET == {}:
-            if self.request.session.get('execution_query_string'):
-                query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
-                if 'actual_start' in query_string:
-                    del query_string['actual_start']
-                if 'actual_finish' in query_string:
-                    del query_string['actual_finish']
-                request.GET = query_string
-                request.META['QUERY_STRING'] = self.request.session.get('execution_query_string')
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
+        #         query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
+        #         if 'actual_start' in query_string:
+        #             del query_string['actual_start']
+        #         if 'actual_finish' in query_string:
+        #             del query_string['actual_finish']
+
         if request.user.has_perm('planner.view_execution'):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
