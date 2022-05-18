@@ -270,9 +270,6 @@ class TasksInlineFormSet(BaseInlineFormSet):
                 if self.instance.__customer__ != project_type.customer:
                     raise forms.ValidationError(
                         "Тип проекту не входить до можливих значень Замовника Договору")
-            if planned_finish and planned_finish > self.instance.__expire_date__:
-                raise forms.ValidationError(
-                    "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
 class TasksInline(admin.TabularInline):
@@ -409,9 +406,6 @@ class TaskForm(forms.ModelForm):
         if exec_status in [Task.Done, Task.Sent] and not pdf_copy:
                 raise forms.ValidationError(
                     "Підвантажте будь ласка електронний примірник")
-        if planned_finish and planned_finish > deal.expire_date:
-            raise forms.ValidationError(
-                "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
 class ExecutersInlineFormSet(BaseInlineFormSet):

@@ -156,7 +156,6 @@ class DealForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(DealForm, self).clean()
         self.data.__customer__ = cleaned_data.get("customer")
-        self.data.__expire_date__ = cleaned_data.get("expire_date")
         self.data.__value__ = cleaned_data.get("value")
 
         return cleaned_data
@@ -190,10 +189,6 @@ class TasksInlineForm(forms.ModelForm):
             if self.data.__customer__ != project_type.customer:
                 self.add_error(
                     'project_type', "Тип проекту не входить до можливих значень Замовника Договору")
-        if planned_finish and self.data.__expire_date__:
-            if planned_finish > self.data.__expire_date__:
-                self.add_error(
-                    'planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
 
 
 TasksFormSet = inlineformset_factory(Deal, Task, form=TasksInlineForm, extra=0)
@@ -418,8 +413,6 @@ class TaskForm(forms.ModelForm):
                 self.add_error('project_type', "Тип проекту не відповідає Замовнику Договору")
         if exec_status in [Task.Done, Task.Sent] and not pdf_copy:
             self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
-        if planned_finish and planned_finish > deal.expire_date:
-            self.add_error('planned_finish', "Планова дата закінчення повинна бути меншою дати закінчення договору")
         if project_code and Task.objects.filter(project_code=project_code).exclude(pk=self.instance.pk).exists():
             self.add_error('project_code', "Проект з таким шифром вже існує")
         return cleaned_data
