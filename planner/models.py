@@ -1113,6 +1113,10 @@ class Execution(models.Model):
         elif self.exec_status != self.Done and self.actual_finish:
             self.actual_finish = None
 
+        # Automatic set planned_finish when execution was not planned and has done
+        if self.exec_status == self.Done and not self.planned_finish:
+            self.planned_finish = datetime.now()
+
         # Logging
         if logging:
             title = self.task.object_code + ' ' + \
