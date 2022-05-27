@@ -265,9 +265,14 @@ class TaskFilterForm(forms.Form):
 
         self.fields['exec_status'].choices = exec_status
         self.fields['owner'].choices = owners
-        self.fields['customer'].choices = customers
         self.fields['construction'].choices = constructions
         self.fields['work_type'].choices = work_types
+
+        if get_current_user().groups.filter(name='Замовники').exists():
+            self.fields['customer'].widget = forms.HiddenInput()
+        else:
+            self.fields['customer'].choices = customers
+
 
     exec_status = forms.MultipleChoiceField(
         label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
@@ -294,16 +299,17 @@ class SprintFilterForm(forms.Form):
         work_types = list(WorkType.objects.all().values_list('pk', 'name'))
 
         # what executors is available in filter
-        if user.is_superuser or user.groups.filter(name='Замовники').exists():
+        if user.is_superuser:
             executors = list(Employee.objects.filter(user__is_active=True).values_list('pk', 'name'))
+            self.fields['executor'].choices = executors
         elif user.groups.filter(name='ГІПи').exists():
             executors = list(Employee.objects.filter(Q(head=user.employee) | Q(user=user), user__is_active=True)
                                              .values_list('pk', 'name').distinct())
-        elif user.groups.filter(name='Проектувальники').exists():
-            executors = list(Employee.objects.filter(user=user).values_list('pk', 'name'))
+            self.fields['executor'].choices = executors
+        else:
+            self.fields['executor'].widget = forms.HiddenInput()
 
         self.fields['exec_status'].choices = exec_status
-        self.fields['executor'].choices = executors
         self.fields['company'].choices = companies
         self.fields['owner'].choices = owners
         self.fields['work_type'].choices = work_types
