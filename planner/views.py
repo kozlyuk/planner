@@ -60,7 +60,7 @@ class Dashboard(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.groups.filter(name='Замовники').exists():
-            return redirect('task_list')
+            return redirect('sprint_list')
         return super().dispatch(request, *args, **kwargs)
 
     def get_template_names(self):

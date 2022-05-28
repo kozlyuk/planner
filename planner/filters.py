@@ -102,7 +102,8 @@ def execuition_queryset_filter(request_user, query_dict):
     else:
         query = Q()
         if request_user.groups.filter(name='Замовники').exists():
-            query |= Q(task__deal__customer__user=request_user)
+            query |= Q(task__deal__customer__user=request_user,
+                       subtask__show_to_customer=True)
         if request_user.groups.filter(name='ГІПи').exists():
             query |= Q(executor__head=request_user.employee)
         if request_user.groups.filter(name='Проектувальники').exists():
