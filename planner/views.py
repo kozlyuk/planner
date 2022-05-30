@@ -1019,10 +1019,10 @@ class EmployeeList(ListView):
     model = Employee
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 18
 
     def get_queryset(self):
-        employees = Employee.objects.order_by('-user__is_active', 'name')\
+        employees = Employee.objects.filter(user__is_active=True) \
+                                    .order_by('name')\
                                     .annotate(url=Concat(F('pk'), Value('/change/')))\
                                     .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
@@ -1044,7 +1044,7 @@ class EmployeeList(ListView):
             context['add_url'] = reverse('employee_add')
             context['add_help_text'] = 'Додати працівника'
         context['header_main'] = 'Працівники'
-        context['objects_count'] = Employee.objects.all().count()
+        context['objects_count'] = Employee.objects.filter(user__is_active=True).count()
         if self.request.POST:
             context['filter_form'] = forms.EmployeeFilterForm(
                 self.request.POST)
