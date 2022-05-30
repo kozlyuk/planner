@@ -1,10 +1,12 @@
+from datetime import timedelta
 import re
 from django import template
 from django.utils.html import format_html
 from django.urls import reverse
 from django.conf.locale.uk import formats as uk_formats
-from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS, TASK_BADGE_COLORS
+from crum import get_current_user
 
+from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS, TASK_BADGE_COLORS
 from planner.models import Execution
 
 register = template.Library()
@@ -152,8 +154,13 @@ def none_date_check(date):
 
 @register.simple_tag()
 def none_datetime_check(date):
-    ''' Return date in rigth format if it exist '''
+    '''
+    Return date in rigth format if it exist.
+    Add 1 hour to planned dates for customers
+    '''
     if date:
+        if get_current_user().groups.filter(name='Замовники').exists():
+            date = date + timedelta(days=1)
         return date.strftime(time_format)
     return 'Не вказано'
 
