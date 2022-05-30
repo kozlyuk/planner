@@ -105,12 +105,12 @@
                     <!-- BEGIN WIDGET TAB -->
                     <div class="widget-bg-color-white main-widget-tab widget-tab">
                         <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                    role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
+                            </li>
                             <!-- Only for staff members -->
                             {% if request.user.is_staff %}
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
-                                        role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
-                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
                                     role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
@@ -122,36 +122,36 @@
                             </li>
                         </ul>
                         <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <!-- Only for staff members -->
-                            {% if request.user.is_staff %}
-                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
-                                    aria-labelledby="pills-tab_2_1">
-                                    {% if executors|length > 0 %}
-                                        {% for executor in executors %}
-                                            <div class="widget-media">
-                                                <div class="widget-media-elements text-center">
-                                                    <img class="widget-media-avatar circle margin-bottom-15"
-                                                        src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
-                                                </div>
-                                                <div class="widget-media-body">
-                                                    <h4 class="widget-media-body-title">
-                                                        <a href="#">{{ executor.executor.name }}</a>
-                                                    </h4>
-                                                    Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
-                                                    Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
-                                                    Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
-                                                    {% if executor.actual_finish %}Дата виконання: <strong>{{ executor.actual_finish }}</strong><br>{% endif %}
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    {% else %}
+                            <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
+                                aria-labelledby="pills-tab_2_1">
+                                {% if executors|length > 0 %}
+                                    {% for executor in executors %}
                                         <div class="widget-media">
+                                            <div class="widget-media-elements text-center">
+                                                <img class="widget-media-avatar circle margin-bottom-15"
+                                                    src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
+                                            </div>
                                             <div class="widget-media-body">
-                                                <p class="widget-media-body-subtitle">Виконавці відсутні</p>
+                                                <h4 class="widget-media-body-title">
+                                                    <a href="#">{{ executor.executor.name }}</a>
+                                                </h4>
+                                                Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
+                                                Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                                Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
+                                                {% if executor.actual_finish %}Дата виконання: <strong>{{ executor.actual_finish }}</strong><br>{% endif %}
                                             </div>
                                         </div>
-                                    {% endif %}
-                                </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Виконавці відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- Only for staff members -->
+                            {% if request.user.is_staff %}
                                 <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
                                     aria-labelledby="pills-tab_2_2">
                                     {% if costs|length > 0 %}
