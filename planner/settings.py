@@ -131,13 +131,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'uk'
-
 TIME_ZONE = 'Europe/Kiev'
-
 USE_I18N = True
-
 USE_TZ = False
-
 USE_L10N = True
 
 # Static files (CSS, JavaScript, Images)

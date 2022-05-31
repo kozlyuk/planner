@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.conf.locale.uk import formats as uk_formats
 from crum import get_current_user
 
+from planner.timeplanning import calc_businesstimedelta
 from planner.settings import MEDIA_URL, EXECUTION_BADGE_COLORS, TASK_BADGE_COLORS
 from planner.models import Execution
 
@@ -159,8 +160,9 @@ def none_datetime_check(date):
     Add 1 hour to planned dates for customers
     '''
     if date:
-        if get_current_user().groups.filter(name='Замовники').exists():
-            date = date + timedelta(days=1)
+        request_user = get_current_user()
+        if request_user.groups.filter(name='Замовники').exists() and request_user.customer.plan_reserve:
+            date = calc_businesstimedelta(date, request_user.customer.plan_reserve)
         return date.strftime(time_format)
     return 'Не вказано'
 

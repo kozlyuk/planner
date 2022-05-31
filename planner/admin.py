@@ -87,6 +87,7 @@ class CustomerAdmin(admin.ModelAdmin):
                            ('regulations', 'city'),
                            ('requisites'),
                            ('legal'),
+                           ('plan_reserve'),
                            ('deal_template'),
                            ('act_template'),
                            ('invoice_template'),

@@ -724,7 +724,7 @@ class CustomerForm(forms.ModelForm):
         fields = ['name', 'full_name', 'contact_person', 'phone', 'email',
                   'debtor_term', 'user',
                   'city', 'legal', 'regulations',
-                  'signatory_person', 'signatory_position', 'requisites',
+                  'signatory_person', 'signatory_position', 'requisites', 'plan_reserve',
                   'deal_template', 'act_template', 'invoice_template', 'report_template', 'active',
                   ]
 

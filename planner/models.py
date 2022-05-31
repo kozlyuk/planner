@@ -187,6 +187,7 @@ class Customer(Requisites):
     email = models.EmailField('Email')
     debtor_term = models.PositiveSmallIntegerField('Термін післяоплати', blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
+    plan_reserve = models.DurationField('Запас плану', default=timedelta(hours=8))
     deal_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон договору', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_deals')
     act_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон акту', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_acts')
     invoice_template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон рахунку', blank=True, null=True, on_delete=models.CASCADE, related_name='customers_invoices')
