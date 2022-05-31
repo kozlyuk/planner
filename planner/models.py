@@ -468,20 +468,30 @@ class Deal(models.Model):
             self.value = self.value_calc()
 
         # Logging
-        title = self.number
         if not self.pk:
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Доданий договір', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Доданий договір',
+                    extra={"title": self.number},
+                    obj=self,
+                    )
             else:
-                log(user=get_current_user(), action='Оновлений договір', extra={"title": title})
-        super(Deal, self).save(*args, **kwargs)
+                log(user=get_current_user(),
+                    action='Оновлений договір',
+                    extra={"title": self.number},
+                    obj=self,
+                    )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.number
-        log(user=get_current_user(), action='Видалений договір', extra={"title": title})
-        super(Deal, self).delete(*args, **kwargs)
+        log(user=get_current_user(),
+            action='Видалений договір',
+            extra={"title": self.number},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
 
     def get_act_status(self):
         # Get actual act_status
@@ -587,10 +597,6 @@ class ActOfAcceptance(models.Model):
         return f'{self.number} від {self.date}'
 
     def save(self, *args, logging=True, **kwargs):
-        if not self.pk:
-            # Set creator
-            self.creator = get_current_user()
-        super().save(*args, **kwargs)
 
         # tasks actofacceptance autofill
         if self.deal.get_act_status() == Deal.Issued:
@@ -601,13 +607,30 @@ class ActOfAcceptance(models.Model):
         if logging:
             title = f'{self.number} - {self.date}'
             if not self.pk:
-                log(user=get_current_user(), action='Доданий акт', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Доданий акт',
+                    extra={"title": title},
+                    obj=self.deal,
+                    )
             else:
-                log(user=get_current_user(), action='Оновлений акт', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлений акт',
+                    extra={"title": title},
+                    obj=self.deal,
+                    )
+
+        if not self.pk:
+            # Set creator
+            self.creator = get_current_user()
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         title = f'{self.number} - {self.date}'
-        log(user=get_current_user(), action='Видалений акт', extra={"title": title})
+        log(user=get_current_user(),
+            action='Видалений акт',
+            extra={"title": title},
+            obj=self.deal,
+            )
         super().delete(*args, **kwargs)
 
 
@@ -631,6 +654,23 @@ class Payment(models.Model):
         return f'{self.deal} - {self.date}'
 
     def save(self, *args, logging=True, **kwargs):
+
+        # Logging
+        if logging:
+            title = f'{self.date} - {self.value}'
+            if not self.pk:
+                log(user=get_current_user(),
+                    action='Додана оплата',
+                    extra={"title": title},
+                    obj=self.deal,
+                    )
+            else:
+                log(user=get_current_user(),
+                    action='Оновлена оплата',
+                    extra={"title": title},
+                    obj=self.deal,
+                    )
+
         if not self.pk:
             # Set creator
             self.creator = get_current_user()
@@ -645,13 +685,14 @@ class Payment(models.Model):
             self.deal.pay_status = Deal.AdvancePaid
             self.deal.save(logging=False)
 
-        # Logging
-        if logging:
-            title = f'{self.date} - {self.value}'
-            if not self.pk:
-                log(user=get_current_user(), action='Доданий акт', extra={"title": title})
-            else:
-                log(user=get_current_user(), action='Оновлений акт', extra={"title": title})
+    def delete(self, *args, **kwargs):
+        title = f'{self.date} - {self.value}'
+        log(user=get_current_user(),
+            action='Видалена оплата',
+            extra={"title": title},
+            obj=self.deal,
+            )
+        super().delete(*args, **kwargs)
 
 
 class Receiver(models.Model):
@@ -737,6 +778,23 @@ class Task(models.Model):
         return reverse('task_detail', args=[self.pk])
 
     def save(self, *args, logging=True, **kwargs):
+
+        # Logging
+        if logging:
+            title = f'{self.object_code} {self.project_type.price_code}'
+            if not self.pk:
+                log(user=get_current_user(),
+                    action='Доданий проект',
+                    extra={"title": title},
+                    obj=self,
+                    )
+            else:
+                log(user=get_current_user(),
+                    action='Оновлений проект',
+                    extra={"title": title},
+                    obj=self,
+                    )
+
         is_new_object = False
         if not self.pk:
             is_new_object = True
@@ -785,19 +843,13 @@ class Task(models.Model):
                                          part = subtask.part,
                                          )
 
-        # Logging
-        if logging:
-            title = self.object_code + ' ' + self.project_type.price_code
-            if not self.pk:
-                log(user=get_current_user(),
-                    action='Доданий проект', extra={"title": title})
-            else:
-                log(user=get_current_user(),
-                    action='Оновлений проект', extra={"title": title})
-
     def delete(self, *args, **kwargs):
-        title = self.object_code + ' ' + self.project_type.price_code
-        log(user=get_current_user(), action='Видалений проект', extra={"title": title})
+        title = f'{self.object_code} {self.project_type.price_code}'
+        log(user=get_current_user(),
+            action='Видалений проект',
+            extra={"title": title},
+            obj=self,
+            )
         super(Task, self).delete(*args, **kwargs)
 
     def execution_status(self):
@@ -966,21 +1018,30 @@ class Order(models.Model):
         return self.task.__str__() + ' --> ' + self.contractor.__str__()
 
     def save(self, *args, logging=True, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code
+        title = f'{self.task.object_code} {self.task.project_type.price_code}'
         if logging:
             if not self.pk:
                 log(user=get_current_user(),
-                    action='Доданий підрядник по проекту', extra={"title": title})
+                    action='Доданий підрядник по проекту',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
             else:
-                log(user=get_current_user(), action='Оновлений підрядник по проекту', extra={
-                    "title": title})
-        super(Order, self).save(*args, **kwargs)
+                log(user=get_current_user(),
+                    action='Оновлений підрядник по проекту',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + self.task.project_type.price_code
+        title = f'{self.task.object_code} {self.task.project_type.price_code}'
         log(user=get_current_user(),
-            action='Видалений підрядник по проекту', extra={"title": title})
-        super(Order, self).delete(*args, **kwargs)
+            action='Видалений підрядник по проекту',
+            extra={"title": title},
+            obj=self.task,
+            )
+        super().delete(*args, **kwargs)
 
     def get_exec_status(self):
         return self.task.get_exec_status_display()
@@ -1005,16 +1066,22 @@ class Sending(models.Model):
 
     def save(self, *args, logging=True, **kwargs):
 
-        # saving object
-        super().save(*args, **kwargs)
-
         # Logging
         if logging:
-            title = self.task.object_code + ' ' + self.task.project_type.price_code
+            title = f'{self.task.object_code} {self.task.project_type.price_code}'
             if not self.pk:
-                log(user=get_current_user(), action='Додана відправка проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Додана відправка проекту',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
             else:
-                log(user=get_current_user(), action='Оновлена відправка проекту', extra={"title": title})
+                log(user=get_current_user(),
+                    action='Оновлена відправка проекту',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
 
@@ -1027,9 +1094,13 @@ class Sending(models.Model):
             self.task.save(logging=False)
 
         # Logging
-        title = f"{self.task.object_code} {self.task.project_type.price_code}"
-        log(user=get_current_user(), action='Видалена відправка проекту', extra={"title": title})
-        super(Sending, self).delete(*args, **kwargs)
+        title = f'{self.task.object_code} {self.task.project_type.price_code}'
+        log(user=get_current_user(),
+            action='Видалена відправка проекту',
+            extra={"title": title},
+            obj=self.task,
+            )
+        super().delete(*args, **kwargs)
 
 
 class Execution(models.Model):
@@ -1120,25 +1191,32 @@ class Execution(models.Model):
 
         # Logging
         if logging:
-            title = self.task.object_code + ' ' + \
-                self.task.project_type.price_code + ' ' + self.subtask.name
+            title = f'{self.task.object_code} {self.task.project_type.price_code} {self.subtask.name}'
             if not self.pk:
                 log(user=get_current_user(),
-                    action='Додана задача', extra={"title": title})
+                    action='Додана задача',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
             else:
                 log(user=get_current_user(),
-                    action='Оновлена задача', extra={"title": title})
-
+                    action='Оновлена задача',
+                    extra={"title": title},
+                    obj=self.task,
+                    )
         super().save(*args, **kwargs)
+
         # Recal employee execution queue
         if self.executor:
             recalc_queue(self.executor)
 
     def delete(self, *args, **kwargs):
-        title = self.task.object_code + ' ' + \
-            self.task.project_type.price_code + ' ' + self.subtask.name
+        title = f'{self.task.object_code} {self.task.project_type.price_code} {self.subtask.name}'
         log(user=get_current_user(),
-            action='Видалена задача', extra={"title": title})
+            action='Видалена задача',
+            extra={"title": title},
+            obj=self.task,
+            )
         super().delete(*args, **kwargs)
 
     def warning_select(self):
@@ -1209,22 +1287,30 @@ class IntTask(models.Model):
             self.actual_finish = None
 
         # Logging
-        title = self.task_name
         if not self.pk:
             self.creator = get_current_user()
         if logging:
             if not self.pk:
                 log(user=get_current_user(),
-                    action='Додане завдання', extra={"title": title})
+                    action='Додане завдання',
+                    extra={"title": self.task_name},
+                    obj=self,
+                    )
             else:
                 log(user=get_current_user(),
-                    action='Оновлене завдання', extra={"title": title})
-        super(IntTask, self).save(*args, **kwargs)
+                    action='Оновлене завдання',
+                    extra={"title": self.task_name},
+                    obj=self,
+                    )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        log(user=get_current_user(), action='Видалене завдання',
-            extra={"title": self.task_name})
-        super(IntTask, self).delete(*args, **kwargs)
+        log(user=get_current_user(),
+            action='Видалене завдання',
+            extra={"title": self.task_name},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.task_name

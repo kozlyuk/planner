@@ -40,17 +40,26 @@ class Event(models.Model):
             self.creator = get_current_user()
         if logging:
             if not self.pk:
-                log(user=get_current_user(), action='Додана подія',
-                    extra={"title": self.title})
+                log(user=get_current_user(),
+                    action='Додана подія',
+                    extra={"title": self.title},
+                    obj=self,
+                    )
             else:
-                log(user=get_current_user(), action='Оновлена подія',
-                    extra={"title": self.title})
-        super(Event, self).save(*args, **kwargs)
+                log(user=get_current_user(),
+                    action='Оновлена подія',
+                    extra={"title": self.title},
+                    obj=self,
+                    )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        log(user=get_current_user(), action='Видалена подія',
-            extra={"title": self.title})
-        super(Event, self).delete(*args, **kwargs)
+        log(user=get_current_user(),
+            action='Видалена подія',
+            extra={"title": self.title},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -117,17 +126,26 @@ class News(models.Model):
         if not self.pk:
             self.creator = get_current_user()
         if not self.pk:
-            log(user=get_current_user(), action='Додана новина',
-                extra={"title": self.title})
+            log(user=get_current_user(),
+                action='Додана новина',
+                extra={"title": self.title},
+                obj=self,
+                )
         else:
-            log(user=get_current_user(), action='Оновлена новина',
-                extra={"title": self.title})
-        super(News, self).save(*args, **kwargs)
+            log(user=get_current_user(),
+                action='Оновлена новина',
+                extra={"title": self.title},
+                obj=self,
+                )
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        log(user=get_current_user(), action='Видалена новина',
-            extra={"title": self.title})
-        super(News, self).delete(*args, **kwargs)
+        log(user=get_current_user(),
+            action='Видалена новина',
+            extra={"title": self.title},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.title
