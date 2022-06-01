@@ -16,11 +16,11 @@ def task_queryset_filter(request_user, query_dict):
     """
 
     search_string = query_dict.get('filter', '').split()
-    exec_statuses = query_dict.getlist('exec_status')
-    owners = query_dict.getlist('owner')
-    customers = query_dict.getlist('customer')
-    constructions = query_dict.getlist('construction')
-    work_types = query_dict.getlist('work_type')
+    exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
+    owners = list(filter(None, query_dict.getlist('owner')))
+    customers = list(filter(None, query_dict.getlist('customer')))
+    constructions = list(filter(None, query_dict.getlist('construction')))
+    work_types = list(filter(None, query_dict.getlist('work_type')))
     order = query_dict.get('o')
 
 
@@ -84,8 +84,8 @@ def execuition_queryset_filter(request_user, query_dict):
     Order queryset by any given field ('o' get parameter)
     """
 
-    exec_statuses = query_dict.getlist('exec_status')
-    work_types = query_dict.getlist('work_type')
+    exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
+    work_types = list(filter(None, query_dict.getlist('work_type')))
     owner = query_dict.get('owner')
     executor = query_dict.get('executor')
     company = query_dict.get('company')
