@@ -19,6 +19,7 @@ django-celery-beat
 django-object-actions
 businesstimedelta
 admin-totals
+django-bootstrap-modal-forms
 
 # Rest API
 djangorestframework

@@ -4,9 +4,10 @@ from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from bootstrap_modal_forms.generic import BSModalCreateView
 
 from .models import News, Event
-from .forms import NewsForm, EventForm
+from .forms import NewsForm, EventForm, CommentModelForm
 
 @method_decorator(login_required, name='dispatch')
 class NewsList(ListView):
@@ -69,3 +70,9 @@ class EventUpdate(UpdateView):
 class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('event_list')
+
+
+class CommentCreateView(BSModalCreateView):
+    template_name = 'notice/comment_form.html'
+    form_class = CommentModelForm
+    success_message = 'Коментар додано'

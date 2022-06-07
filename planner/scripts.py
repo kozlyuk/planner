@@ -82,3 +82,11 @@ from planner.models import Order, Execution
 
 Execution.objects.filter(subtask__pk=2823).update(subtask=2989)
 Order.objects.filter(subtask__pk=2823).update(subtask=2989)
+
+
+from planner.models import Task
+from notice.models import create_comment
+
+for task in Task.objects.exclude(comment=''):
+    create_comment(task.owner.user, task, task.comment[:255])
+    print(task.comment)

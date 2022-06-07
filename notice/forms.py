@@ -1,6 +1,7 @@
 from django import forms
+from bootstrap_modal_forms.forms import BSModalModelForm
 
-from .models import News, Event
+from .models import News, Event, Comment
 
 
 class NewsForm(forms.ModelForm):
@@ -26,3 +27,9 @@ class EventForm(forms.ModelForm):
         self.fields['date'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
         self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
         self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
+
+
+class CommentModelForm(BSModalModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']

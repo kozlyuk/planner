@@ -746,7 +746,7 @@ class Task(models.Model):
     actual_start = models.DateField('Фактичний початок', blank=True, null=True)
     actual_finish = models.DateField('Фактичне закінчення', blank=True, null=True)
     sending_date = models.DateField('Дата відправки', blank=True, null=True)
-    tc_received = models.DateField('Дата отримання ТЗ', blank=True, null=True)
+    tc_received = models.DateField('Отримано ТЗ', blank=True, null=True)
     tc_upload = ContentTypeRestrictedFileField('Технічне завдання', upload_to=user_directory_path,
         content_types=['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'admin_totals',
+    'bootstrap_modal_forms',
 ]
 
 MIDDLEWARE = [

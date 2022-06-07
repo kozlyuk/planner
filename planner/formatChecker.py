@@ -80,7 +80,8 @@ class NotClearableFileInput(FileInput):
     initial_text = _('Currently')
     input_text = _('Change')
 
-    template_with_initial = '%(initial_text)s: %(initial)s <br />%(input_text)s: %(input)s'
+    # template_with_initial = '%(initial_text)s: %(initial)s <br />%(input_text)s: %(input)s'
+    template_with_initial = '%(initial)s <br /> %(input)s'
 
     url_markup_template = '<a href="/media/{0}">{1}</a>'
 

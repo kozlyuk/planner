@@ -15,4 +15,6 @@ urlpatterns = [
     path('event/<int:pk>/change/', views.EventUpdate.as_view(), name='event_update'),
     path('event/add/', views.EventCreate.as_view(), name='event_add'),
     path('event/<int:pk>/delete/', views.EventDelete.as_view(), name='event_delete'),
+
+    path('comment/add/', views.CommentCreateView.as_view(), name='comment_create'),
 ]

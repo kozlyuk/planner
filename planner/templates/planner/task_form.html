@@ -22,7 +22,7 @@
                 {% csrf_token %}
                 <!--alert: inline layout-->
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-8">
                         <!-- BEGIN WIDGET TAB -->
                         <div class="card main-widget-tab">
                             <h6 class="task-header center-block text-center">
@@ -46,7 +46,7 @@
                                                             for="id_{{ form.object_code.name }}">{{ form.object_code.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.object_code|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.object_code.errors}}
@@ -57,7 +57,7 @@
                                                         <label
                                                             for="id_{{ form.object_address.name }}">{{ form.object_address.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.object_address|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.object_address.errors}}
@@ -73,7 +73,7 @@
                                                         <label
                                                             for="id_{{ form.work_type.name }}">{{ form.work_type.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.work_type|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.work_type.errors}}
@@ -84,7 +84,7 @@
                                                         <label
                                                             for="id_{{ form.construction.name }}">{{ form.construction.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.construction|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.construction.errors}}
@@ -101,7 +101,7 @@
                                                             {{ form.project_type.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.project_type|attr:"style: width: 100%; padding-left: 0px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.project_type.errors}}
@@ -112,21 +112,10 @@
                                                         <label
                                                             for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         {{ form.deal|attr:"style: width: 100%; padding-left: 0px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.deal.errors}}
-                                                        </div>
-                                                    </div>
-                                                    <!-- tc_received -->
-                                                    <div class="col-1">
-                                                        <label
-                                                            for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.tc_received|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{form.tc_received.errors}}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -140,7 +129,7 @@
                                                             {{ form.owner.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {{ form.owner|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -153,7 +142,7 @@
                                                         <label
                                                             for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {{ form.exec_status|attr:"style: width:100%; padding-left: 3px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -161,12 +150,15 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                <div class="row">
                                                     <!-- project_code -->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {{ form.project_code|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -174,63 +166,13 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <!-- planned_start -->
-                                                    <div class="col-1">
-                                                        <label for="id_{{ form.planned_start.name }}">
-                                                            {{ form.planned_start.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.planned_start|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{form.planned_start.errors}}
-                                                        </div>
-                                                    </div>
-                                                    <!-- planned_finish -->
-                                                    <div class="col-1">
-                                                        <label for="id_{{ form.planned_finish.name }}">
-                                                            {{ form.planned_finish.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <div class="form-group">
-                                                        {{ form.planned_finish|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            <div class="invalid-feedback">
-                                                                {{form.planned_finish.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- actual_finish -->
-                                                    <div class="col-1">
-                                                        <label for="id_actual_finish">
-                                                            {{ form.actual_finish.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <div class="form-group">
-                                                            {% if request.user.is_superuser %}
-                                                                {{ form.actual_finish|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% else %}
-                                                                {{ form.actual_finish|attr:"readonly style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% endif %}
-                                                            <div class="invalid-feedback">
-                                                                {{form.actual_finish.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
                                                     <!-- manual_warning -->
                                                     <div class="col-1">
                                                         <label for="id_{{ form.manual_warning.name }}">
                                                             {{ form.manual_warning.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -238,12 +180,15 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                <div class="row">
                                                     <!-- difficulty_owner -->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.difficulty_owner.name }}">{{ form.difficulty_owner.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {% if request.user.is_superuser %}
                                                                 {{ form.difficulty_owner|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
@@ -260,7 +205,7 @@
                                                         <label
                                                             for="id_{{ form.difficulty_executor.name }}">{{ form.difficulty_executor.label }}:</label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-5">
                                                         <div class="form-group">
                                                             {% if request.user.is_superuser %}
                                                                 {{ form.difficulty_executor|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
@@ -275,39 +220,83 @@
                                                 </div>
 
                                                 <div class="row">
-                                                    <!--alert: comment-->
-                                                    <div class="col-1">
-                                                        <label for="id_{{ form.comment.name }}">
-                                                            {{ form.comment.label }}:
+                                                    <!-- planned_start -->
+                                                    <!-- <div class="col-1">
+                                                        <label for="id_{{ form.planned_start.name }}">
+                                                            {{ form.planned_start.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        {{ form.planned_start|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.planned_start.errors}}
+                                                        </div>
+                                                    </div> -->
+                                                    <!-- planned_finish -->
+                                                    <!-- <div class="col-1">
+                                                        <label for="id_{{ form.planned_finish.name }}">
+                                                            {{ form.planned_finish.label }}:
                                                         </label>
                                                     </div>
                                                     <div class="col-3">
                                                         <div class="form-group">
-                                                            {{ form.comment|attr:"style: width:100%; height:56px; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.planned_finish|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
-                                                                {{form.comment.errors}}
+                                                                {{form.planned_finish.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div> -->
+                                                    <!-- tc_received -->
+                                                    <div class="col-1">
+                                                        <label
+                                                            for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        {{ form.tc_received|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.tc_received.errors}}
+                                                        </div>
+                                                    </div>
+                                                    <!-- actual_finish -->
+                                                    <div class="col-1">
+                                                        <label for="id_actual_finish">
+                                                            {{ form.actual_finish.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <div class="form-group">
+                                                            {% if request.user.is_superuser %}
+                                                                {{ form.actual_finish|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {% else %}
+                                                                {{ form.actual_finish|attr:"readonly style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {% endif %}
+                                                            <div class="invalid-feedback">
+                                                                {{form.actual_finish.errors}}
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                <div class="row">
                                                     <!-- tc_upload -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.tc_upload.name }}">
                                                             {{ form.tc_upload.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-4">
                                                         {{ form.tc_upload|attr:"style: width:100%; border: none"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.tc_upload.errors}}
                                                         </div>
                                                     </div>
                                                     <!-- pdf_copy -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.pdf_copy.name }}">
                                                             {{ form.pdf_copy.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-3">
+                                                    <div class="col-4">
                                                         {{ form.pdf_copy|attr:"style: width:100%; border: none"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.pdf_copy.errors}}
@@ -337,7 +326,75 @@
                         </div>
                         <!-- END WIDGET -->
                     </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div class="widget-bg-color-white main-widget-tab widget-tab">
+                            <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                        role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Коментарі </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                    role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Інформація </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
+                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
+                                    aria-labelledby="pills-tab_2_1">
+                                    {% if comments|length > 0 %}
+                                        {% for comment in comments %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-elements text-center">
+                                                    <img class="widget-media-avatar circle margin-bottom-15"
+                                                        src="{{ comment.user.employee.avatar.thumbnail.url }}" alt="">
+                                                </div>
+                                                <div class="widget-media-body">
+                                                    <h4 class="widget-media-body-title">
+                                                        {{ comment.timestamp }} - {{ comment.user.employee.name }}
+                                                    </h4>
+                                                    <p>{{ comment.text }}</p>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-body">
+                                                <p class="widget-media-body-subtitle">Коментарі відсутні</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Create book button -->
+                                    <button id="add-comment" class="btn btn-primary" type="button" name="button">Додати коментар</button>
+
+
+                                </div>
+                                <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
+                                    aria-labelledby="pills-tab_2_2">
+                                    <div class="widget-news margin-bottom-20">
+                                        <div class="widget-news-right-body">
+                                            <p>Плавновий початок: <strong>{% none_date_check task.planned_start %}</strong></p>
+                                            <p>Плавновий кінець: <strong>{% none_date_check task.planned_finish %}</strong></p>
+                                            <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
+                                            <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
+                                            <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END PORTLET-->
+                    </div>
                 </div>
+
                 {% if task.pk %}
                     <div class="row mt-4">
                         <div class="col-12">
@@ -890,6 +947,7 @@
     })
 </script>
 <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
 <script type="text/javascript">
 
 const addBtnExec = document.querySelector('.add-executors-formset');
@@ -1008,5 +1066,15 @@ function cliсk(formsetId, dynamicFormset) {
         });
     })
 </script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $("#add-comment").modalForm({
+            formURL: "{% url 'comment_create' %}"
+        });
+
+    });
+    </script>
 
 {% endblock %}

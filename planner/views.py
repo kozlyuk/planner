@@ -24,6 +24,7 @@ from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
 from .filters import task_queryset_filter, execuition_queryset_filter
+from notice.models import Comment, create_comment
 
 
 class Round(Func):
@@ -309,7 +310,7 @@ class TaskUpdate(UpdateView):
         if 'task_success_url' in self.request.session and \
                 self.request.session['task_success_url'] == 'execution':
             return reverse_lazy('sprint_list')
-        return reverse_lazy('task_list')
+        return reverse_lazy('home_page')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -324,6 +325,9 @@ class TaskUpdate(UpdateView):
             employees = Employee.objects.filter(user__is_active=True)
             subtasks = SubTask.objects.filter(project_type=self.object.project_type)
             contractors = Contractor.objects.filter(active=True)
+            context['comments'] = Comment.objects.filter(content_type__model='Task',
+                                                         object_id=self.object.pk
+                                                         )
             context['executors_formset'] = forms.ExecutorsFormSet(
                 instance=self.object, form_kwargs={'method': self.request.method,
                                                    'employees': employees,
@@ -338,6 +342,12 @@ class TaskUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
+        # create comment if comment modal form was submitted
+        comment_text = form.data.get('text')
+        if comment_text:
+            create_comment(get_current_user(), self.object, comment_text)
+            return redirect(self.request.META['HTTP_REFERER'])
+
         context = self.get_context_data()
         executors_formset = context['executors_formset']
         costs_formset = context['costs_formset']

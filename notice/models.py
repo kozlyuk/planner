@@ -4,6 +4,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from crum import get_current_user
 from eventlog.models import log
 
@@ -149,3 +150,59 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=255)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name = 'Коментар'
+        verbose_name_plural = 'Коментарі'
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return f'{self.timestamp} - {self.user.employee.name}'
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.creator = get_current_user()
+        if not self.pk:
+            log(user=get_current_user(),
+                action='Доданий коментар',
+                extra={"title": self.text},
+                obj=self,
+                )
+        else:
+            log(user=get_current_user(),
+                action='Оновлений коментар',
+                extra={"title": self.text},
+                obj=self,
+                )
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(),
+            action='Видалений коментар',
+            extra={"title": self.text},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
+
+
+def create_comment(user, obj, text):
+    if (user is not None and not user.is_authenticated):
+        user = None
+    content_type = ContentType.objects.get_for_model(obj)
+    object_id = obj.pk
+
+    return Comment.objects.create(
+        user=user,
+        text=text,
+        content_type=content_type,
+        object_id=object_id
+    )

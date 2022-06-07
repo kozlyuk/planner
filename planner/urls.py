@@ -7,13 +7,10 @@ from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
 from planner import views
-from gantt.views import GetPlan, ChangePlan
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-
-    path('api/gantt/', include('gantt.urls')),
 
     path('', views.Dashboard.as_view(), name='home_page'),
 
@@ -31,9 +28,6 @@ urlpatterns = [
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
-    path('sprint/gantt/', GetPlan.as_view(), name='get_plan'),
-    path('sprint/gantt/change/', ChangePlan.as_view(), name='change_plan'),
-
     path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
 
@@ -77,9 +71,11 @@ urlpatterns = [
     path('employee/change/', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
 
     path('select2/', include('django_select2.urls')),
+    path('api/gantt/', include('gantt.urls')),
     path('notice/', include('notice.urls')),
     path('analytics/', include('analytics.urls')),
     path('templates/', include('html_templates.urls')),
+
 ]
 
 if settings.DEBUG:
