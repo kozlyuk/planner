@@ -10,7 +10,7 @@ class NewsForm(forms.ModelForm):
         fields = ['title', 'text', 'news_type', 'actual_from', 'actual_to']
 
     def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['actual_from'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
         self.fields['actual_to'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
         self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
@@ -23,7 +23,7 @@ class EventForm(forms.ModelForm):
         fields = ['title', 'date', 'repeat', 'description', 'is_holiday']
 
     def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['date'].widget = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
         self.fields['title'].widget.attrs.update({'style': 'width:100%;'})
         self.fields['description'].widget.attrs.update({'style': 'width:100%; height:63px;'})
@@ -33,3 +33,7 @@ class CommentModelForm(BSModalModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['text'].widget.attrs.update({'style': 'width:100%;'})

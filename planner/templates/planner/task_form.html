@@ -351,10 +351,10 @@
                                                         src="{{ comment.user.employee.avatar.thumbnail.url }}" alt="">
                                                 </div>
                                                 <div class="widget-media-body">
-                                                    <h4 class="widget-media-body-title">
-                                                        {{ comment.timestamp }} - {{ comment.user.employee.name }}
-                                                    </h4>
-                                                    <p>{{ comment.text }}</p>
+                                                    <div class="widget-media-body-title">
+                                                        {{ comment.user.employee.name }} - {{ comment.timestamp }}
+                                                    </div>
+                                                    <h6>{{ comment.text }}</h6>
                                                 </div>
                                             </div>
                                         {% endfor %}
