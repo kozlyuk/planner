@@ -84,7 +84,7 @@ class Dashboard(TemplateView):
 class DealList(ListView):
     model = Deal
     context_object_name = 'deals'  # Default: object_list
-    paginate_by = 50
+    paginate_by = 35
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
@@ -256,7 +256,7 @@ class DealDelete(DeleteView):
 class TaskList(ListView):
     model = Task
     context_object_name = 'tasks'  # Default: object_list
-    paginate_by = 50
+    paginate_by = 35
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
@@ -294,7 +294,10 @@ class TaskDetail(DetailView):
     context_object_name = 'task'
 
     def get_context_data(self, **kwargs):
-        context = super(TaskDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(content_type__model='Task',
+                                                     object_id=self.kwargs['pk']
+                                                     )
         context['executors'] = Execution.objects.filter(task=self.kwargs['pk'])
         context['costs'] = Order.objects.filter(task=self.kwargs['pk'])
         context['sendings'] = Sending.objects.filter(task=self.kwargs['pk'])
@@ -310,7 +313,7 @@ class TaskUpdate(UpdateView):
         if 'task_success_url' in self.request.session and \
                 self.request.session['task_success_url'] == 'execution':
             return reverse_lazy('sprint_list')
-        return reverse_lazy('home_page')
+        return reverse_lazy('task_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -446,7 +449,7 @@ class SprintList(ListView):
     model = Execution
     template_name = "planner/subtask_sprint_list.html"
     context_object_name = 'tasks'
-    paginate_by = 50
+    paginate_by = 32
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
@@ -584,7 +587,7 @@ class ReceiverList(ListView):
     model = Receiver
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 35
 
     def get_queryset(self):
         receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
@@ -680,7 +683,7 @@ class ProjectList(ListView):
     model = Project
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 35
 
     def get_queryset(self):
         project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
@@ -800,7 +803,7 @@ class CustomerList(ListView):
     model = Customer
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 50
+    paginate_by = 35
 
     def get_queryset(self):
         debit_qry = Q(deal__act_status=Deal.Issued, deal__pay_status=Deal.NotPaid)
@@ -899,7 +902,7 @@ class CompanyList(ListView):
     model = Company
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 35
 
     def get_queryset(self):
         companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
@@ -1131,7 +1134,7 @@ class ContractorList(ListView):
     model = Contractor
     template_name = "planner/generic_list.html"
     success_url = reverse_lazy('home_page')
-    paginate_by = 15
+    paginate_by = 35
 
     def get_queryset(self):  # todo args url
         contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
