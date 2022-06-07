@@ -340,9 +340,9 @@
                                     role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Інформація </a>
                                 </li>
                             </ul>
-                            <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
-                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
-                                    aria-labelledby="pills-tab_2_1">
+                            <div style="height: 500px" class="tab-content scroller pt-1" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2" aria-labelledby="pills-tab_2_1">
+                                    <br>
                                     {% if comments|length > 0 %}
                                         {% for comment in comments %}
                                             <div class="widget-media">
@@ -372,15 +372,21 @@
                                         </div>
                                     </div>
 
-                                    <!-- Create book button -->
-                                    <button id="add-comment" class="btn btn-primary" type="button" name="button">Додати коментар</button>
-
-
+                                    <!-- Create comment button -->
+                                    <div class="form-actions">
+                                        <button id="add-comment"
+                                            type="button"
+                                            class="btn dark btn-sm btn-outline sbold uppercase"
+                                            style="float: right;">Додати коментар
+                                        </button>
+                                        <br>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
                                     aria-labelledby="pills-tab_2_2">
                                     <div class="widget-news margin-bottom-20">
                                         <div class="widget-news-right-body">
+                                            <br>
                                             <p>Плавновий початок: <strong>{% none_date_check task.planned_start %}</strong></p>
                                             <p>Плавновий кінець: <strong>{% none_date_check task.planned_finish %}</strong></p>
                                             <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
