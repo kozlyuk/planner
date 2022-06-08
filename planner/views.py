@@ -23,8 +23,8 @@ from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     Contractor, SubTask, ActOfAcceptance, IntTask, Customer, Company
-from .filters import task_queryset_filter
-from notice.models import Comment
+from .filters import task_queryset_filter, execuition_queryset_filter
+from notice.models import Comment, create_comment
 from eventlog.models import Log
 
 
