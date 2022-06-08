@@ -220,33 +220,6 @@
                                                 </div>
 
                                                 <div class="row">
-                                                    <!-- planned_start -->
-                                                    <!-- <div class="col-1">
-                                                        <label for="id_{{ form.planned_start.name }}">
-                                                            {{ form.planned_start.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        {{ form.planned_start|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{form.planned_start.errors}}
-                                                        </div>
-                                                    </div> -->
-                                                    <!-- planned_finish -->
-                                                    <!-- <div class="col-1">
-                                                        <label for="id_{{ form.planned_finish.name }}">
-                                                            {{ form.planned_finish.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <div class="form-group">
-                                                        {{ form.planned_finish|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            <div class="invalid-feedback">
-                                                                {{form.planned_finish.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div> -->
-                                                    <!-- tc_received -->
                                                     <div class="col-1">
                                                         <label
                                                             for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
@@ -354,7 +327,7 @@
                                                     <div class="widget-media-body-title">
                                                         {{ comment.user.employee.name }} - {{ comment.timestamp }}
                                                     </div>
-                                                    <h6>{{ comment.text }}</h6>
+                                                    <p>{{ comment.text }}</p>
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -1077,10 +1050,10 @@ function cliсk(formsetId, dynamicFormset) {
     $(document).ready(function() {
 
         $("#add-comment").modalForm({
-            formURL: "{% url 'comment_create' %}"
+            formURL: "{% url 'comment_create' task.pk %}"
         });
 
     });
-    </script>
+</script>
 
 {% endblock %}

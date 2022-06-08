@@ -35,7 +35,7 @@
                                     aria-labelledby="pills-tab_1_1">
                                 <div class="widget-news margin-bottom-20">
                                     <div class="widget-news-right-body">
-                                        <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address }}
+                                        <h3 class="widget-news-right-body-title">{{ task.object_code }} {{ task.object_address|slice:":90" }}
                                             <span class="badge badge-pill badge-{% task_overdue_color task.warning %} float-right"> {{ task.warning }} </span>
                                         </h3>
                                         <p>Тип проекту: <strong>{{ task.project_type }}</strong></p>
@@ -107,23 +107,66 @@
                         <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
-                                    role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Виконавці </a>
+                                    role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Коментарі </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                    role="tab" aria-controls="pills-tab_2_2" aria-selected="true"> Виконавці </a>
                             </li>
                             <!-- Only for staff members -->
                             {% if request.user.is_staff %}
                                 <li class="nav-item">
-                                    <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
-                                    role="tab" aria-controls="pills-tab_2_2" aria-selected="false"> Витрати </a>
+                                    <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
+                                    role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Витрати </a>
                                 </li>
                             {% endif %}
                             <li class="nav-item">
-                                <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
-                                    role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Відправки </a>
+                                <a class="nav-link" id="pills-tab_2_4-tab" data-toggle="pill" href="#tab_2_4"
+                                    role="tab" aria-controls="pills-tab_2_4" aria-selected="false"> Відправки </a>
                             </li>
                         </ul>
-                        <div class="tab-content" data-always-visible="1" data-handle-color="#D7DCE2">
-                            <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2"
-                                aria-labelledby="pills-tab_2_1">
+                        <div style="height: 500px" class="tab-content scroller pt-1" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2" aria-labelledby="pills-tab_2_1">
+                                {% if comments|length > 0 %}
+                                    {% for comment in comments %}
+                                        <div class="widget-media">
+                                            <div class="widget-media-elements text-center">
+                                                <img class="widget-media-avatar circle margin-bottom-15"
+                                                    src="{{ comment.user.employee.avatar.thumbnail.url }}" alt="">
+                                            </div>
+                                            <div class="widget-media-body">
+                                                <div class="widget-media-body-title">
+                                                    {{ comment.user.employee.name }} - {{ comment.timestamp }}
+                                                </div>
+                                                <p>{{ comment.text }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="widget-media">
+                                        <div class="widget-media-body">
+                                            <p class="widget-media-body-subtitle">Коментарі відсутні</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Create comment button -->
+                                <div class="form-actions">
+                                    <button id="add-comment"
+                                        type="button"
+                                        class="btn dark btn-sm btn-outline sbold uppercase"
+                                        style="float: right;">Додати коментар
+                                    </button>
+                                    <br>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade show" id="tab_2_2" role="tabpane2" aria-labelledby="pills-tab_2_2">
                                 {% if executors|length > 0 %}
                                     {% for executor in executors %}
                                         <div class="widget-media">
@@ -153,8 +196,8 @@
                             </div>
                             <!-- Only for staff members -->
                             {% if request.user.is_staff %}
-                                <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
-                                    aria-labelledby="pills-tab_2_2">
+                                <div class="tab-pane fade show" id="tab_2_3" role="tabpane2"
+                                    aria-labelledby="pills-tab_2_3">
                                     {% if costs|length > 0 %}
                                     {% for cost in costs %}
                                     <div class="widget-media">
@@ -182,8 +225,8 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-                            <div class="tab-pane fade show" id="tab_2_3" role="tabpane2"
-                                aria-labelledby="pills-tab_2_3">
+                            <div class="tab-pane fade show" id="tab_2_4" role="tabpane2"
+                                aria-labelledby="pills-tab_2_4">
                                 {% if sendings|length > 0 %}
                                     {% for sending in sendings %}
                                         <div class="widget-media">
@@ -215,4 +258,30 @@
         <!-- END CONTENT -->
     </div>
     <!-- END CONTAINER -->
+
+{% endblock %}
+
+{% block extrahead %}
+
+    <script type="text/javascript">
+        if(typeof jQuery!=='undefined'){
+            console.log('jQuery Loaded');
+        }
+        else{
+            console.log('jQuery not loaded yet');
+        }
+    </script>
+
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            $("#add-comment").modalForm({
+                formURL: "{% url 'comment_create' task.pk %}"
+            });
+
+        });
+    </script>
+
 {% endblock %}
