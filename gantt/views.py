@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 
 from planner.models import Task, Execution
-from planner.views import execuition_queryset_filter
+from planner.filters import execuition_queryset_filter
 
 
 @method_decorator(login_required, name='dispatch')

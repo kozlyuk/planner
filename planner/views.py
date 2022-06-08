@@ -22,9 +22,10 @@ from crum import get_current_user
 from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                    IntTask, Customer, Company, Contractor, SubTask, ActOfAcceptance
-from .filters import task_queryset_filter, execuition_queryset_filter
-from notice.models import Comment, create_comment
+                    Contractor, SubTask, ActOfAcceptance, IntTask, Customer, Company
+from .filters import task_queryset_filter
+from notice.models import Comment
+from eventlog.models import Log
 
 
 class Round(Func):
@@ -331,6 +332,9 @@ class TaskUpdate(UpdateView):
             context['comments'] = Comment.objects.filter(content_type__model='Task',
                                                          object_id=self.object.pk
                                                          )
+            context['activities'] = Log.objects.filter(content_type__model='Task',
+                                                       object_id=self.object.pk
+                                                       )
             context['executors_formset'] = forms.ExecutorsFormSet(
                 instance=self.object, form_kwargs={'method': self.request.method,
                                                    'employees': employees,
