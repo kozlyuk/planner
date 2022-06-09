@@ -502,7 +502,7 @@ class ExecutionStatusChange(View):
             raise Execution.DoesNotExist
 
         if kwargs['status'] in dict(Execution.EXEC_STATUS_CHOICES):
-            if request.user == obj.executor.user and kwargs['status'] != Execution.Done:
+            if request.user == obj.executor.user and (kwargs['status'] != Execution.Done or not obj.subtask.check_required):
                 return super().dispatch(request, *args, **kwargs)
             if request.user.is_superuser or request.user == obj.task.owner.user:
                 return super().dispatch(request, *args, **kwargs)
