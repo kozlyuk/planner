@@ -285,7 +285,7 @@ class TaskFilterForm(forms.Form):
         label='Тип конструкції', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     work_type = forms.MultipleChoiceField(
         label='Вид будівництва', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    period = forms.DateField(label='Період будівництва', required=False, widget=DjangoYearMonthWidget())
+    period = forms.DateField(label='Період проектування', required=False, widget=DjangoYearMonthWidget())
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
