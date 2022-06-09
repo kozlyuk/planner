@@ -21,8 +21,8 @@ def task_queryset_filter(request_user, query_dict):
     customers = list(filter(None, query_dict.getlist('customer')))
     constructions = list(filter(None, query_dict.getlist('construction')))
     work_types = list(filter(None, query_dict.getlist('work_type')))
+    period = query_dict.get('period')
     order = query_dict.get('o')
-
 
     tasks = Task.objects.all().select_related('project_type', 'owner', 'deal', 'deal__customer')
     # filter only customer tasks
@@ -64,6 +64,8 @@ def task_queryset_filter(request_user, query_dict):
             tasks_part = tasks.filter(work_type=work_type)
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
+    if period:
+        tasks = tasks.filter(period=period)
     if order:
         tasks = tasks.order_by(order)
     else:

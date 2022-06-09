@@ -9,7 +9,6 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-# from django.views.generic.dates import WeekArchiveView
 from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When
 from django.db.models.functions import Concat
 from django.db import transaction

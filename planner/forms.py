@@ -10,6 +10,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models import Q, F
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 from crum import get_current_user
+from django_yearmonth_widget.widgets import DjangoYearMonthWidget
 
 from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
                     Deal, Employee, Project, Company, Receiver, Contractor, WorkType
@@ -284,6 +285,7 @@ class TaskFilterForm(forms.Form):
         label='Тип конструкції', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
     work_type = forms.MultipleChoiceField(
         label='Вид будівництва', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    period = forms.DateField(label='Період будівництва', required=False, widget=DjangoYearMonthWidget())
     filter = forms.CharField(label='Слово пошуку',
                              max_length=255, required=False, widget=forms.TextInput(
                                  attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
@@ -355,6 +357,7 @@ class TaskForm(forms.ModelForm):
                   'project_code', 'manual_warning',
                   'difficulty_owner', 'difficulty_executor',
                   'tc_received', 'actual_finish',
+                  'period',
                   'tc_upload', 'pdf_copy',
                   ]
         widgets = {
@@ -364,6 +367,7 @@ class TaskForm(forms.ModelForm):
             'planned_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'actual_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'tc_received': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'period': DjangoYearMonthWidget(),
             'tc_upload': NotClearableFileInput,
             'pdf_copy': NotClearableFileInput,
         }
