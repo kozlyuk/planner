@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'admin_totals',
     'bootstrap_modal_forms',
-    'django_yearmonth_widget',
 ]
 
 MIDDLEWARE = [
