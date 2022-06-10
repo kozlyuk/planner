@@ -65,9 +65,9 @@ def task_queryset_filter(request_user, query_dict):
             tasks_part = tasks.filter(work_type=work_type)
             tasks_union = tasks_union | tasks_part
         tasks = tasks_union
-    if period_month:
+    if period_month and period_month != 0:
         tasks = tasks.filter(period__month=period_month)
-    if period_year:
+    if period_year and period_year != 0:
         tasks = tasks.filter(period__year=period_year)
     if order:
         tasks = tasks.order_by(order)
