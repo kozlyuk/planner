@@ -154,9 +154,9 @@ class News(models.Model):
 
 class Comment(models.Model):
 
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, verbose_name='Працівник', null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=255)
+    text = models.CharField('Коментар', max_length=255)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
 

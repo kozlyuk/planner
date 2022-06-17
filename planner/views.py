@@ -17,6 +17,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.html import format_html
 from django.http import QueryDict
 from crum import get_current_user
+from bootstrap_modal_forms.generic import BSModalUpdateView
 
 from .context import context_accounter, context_pm, context_projector
 from . import forms
@@ -722,6 +723,7 @@ class ProjectList(ListView):
             context['add_url'] = reverse('project_type_add')
             context['add_help_text'] = 'Додати вид робіт'
         context['header_main'] = 'Види робіт'
+        context['tasks_filtered'] = self.get_queryset().count()
         context['objects_count'] = Project.objects.all().count()
         if self.request.POST:
             context['filter_form'] = forms.ProjectFilterForm(self.request.POST)
@@ -1226,3 +1228,11 @@ class ContractorDelete(DeleteView):
         if self.object.order_set.exists():
             context['objects'] = self.object.order_set.all()
         return context
+
+
+class ExecutionkUpdateView(BSModalUpdateView):
+    model = Execution
+    template_name = 'planner/execution_update.html'
+    form_class = forms.ExecutionModelForm
+    success_message = 'Success: Execution was updated.'
+    success_url = reverse_lazy('sprint_list')

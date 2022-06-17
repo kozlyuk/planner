@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load mptt_tags %}
 {% load widget_tweaks %}
-{% load ita_template_tags %}
 {% load static %}
 
 {% block context %}
@@ -18,84 +17,23 @@
     <br><!-- BEGIN CONTENT -->
     <div class="container-fluid">
         <div class="portlet-body">
-            <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
-                <div id="sprintList" class="table-scrollable">
-                    <table class="table table-striped table-advance table-hover">
-                        <thead>
-                            <tr>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'task__object_code' %}">шифр</a></th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">тип проекту</a></th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'subtask' %}">роботи</a></th>
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'task__object_address' %}">договір</a></th>
-                                <!-- Only for staff members -->
-                                {% if request.user.is_staff %}
-                                    <th class="uppercase"><a href="?{% url_replace request 'o' 'executor' %}">виконавець</a></th>
-                                {% endif %}
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_start' %}">плановий початок</a></th>
-                                <th class="hidden-xs uppercase"><a href="?{% url_replace request 'o' 'planned_finish' %}">плановий кінець</a></th>
-                                <th class="hidden-xs uppercase"><i class="fa fa-calendar-check-o"></i></th>
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'exec_status' %}">статус виконання</a></th>
-                                {% if request.user.is_staff %}
-                                    <th class="print-ignore uppercase">змінити статус</th>
-                                {% endif %}
-                                <th class="uppercase"><a href="?{% url_replace request 'o' 'actual_finish' %}">дата виконання</a></th>
-                                <th class="uppercase"> попередження </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for task in tasks %}
-                            <tr>
-                                {% if task.task.is_editable %}
-                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_update' task.task.id %}">{{ task.task.object_code }}</a></td>
-                                {% elif task.task.is_viewable %}
-                                    <td><a data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}" href="{% url 'task_detail' task.task.id %}">{{ task.task.object_code }}</a></td>
-                                {% else %}
-                                    <td data-toggle="tooltip" data-placement="right" title="{{ task.task.object_address }}">{{ task.task.object_code }}</td>
-                                {% endif %}
-                                {% if request.user.is_staff %}
-                                    <td><span data-toggle="tooltip" data-placement="right" title="{{ task.task.project_type.project_type }}">{{ task.task.project_type.price_code }}</span></td>
-                                {% else %}
-                                    <td>{{ task.task.project_type.project_type }}</td>
-                                {% endif %}
-                                <td>{{ task.subtask.name }}</td>
-                                <td>{{ task.task.deal.number }}</td>
-                                <!-- Only for staff members -->
-                                {% if request.user.is_staff %}
-                                    <td>{{ task.executor }}</td>
-                                {% endif %}
-                                <td>{% none_datetime_check task.planned_start %}</td>
-                                <td>{% none_datetime_check task.planned_finish_with_interruption %}</td>
-                                <td>{% if task.fixed_date %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}</td>
-                                <td>
-                                        {{ task.get_exec_status_display }}
-                                </td>
-                                {% if request.user.is_staff %}
-                                    <td class="print-ignore" class="text-center">
-                                        {% status_change request.user task.pk task.exec_status %}
-                                    </td>
-                                {% endif %}
-                                <td>{% none_date_check task.actual_finish %}</td>
-                                <td>
-                                    <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
-                                        {{task.warning_select}}
-                                    </span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div id="sprintList" class="table-scrollable">
+                {% include 'planner/execution_table.html' %}
+            </div>
+            <div class="modal fade" id="modal-default">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content"></div>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="text-center">
-                            {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
-                            </a><br>
-                            {% include 'pagination.html' %}
-                        </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center">
+                        {{ tasks_filtered }} знайдено <a href="{% url 'sprint_list' %}"> ({{ tasks_count }} всього)
+                        </a><br>
+                        {% include 'pagination.html' %}
                     </div>
                 </div>
-            </form>
+            </div>
             <!-- END PAGE BASE CONTENT -->
         </div>
         <!-- END CONTENT -->
@@ -119,6 +57,7 @@
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script type="text/javascript" src="{% static 'air_datepicker/main.min.js' %}"></script>
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
     <script>
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
@@ -135,6 +74,17 @@
                     }
                 )
         })
+
+        function updateExecutionModalForm() {
+            $(".update-execution").each(function () {
+                $(this).modalForm({
+                    formURL: $(this).data("form-url"),
+                });
+            });
+            }
+
+        updateExecutionModalForm();
+
     </script>
 
 {% endblock extrahead %}

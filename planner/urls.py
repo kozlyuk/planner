@@ -12,6 +12,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 
+    path('login/', views.login_page, name='login_page'),
+    path('logout/', views.logout_page, name='logout_page'),
     path('', views.Dashboard.as_view(), name='home_page'),
 
     path('deal/', views.DealList.as_view(), name='deal_list'),
@@ -30,6 +32,7 @@ urlpatterns = [
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
     path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
+    path('execution/update/<int:pk>', views.ExecutionkUpdateView.as_view(), name='execution_update'),
 
     path('receiver/', views.ReceiverList.as_view(), name='receiver_list'),
     path('receiver/add', views.ReceiverCreate.as_view(), name='receiver_add'),
@@ -59,8 +62,6 @@ urlpatterns = [
 
     path('subtask/<int:pk>/', views.SubtaskDetail.as_view(), name='subtask_detail'),
     path('inttask/<int:pk>/', views.InttaskDetail.as_view(), name='inttask_detail'),
-    path('login/', views.login_page, name='login_page'),
-    path('logout/', views.logout_page, name='logout_page'),
 
     path('colleague/', views.СolleagueList.as_view(), name='colleague_list'),
     path('colleague/<int:pk>/detail/', views.СolleagueDetail.as_view(), name='colleague_detail'),

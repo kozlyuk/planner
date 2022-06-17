@@ -17,6 +17,7 @@ from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Custo
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
+from bootstrap_modal_forms.forms import BSModalModelForm
 
 
 class UserLoginForm(forms.ModelForm):
@@ -438,7 +439,6 @@ class ExecutorInlineForm(forms.ModelForm):
             'subtask': Select2Widget(),
             'planned_start': SplitDateTimeWidget(),
             'planned_finish': SplitDateTimeWidget(),
-            # 'actual_finish': SplitDateTimeWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput(),
             'prev_exec_status': forms.HiddenInput()
         }
@@ -796,3 +796,16 @@ class SubTasksInlineForm(forms.ModelForm):
 
 SubTasksFormSet = inlineformset_factory(Project, SubTask, form=SubTasksInlineForm,
                                         extra=0, can_delete=False)
+
+
+class ExecutionModelForm(BSModalModelForm):
+
+    class Meta:
+        model = Execution
+        fields = ['planned_start', 'planned_finish', 'fixed_date']
+
+        widgets = {
+            'planned_start': SplitDateTimeWidget(),
+            'planned_finish': SplitDateTimeWidget(),
+            'fixed_date': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
+        }
