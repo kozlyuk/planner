@@ -457,11 +457,12 @@ class SprintList(ListView):
     success_url = reverse_lazy('home_page')
 
     def dispatch(self, request, *args, **kwargs):
-        if request.GET == {}:
+        query_string = self.request.session.get('execution_query_string')
+        if request.GET == {} and query_string:
             request.GET = request.GET.copy()
-            request.GET = QueryDict(self.request.session.get('execution_query_string', ''))
-            request.META['QUERY_STRING'] = self.request.session.get('execution_query_string', '')
-        #         query_string = QueryDict(self.request.session.get('execution_query_string')).copy()
+            request.GET = QueryDict(query_string)
+            request.META['QUERY_STRING'] = query_string
+        #         query_string = QueryDict(query_string).copy()
         #         if 'actual_start' in query_string:
         #             del query_string['actual_start']
         #         if 'actual_finish' in query_string:
