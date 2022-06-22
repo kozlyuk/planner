@@ -6,7 +6,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from crum import get_current_user
+
 from eventlog.models import log
+from messaging.tasks import send_comment_notification
 
 
 class Event(models.Model):
@@ -185,6 +187,9 @@ class Comment(models.Model):
                 )
         super().save(*args, **kwargs)
 
+        # send email for executors
+        send_comment_notification.delay(self.pk)
+
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),
             action='Видалений коментар',
@@ -195,6 +200,7 @@ class Comment(models.Model):
 
 
 def create_comment(user, obj, text):
+    """ Create new comment """
     if (user is not None and not user.is_authenticated):
         user = None
     content_type = ContentType.objects.get_for_model(obj)

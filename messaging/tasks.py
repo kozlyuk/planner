@@ -5,9 +5,9 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
 from django.template.loader import render_to_string
+from django.apps import apps
 
-from notice.models import Event
-from planner.models import Employee, Deal
+from planner.models import Employee, Deal, Task
 from html_templates.context import context_bonus_per_month
 from planner.celery import app
 from .context_email import context_actneed_deals, context_debtors_deals, \
@@ -19,14 +19,15 @@ logger = get_task_logger(__name__)
 
 def public_holiday() -> bool:
     """ check if today is public holiday """
-    return Event.objects.filter(next_date=date.today(), is_holiday=True).exists()
+    event =apps.get_model('notice.Event')
+    return event.objects.filter(next_date=date.today(), is_holiday=True).exists()
 
 
 @app.task
-def send_email_list(emails: EmailMessage) -> None:
+def send_email_list(emails: EmailMessage, ignore_holidays = False) -> None:
     """ sends email to emails list """
 
-    if public_holiday():
+    if not ignore_holidays and public_holiday():
         print(f"Innore sending due to public holiday")
         return
 
@@ -217,3 +218,41 @@ def send_monthly_report(period=None):
     # sending emails
     if emails:
         send_email_list(change_content_type_to_html(emails))
+
+
+@app.task
+def send_comment_notification(comment_pk) -> None:
+    """Sending notifications about new comment"""
+
+    template_name = "email/comment_email.html"
+    emails = []
+    comment_model =apps.get_model('notice.Comment')
+    comment = comment_model.objects.get(pk=comment_pk)
+
+    try:
+        task = Task.objects.get(pk=comment.object_id)
+        recepients_set = set(task.executors.exclude(user__email='').values_list('user__email', flat=True))
+        recepients_set.add(task.owner.user.email)
+
+        # prepearing email
+        context = {
+            'employee': comment.user.employee.name,
+            'object_code': task.object_code,
+            'object_address': task.object_address,
+            'comment': comment.text
+        }
+        message = render_to_string(template_name, context)
+
+        emails.append(EmailMessage(
+            f'Додано коментар по {task.object_code}',
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            list(recepients_set),
+        ))
+
+        # sending emails
+        if emails:
+            send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
+
+    except Task.DoesNotExist:
+        logger.info("Task with pk %s does not exists", comment.object_id)
