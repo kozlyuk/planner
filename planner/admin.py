@@ -605,8 +605,8 @@ class TaskAdmin(admin.ModelAdmin):
                                                  ('pdf_copy', )]}),
         ('Додаткова інформіція', {'fields': [
             'project_code', 'manual_warning',
-            ('difficulty_owner', 'difficulty_executor'),
-            'comment'],
+            ('difficulty_owner', 'difficulty_executor')
+            ],
             'classes': ['collapse']
             })
     ]

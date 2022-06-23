@@ -757,7 +757,6 @@ class Task(models.Model):
         content_types=['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                        max_upload_size=26214400, blank=True, null=True)
-    comment = models.TextField('Коментар', blank=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)

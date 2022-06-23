@@ -21,7 +21,7 @@
     margin: 0 auto;
     position: relative;
     top: -20px;
-    
+
 }
 .profile-card-5 .card-img-block img{
     border-radius:5px;
@@ -62,12 +62,6 @@
                                             {{ header_main }}
                                         </button>
                                     </div>
-                                {% comment %} {% if add_url %}
-                                <button onclick="window.location.href = '{{ add_url }}'"
-                                    class="btn dark btn-sm btn-outline sbold uppercase"
-                                    style="margin-right: 5px; margin-bottom: 5px; margin-top: 5px; position: absolute; right: 0%; top: 0px;">
-                                    <i class="fa fa-plus"></i> {{add_help_text}} </button>
-                                {% endif %} {% endcomment %}
                                 </div>
                             </div>
                         </h2>
@@ -136,10 +130,6 @@
                         </div>
                     </div>
                 </div>
-                {% comment %} {% if perms.planner.change_deal %}
-                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
-                    договір</button>
-                {% endif %} {% endcomment %}
             </form>
             <!-- END PAGE BASE CONTENT -->
         </div>

@@ -23,10 +23,7 @@
           type="text/css"/>
     <link href="{% static 'assets/global/plugins/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet"
           type="text/css"/>
-    {% comment %} <link href="{% static 'assets/global/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/> {% endcomment %}
     <link href="{% static 'assets/global/plugins/uniform/css/uniform.default.css' %}" rel="stylesheet" type="text/css"/>
-    {% comment %} <link href="{% static 'assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css' %}" rel="stylesheet"
-          type="text/css"/> {% endcomment %}
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <link href="{% static 'assets/global/plugins/morris/morris.css' %}" rel="stylesheet" type="text/css"/>
@@ -35,7 +32,6 @@
     <!-- BEGIN THEME GLOBAL STYLES -->
     <link href="{% static 'assets/global/css/components.min.css' %}" rel="stylesheet" id="style_components"
           type="text/css"/>
-    {% comment %} <link href="{% static 'assets/global/css/plugins.min.css' %}" rel="stylesheet" type="text/css"/> {% endcomment %}
     <link href="{% static 'assets/global/css/menu.css'%}" rel="stylesheet" type="text/css"/>
     <!-- END THEME GLOBAL STYLES -->
     <!-- BEGIN THEME LAYOUT STYLES -->
@@ -171,11 +167,6 @@
                                         <i class="icon-user"></i>Мій профіль</a>
                                 </li>
                             {% endif %}
-                            {% comment %} <li>
-                                <a href="#">
-                                    <i class="icon-calendar"></i>Календар</a>
-                            </li> {% endcomment %}
-                            {% comment %} <li class="divider"></li> {% endcomment %}
                             <li>
                                 <a href="{% url 'logout_page' %}">
                                     <i class="icon-key"></i>Вийти</a>
@@ -195,17 +186,7 @@
     <!-- BEGIN CONTAINER -->
     {% block context %}
     {% endblock %}
-    <!-- BEGIN FOOTER -->
-    {% comment %} <div class="page-footer">
-        <div class="container-fluid container-lf-space">
-            <p class="page-footer-copyright">2022 &copy; Itel-Service</p>
-        </div>
-        <div class="go2top">
-            <i class="icon-arrow-up"></i>
-        </div>
-    </div> {% endcomment %}
 </div>
-<!-- END FOOTER -->
 <!--[if lt IE 9]>
 <script src="../assets/global/plugins/respond.min.js"></script>
 <script src="../assets/global/plugins/excanvas.min.js"></script>
