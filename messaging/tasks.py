@@ -1,6 +1,7 @@
 from datetime import date
 from smtplib import SMTPException
 from celery.utils.log import get_task_logger
+from django.utils.html import format_html
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
@@ -238,6 +239,8 @@ def send_comment_notification(comment_pk) -> None:
         context = {
             'employee': comment.user.employee.name,
             'task': task,
+            'task_url': format_html('<a href="%s%s">%s</a>' %
+                        (settings.SITE_URL, task.get_absolute_url(), task.object_code)),
             'comment': comment.text
         }
         message = render_to_string(template_name, context)
