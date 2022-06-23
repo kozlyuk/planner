@@ -386,6 +386,8 @@
                                             <p>Бонуси керівника проекту: <strong>{{ task.owner_bonus|floatformat:"2" }} грн.</strong></p>
                                             <p>Бонуси за виконання: <strong>{{ task.executors_bonus|floatformat:"2" }} грн.</strong></p>
                                             <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
+                                            <p>Необхідно відправок: <strong>{{ task.project_type.copies_count }}</strong></p>
+                                            <p>Зараховані відправки: <strong>{% none_date_check task.sending_date %}</strong></p>
                                         </div>
                                     </div>
                                 </div>
