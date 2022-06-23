@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <body>
-    {{ employee }} додав коментар по об'єкту {{ object_code }} - {{ object_address }}:<br>
+    {{ employee }} додав коментар по об'єкту
+    <a href="{% url 'task_detail' task.id %}"> {{ task.object_code }} </a>
+    - {{ task.object_address }}:<br>
     "{{ comment }}"
 </body>
 </html>

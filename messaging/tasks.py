@@ -237,8 +237,7 @@ def send_comment_notification(comment_pk) -> None:
         # prepearing email
         context = {
             'employee': comment.user.employee.name,
-            'object_code': task.object_code,
-            'object_address': task.object_address,
+            'task': task,
             'comment': comment.text
         }
         message = render_to_string(template_name, context)
