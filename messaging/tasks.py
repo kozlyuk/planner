@@ -234,6 +234,7 @@ def send_comment_notification(comment_pk) -> None:
         task = Task.objects.get(pk=comment.object_id)
         recepients_set = set(task.executors.exclude(user__email='').values_list('user__email', flat=True))
         recepients_set.add(task.owner.user.email)
+        recepients_set.update(list(Employee.objects.filter(user__is_superuser=True).values_list('user__email', flat=True)))
 
         # prepearing email
         context = {
