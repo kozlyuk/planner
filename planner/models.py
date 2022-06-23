@@ -816,7 +816,7 @@ class Task(models.Model):
             self.actual_finish = None
 
         # Automatic changing of Task.exec_status when all sendings was sent
-        if self.exec_status == self.Done:
+        if self.exec_status in [self.Done, self.Sent]:
             sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
             if sendings >= self.project_type.copies_count:
                 self.exec_status = self.Sent
