@@ -1,0 +1,9 @@
+.env*
+.git*
+.vscode
+.mypy_cache
+media
+planner/static
+venv
+test*
+celerybeat-schedule

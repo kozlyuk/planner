@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+
+#########
+# REDIS #
+#########
+
+  # redis:
+  #   restart: always
+  #   image: "redis:4-alpine"
+  #   ports:
+  #     - "6379:6379"
+  #   network_mode: host
+
+###########
+# BACKEND #
+###########
+
+  planner_back:
+    restart: always
+    build: ../
+    # image: &img kozlyuk/acmon:acmon_back_latest
+    container_name: planner_back
+    ports:
+      - "8000:8000"
+    # command: ['gunicorn', '--bind', '0.0.0.0:8000', 'appart.wsgi:application',
+    #   '--worker-tmp-dir', '/dev/shm', '--workers', '2',
+    #   '--threads', '4', '--worker-class', 'gthread']
+    command: ['python', 'manage.py', 'runserver']
+    network_mode: host
+    env_file:
+      - ./.env
+    volumes:
+      - ./media:/home/itel/media
+      - ./static:/home/itel/planner/static
+    entrypoint: ['/home/itel/entrypoint.sh']
+
+###############
+# CELERY BEAT #
+###############
+
+  # celery_beat:
+  #   restart: always
+  #   image: *img
+  #   container_name: acmon_celery_beat
+  #   command: celery -A acmon worker --beat -l info -S django
+  #   env_file:
+  #     - .env
+  #   network_mode: host
