@@ -29,5 +29,5 @@ django-cors-headers == 3.11.0
 gunicorn
 
 # Debuging tools
-django-silk         # https://github.com/jazzband/django-silk
-sentry-sdk          # https://docs.sentry.io/platforms/python/
+django-silk == 4.1.0        # https://github.com/jazzband/django-silk
+sentry-sdk                  # https://docs.sentry.io/platforms/python/

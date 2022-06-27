@@ -23,7 +23,7 @@ services:
     container_name: planner_back
     ports:
       - "8000:8000"
-    command: ['gunicorn', '--bind', '0.0.0.0:8000', 'appart.wsgi:application',
+    command: ['gunicorn', '--bind', '0.0.0.0:8000', 'planner.wsgi:application',
       '--worker-tmp-dir', '/dev/shm', '--workers', '2',
       '--threads', '4', '--worker-class', 'gthread']
     # command: ['python', 'manage.py', 'runserver']
