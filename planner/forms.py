@@ -358,7 +358,7 @@ class TaskForm(forms.ModelForm):
                   'project_code', 'manual_warning',
                   'difficulty_owner', 'difficulty_executor',
                   'tc_received', 'actual_finish',
-                  'period',
+                  'period', 'planned_start',
                   'tc_upload', 'pdf_copy',
                   ]
         widgets = {
@@ -367,6 +367,7 @@ class TaskForm(forms.ModelForm):
             'planned_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'planned_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'actual_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'planned_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'tc_received': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'period': MonthYearWidget(attrs={"style": 'height: 27px'}),
             'tc_upload': NotClearableFileInput,
