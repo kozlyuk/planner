@@ -1,0 +1,23 @@
+{% load widget_tweaks %}
+
+<form method="post" action="">
+  {% csrf_token %}
+
+  <div class="modal-header">
+    <h3 class="modal-title">Видалити коментар</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p>Ви впевнені що хочете видалити коментар
+      <strong>{{ comment.text }}</strong>?</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Відмінити</button>
+    <button type="submit" class="btn btn-primary" name="comment_delete" value={{ comment.pk }}>Видалити</button>
+</div>
+
+</form>

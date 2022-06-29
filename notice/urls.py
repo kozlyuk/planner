@@ -16,5 +16,7 @@ urlpatterns = [
     path('event/add/', views.EventCreate.as_view(), name='event_add'),
     path('event/<int:pk>/delete/', views.EventDelete.as_view(), name='event_delete'),
 
-    path('comment/add/<int:task_pk>/', views.CommentCreateView.as_view(), name='comment_create'),
+    path('comment/add/<int:pk>/', views.CommentCreateView.as_view(), name='comment_create'),
+    path('comment/update/<int:pk>/', views.CommentUpdateView.as_view(), name='comment_update'),
+    path('comment/delete/<int:pk>/', views.CommentDeleteView.as_view(), name='comment_delete'),
 ]

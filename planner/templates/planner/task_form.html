@@ -348,7 +348,23 @@
                                                     <div class="widget-media-body-title">
                                                         {{ comment.user.employee.name }} - {{ comment.timestamp }}
                                                     </div>
-                                                    <p>{{ comment.text }}</p>
+                                                    <div class="pull-left">{{ comment.text }}</div>
+                                                    {% if request.user.is_superuser or request.user == comment.user %}
+                                                        <div class="pull-right">
+                                                            <!-- Update book buttons -->
+                                                            <button type="button"
+                                                                class="update-comment bs-modal btn btn-link"
+                                                                data-form-url="{% url 'comment_update' comment.pk %}">
+                                                                <i class="fa fa-pen"></i>
+                                                            </button>
+                                                            <!-- Delete book buttons -->
+                                                            <button type="button"
+                                                                class="delete-comment bs-modal btn btn-link"
+                                                                data-form-url="{% url 'comment_delete' comment.pk %}">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -1093,14 +1109,27 @@
     </script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
 
-            $("#add-comment").modalForm({
-                formURL: "{% url 'comment_create' task.pk %}"
-            });
+        $(function () {
 
+        // Add comment buttons
+        $("#add-comment").modalForm({
+            formURL: "{% url 'comment_create' task.pk %}"
         });
+
+        // Update comment buttons
+        $(".update-comment").each(function () {
+            $(this).modalForm({formURL: $(this).data("form-url")});
+        });
+
+        // Delete comment buttons - formURL is retrieved from the data of the element
+        $(".delete-comment").each(function () {
+            $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+        });
+        });
+
     </script>
+
 {% endif %}
 
 {% endblock %}

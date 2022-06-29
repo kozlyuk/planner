@@ -350,9 +350,24 @@ class TaskUpdate(UpdateView):
 
     def form_valid(self, form):
         # create comment if comment modal form was submitted
-        comment_text = form.data.get('text')
-        if comment_text:
+        if self.request.POST.get('comment_add'):
+            comment_text = form.data.get('text')
             create_comment(get_current_user(), self.object, comment_text)
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_update'):
+            comment_id = form.data.get('comment_update')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.text = form.data.get('text')
+            comment.save()
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_delete'):
+            comment_id = form.data.get('comment_delete')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.delete()
             return redirect(self.request.META['HTTP_REFERER'])
 
         context = self.get_context_data()
