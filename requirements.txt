@@ -7,7 +7,7 @@ django-jsonfield
 django-mptt
 django-mptt-admin
 django-select2
-django-stdimage
+django-stdimage == 5.3.0
 django-widget-tweaks
 django-dotenv
 mysqlclient
