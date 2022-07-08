@@ -1,8 +1,9 @@
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
 from django.conf import settings
+from django.db.models import Sum
 
-from planner.models import ActOfAcceptance, Deal, Payment
+from planner.models import ActOfAcceptance, Deal, Payment, Task
 
 def receivables_context(company, customer, from_date, to_date):
 
@@ -262,7 +263,7 @@ def context_report_render(report, customer, company=None, from_date=None, to_dat
 
 def act_list_context(company, customer, from_date, to_date):
 
-    # get deals
+    # get acts
     acts = ActOfAcceptance.objects.filter(deal__company=company,
                                           deal__customer=customer
                                           )
@@ -306,7 +307,7 @@ def act_list_context(company, customer, from_date, to_date):
 
 def payment_list_context(company, customer, from_date, to_date):
 
-    # get deals
+    # get payments
     payments = Payment.objects.filter(deal__company=company,
                                       deal__customer=customer
                                       )
@@ -344,5 +345,58 @@ def payment_list_context(company, customer, from_date, to_date):
         'labels': labels,
         'payment_list': payment_list,
         'svalue': svalue
+    }
+    return context
+
+
+def customer_report_context(company, customer, from_date, to_date):
+
+    # prepare context data
+    acts = ActOfAcceptance.objects.filter(deal__company=company,
+                                          deal__customer=customer
+                                          )
+    payments = Payment.objects.filter(deal__company=company,
+                                      deal__customer=customer
+                                      )
+    work_done = Task.objects.filter(deal__company=company,
+                                    deal__customer=customer
+                                    )
+
+    acts_sum = acts.aggregate(Sum('value'))['value__sum'] or 0
+    payments_sum = payments.aggregate(Sum('value'))['value__sum'] or 0
+    receivables = acts_sum - payments_sum
+
+    if from_date:
+        acts = acts.filter(date__gte=from_date)
+        payments = payments.filter(date__gte=from_date)
+        work_done = work_done.filter(actual_finish__gte=from_date)
+    if to_date:
+        acts = acts.filter(date__lte=to_date)
+        payments = payments.filter(date__lte=to_date)
+        work_done = work_done.filter(actual_finish__lte=to_date)
+
+    acts_for_period = acts.aggregate(Sum('value'))['value__sum'] or 0
+    payments_for_period = payments.aggregate(Sum('value'))['value__sum'] or 0
+    work_done_for_period = work_done.aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
+
+    # prepare table data
+    labels = ['Дебіторська заборгованість',
+              'Виписано актів',
+              'Оплачено',
+              'Виконано робіт',
+              ]
+
+    report_data = [receivables,
+                   acts_for_period,
+                   payments_for_period,
+                   work_done_for_period
+                   ]
+
+    # creating context
+    context = {
+        'company': company,
+        'customer': customer,
+        'labels': labels,
+        'report_data': report_data,
     }
     return context

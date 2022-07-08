@@ -44,6 +44,7 @@ class Report(models.Model):
         ('overdue_execution_context', 'Протеріноване виконання'),
         ('act_list_context', 'Акти виконаних робіт'),
         ('payment_list_context', 'Оплати'),
+        ('customer_report_context', 'Звіт по замовнику'),
     )
 
     name = models.CharField('Назва звіту', max_length=50, unique=True)
