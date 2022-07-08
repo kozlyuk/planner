@@ -42,6 +42,8 @@ class Report(models.Model):
         ('payment_queue_context', 'Черга оплат'),
         ('overdue_payment_context', 'Протермінована опата'),
         ('overdue_execution_context', 'Протеріноване виконання'),
+        ('act_list_context', 'Акти виконаних робіт'),
+        ('payment_list_context', 'Оплати'),
     )
 
     name = models.CharField('Назва звіту', max_length=50, unique=True)

@@ -186,14 +186,22 @@
                                 {% if executors|length > 0 %}
                                     {% for executor in executors %}
                                         <div class="widget-media">
+                                            {% if executor.executor %}
                                             <div class="widget-media-elements text-center">
                                                 <img class="widget-media-avatar circle margin-bottom-15"
                                                     src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
                                             </div>
+                                            {% endif %}
                                             <div class="widget-media-body">
-                                                <h4 class="widget-media-body-title">
-                                                    <a href="#">{{ executor.executor.name }}</a>
-                                                </h4>
+                                                {% if executor.executor %}
+                                                    <h4 class="widget-media-body-title">
+                                                        {{ executor.executor.name }}
+                                                    </h4>
+                                                {% else %}
+                                                    <h4 class="widget-media-body-title">
+                                                        Виконавець не призначений
+                                                    </h4>
+                                                {% endif %}
                                                 Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
                                                 Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
                                                 Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>

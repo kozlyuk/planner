@@ -2,9 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
 from django.conf import settings
 
-from planner.models import Deal
-
-from .models import Report
+from planner.models import ActOfAcceptance, Deal, Payment
 
 def receivables_context(company, customer, from_date, to_date):
 
@@ -255,7 +253,96 @@ def overdue_execution_context(company, customer, from_date, to_date):
     }
     return context
 
+
 def context_report_render(report, customer, company=None, from_date=None, to_date=None):
     """ return context defined in report.context """
 
     return globals()[report.context](company, customer, from_date, to_date)
+
+
+def act_list_context(company, customer, from_date, to_date):
+
+    # get deals
+    acts = ActOfAcceptance.objects.filter(deal__company=company,
+                                          deal__customer=customer
+                                          )
+    if from_date:
+        acts = acts.filter(date__gte=from_date)
+    if to_date:
+        acts = acts.filter(date__lte=to_date)
+
+    # prepare table data
+    labels = ["№",
+              ActOfAcceptance._meta.get_field('deal').verbose_name,
+              ActOfAcceptance._meta.get_field('number').verbose_name,
+              ActOfAcceptance._meta.get_field('value').verbose_name,
+              ActOfAcceptance._meta.get_field('date').verbose_name,
+              ]
+    index = 0
+    svalue = Decimal(0)
+    act_list = []
+    for act in acts:
+        index += 1
+        svalue += act.value
+        act_list.append([index,
+                         format_html('<a href="%s%s">%s</a>'
+                                     % (settings.SITE_URL,
+                                        act.deal.get_absolute_url(),
+                                        act.deal.number)),
+                         act.number,
+                         act.value,
+                         act.date
+                         ])
+    # creating context
+    context = {
+        'company': company,
+        'customer': customer,
+        'labels': labels,
+        'act_list': act_list,
+        'svalue': svalue
+    }
+    return context
+
+
+def payment_list_context(company, customer, from_date, to_date):
+
+    # get deals
+    payments = Payment.objects.filter(deal__company=company,
+                                      deal__customer=customer
+                                      )
+    if from_date:
+        payments = payments.filter(date__gte=from_date)
+    if to_date:
+        payments = payments.filter(date__lte=to_date)
+
+    # prepare table data
+    labels = ["№",
+              Payment._meta.get_field('deal').verbose_name,
+              Payment._meta.get_field('act_of_acceptance').verbose_name,
+              Payment._meta.get_field('value').verbose_name,
+              Payment._meta.get_field('date').verbose_name,
+              ]
+    index = 0
+    svalue = Decimal(0)
+    payment_list = []
+    for payment in payments:
+        index += 1
+        svalue += payment.value
+        payment_list.append([index,
+                         format_html('<a href="%s%s">%s</a>'
+                                     % (settings.SITE_URL,
+                                        payment.deal.get_absolute_url(),
+                                        payment.deal.number)),
+                         payment.act_of_acceptance,
+                         payment.value,
+                         payment.date
+                         ])
+    # creating context
+    context = {
+        'company': company,
+        'customer': customer,
+        'labels': labels,
+        'payment_list': payment_list,
+        'svalue': svalue
+    }
+    return context
