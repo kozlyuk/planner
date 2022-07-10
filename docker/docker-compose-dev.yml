@@ -30,8 +30,9 @@ services:
     network_mode: host
     env_file:
       - ./.env
-    # volumes:
-    #   - ./media:/home/acmon/media
+    volumes:
+      - ./media:/home/itel/media
+      # - ./static:/home/itel/planner/static
     # entrypoint: ['./entrypoint.sh']
 
 ###############

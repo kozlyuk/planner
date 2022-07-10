@@ -41,7 +41,10 @@ RUN mkdir $APP_HOME/media
 WORKDIR $APP_HOME
 
 # install dependencies
-RUN apk update && apk add gcc musl-dev mariadb-connector-c-dev libffi-dev cairo-dev pango-dev
+RUN apk --update --upgrade --no-cache add gcc musl-dev mariadb-connector-c-dev libffi-dev cairo-dev pango-dev \
+    fontconfig ttf-freefont font-noto terminus-font \
+    && fc-cache -f \
+    && fc-list | sort
 
 # libpq tzdata
 # jpeg-dev zlib-dev libjpeg
