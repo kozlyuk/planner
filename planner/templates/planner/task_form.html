@@ -41,23 +41,23 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <!-- object_code -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.object_code.name }}">{{ form.object_code.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.object_code|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.object_code.errors}}
                                                         </div>
                                                     </div>
                                                     <!-- object_address -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.object_address.name }}">{{ form.object_address.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.object_address|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.object_address.errors}}
@@ -69,22 +69,22 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <!-- work_type -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.work_type.name }}">{{ form.work_type.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.work_type|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.work_type.errors}}
                                                         </div>
                                                     </div>
                                                     <!-- construction -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.construction.name }}">{{ form.construction.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.construction|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.construction.errors}}
@@ -96,23 +96,23 @@
                                             <div class="form-group">
                                                 <div class="row">
                                                     <!-- project_type -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.project_type.name }}">
                                                             {{ form.project_type.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.project_type|attr:"style: width: 100%; padding-left: 0px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.project_type.errors}}
                                                         </div>
                                                     </div>
                                                     <!--deal-->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.deal|attr:"style: width: 100%; padding-left: 0px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.deal.errors}}
@@ -123,13 +123,13 @@
 
                                             <div class="form-group">
                                                 <div class="row">
-                                                    <!--alert: owner-->
-                                                    <div class="col-1">
+                                                    <!-- owner -->
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.owner.name }}">
                                                             {{ form.owner.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {{ form.owner|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -138,11 +138,11 @@
                                                         </div>
                                                     </div>
                                                     <!-- exec_status -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.exec_status.name }}">{{ form.exec_status.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {{ form.exec_status|attr:"style: width:100%; padding-left: 3px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -154,11 +154,11 @@
 
                                                 <div class="row">
                                                     <!-- project_code -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.project_code.name }}">{{ form.project_code.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {{ form.project_code|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -167,12 +167,12 @@
                                                         </div>
                                                     </div>
                                                     <!-- manual_warning -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.manual_warning.name }}">
                                                             {{ form.manual_warning.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {{ form.manual_warning|attr:"style: width:100%; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
@@ -184,11 +184,11 @@
 
                                                 <div class="row">
                                                     <!-- difficulty_owner -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.difficulty_owner.name }}">{{ form.difficulty_owner.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {% if request.user.is_superuser %}
                                                                 {{ form.difficulty_owner|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
@@ -201,11 +201,11 @@
                                                         </div>
                                                     </div>
                                                     <!-- difficulty_executor -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.difficulty_executor.name }}">{{ form.difficulty_executor.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {% if request.user.is_superuser %}
                                                                 {{ form.difficulty_executor|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
@@ -220,23 +220,23 @@
                                                 </div>
 
                                                 <div class="row">
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label
                                                             for="id_{{ form.tc_received.name }}">{{ form.tc_received.label }}:</label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         {{ form.tc_received|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.tc_received.errors}}
                                                         </div>
                                                     </div>
                                                     <!-- actual_finish -->
-                                                    <div class="col-1">
+                                                    <div class="col-2">
                                                         <label for="id_actual_finish">
                                                             {{ form.actual_finish.label }}:
                                                         </label>
                                                     </div>
-                                                    <div class="col-5">
+                                                    <div class="col-4">
                                                         <div class="form-group">
                                                             {% if request.user.is_superuser %}
                                                                 {{ form.actual_finish|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
@@ -251,33 +251,19 @@
                                                 </div>
 
                                                 <div class="row">
-                                                    <!-- planned_start -->
-                                                    <div class="col-1">
-                                                        <label for="id_planned_start">
-                                                            {{ form.planned_start.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <div class="form-group">
-                                                            {% if request.user.is_superuser %}
-                                                                {{ form.planned_start|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% else %}
-                                                                {{ form.planned_start|attr:"readonly style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% endif %}
-                                                            <div class="invalid-feedback">
-                                                                {{form.planned_start.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <!-- period -->
                                                     <div class="col-2">
-                                                        <label for="id_actual_finish">
+                                                        <label for="id_period">
                                                             {{ form.period.label }}:
                                                         </label>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            {{ form.period }}
+                                                            {% if request.user.is_superuser %}
+                                                                {{ form.period|attr:"style: width:100%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {% else %}
+                                                                {{ form.period|attr:"readonly style: width:50%; display: inline-block; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {% endif %}
                                                             <div class="invalid-feedback">
                                                                 {{form.period.errors}}
                                                             </div>

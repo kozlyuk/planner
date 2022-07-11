@@ -30,7 +30,7 @@
                                 <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ
                                     </a></th>
                                 <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
-                                <th><a href="?{% url_replace request 'o' 'planned_start' %}"> ПЛАНОВИЙ ПОЧАТОК </a></th>
+                                <th><a href="?{% url_replace request 'o' 'period' %}"> ПЕРІОД ПРОЕКТУВАННЯ </a></th>
                                 <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
                                 <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
                                 <th> ПОПЕРЕДЖЕННЯ </th>
@@ -62,7 +62,7 @@
                                     {{ task.deal }}
                                     {% endif %}
                                 </td>
-                                <td>{% none_date_check task.planned_start %}</td>
+                                <td>{% none_date_check task.period %}</td>
                                 <td> {{ task.get_exec_status_display }} </td>
                                 <td> {{ task.owner.name }} </td>
                                 <td><span
