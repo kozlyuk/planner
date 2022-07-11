@@ -1,0 +1,51 @@
+{% load ita_template_tags %}
+
+<table class="table table-striped table-advance table-hover">
+    <thead>
+        <tr>
+            <th class="print-ignore"></th>
+            <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
+            <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ
+                </a></th>
+            <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
+            <th><a href="?{% url_replace request 'o' 'period' %}"> ПОСЛІДОВНІСТЬ </a></th>
+            <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
+            <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
+            <th> ПОПЕРЕДЖЕННЯ </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td class="print-ignore"><input type="checkbox" name="ids" value="{{ task.id }}" /></td>
+            {% if task.is_editable %}
+                <td><a data-toggle="tooltip" data-placement="right" title="{{ task.object_address }}"
+                    href="{% url 'task_update' task.id %}">{{ task.object_code }}</a>
+                </td>
+            {% elif task.is_viewable %}
+                <td><a data-toggle="tooltip" data-placement="right" title="{{ task.object_address }}"
+                    href="{% url 'task_detail' task.id %}">{{ task.object_code }}</a>
+                </td>
+            {% else %}
+                <td data-toggle="tooltip" data-placement="right" title="{{ task.object_address }}">{{ task.object_code }}</td>
+            {% endif %}
+            <td> {{ task.project_type }}</td>
+            <td class="hidden-xs">
+                {% if perms.planner.change_deal %}
+                <a href="{% url 'deal_update' task.deal.id %}"> {{ task.deal }} </a>
+                {% else %}
+                {{ task.deal }}
+                {% endif %}
+            </td>
+            <td>{% none_date_check task.period %}</td>
+            <td> {{ task.get_exec_status_display }} </td>
+            <td> {{ task.owner.name }} </td>
+            <td data-toggle="tooltip" title="{% last_comment task %}">
+                <span class="badge badge-pill badge-{% task_overdue_color task.warning %} label-mini">
+                    {{ task.warning }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

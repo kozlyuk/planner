@@ -228,3 +228,7 @@ def status_change(user, pk, status):
             return 'Виконано'
 
     return ""
+
+@register.simple_tag
+def last_comment(obj):
+    return obj.get_last_comment()

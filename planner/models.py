@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.core.validators import MaxValueValidator
 from django.conf.locale.uk import formats as uk_formats
 from django.dispatch import receiver
+from django.apps import apps
 from crum import get_current_user
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -776,6 +777,12 @@ class Task(models.Model):
 
     def get_absolute_url(self):
         return reverse('task_detail', args=[self.pk])
+
+    def get_last_comment(self):
+        Comment =apps.get_model('notice.Comment')
+        last_comment = Comment.objects.filter(content_type__model='Task',
+                                      object_id=self.pk)
+        return last_comment.latest('timestamp').text[:50] if last_comment else ''
 
     def save(self, *args, logging=True, **kwargs):
 
