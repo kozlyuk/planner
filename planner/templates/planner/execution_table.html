@@ -45,10 +45,20 @@
             {% if request.user.is_staff %}
                 <td>{{ task.executor }}</td>
             {% endif %}
-            <td>{% none_datetime_check task.planned_start %}</td>
-            <td data-toggle="tooltip" title="Тривалість виконання: {{ task.actual_duration }}">
-                {% none_datetime_check task.planned_finish_with_interruption %}
-            </td>
+            {% if task.work_started %}
+                <td data-toggle="tooltip" title="Початок виконання: {{ task.work_started }}">
+                    {% none_datetime_check task.planned_start %}
+                </td>
+            {% else %}
+                <td>{% none_datetime_check task.planned_start %}</td>
+            {% endif %}
+            {% if not task.work_started and not task.exec_status == 'IW' %}
+                <td data-toggle="tooltip" title="Тривалість виконання: {{ task.actual_duration }}">
+                    {% none_datetime_check task.planned_finish_with_interruption %}
+                </td>
+            {% else %}
+                <td>{% none_datetime_check task.planned_finish_with_interruption %}</td>
+            {% endif %}
             <td>{% if task.fixed_date %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}</td>
             {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
                 <td>
