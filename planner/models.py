@@ -758,13 +758,13 @@ class Task(models.Model):
         content_types=['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                        max_upload_size=26214400, blank=True, null=True)
-    # Creating information
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
-    creation_date = models.DateField(auto_now_add=True)
     difficulty_owner = models.DecimalField('Коефіцієнт ведення', max_digits=3, decimal_places=2, default=1)
     difficulty_executor = models.DecimalField('Коефіцієнт виконання', max_digits=3, decimal_places=2, default=1)
     act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
                                           blank=True, null=True, on_delete=models.SET_NULL)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')
@@ -1182,7 +1182,7 @@ class Execution(models.Model):
             self.work_started = datetime.now()
 
         # Automatic set actual_duration when exec_status has changed
-        if self.exec_status == [self.OnHold, self.OnChecking, self.Done] and self.work_started:
+        if self.exec_status in [self.OnHold, self.OnChecking, self.Done] and self.work_started:
             self.actual_duration += calc_businesshrsdiff(self.work_started, datetime.now())
             self.work_started = None
 
