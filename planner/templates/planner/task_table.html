@@ -54,11 +54,12 @@
                     <a href="{% media_url task.pdf_copy %}"> <i class="fas fa-file-pdf"></i> </a>
                 {% endif %}
             </td>
-            {% if task.get_last_comment %}
-                <td data-toggle="tooltip" title="{{ task.get_last_comment }}">
-                        <i class="fa fa-comment"></i>
-                </td>
-            {% endif %}
+            <td>
+                {% if task.get_last_comment %}
+                <div data-toggle="tooltip" title="{{ task.get_last_comment }}">
+                    <i class="fa fa-comment"></i>
+                </div>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
