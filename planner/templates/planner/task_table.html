@@ -5,6 +5,7 @@
         <tr>
             <th class="print-ignore"></th>
             <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
+            <th><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА </a></th>
             <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ
                 </a></th>
             <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
@@ -12,6 +13,8 @@
             <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
             <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
             <th> ПОПЕРЕДЖЕННЯ </th>
+            <th> <i class="fas fa-file-pdf"></i> </th>
+            <th> <i class="fa fa-comment"></i> </th>
         </tr>
     </thead>
     <tbody>
@@ -29,6 +32,7 @@
             {% else %}
                 <td data-toggle="tooltip" data-placement="right" title="{{ task.object_address }}">{{ task.object_code }}</td>
             {% endif %}
+            <td> {{ task.object_address }}</td>
             <td> {{ task.project_type }}</td>
             <td class="hidden-xs">
                 {% if perms.planner.change_deal %}
@@ -40,10 +44,21 @@
             <td>{% none_date_check task.period %}</td>
             <td> {{ task.get_exec_status_display }} </td>
             <td> {{ task.owner.name }} </td>
-            <td data-toggle="tooltip" title="{% last_comment task %}">
+            <td>
                 <span class="badge badge-pill badge-{% task_overdue_color task.warning %} label-mini">
                     {{ task.warning }}
                 </span>
+            </td>
+            <td>
+                {% if task.pdf_copy %}
+                    <a href="{% media_url task.pdf_copy %}"> <i class="fas fa-file-pdf"></i> </a>
+                {% endif %}
+            </td>
+            {% if task.get_last_comment %}
+                <td data-toggle="tooltip" title="{{ task.get_last_comment }}">
+                        <i class="fa fa-comment"></i>
+                </td>
+            {% endif %}
             </td>
         </tr>
         {% endfor %}

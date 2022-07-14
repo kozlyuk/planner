@@ -782,7 +782,7 @@ class Task(models.Model):
         Comment =apps.get_model('notice.Comment')
         last_comment = Comment.objects.filter(content_type__model='Task',
                                       object_id=self.pk)
-        return last_comment.latest('timestamp').text[:50] if last_comment else ''
+        return last_comment.latest('timestamp').text[:50] if last_comment else None
 
     def save(self, *args, logging=True, **kwargs):
 
