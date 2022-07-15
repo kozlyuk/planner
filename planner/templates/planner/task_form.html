@@ -1109,27 +1109,22 @@
                     $(row).find('.django-select2').djangoSelect2();
                 }
             });
-        })
-    </script>
 
-    <script type="text/javascript">
+            // Add comment buttons
+            $("#add-comment").modalForm({
+                formURL: "{% url 'comment_create' task.pk %}"
+            });
 
-        $(function () {
+            // Update comment buttons
+            $(".update-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url")});
+            });
 
-        // Add comment buttons
-        $("#add-comment").modalForm({
-            formURL: "{% url 'comment_create' task.pk %}"
-        });
+            // Delete comment buttons - formURL is retrieved from the data of the element
+            $(".delete-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+            });
 
-        // Update comment buttons
-        $(".update-comment").each(function () {
-            $(this).modalForm({formURL: $(this).data("form-url")});
-        });
-
-        // Delete comment buttons - formURL is retrieved from the data of the element
-        $(".delete-comment").each(function () {
-            $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
-        });
         });
 
     </script>
