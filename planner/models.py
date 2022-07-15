@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from ast import Mod
+import json
 from datetime import date, datetime, timedelta
 from django.db import models
 from django.db.models import Sum, Max
@@ -17,6 +19,7 @@ from stdimage.models import StdImageField
 from eventlog.models import log
 from html_templates.models import HTMLTemplate
 
+from .mixins import ModelDiffMixin
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
 from .timeplanning import recalc_queue, calc_businesshrsdiff, calc_businesstimedelta
@@ -377,7 +380,7 @@ class Contractor(models.Model):
     completed_calc.short_description = 'Виконано та оплачено'
 
 
-class Deal(models.Model):
+class Deal(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
     AdvancePaid = 'AP'
     PaidUp = 'PU'
@@ -475,13 +478,13 @@ class Deal(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий договір',
-                    extra={"title": self.number},
+                    extra={'title': self.number},
                     obj=self,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлений договір',
-                    extra={"title": self.number},
+                    extra={'title': self.number, 'diff': json.dumps(self.diff, default=str)},
                     obj=self,
                     )
         super().save(*args, **kwargs)
@@ -489,7 +492,7 @@ class Deal(models.Model):
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),
             action='Видалений договір',
-            extra={"title": self.number},
+            extra={'title': self.number},
             obj=self,
             )
         super().delete(*args, **kwargs)
@@ -569,7 +572,7 @@ def update_deal(sender, instance, **kwargs):
     update_deal_statuses(instance.pk)
 
 
-class ActOfAcceptance(models.Model):
+class ActOfAcceptance(ModelDiffMixin, models.Model):
 
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     number = models.CharField('Номер акту виконаних робіт', max_length=30)
@@ -610,13 +613,13 @@ class ActOfAcceptance(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий акт',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self.deal,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлений акт',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self.deal,
                     )
 
@@ -629,13 +632,13 @@ class ActOfAcceptance(models.Model):
         title = f'{self.number} - {self.date}'
         log(user=get_current_user(),
             action='Видалений акт',
-            extra={"title": title},
+            extra={'title': title},
             obj=self.deal,
             )
         super().delete(*args, **kwargs)
 
 
-class Payment(models.Model):
+class Payment(ModelDiffMixin, models.Model):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
@@ -662,13 +665,13 @@ class Payment(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана оплата',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self.deal,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлена оплата',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self.deal,
                     )
 
@@ -690,7 +693,7 @@ class Payment(models.Model):
         title = f'{self.date} - {self.value}'
         log(user=get_current_user(),
             action='Видалена оплата',
-            extra={"title": title},
+            extra={'title': title},
             obj=self.deal,
             )
         super().delete(*args, **kwargs)
@@ -712,7 +715,7 @@ class Receiver(models.Model):
         return self.name
 
 
-class Task(models.Model):
+class Task(ModelDiffMixin, models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
     Done = 'HD'
@@ -792,13 +795,13 @@ class Task(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий проект',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлений проект',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self,
                     )
 
@@ -854,7 +857,7 @@ class Task(models.Model):
         title = f'{self.object_code} {self.project_type.price_code}'
         log(user=get_current_user(),
             action='Видалений проект',
-            extra={"title": title},
+            extra={'title': title},
             obj=self,
             )
         super(Task, self).delete(*args, **kwargs)
@@ -999,7 +1002,7 @@ class SubTask(models.Model):
         return self.name
 
 
-class Order(models.Model):
+class Order(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
     AdvancePaid = 'AP'
     PaidUp = 'PU'
@@ -1030,13 +1033,13 @@ class Order(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий підрядник по проекту',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self.task,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлений підрядник по проекту',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1045,7 +1048,7 @@ class Order(models.Model):
         title = f'{self.task.object_code} {self.task.project_type.price_code}'
         log(user=get_current_user(),
             action='Видалений підрядник по проекту',
-            extra={"title": title},
+            extra={'title': title},
             obj=self.task,
             )
         super().delete(*args, **kwargs)
@@ -1055,7 +1058,7 @@ class Order(models.Model):
     get_exec_status.short_description = 'Статус виконання'
 
 
-class Sending(models.Model):
+class Sending(ModelDiffMixin, models.Model):
     receiver = models.ForeignKey(Receiver, verbose_name='Отримувач проекту', on_delete=models.CASCADE)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
     receipt_date = models.DateField('Дата відправки')
@@ -1079,13 +1082,13 @@ class Sending(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана відправка проекту',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self.task,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлена відправка проекту',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1104,13 +1107,13 @@ class Sending(models.Model):
         title = f'{self.task.object_code} {self.task.project_type.price_code}'
         log(user=get_current_user(),
             action='Видалена відправка проекту',
-            extra={"title": title},
+            extra={'title': title},
             obj=self.task,
             )
         super().delete(*args, **kwargs)
 
 
-class Execution(models.Model):
+class Execution(ModelDiffMixin, models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
     OnHold = 'OH'
@@ -1202,13 +1205,13 @@ class Execution(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додана задача',
-                    extra={"title": title},
+                    extra={'title': title},
                     obj=self.task,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлена задача',
-                    extra={"title": title},
+                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1221,7 +1224,7 @@ class Execution(models.Model):
         title = f'{self.task.object_code} {self.task.project_type.price_code} {self.subtask.name}'
         log(user=get_current_user(),
             action='Видалена задача',
-            extra={"title": title},
+            extra={'title': title},
             obj=self.task,
             )
         super().delete(*args, **kwargs)
@@ -1257,7 +1260,7 @@ class Execution(models.Model):
         return False
 
 
-class IntTask(models.Model):
+class IntTask(ModelDiffMixin, models.Model):
     ToDo = 'IW'
     InProgress = 'IP'
     Done = 'HD'
@@ -1300,13 +1303,13 @@ class IntTask(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Додане завдання',
-                    extra={"title": self.task_name},
+                    extra={'title': self.task_name},
                     obj=self,
                     )
             else:
                 log(user=get_current_user(),
                     action='Оновлене завдання',
-                    extra={"title": self.task_name},
+                    extra={'title': self.task_name, 'diff': json.dumps(self.diff, default=str)},
                     obj=self,
                     )
         super().save(*args, **kwargs)
@@ -1314,7 +1317,7 @@ class IntTask(models.Model):
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),
             action='Видалене завдання',
-            extra={"title": self.task_name},
+            extra={'title': self.task_name},
             obj=self,
             )
         super().delete(*args, **kwargs)
