@@ -370,7 +370,7 @@ class DealAdmin(admin.ModelAdmin):
                                                ('act_status', 'pay_status'),
                                                ('pdf_copy')]}),
         ('Додаткова інформація', {'fields': ['value_correction', 'value_calc', 'bonuses_calc',
-                                             'costs_calc', 'pay_date_calc', 'manual_warning', 'comment',
+                                             'costs_calc', 'pay_date_calc', 'manual_warning',
                                              'parent_deal_number', 'parent_deal_date'],
                                   'classes': ['collapse']})
     ]

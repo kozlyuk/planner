@@ -139,7 +139,7 @@ class DealForm(forms.ModelForm):
     class Meta:
         model = Deal
         fields = ['number', 'date', 'customer', 'company', 'value', 'expire_date',
-                  'pdf_copy', 'value_correction', 'comment', 'manual_warning',
+                  'pdf_copy', 'value_correction', 'manual_warning',
                   'parent_deal_number', 'parent_deal_date']
         widgets = {
             'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
@@ -153,7 +153,6 @@ class DealForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DealForm, self).__init__(*args, **kwargs)
         self.fields['number'].widget.attrs.update({'style': 'width:100%'})
-        self.fields['comment'].widget.attrs.update({'style': 'width:100%; height:44px;'})
 
     def clean(self):
         cleaned_data = super(DealForm, self).clean()

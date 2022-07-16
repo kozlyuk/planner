@@ -439,7 +439,6 @@ class Deal(ModelDiffMixin, models.Model):
                                                              'wordprocessingml.document'],
                                               max_upload_size=26214400,
                                               blank=True, null=True)
-    comment = models.TextField('Коментар', blank=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
