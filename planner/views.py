@@ -190,6 +190,9 @@ class DealUpdate(UpdateView):
             owners = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
             project_types = Project.objects.filter(customer=self.object.customer, active=True)
             acts = ActOfAcceptance.objects.filter(deal=self.object)
+            context['activities'] = Log.objects.filter(content_type__model='Deal',
+                                                       object_id=self.object.pk
+                                                       )
             context['tasks_formset'] = forms.TasksFormSet(
                 instance=self.object, form_kwargs={'method': self.request.method,
                                                    'owners': owners,

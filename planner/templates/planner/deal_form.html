@@ -21,14 +21,14 @@
                 {% csrf_token %}
                 <!--alert: inline layout-->
                 <div class="row">
-                    <div {% if deal.pk %} class="col-md-9" {% else %} class="col-md-12" {% endif %}>
+                    <div class="col-md-8">
                         <!-- BEGIN WIDGET TAB -->
                         <div class="card main-widget-tab">
-                            {% if deal.pk %}
-                            <h6 class="task-header center-block text-center">Редагувати договір</h6>
-                            {% else %}
-                            <h6 class="task-header center-block text-center">Додати договір</h6>
-                            {% endif %}
+                            <h6 class="task-header center-block text-center">
+                                {% if deal.pk %}Редагувати договір
+                                {% else %}Додати договір
+                                {% endif %}
+                            </h6>
                             <div class="card-body">
                                 <div class="tab-content" data-handle-color="#D7DCE2" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
@@ -232,31 +232,72 @@
                         </div>
                         <!-- END WIDGET -->
                     </div>
+
                     {% if deal.pk %}
-                    <div class="col-md-3 col-sm-12 col-xs-12  margin-top-sm-20">
-                        <!--alert: deal info-->
-                        <div class="card main-widget-tab">
-                            <h6 class="task-header center-block text-center">Інформація по договору</h6>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Акт виконаних робіт: <b>{{ deal.get_act_status_display}}</b></li>
-                                    <li class="list-group-item">Статус оплати: <b>{{ deal.get_pay_status_display}}</b></li>
-                                    <li class="list-group-item">Вартість договору по роботам:
-                                        <b>{{ deal.value_calc }} грн.</b></li>
-                                    <li class="list-group-item">Бонуси по договору: <b>{{ deal.bonuses_calc }}
-                                            грн.</b></li>
-                                    <li class="list-group-item">Витрати по договору: <b>{{ deal.costs_calc }}
-                                            грн.</b></li>
-                                    {% if deal.pay_date_calc %}
-                                        <li class="list-group-item">Планова дата оплати: <b> {{ deal.pay_date_calc|date:"d E Y" }} р.</b></li>
-                                    {% endif %}
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <!-- BEGIN WIDGET TAB -->
+                            <div class="widget-bg-color-white main-widget-tab widget-tab">
+                                <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
+                                    <!-- <li class="nav-item">
+                                        <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                            role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Коментарі </a>
+                                    </li> -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                        role="tab" aria-controls="pills-tab_2_2" aria-selected="true"> Інформація </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
+                                        role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Історія </a>
+                                    </li>
                                 </ul>
+                                <div style="height: 380px" class="tab-content scroller pt-1" id="pills-tabContent">
+
+
+                                    <div class="tab-pane fade show active" id="tab_2_2" role="tabpane2"
+                                        aria-labelledby="pills-tab_2_2">
+                                        <div class="widget-news margin-bottom-20">
+                                            <div class="widget-news-right-body">
+                                                <br>
+                                                <p>Акт виконаних робіт: <strong>{{ deal.get_act_status_display}}</strong></p>
+                                                <p>Статус оплати: <strong>{{ deal.get_pay_status_display}}</strong></p>
+                                                <p>Вартість договору по роботам:<strong>{{ deal.value_calc }} грн.</strong></p>
+                                                <p>Бонуси по договору: <strong>{{ deal.bonuses_calc }} грн.</strong></p>
+                                                <p>Витрати по договору: <strong>{{ deal.costs_calc }} грн.</strong></p>
+                                                {% if deal.pay_date_calc %}
+                                                    <p>Планова дата оплати: <strong>{{ deal.pay_date_calc|date:"d E Y" }} р.</strong></p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="tab_2_3" role="tabpane2" aria-labelledby="pills-tab_2_3">
+                                        <br>
+                                        {% if activities|length > 0 %}
+                                            {% for activity in activities %}
+                                                <div class="widget-media">
+                                                    <div class="widget-media-body">
+                                                        <div class="widget-media-body-title">
+                                                            {{ activity.timestamp }} - {{ activity.user.employee }}
+                                                        </div>
+                                                        <div>{{ activity.action }} - {{ activity.extra.title }}</div>
+                                                        <div>{{ activity.extra.diff }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-body">
+                                                    <p class="widget-media-body-subtitle">Зміни відсутні</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
+                            <!-- END PORTLET-->
                         </div>
                     </div>
-                    {% endif %}
-                </div>
-                {% if deal.pk %}
+
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card main-widget-tab">
