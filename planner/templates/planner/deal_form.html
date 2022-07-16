@@ -175,19 +175,6 @@
 
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <label for="id_{{ form.comment.name }}">
-                                                            {{ form.comment.label }}:
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <div class="form-group">
-                                                        {{ form.comment|attr:"style: width:100%; height:56px; padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
-                                                            <div class="invalid-feedback">
-                                                                {{form.comment.errors}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-2">
                                                         <label for="id_{{ form.pdf_copy.name }}">
                                                             {{ form.pdf_copy.label }}:
                                                         </label>
@@ -236,12 +223,12 @@
                     {% if deal.pk %}
                         <div class="col-md-4 col-sm-6 col-xs-12">
                             <!-- BEGIN WIDGET TAB -->
-                            <div class="widget-bg-color-white main-widget-tab widget-tab">
+                            <div class="card widget-bg-color-white main-widget-tab widget-tab">
                                 <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
-                                    <!-- <li class="nav-item">
+                                    <li class="nav-item">
                                         <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
                                             role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Коментарі </a>
-                                    </li> -->
+                                    </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
                                         role="tab" aria-controls="pills-tab_2_2" aria-selected="true"> Інформація </a>
@@ -252,9 +239,65 @@
                                     </li>
                                 </ul>
                                 <div style="height: 380px" class="tab-content scroller pt-1" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2" aria-labelledby="pills-tab_2_1">
+                                        <br>
+                                        {% if comments|length > 0 %}
+                                            {% for comment in comments %}
+                                                <div class="widget-media">
+                                                    <div class="widget-media-elements text-center">
+                                                        <img class="widget-media-avatar circle margin-bottom-15"
+                                                            src="{{ comment.user.employee.avatar.thumbnail.url }}" alt="">
+                                                    </div>
+                                                    <div class="widget-media-body">
+                                                        <div class="widget-media-body-title">
+                                                            {{ comment.user.employee.name }} - {{ comment.timestamp }}
+                                                        </div>
+                                                        <div class="pull-left">{{ comment.text }}</div>
+                                                        {% if request.user.is_superuser or request.user == comment.user %}
+                                                            <div class="pull-right">
+                                                                <!-- Update book buttons -->
+                                                                <button type="button"
+                                                                    class="update-comment bs-modal btn btn-link"
+                                                                    data-form-url="{% url 'comment_update' comment.pk %}">
+                                                                    <i class="fa fa-pen"></i>
+                                                                </button>
+                                                                <!-- Delete book buttons -->
+                                                                <button type="button"
+                                                                    class="delete-comment bs-modal btn btn-link"
+                                                                    data-form-url="{% url 'comment_delete' comment.pk %}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-body">
+                                                    <p class="widget-media-body-subtitle">Коментарі відсутні</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
 
+                                        <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content"></div>
+                                            </div>
+                                        </div>
 
-                                    <div class="tab-pane fade show active" id="tab_2_2" role="tabpane2"
+                                        <!-- Create comment button -->
+                                        <div class="form-actions">
+                                            <button id="add-comment"
+                                                type="button"
+                                                class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Додати коментар
+                                            </button>
+                                            <br>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
                                         aria-labelledby="pills-tab_2_2">
                                         <div class="widget-news margin-bottom-20">
                                             <div class="widget-news-right-body">
@@ -706,133 +749,152 @@
 {% endblock %}
 
 {% block extrahead %}
-<script type="text/javascript">
-    window.onerror = function (msg) {
-        $("body").attr("JSError", msg);
-    }
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
-<script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
-<script type="text/javascript">
+{% if deal.pk %}
+    <script type="text/javascript">
+        window.onerror = function (msg) {
+            $("body").attr("JSError", msg);
+        }
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
 
-const addBtnExec = document.querySelector('.add-tasks-formset');
-const addBtnCost = document.querySelector('.add-act-formset');
-const addBtnSend = document.querySelector('.add-payment-formset');
-if (document.querySelector('#tasks_formset')) {
-    addBtnExec.addEventListener('click', () => {
-        addInitialFormset('tasks_formset', addBtnExec);
-        cliсk('tasks_formset', 'dynamic-formset1');
-    })
-};
+    <script type="text/javascript">
+        const addBtnExec = document.querySelector('.add-tasks-formset');
+        const addBtnCost = document.querySelector('.add-act-formset');
+        const addBtnSend = document.querySelector('.add-payment-formset');
+        if (document.querySelector('#tasks_formset')) {
+            addBtnExec.addEventListener('click', () => {
+                addInitialFormset('tasks_formset', addBtnExec);
+                cliсk('tasks_formset', 'dynamic-formset1');
+            })
+        };
 
-if (document.querySelector('#actofacceptance_formset')) {
-    addBtnCost.addEventListener('click', () => {
-        addInitialFormset('actofacceptance_formset', addBtnCost);
-        cliсk('actofacceptance_formset', 'dynamic-formset2');
-    })
-};
+        if (document.querySelector('#actofacceptance_formset')) {
+            addBtnCost.addEventListener('click', () => {
+                addInitialFormset('actofacceptance_formset', addBtnCost);
+                cliсk('actofacceptance_formset', 'dynamic-formset2');
+            })
+        };
 
-if (document.querySelector('#payment_formset')) {
-    addBtnSend.addEventListener('click', () => {
-        addInitialFormset('payment_formset', addBtnSend);
-        cliсk('payment_formset', 'dynamic-formset3');
-    })
-};
+        if (document.querySelector('#payment_formset')) {
+            addBtnSend.addEventListener('click', () => {
+                addInitialFormset('payment_formset', addBtnSend);
+                cliсk('payment_formset', 'dynamic-formset3');
+            })
+        };
 
-function addInitialFormset(formsetId, btn) {
-    const formsetTemplate = document.querySelector('#' + formsetId);
-    formsetTemplate.setAttribute('style', '');
-    btn.setAttribute('style', 'display:none');
-};
+        function addInitialFormset(formsetId, btn) {
+            const formsetTemplate = document.querySelector('#' + formsetId);
+            formsetTemplate.setAttribute('style', '');
+            btn.setAttribute('style', 'display:none');
+        };
 
-function cliсk(formsetId, dynamicFormset) {
-    const initialBtn = document.querySelector('.add-row-' + formsetId);
-    const formsetTemplate = document.querySelector('#' + formsetId);
-    initialBtn.click();
-    const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
-    dynamicFormsetFirst.setAttribute('style', 'display:none');
-};
+        function cliсk(formsetId, dynamicFormset) {
+            const initialBtn = document.querySelector('.add-row-' + formsetId);
+            const formsetTemplate = document.querySelector('#' + formsetId);
+            initialBtn.click();
+            const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
+            dynamicFormsetFirst.setAttribute('style', 'display:none');
+        };
 
-    $(function () {
-        setTimeout(function () {
-            $('span.select2-container.select2-container--bootstrap').width('auto');
-        }, 100);
-        $('#tasks_formset_not_empty tbody tr').formset({
-            prefix: '{{ tasks_formset.prefix }}',
-            formCssClass: 'dynamic-formset1',
-            addText: 'Додати проект',
-            deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
+        $(function () {
+            setTimeout(function () {
+                $('span.select2-container.select2-container--bootstrap').width('auto');
+            }, 100);
+            $('#tasks_formset_not_empty tbody tr').formset({
+                prefix: '{{ tasks_formset.prefix }}',
+                formCssClass: 'dynamic-formset1',
+                addText: 'Додати проект',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
 
-        $('#tasks_formset_empty tbody tr').formset({
-            prefix: '{{ tasks_formset.prefix }}',
-            formCssClass: 'dynamic-formset1',
-            addText: 'Додати проект',
-            deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-tasks_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
+            $('#tasks_formset_empty tbody tr').formset({
+                prefix: '{{ tasks_formset.prefix }}',
+                formCssClass: 'dynamic-formset1',
+                addText: 'Додати проект',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row-tasks_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
 
-        $('#actofacceptance_formset_not_empty tbody tr').formset({
-            prefix: '{{ actofacceptance_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати акт',
-            deleteText: '<i class="far fa-trash-alt" title="Відкрити редагування проекту"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-                // $(row).find('.pdf_copy').html("Документ згенерується після збереження");
-            }
-        });
+            $('#actofacceptance_formset_not_empty tbody tr').formset({
+                prefix: '{{ actofacceptance_formset.prefix }}',
+                formCssClass: 'dynamic-formset2',
+                addText: 'Додати акт',
+                deleteText: '<i class="far fa-trash-alt" title="Відкрити редагування проекту"></i>',
+                addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                    // $(row).find('.pdf_copy').html("Документ згенерується після збереження");
+                }
+            });
 
-        $('#actofacceptance_formset_empty tbody tr').formset({
-            prefix: '{{ actofacceptance_formset.prefix }}',
-            formCssClass: 'dynamic-formset2',
-            addText: 'Додати акт',
-            keepFieldValues: '*',
-            deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-actofacceptance_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
+            $('#actofacceptance_formset_empty tbody tr').formset({
+                prefix: '{{ actofacceptance_formset.prefix }}',
+                formCssClass: 'dynamic-formset2',
+                addText: 'Додати акт',
+                keepFieldValues: '*',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row-actofacceptance_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
 
-        $('#payment_formset_not_empty tbody tr').formset({
-            prefix: '{{ payment_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати оплату',
-            deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
+            $('#payment_formset_not_empty tbody tr').formset({
+                prefix: '{{ payment_formset.prefix }}',
+                formCssClass: 'dynamic-formset3',
+                addText: 'Додати оплату',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
 
-        $('#payment_formset_empty tbody tr').formset({
-            prefix: '{{ payment_formset.prefix }}',
-            formCssClass: 'dynamic-formset3',
-            addText: 'Додати оплату',
-            deleteText: '<i class="far fa-trash-alt"></i>',
-            addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-            deleteCssClass: 'delete-row badge badge-pill badge-danger',
-            'added': function (row) {
-                $(row).find('.django-select2').djangoSelect2();
-            }
-        });
-    })
-</script>
+            $('#payment_formset_empty tbody tr').formset({
+                prefix: '{{ payment_formset.prefix }}',
+                formCssClass: 'dynamic-formset3',
+                addText: 'Додати оплату',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
 
+            // Add comment buttons
+            $("#add-comment").modalForm({
+                formURL: "{% url 'comment_create' deal.pk %}"
+            });
+
+            // Update comment buttons
+            $(".update-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url")});
+            });
+
+            // Delete comment buttons - formURL is retrieved from the data of the element
+            $(".delete-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+            });
+        })
+
+    </script>
+
+{% endif %}
 {% endblock %}

@@ -82,3 +82,11 @@ from planner.models import Order, Execution
 
 Execution.objects.filter(subtask__pk=2823).update(subtask=2989)
 Order.objects.filter(subtask__pk=2823).update(subtask=2989)
+
+
+from planner.models import Deal, User
+from notice.models import create_comment
+for deal in Deal.objects.all():
+    if deal.comment:
+        user = User.objects.get(pk=2)
+        create_comment(user, deal, deal.comment)

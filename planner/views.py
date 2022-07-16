@@ -190,6 +190,9 @@ class DealUpdate(UpdateView):
             owners = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
             project_types = Project.objects.filter(customer=self.object.customer, active=True)
             acts = ActOfAcceptance.objects.filter(deal=self.object)
+            context['comments'] = Comment.objects.filter(content_type__model='Deal',
+                                                         object_id=self.object.pk
+                                                         )
             context['activities'] = Log.objects.filter(content_type__model='Deal',
                                                        object_id=self.object.pk
                                                        )
@@ -204,6 +207,27 @@ class DealUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
+        # create comment if comment modal form was submitted
+        if self.request.POST.get('comment_add'):
+            comment_text = form.data.get('text')
+            create_comment(get_current_user(), self.object, comment_text)
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_update'):
+            comment_id = form.data.get('comment_update')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.text = form.data.get('text')
+            comment.save()
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_delete'):
+            comment_id = form.data.get('comment_delete')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.delete()
+            return redirect(self.request.META['HTTP_REFERER'])
+
         context = self.get_context_data()
         tasks_formset = context['tasks_formset']
         actofacceptance_formset = context['actofacceptance_formset']
@@ -322,12 +346,9 @@ class TaskUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['executors_formset'] = forms.ExecutorsFormSet(
-                self.request.POST, instance=self.object)
-            context['costs_formset'] = forms.CostsFormSet(
-                self.request.POST, instance=self.object)
-            context['sending_formset'] = forms.SendingFormSet(
-                self.request.POST, instance=self.object)
+            context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST, instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST, instance=self.object)
+            context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
         else:
             employees = Employee.objects.filter(user__is_active=True)
             subtasks = SubTask.objects.filter(project_type=self.object.project_type)
