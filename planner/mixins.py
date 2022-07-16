@@ -1,3 +1,4 @@
+import json
 from django.forms.models import model_to_dict
 
 
@@ -43,3 +44,14 @@ class ModelDiffMixin(object):
     def _dict(self):
         return model_to_dict(self, fields=[field.name for field in
                              self._meta.fields])
+
+    @property
+    def diff_str(self):
+        diff_str = f'Змінені поля: '
+
+        for key, value in self.diff.items():
+            value_str = ' -> '.join(map(str, value))
+            key_name = self._meta.get_field(key).verbose_name
+            diff_str += f'{key_name}: {value_str}, '
+
+        return diff_str[:-2]

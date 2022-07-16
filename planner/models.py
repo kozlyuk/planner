@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from ast import Mod
-import json
 from datetime import date, datetime, timedelta
 from django.db import models
 from django.db.models import Sum, Max
@@ -484,7 +482,7 @@ class Deal(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений договір',
-                    extra={'title': self.number, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': self.number, 'diff': self.diff_str},
                     obj=self,
                     )
         super().save(*args, **kwargs)
@@ -619,7 +617,7 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений акт',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self.deal,
                     )
 
@@ -671,7 +669,7 @@ class Payment(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлена оплата',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self.deal,
                     )
 
@@ -801,7 +799,7 @@ class Task(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений проект',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self,
                     )
 
@@ -1039,7 +1037,7 @@ class Order(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлений підрядник по проекту',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1088,7 +1086,7 @@ class Sending(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлена відправка проекту',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1211,7 +1209,7 @@ class Execution(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлена задача',
-                    extra={'title': title, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': title, 'diff': self.diff_str},
                     obj=self.task,
                     )
         super().save(*args, **kwargs)
@@ -1309,7 +1307,7 @@ class IntTask(ModelDiffMixin, models.Model):
             else:
                 log(user=get_current_user(),
                     action='Оновлене завдання',
-                    extra={'title': self.task_name, 'diff': json.dumps(self.diff, default=str)},
+                    extra={'title': self.task_name, 'diff': self.diff_str},
                     obj=self,
                     )
         super().save(*args, **kwargs)

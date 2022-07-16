@@ -420,7 +420,8 @@
                                                     <div class="widget-media-body-title">
                                                         {{ activity.timestamp }} - {{ activity.user.employee }}
                                                     </div>
-                                                    <span data-toggle="tooltip" data-placement="right" title="{{ activity.extra.diff }}">{{ activity.action }} - {{ activity.extra.title }}</span>
+                                                    <div>{{ activity.action }} - {{ activity.extra.title }}</div>
+                                                    <div>{{ activity.extra.diff }}</div>
                                                 </div>
                                             </div>
                                         {% endfor %}
