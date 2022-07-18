@@ -478,7 +478,7 @@ class Deal(ModelDiffMixin, models.Model):
                     extra={'title': self.number},
                     obj=self,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлений договір',
                     extra={'title': self.number, 'diff': self.diff_str},
@@ -613,7 +613,7 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self.deal,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлений акт',
                     extra={'title': title, 'diff': self.diff_str},
@@ -665,7 +665,7 @@ class Payment(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self.deal,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлена оплата',
                     extra={'title': title, 'diff': self.diff_str},
@@ -795,7 +795,7 @@ class Task(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлений проект',
                     extra={'title': title, 'diff': self.diff_str},
@@ -1033,7 +1033,7 @@ class Order(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self.task,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлений підрядник по проекту',
                     extra={'title': title, 'diff': self.diff_str},
@@ -1082,7 +1082,7 @@ class Sending(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self.task,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлена відправка проекту',
                     extra={'title': title, 'diff': self.diff_str},
@@ -1205,7 +1205,7 @@ class Execution(ModelDiffMixin, models.Model):
                     extra={'title': title},
                     obj=self.task,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлена задача',
                     extra={'title': title, 'diff': self.diff_str},
@@ -1303,7 +1303,7 @@ class IntTask(ModelDiffMixin, models.Model):
                     extra={'title': self.task_name},
                     obj=self,
                     )
-            else:
+            elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлене завдання',
                     extra={'title': self.task_name, 'diff': self.diff_str},

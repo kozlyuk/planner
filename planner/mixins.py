@@ -48,10 +48,12 @@ class ModelDiffMixin(object):
     @property
     def diff_str(self):
         diff_str = f'Змінені поля: '
+        changed = False
 
         for key, value in self.diff.items():
+            changed = True
             value_str = ' -> '.join(map(str, value))
             key_name = self._meta.get_field(key).verbose_name
             diff_str += f'{key_name}: {value_str}, '
 
-        return diff_str[:-2]
+        return diff_str[:-2] if changed else None
