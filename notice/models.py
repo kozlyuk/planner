@@ -189,7 +189,7 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
         # send email for executors
-        send_comment_notification(self.pk)
+        send_comment_notification.delay(self.pk)
 
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),
