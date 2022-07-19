@@ -9,6 +9,7 @@ from crum import get_current_user
 
 from eventlog.models import log
 from messaging.tasks import send_comment_notification
+from planner.models import Task
 
 
 class Event(models.Model):
@@ -188,7 +189,7 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
         # send email for executors
-        send_comment_notification.delay(self.pk)
+        send_comment_notification(self.pk)
 
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),

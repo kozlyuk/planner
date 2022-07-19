@@ -230,32 +230,58 @@ def send_comment_notification(comment_pk) -> None:
     comment_model =apps.get_model('notice.Comment')
     comment = comment_model.objects.get(pk=comment_pk)
 
-    try:
-        task = Task.objects.get(pk=comment.object_id)
-        recepients_set = set(task.executors.exclude(user__email='').values_list('user__email', flat=True))
-        recepients_set.add(task.owner.user.email)
-        recepients_set.update(list(Employee.objects.filter(user__is_superuser=True).values_list('user__email', flat=True)))
+    if comment.content_type.model == 'task':
+        template_name = "email/task_comment_email.html"
+        try:
+            task = Task.objects.get(pk=comment.object_id)
+            recepients_set = set(task.executors.exclude(user__email='').values_list('user__email', flat=True))
+            recepients_set.add(task.owner.user.email)
+            recepients_set.update(list(Employee.objects.filter(user__is_superuser=True).values_list('user__email', flat=True)))
+            recepients = list(recepients_set)
 
-        # prepearing email
-        context = {
-            'employee': comment.user.employee.name,
-            'task': task,
-            'task_url': format_html('<a href="%s%s">%s</a>' %
-                        (settings.SITE_URL, task.get_absolute_url(), task.object_code)),
-            'comment': comment.text
-        }
-        message = render_to_string(template_name, context)
+            # prepearing email
+            context = {
+                'employee': comment.user.employee.name,
+                'task': task,
+                'task_url': format_html('<a href="%s%s">%s</a>' %
+                            (settings.SITE_URL, task.get_absolute_url(), task.object_code)),
+                'comment': comment.text
+            }
+            subject = f'Додано коментар по проекту {task.object_code}'
+            message = render_to_string(template_name, context)
+
+        except Task.DoesNotExist:
+            logger.info("Task with pk %s does not exists", comment.object_id)
+
+    if comment.content_type.model == 'deal':
+        template_name = "email/deal_comment_email.html"
+        try:
+            deal = Deal.objects.get(pk=comment.object_id)
+            recepients = Employee.objects.filter(user__groups__name='Бухгалтери').values_list('user__email', flat=True)
+
+            # prepearing email
+            context = {
+                'employee': comment.user.employee.name,
+                'deal': deal,
+                'deal_url': format_html('<a href="%s%s">%s</a>' %
+                            (settings.SITE_URL, deal.get_absolute_url(), deal.number)),
+                'comment': comment.text
+            }
+            subject = f'Додано коментар по договору {deal.number}'
+            message = render_to_string(template_name, context)
+
+        except Deal.DoesNotExist:
+            logger.info("Deal with pk %s does not exists", comment.object_id)
+
+
 
         emails.append(EmailMessage(
-            f'Додано коментар по {task.object_code}',
+            subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
-            list(recepients_set),
+            recepients,
         ))
 
         # sending emails
         if emails:
             send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
-
-    except Task.DoesNotExist:
-        logger.info("Task with pk %s does not exists", comment.object_id)
