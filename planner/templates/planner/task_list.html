@@ -5,51 +5,52 @@
 {% load static %}
 
 {% block context %}
-<style>
-    .select2-container--bootstrap {
-        display: inline-table
-    }
-</style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
-<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
-    xmlns="http://www.w3.org/1999/html">
-    <br><!-- BEGIN CONTENT -->
-    <div class="container-fluid">
-        <div class="portlet-body">
-            <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
-                <div id="sprintList" class="table-scrollable">
-                    {% include 'planner/task_table.html' %}
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="text-center">
-                            {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
-                            </a><br>
-                            {% include 'pagination.html' %}
+    <style>
+        .select2-container--bootstrap {
+            display: inline-table
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+        xmlns="http://www.w3.org/1999/html">
+        <br><!-- BEGIN CONTENT -->
+        <div class="container-fluid">
+            <div class="portlet-body">
+                <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
+                    <div id="taskList" class="table-scrollable">
+                        {% include 'planner/task_table.html' %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                {{ tasks_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ tasks_count }} всього)
+                                </a><br>
+                                {% include 'pagination.html' %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% if perms.planner.change_deal %}
-                <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
-                    договір</button>
-                {% endif %}
-            </form>
-            <!-- END PAGE BASE CONTENT -->
+                    {% if perms.planner.change_deal %}
+                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
+                        договір</button>
+                    {% endif %}
+                </form>
+                <!-- END PAGE BASE CONTENT -->
+            </div>
+            <!-- END CONTENT -->
         </div>
-        <!-- END CONTENT -->
+        <!-- END CONTAINER -->
     </div>
-    <!-- END CONTAINER -->
-</div>
-<div class="add-btn-wrapper">
-{% if perms.planner.add_task %}
-    <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
-{% endif %}
+    <div class="add-btn-wrapper">
+    {% if perms.planner.add_task %}
+        <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
+    {% endif %}
     <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
-</div>
-{% include 'widgets/filter_panel.html' %}
+    </div>
+    {% include "widgets/filter_panel.html" %}
 {% endblock %}
+
 {% block css %}
     <link rel="stylesheet" type="text/css" href="https://printjs-4de6.kxcdn.com/print.min.css">
 {% endblock css %}
