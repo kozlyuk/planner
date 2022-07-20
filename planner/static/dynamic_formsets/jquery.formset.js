@@ -214,6 +214,19 @@
                 row.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
                 });
+                //  Fixed on clone copying the last row values
+                //  By EndL11 - Podobailo Andrii
+                row
+                 .find(childElementSelector)
+                 .not(options.keepFieldValues)
+                 .each(function () {
+                 var elem = $(this);
+                 if (elem.is("input:checkbox") || elem.is("input:radio")) {
+                     elem.attr("checked", false);
+                 } else {
+                     elem.val("");
+                 }
+                 });
                 totalForms.val(formCount + 1);
                 // Check if we're above the minimum allowed number of forms -> show all delete link(s)
                 if (showDeleteLinks()){
