@@ -226,6 +226,17 @@
                  } else {
                      elem.val("");
                  }
+                 // Reseting status options
+                 // By EndL11 - Podobailo Andrii
+                 if (elem.prop("name")?.includes("-exec_status")) {
+                  elem
+                   .find("option")
+                   .remove()
+                   .end()
+                   .append('<option value="IW">В черзі</option>')
+                   .append('<option value="IP">Виконується</option>')
+                   .val("IW");
+                  }
                  });
                 totalForms.val(formCount + 1);
                 // Check if we're above the minimum allowed number of forms -> show all delete link(s)
