@@ -8,12 +8,15 @@ class TaskSerializer(serializers.ModelSerializer):
 
     subtask_name = serializers.ReadOnlyField(source='subtask.name')
     executor_name = serializers.ReadOnlyField(source='executor.name')
+    object_code = serializers.ReadOnlyField(source='task.object_code')
     exec_status = serializers.ReadOnlyField(source='get_exec_status_display')
+    planned_duration = serializers.SerializerMethodField()
 
     class Meta:
         model = Execution
         fields = [
             "id",
+            "object_code",
             "subtask_name",
             "executor_name",
             "exec_status",
@@ -21,15 +24,21 @@ class TaskSerializer(serializers.ModelSerializer):
             "planned_finish",
             "actual_start",
             "actual_finish",
-            "planned_duration"
+            "planned_duration",
+            "warning",
         ]
-        extra_kwargs = {
-            'planned_duration': {'read_only': True},
-        }
+
+    def get_planned_duration(self, instance):
+        # convert planned_duration to hours, minutes
+        if instance.planned_duration:
+            min, sec = divmod(instance.planned_duration.total_seconds(), 60)
+            hour, min = divmod(min, 60)
+            return f'{int(hour)} год {int(min)} хв'
 
 
 class ProjectSerializer(serializers.ModelSerializer):
 
+    warning = serializers.SerializerMethodField()
     tasks = TaskSerializer(source='execution_set', many=True, read_only=True)
 
     class Meta:
@@ -41,11 +50,16 @@ class ProjectSerializer(serializers.ModelSerializer):
             "planned_finish",
             "actual_start",
             "actual_finish",
+            "warning",
             "tasks",
         ]
         extra_kwargs = {
             'object_code': {'read_only': True},
         }
+
+    def get_warning(self, instance):
+        # get last comment
+        return instance.get_last_comment()
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
