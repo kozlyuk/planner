@@ -1,10 +1,11 @@
 from rest_framework import serializers
+from drf_dynamic_fields import DynamicFieldsMixin
 
 from planner.models import Task, Employee, Execution
 from planner.filters import execuition_queryset_filter
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     subtask_name = serializers.ReadOnlyField(source='subtask.name')
     executor_name = serializers.ReadOnlyField(source='executor.name')
@@ -36,7 +37,7 @@ class TaskSerializer(serializers.ModelSerializer):
             return f'{int(hour)} год {int(min)} хв'
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     warning = serializers.SerializerMethodField()
     tasks = TaskSerializer(source='execution_set', many=True, read_only=True)
@@ -62,7 +63,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         return instance.get_last_comment()
 
 
-class EmployeeSerializer(serializers.ModelSerializer):
+class EmployeeSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     tasks = serializers.SerializerMethodField()
 

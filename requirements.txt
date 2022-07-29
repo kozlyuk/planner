@@ -22,7 +22,8 @@ django-bootstrap-modal-forms
 weasyprint
 
 # Rest API
-djangorestframework
+djangorestframework == 3.13.1
+drf-dynamic-fields == 0.4.0
 django-cors-headers == 3.11.0
 
 # Deployment
