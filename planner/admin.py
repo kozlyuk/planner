@@ -143,13 +143,19 @@ class ContractorOrdersInlineFormSet(BaseInlineFormSet):
 
 
 class OrderAdmin(ModelAdminTotals):
-    list_display = ['contractor', 'task', 'subtask', 'value', 'pay_status', 'pay_date', 'get_exec_status']
+    list_display = ['contractor', 'task', 'subtask', 'value', 'pay_status',
+                    'pay_date', 'get_exec_status', 'get_actual_finish']
     readonly_fields = ["contractor", "task", "subtask"]
     search_fields = ['contractor__name', 'subtask__name']
     list_filter = ['task__deal__company', 'pay_status', 'task__exec_status', ('contractor', RelatedDropdownFilter)]
     date_hierarchy = 'pay_date'
     ordering = ['-pay_date']
     list_totals = [('value', Sum)]
+
+    def get_actual_finish(self, obj):
+        return obj.task.actual_finish
+    get_actual_finish.short_description = 'Фактичне закінчення'
+    get_actual_finish.admin_order_field = 'task__actual_finish'
 
 
 class ContractorOrdersInline(admin.TabularInline):
@@ -395,7 +401,6 @@ class TaskForm(forms.ModelForm):
         project_type = cleaned_data.get("project_type")
         deal = cleaned_data.get("deal")
         exec_status = cleaned_data.get("exec_status")
-        planned_finish = cleaned_data.get("planned_finish")
         pdf_copy = cleaned_data.get("pdf_copy")
         self.instance.__exec_status__ = exec_status
         self.instance.__project_type__ = project_type
