@@ -52,12 +52,12 @@
             </td>
             <td>
                 {% if task.tc_upload %}
-                    <a href="{% media_url task.pdf_copy %}"> <i class="fas fa-file"></i> </a>
+                    <a href="{% media_url task.tc_upload %}"> <i class="fas fa-file"></i> </a>
                 {% endif %}
             </td>
             <td>
                 {% if task.pdf_copy %}
-                    <a href="{% media_url task.tc_upload %}"> <i class="fas fa-file-pdf"></i> </a>
+                    <a href="{% media_url task.pdf_copy %}"> <i class="fas fa-file-pdf"></i> </a>
                 {% endif %}
             </td>
             <td>
