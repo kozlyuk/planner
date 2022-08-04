@@ -13,7 +13,7 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from admin_totals.admin import ModelAdminTotals
 
 from .models import ActOfAcceptance, Payment, Project, Employee, Customer, \
-                    Receiver, Sending, Deal, Task, Execution, WorkType, \
+                    Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
                     IntTask, Contractor, Order, Company, Construction, SubTask
 
 
@@ -46,6 +46,12 @@ class ProjectAdmin(admin.ModelAdmin):
         return [f.name for f in self.model._meta.fields]
 
 
+class VacationsInline(admin.TabularInline):
+    model = Vacation
+    fields = ['start_date', 'end_date']
+    extra = 0
+    show_change_link = True
+
 class EmployeeAdmin(admin.ModelAdmin):
 
     list_display = ['name', 'owner_count', 'task_count', 'inttask_count', 'card_number', 'salary']
@@ -61,6 +67,7 @@ class EmployeeAdmin(admin.ModelAdmin):
                            ('comment'),
                            ]})
     ]
+    inlines = [VacationsInline]
 
     def get_queryset(self, request):
         qs = super(EmployeeAdmin, self).get_queryset(request)

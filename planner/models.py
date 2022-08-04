@@ -20,7 +20,7 @@ from html_templates.models import HTMLTemplate
 from .mixins import ModelDiffMixin
 from .formatChecker import ContentTypeRestrictedFileField
 from .managers import DealQuerySet
-from .timeplanning import recalc_queue, calc_businesshrsdiff, calc_businesstimedelta
+from .timeplanning import TimePlanner
 
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -1151,14 +1151,13 @@ class Execution(ModelDiffMixin, models.Model):
     @property
     def planned_duration(self):
         if self.planned_start and self.planned_finish:
-            return calc_businesshrsdiff(self.planned_start, self.planned_finish)
+            timeplanner = TimePlanner(self.executor)
+            return timeplanner.calc_businesshrsdiff(self.planned_start, self.planned_finish)
 
     @property
     def planned_finish_with_interruption(self):
-        if self.planned_finish and self.interruption > timedelta(0):
-            return calc_businesstimedelta(self.planned_finish, self.interruption)
-        else:
-            return self.planned_finish
+            timeplanner = TimePlanner(self.executor)
+            return timeplanner.planned_finish_with_interruption(self)
 
     def save(self, *args, logging=True, **kwargs):
 
@@ -1166,35 +1165,36 @@ class Execution(ModelDiffMixin, models.Model):
         if self.executor is None:
             self.planned_start = None
             self.planned_finish = None
+        else:
+            # Automatic add execution first to employee queue with duration 1 hour
+            timeplanner = TimePlanner(self.executor)
+            if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
+                    and self.warning != "На коригуванні":
+                self.warning = "На коригуванні"
+                self.planned_finish = timeplanner.calc_businesstimedelta(self.planned_start, timedelta(hours=1))
+            if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
+                self.warning = ""
 
-        # Automatic add execution first to employee queue with duration 1 hour
-        if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
-                and self.warning != "На коригуванні":
-            self.warning = "На коригуванні"
-            self.planned_finish = calc_businesstimedelta(self.planned_start, timedelta(hours=1))
-        if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
-            self.warning = ""
+            # Automatic set actual_start and work_started when exec_status has changed
+            if self.exec_status == self.InProgress and not self.actual_start:
+                self.actual_start = datetime.now()
+            if self.exec_status == self.InProgress and not self.work_started:
+                self.work_started = datetime.now()
 
-        # Automatic set actual_start and work_started when exec_status has changed
-        if self.exec_status == self.InProgress and not self.actual_start:
-            self.actual_start = datetime.now()
-        if self.exec_status == self.InProgress and not self.work_started:
-            self.work_started = datetime.now()
+            # Automatic set actual_duration when exec_status has changed
+            if self.exec_status in [self.OnHold, self.OnChecking, self.Done] and self.work_started:
+                self.actual_duration += timeplanner.calc_businesshrsdiff(self.work_started, datetime.now())
+                self.work_started = None
 
-        # Automatic set actual_duration when exec_status has changed
-        if self.exec_status in [self.OnHold, self.OnChecking, self.Done] and self.work_started:
-            self.actual_duration += calc_businesshrsdiff(self.work_started, datetime.now())
-            self.work_started = None
+            # Automatic set actual_finish when Execution has done
+            if self.exec_status == self.Done and not self.actual_finish:
+                self.actual_finish = datetime.now()
+            elif self.exec_status != self.Done and self.actual_finish:
+                self.actual_finish = None
 
-        # Automatic set actual_finish when Execution has done
-        if self.exec_status == self.Done and not self.actual_finish:
-            self.actual_finish = datetime.now()
-        elif self.exec_status != self.Done and self.actual_finish:
-            self.actual_finish = None
-
-        # Automatic set planned_finish when execution was not planned and has done
-        if self.exec_status == self.Done and not self.planned_finish:
-            self.planned_finish = datetime.now()
+            # Automatic set planned_finish when execution was not planned and has done
+            if self.exec_status == self.Done and not self.planned_finish:
+                self.planned_finish = datetime.now()
 
         # Logging
         if logging:
@@ -1215,7 +1215,7 @@ class Execution(ModelDiffMixin, models.Model):
 
         # Recal employee execution queue
         if self.executor:
-            recalc_queue(self.executor)
+            timeplanner.recalc_queue()
 
     def delete(self, *args, **kwargs):
         title = f'{self.task.object_code} {self.task.project_type.price_code} {self.subtask.name}'
@@ -1328,3 +1328,67 @@ class IntTask(ModelDiffMixin, models.Model):
     def is_editable(self):
         user = get_current_user()
         return user.is_superuser or user == self.creator
+
+
+class Vacation(ModelDiffMixin, models.Model):
+
+    employee = models.ForeignKey(Employee, verbose_name='Працівник', on_delete=models.CASCADE)
+    start_date = models.DateField('Початок відпустки')
+    end_date = models.DateField('Кінець відпустки')
+    creator = models.ForeignKey(User, verbose_name='Створив',
+                                related_name='vacation_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('employee', 'start_date')
+        verbose_name = 'Відпустка'
+        verbose_name_plural = 'Відпустки'
+        ordering = ['-creation_date']
+
+    def __str__(self):
+        return f'{self.employee} {self.start_date}-{self.end_date}'
+
+    def save(self, *args, logging=True, **kwargs):
+        # Automatic set creator
+        if not self.pk:
+            self.creator = get_current_user()
+
+        # Logging
+        if logging:
+            if not self.pk:
+                log(user=get_current_user(),
+                    action='Додана відпустка',
+                    extra={'title': self.employee.name},
+                    obj=self,
+                    )
+            elif self.diff_str:
+                log(user=get_current_user(),
+                    action='Оновлена відпустка',
+                    extra={'title': self.employee.name, 'diff': self.diff_str},
+                    obj=self,
+                    )
+        super().save(*args, **kwargs)
+
+        timeplanner = TimePlanner(self.employee)
+        timeplanner.recalc_queue()
+
+
+# class Plan(models.Model):
+
+#     name = models.CharField('Назва плану', max_length=100)
+#     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
+#                                        verbose_name='Виконавці', blank=True)
+#     part = models.PositiveSmallIntegerField('Відсоток виконання', default=0, validators=[MaxValueValidator(100)])
+#     planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
+#     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
+#     bonus = models.DecimalField('Бонус, грн.', max_digits=8, decimal_places=2, default=0)
+#     comment = models.TextField('Коментар', blank=True)
+#     creator = models.ForeignKey(User, verbose_name='Створив',
+#                                 related_name='inttask_creators', on_delete=models.PROTECT)
+#     creation_date = models.DateField(auto_now_add=True)
+
+#     class Meta:
+#         unique_together = ('task_name', 'executor')
+#         verbose_name = 'Завдання'
+#         verbose_name_plural = 'Завдання'
+#         ordering = ['-exec_status', '-actual_finish']
