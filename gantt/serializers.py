@@ -47,6 +47,7 @@ class ProjectSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         fields = [
             "id",
             "object_code",
+            "exec_status",
             "planned_start",
             "planned_finish",
             "actual_start",
