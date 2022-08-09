@@ -273,15 +273,13 @@ def send_comment_notification(comment_pk) -> None:
         except Deal.DoesNotExist:
             logger.info("Deal with pk %s does not exists", comment.object_id)
 
+    emails.append(EmailMessage(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        recepients,
+    ))
 
-
-        emails.append(EmailMessage(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            recepients,
-        ))
-
-        # sending emails
-        if emails:
-            send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
+    # sending emails
+    if emails:
+        send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
