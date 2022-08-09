@@ -442,7 +442,6 @@ class Deal(ModelDiffMixin, models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='deal_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
-    comment = models.TextField('Коментар', blank=True)
 
     # defining custom manager
     objects = DealQuerySet.as_manager()
