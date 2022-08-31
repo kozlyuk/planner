@@ -498,7 +498,7 @@ class Deal(ModelDiffMixin, models.Model):
         # Get actual act_status
         if self.actofacceptance_set.count() > 0:
             value_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
-            if value_sum >= self.value:
+            if value_sum >= self.value + self.value_correction:
                 return self.Issued
             elif value_sum > 0:
                 return self.PartlyIssued
