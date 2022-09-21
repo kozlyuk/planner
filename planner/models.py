@@ -508,7 +508,7 @@ class Deal(ModelDiffMixin, models.Model):
         # Get actual pay_status
         if self.payment_set.count() > 0:
             value_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
-            if value_sum >= self.value:
+            if value_sum >= self.value + self.value_correction:
                 return self.PaidUp
             elif value_sum > 0:
                 return self.AdvancePaid
