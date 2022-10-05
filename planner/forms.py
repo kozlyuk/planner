@@ -157,7 +157,7 @@ class DealForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(DealForm, self).clean()
         self.data.__customer__ = cleaned_data.get("customer")
-        self.data.__value__ = cleaned_data.get("value")
+        self.data.__value__ = cleaned_data.get("value") + cleaned_data.get("value_correction")
 
         return cleaned_data
 
