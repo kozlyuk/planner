@@ -338,7 +338,7 @@ class Contractor(models.Model):
 
     def advance_calc(self):
         total = 0
-        for order in self.order_set.exclude(task__exec_status__in=[Task.Done, Task.Sent]):
+        for order in self.order_set.exclude(task__exec_status__in=[Task.Done, Task.Sent, Task.Canceled]):
             if order.pay_status == Order.AdvancePaid:
                 total += order.advance
             if order.pay_status == Order.PaidUp:
