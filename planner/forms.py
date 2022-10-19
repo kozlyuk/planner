@@ -411,6 +411,8 @@ class TaskForm(forms.ModelForm):
         exec_status = cleaned_data.get("exec_status")
         pdf_copy = cleaned_data.get("pdf_copy")
         project_code = cleaned_data.get("project_code")
+        construction = cleaned_data.get("construction")
+        work_type = cleaned_data.get("work_type")
         self.instance.__project_type__ = project_type
         self.instance.__exec_status__ = exec_status
 
@@ -423,6 +425,10 @@ class TaskForm(forms.ModelForm):
             self.add_error('pdf_copy', "Підвантажте будь ласка електронний примірник")
         if project_code and Task.objects.filter(project_code=project_code).exclude(pk=self.instance.pk).exists():
             self.add_error('project_code', "Проект з таким шифром вже існує")
+        if not construction:
+            self.add_error('construction', "Вкажіть тип конструкції")
+        if not work_type:
+            self.add_error('work_type', "Вкажіть вид будівництва")
         return cleaned_data
 
 

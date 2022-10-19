@@ -23,7 +23,7 @@ class EventAdmin(admin.ModelAdmin):
     ordering = ['created']
     list_filter = ['creator']
     fieldsets = [
-        (None, {'fields': [('title',),
+        (None, {'fields': [('title', 'is_holiday'),
                            ('date', 'repeat'),
                            ('description',),
                            ]})
