@@ -765,6 +765,8 @@ class Task(ModelDiffMixin, models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='task_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
+    project_share = models.CharField('Папка проекту', max_length=255, blank=True, null=True)
+    photo_share = models.CharField('Папка фото', max_length=255, blank=True, null=True)
 
     class Meta:
         unique_together = ('object_code', 'project_type', 'deal')

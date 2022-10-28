@@ -359,6 +359,7 @@ class TaskForm(forms.ModelForm):
                   'tc_received', 'actual_finish',
                   'period',
                   'tc_upload', 'pdf_copy',
+                  'project_share', 'photo_share',
                   ]
         widgets = {
             'project_type': Select2Widget,
