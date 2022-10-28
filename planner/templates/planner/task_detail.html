@@ -73,7 +73,9 @@
 
                                         {% if task.tc_received %}<p>Дата отримання ТЗ або заявки: <strong>{{ task.tc_received }}</strong></p>{% endif %}
                                         {% if task.tc_upload %}<a href="/media/{{ task.tc_upload }}"> Переглянути ТЗ або заявку </a>{% endif %}<br>
-                                        {% if task.pdf_copy %}<a href="/media/{{ task.pdf_copy }}"> Переглянути електронний примірник </a>{% endif %}
+                                        {% if task.pdf_copy %}<a href="/media/{{ task.pdf_copy }}"> Переглянути електронний примірник </a>{% endif %}<br>
+                                        {% if task.project_share %} {{ task.project_share }} {% endif %}<br>
+                                        {% if task.photo_share %} {{ task.photo_share }} {% endif %}
                                     </div>
                                 </div>
                             </div>
