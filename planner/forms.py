@@ -589,7 +589,7 @@ class CostsInlineFormset(BaseInlineFormSet):
         if self.instance.pk:
             if self.instance.__exec_status__ in [Task.Done, Task.Sent]:
                 if self.instance.__project_type__.net_price() > 0 and hasattr(self.instance, '__outsourcing_part__'):
-                    costs_part = outsourcing / self.instance.__project_type__.net_price() * 100 * Decimal(1.2)
+                    costs_part = outsourcing / self.instance.__project_type__.net_price() * 100
                     if self.instance.__outsourcing_part__ > 0 and costs_part == 0:
                         raise ValidationError("Добавте будь ласка витрати по аутсорсингу")
                     if self.instance.__outsourcing_part__ < costs_part and not get_current_user().is_superuser:
