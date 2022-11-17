@@ -5,7 +5,7 @@ from django_object_actions import DjangoObjectActions
 from urllib.parse import parse_qs
 from django.shortcuts import HttpResponseRedirect
 
-from .models import Kpi, Report
+from .models import Kpi, Report, Chart
 from .tasks import recalc_kpi
 
 @admin.register(Kpi)
@@ -35,5 +35,10 @@ class KpiAdmin(DjangoObjectActions, admin.ModelAdmin):
 
 
 @admin.register(Report)
-class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ['name', 'template']
+
+
+@admin.register(Chart)
+class ChartAdmin(admin.ModelAdmin):
     list_display = ['name', 'template']

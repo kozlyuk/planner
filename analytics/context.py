@@ -1,3 +1,5 @@
+from datetime import date
+from django.utils.formats import date_format
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
 from django.conf import settings
@@ -398,5 +400,61 @@ def customer_report_context(company, customer, from_date, to_date):
         'customer': customer,
         'labels': labels,
         'report_data': report_data,
+    }
+    return context
+
+
+def income_context(customers, year):
+
+    # prepare chart data
+    xAxis = []
+    acts_data = []
+    payments_data = []
+    work_done_data = []
+    receivables_data = []
+
+    for month in range(12):
+        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+
+    for customer in customers:
+        acts_income_list = []
+        payments_income_list = []
+        work_done_list = []
+        receivables_list = []
+        for month in range(12):
+            acts_income = ActOfAcceptance.objects.filter(deal__customer=customer,
+                                                         date__year=year,
+                                                         date__month=month+1) \
+                                                 .aggregate(Sum('value'))['value__sum'] or 0
+            acts_income_list.append(float(acts_income))
+            payments_income = Payment.objects.filter(deal__customer=customer,
+                                                     date__year=year,
+                                                     date__month=month+1) \
+                                             .aggregate(Sum('value'))['value__sum'] or 0
+            payments_income_list.append(float(payments_income))
+            work_done_income = Task.objects.filter(deal__customer=customer,
+                                                   actual_finish__year=year,
+                                                   actual_finish__month=month+1) \
+                                            .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
+            work_done_list.append(float(work_done_income))
+            receivables_list.append(float(acts_income-payments_income))
+
+        acts_data.append({"name": customer.name,
+                          "data": acts_income_list})
+        payments_data.append({"name": customer.name,
+                              "data": payments_income_list})
+        work_done_data.append({"name": customer.name,
+                               "data": work_done_list})
+        receivables_data.append({"name": customer.name,
+                                 "data": receivables_list})
+
+    # creating context
+    context = {
+        'customers': customers,
+        'xAxis': xAxis,
+        'acts_data': acts_data,
+        'payments_data': payments_data,
+        'work_done_data': work_done_data,
+        'receivables_data': receivables_data,
     }
     return context

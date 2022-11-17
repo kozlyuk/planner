@@ -57,3 +57,24 @@ class Report(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Chart(models.Model):
+    """ Model contains Charts """
+    CONTEXT_CHOICES = (
+        ('income_context', 'Фінансова аналітика'),
+        ('customer_income_context', 'Фінансова аналітика по замовнику'),
+        ('income_structure_context', 'Структура доходів'),
+    )
+
+    name = models.CharField('Назва', max_length=50, unique=True)
+    yAxis = models.CharField('Вісь Y', max_length=50)
+    template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон', on_delete=models.PROTECT)
+    context = models.CharField('Метод контексту', max_length=50, choices=CONTEXT_CHOICES)
+
+    class Meta:
+        verbose_name = 'Діаграма'
+        verbose_name_plural = 'Діаграми'
+
+    def __str__(self):
+        return self.name

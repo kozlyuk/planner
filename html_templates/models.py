@@ -7,11 +7,13 @@ class HTMLTemplate(models.Model):
     Deal = 'DE'
     Act = 'AC'
     Report = 'RE'
+    Chart = 'CH'
     DOCUMENT_CHOICES = (
         (Invoice, 'Рахунок'),
         (Deal, 'Договір'),
         (Act, 'Акт'),
-        (Report, 'Звіт')
+        (Report, 'Звіт'),
+        (Chart, 'Діаграма'),
     )
 
     name = models.CharField('Назва шаблону', max_length=50, unique=True)

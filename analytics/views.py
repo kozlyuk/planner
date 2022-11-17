@@ -11,9 +11,9 @@ from django.http import HttpResponse
 from planner.models import Company, Customer
 
 from .tasks import recalc_kpi, generate_pdf
-from .models import Report
-from .forms import ReportForm
-from .context import context_report_render
+from .models import Report, Chart
+from .forms import ReportForm, ChartForm
+from .context import context_report_render, income_context
 
 
 @method_decorator(login_required, name='dispatch')
@@ -90,4 +90,44 @@ class ReportRender(TemplateView):
             else:
                 return HttpResponse(template.render(context))
         else:
-            return HttpResponse('HTML template does not exist for this customer')
+            return HttpResponse('HTML template does not exist')
+
+@method_decorator(login_required, name='dispatch')
+class ChartView(FormView):
+    """ Form for choosing reports """
+    model = Chart
+    form_class = ChartForm
+    template_name = 'chart_form.html'
+    success_url = reverse_lazy('chart_render')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+
+@method_decorator(login_required, name='dispatch')
+class ChartRender(TemplateView):
+    """ View for rendering a chart """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        customers = self.request.GET.getlist('customer')
+        context['chart'] = Chart.objects.get(pk=self.request.GET.get('chart'))
+        context['customers'] = Customer.objects.filter(pk__in=customers)
+        context['year'] = self.request.GET.get('year')
+        context_report = income_context(context['customers'], context['year'])
+        return {**context, **context_report}
+
+    def render_to_response(self, context):
+        template = context['chart'].template
+        if template:
+            return HttpResponse(template.render(context))
+        else:
+            return HttpResponse('HTML template does not exist')
