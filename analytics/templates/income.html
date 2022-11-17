@@ -12,6 +12,9 @@
     <div id="container_work_done" style="width: 50%; float: left;"></div>
     <div id="container_payments_income" style="width: 50%; float: left;"></div>
     <div id="container_receivables" style="width: 50%; float: left;"></div>
+    <div id="container_stock" style="width: 50%; float: left;"></div>
+    <div id="container_turnover_closed" style="width: 25%; float: left;"></div>
+    <div id="container_turnover" style="width: 25%; float: left;"></div>
 </div>
 
 {% endblock %}
@@ -114,7 +117,7 @@
                         renderTo: 'container_receivables',
                 },
                 title: {
-                    text: "Дебіторська заборгованість"
+                    text: "Рівень дебіторської заборгованості"
                 },
                 xAxis: {
                     categories: {{ xAxis|safe }},
@@ -134,6 +137,105 @@
                     }
                 },
                 series: {{ receivables_data|safe }}
+            });
+
+            var container_stock = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_stock',
+                },
+                title: {
+                    text: "Рівень запасів"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ stock_data|safe }}
+            });
+
+            var container_turnover_closed = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_turnover_closed',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Об'єми закритих робіт"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ turnover_closed_data|safe }}
+                }]
+            });
+
+            var container_turnover = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_turnover',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Об'єми виконаних робіт"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ turnover_data|safe }}
+                }]
             });
         });
     });

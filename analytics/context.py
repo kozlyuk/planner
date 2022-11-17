@@ -412,6 +412,9 @@ def income_context(customers, year):
     payments_data = []
     work_done_data = []
     receivables_data = []
+    stock_data = []
+    turnover_closed_data = []
+    turnover_data = []
 
     for month in range(12):
         xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
@@ -421,6 +424,8 @@ def income_context(customers, year):
         payments_income_list = []
         work_done_list = []
         receivables_list = []
+        stock_list = []
+
         for month in range(12):
             acts_income = ActOfAcceptance.objects.filter(deal__customer=customer,
                                                          date__year=year,
@@ -438,6 +443,7 @@ def income_context(customers, year):
                                             .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
             work_done_list.append(float(work_done_income))
             receivables_list.append(float(acts_income-payments_income))
+            stock_list.append(float(work_done_income-acts_income))
 
         acts_data.append({"name": customer.name,
                           "data": acts_income_list})
@@ -447,6 +453,12 @@ def income_context(customers, year):
                                "data": work_done_list})
         receivables_data.append({"name": customer.name,
                                  "data": receivables_list})
+        stock_data.append({"name": customer.name,
+                           "data": stock_list})
+        turnover_closed_data.append({"name": customer.name,
+                                     "y": sum(acts_income_list)})
+        turnover_data.append({"name": customer.name,
+                              "y": sum(work_done_list)})
 
     # creating context
     context = {
@@ -456,5 +468,8 @@ def income_context(customers, year):
         'payments_data': payments_data,
         'work_done_data': work_done_data,
         'receivables_data': receivables_data,
+        'stock_data': stock_data,
+        'turnover_closed_data': turnover_closed_data,
+        'turnover_data': turnover_data
     }
     return context
