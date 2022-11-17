@@ -39,11 +39,11 @@ class ReportForm(forms.Form):
 class ChartForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        chart = [(chart.id, chart.title) for chart in Chart.objects.filter(template__document_type=HTMLTemplate.Chart)]
+        chart = [(chart.id, chart.name) for chart in Chart.objects.filter(template__document_type=HTMLTemplate.Chart)]
         customer = [(customer.id, customer.name) for customer in Customer.objects.filter(active=True)]
         self.fields['chart'].choices = chart
         self.fields['customer'].choices = customer
 
-    chart = forms.ChoiceField(label='Діаграма', widget=Select2Widget())
+    chart = forms.ChoiceField(label='Діаграма', widget=Select2Widget(), required=True)
     customer = forms.ChoiceField(label='Замовник', widget=Select2MultipleWidget())
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)
