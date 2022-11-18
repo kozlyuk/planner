@@ -404,7 +404,13 @@ def customer_report_context(company, customer, from_date, to_date):
     return context
 
 
-def income_context(customers, year):
+def context_chart_render(chart, year, customers=None):
+    """ return context defined in chart.context """
+
+    return globals()[chart.context](year, customers)
+
+
+def fin_analysis_context(year, customers):
 
     # prepare chart data
     xAxis = []
@@ -475,5 +481,59 @@ def income_context(customers, year):
         'stock_data': stock_data,
         'turnover_closed_data': turnover_closed_data,
         'turnover_data': turnover_data
+    }
+    return context
+
+
+def customer_fin_analysis_context(year, customers):
+
+    # prepare chart data
+    customer = customers.first()
+    xAxis = []
+    series = []
+
+    for month in range(12):
+        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+
+    acts_income_list = []
+    payments_income_list = []
+    work_done_list = []
+    receivables_list = []
+    stock_list = []
+
+    for month in range(12):
+        acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
+        payments_customer = Payment.objects.filter(deal__customer=customer)
+        acts_income = acts_customer.filter(date__year=year,
+                                            date__month=month+1) \
+                                    .aggregate(Sum('value'))['value__sum'] or 0
+        acts_income_list.append(float(acts_income))
+        payments_income = payments_customer.filter(date__year=year,
+                                                    date__month=month+1) \
+                                            .aggregate(Sum('value'))['value__sum'] or 0
+        payments_income_list.append(float(payments_income))
+        work_done_income = Task.objects.filter(deal__customer=customer,
+                                                actual_finish__year=year,
+                                                actual_finish__month=month+1) \
+                                        .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
+        work_done_list.append(float(work_done_income))
+        acts_sum = acts_customer.filter(date__year__lt=year) \
+                                .aggregate(Sum('value'))['value__sum'] or 0
+        payments_sum = payments_customer.filter(date__year__lt=year) \
+                                        .aggregate(Sum('value'))['value__sum'] or 0
+        receivables_list.append(float(acts_sum - payments_sum + acts_income - payments_income))
+        stock_list.append(float(work_done_income-acts_income))
+
+    series.append({"name": "Дохід по актам", "data": acts_income_list})
+    series.append({"name": "Оплачено", "data": payments_income_list})
+    series.append({"name": "Виконано робіт", "data": work_done_list})
+    series.append({"name": "Дебіторська заборгованість", "data": receivables_list})
+    series.append({"name": "Рівень запасів", "data": stock_list})
+
+    # creating context
+    context = {
+        'customer': customer,
+        'xAxis': xAxis,
+        'series': series,
     }
     return context

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load fontawesome_5 %}
+
+{% block context %}
+
+<div id="content">
+    <div id="container"></div>
+</div>
+
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        var chart;
+        $(document).ready(function() {
+
+            var container_acts_income = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container',
+                },
+                title: {
+                    text: "Фінансова аналітика по замовнику"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ series|safe }}
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

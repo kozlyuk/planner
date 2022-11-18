@@ -45,5 +45,5 @@ class ChartForm(forms.Form):
         self.fields['customer'].choices = customer
 
     chart = forms.ChoiceField(label='Діаграма', widget=Select2Widget(), required=True)
-    customer = forms.ChoiceField(label='Замовник', widget=Select2MultipleWidget())
+    customer = forms.ChoiceField(label='Замовник', widget=Select2MultipleWidget(), required=False)
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)

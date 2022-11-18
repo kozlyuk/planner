@@ -13,7 +13,7 @@ from planner.models import Company, Customer
 from .tasks import recalc_kpi, generate_pdf
 from .models import Report, Chart
 from .forms import ReportForm, ChartForm
-from .context import context_report_render, income_context
+from .context import context_report_render, context_chart_render
 
 
 @method_decorator(login_required, name='dispatch')
@@ -122,7 +122,7 @@ class ChartRender(TemplateView):
         context['chart'] = Chart.objects.get(pk=self.request.GET.get('chart'))
         context['customers'] = Customer.objects.filter(pk__in=customers)
         context['year'] = self.request.GET.get('year')
-        context_report = income_context(context['customers'], context['year'])
+        context_report = context_chart_render(context['chart'], context['year'], context['customers'])
         return {**context, **context_report}
 
     def render_to_response(self, context):

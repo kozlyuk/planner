@@ -62,9 +62,10 @@ class Report(models.Model):
 class Chart(models.Model):
     """ Model contains Charts """
     CONTEXT_CHOICES = (
-        ('income_context', 'Фінансова аналітика'),
-        ('customer_income_context', 'Фінансова аналітика по замовнику'),
+        ('fin_analysis_context', 'Фінансова аналітика'),
+        ('customer_fin_analysis_context', 'Фінансова аналітика по замовнику'),
         ('income_structure_context', 'Структура доходів'),
+        ('receivables_structure_context', 'Структура дебіторки'),
     )
 
     name = models.CharField('Назва', max_length=50, unique=True)
