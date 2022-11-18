@@ -427,22 +427,26 @@ def income_context(customers, year):
         stock_list = []
 
         for month in range(12):
-            acts_income = ActOfAcceptance.objects.filter(deal__customer=customer,
-                                                         date__year=year,
-                                                         date__month=month+1) \
-                                                 .aggregate(Sum('value'))['value__sum'] or 0
+            acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
+            payments_customer = Payment.objects.filter(deal__customer=customer)
+            acts_income = acts_customer.filter(date__year=year,
+                                               date__month=month+1) \
+                                       .aggregate(Sum('value'))['value__sum'] or 0
             acts_income_list.append(float(acts_income))
-            payments_income = Payment.objects.filter(deal__customer=customer,
-                                                     date__year=year,
-                                                     date__month=month+1) \
-                                             .aggregate(Sum('value'))['value__sum'] or 0
+            payments_income = payments_customer.filter(date__year=year,
+                                                       date__month=month+1) \
+                                               .aggregate(Sum('value'))['value__sum'] or 0
             payments_income_list.append(float(payments_income))
             work_done_income = Task.objects.filter(deal__customer=customer,
                                                    actual_finish__year=year,
                                                    actual_finish__month=month+1) \
                                             .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
             work_done_list.append(float(work_done_income))
-            receivables_list.append(float(acts_income-payments_income))
+            acts_sum = acts_customer.filter(date__year__lt=year) \
+                                    .aggregate(Sum('value'))['value__sum'] or 0
+            payments_sum = payments_customer.filter(date__year__lt=year) \
+                                            .aggregate(Sum('value'))['value__sum'] or 0
+            receivables_list.append(float(acts_sum - payments_sum + acts_income - payments_income))
             stock_list.append(float(work_done_income-acts_income))
 
         acts_data.append({"name": customer.name,
