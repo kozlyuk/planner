@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load fontawesome_5 %}
+
+{% block context %}
+
+<div id="content">
+    <div id="container_acts_income" style="width: 50%; float: left;"></div>
+    <div id="container_work_done" style="width: 50%; float: left;"></div>
+    <div id="container_payments_income" style="width: 34%; float: left;"></div>
+    <div id="container_receivables" style="width: 33%; float: left;"></div>
+    <div id="container_stock" style="width: 33%; float: left;"></div>
+</div>
+
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        var chart;
+        $(document).ready(function() {
+
+            var container_acts_income = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_acts_income',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Дохід по актам"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ acts_data|safe }}
+                }]
+            });
+
+            var container_work_done = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_done',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Виконано робіт"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ work_done_data|safe }}
+                }]
+            });
+
+            var container_payments_income = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_payments_income',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Оплачено"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ payments_data|safe }}
+                }]
+            });
+
+            var container_receivables = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_receivables',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Дебіторська заборгованість"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ receivables_data|safe }}
+                }]
+            });
+
+            var container_stock = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_stock',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                },
+                title: {
+                    text: "Рівень запасів"
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Частка',
+                    colorByPoint: true,
+                    data: {{ stock_data|safe }}
+                }]
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

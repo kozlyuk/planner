@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.conf import settings
 from django.db.models import Sum
 
-from planner.models import ActOfAcceptance, Deal, Payment, Task
+from planner.models import ActOfAcceptance, Deal, Payment, Task, Customer
 
 def receivables_context(company, customer, from_date, to_date):
 
@@ -504,19 +504,23 @@ def customer_fin_analysis_context(year, customers):
     for month in range(12):
         acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
         payments_customer = Payment.objects.filter(deal__customer=customer)
+
         acts_income = acts_customer.filter(date__year=year,
                                             date__month=month+1) \
                                     .aggregate(Sum('value'))['value__sum'] or 0
         acts_income_list.append(float(acts_income))
+
         payments_income = payments_customer.filter(date__year=year,
                                                     date__month=month+1) \
                                             .aggregate(Sum('value'))['value__sum'] or 0
         payments_income_list.append(float(payments_income))
+
         work_done_income = Task.objects.filter(deal__customer=customer,
                                                 actual_finish__year=year,
                                                 actual_finish__month=month+1) \
                                         .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
         work_done_list.append(float(work_done_income))
+
         acts_sum = acts_customer.filter(date__year__lt=year) \
                                 .aggregate(Sum('value'))['value__sum'] or 0
         payments_sum = payments_customer.filter(date__year__lt=year) \
@@ -535,5 +539,73 @@ def customer_fin_analysis_context(year, customers):
         'customer': customer,
         'xAxis': xAxis,
         'series': series,
+    }
+    return context
+
+
+def income_structure_context(year, customers):
+
+    # prepare chart data
+    xAxis = []
+    acts_data = []
+    payments_data = []
+    work_done_data = []
+    receivables_data = []
+    stock_data = []
+
+    for month in range(12):
+        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+
+    if not customers:
+        customer_ids = list(set(ActOfAcceptance.objects.filter(date__year=year).values_list('deal__customer', flat=True)))
+        customers = Customer.objects.filter(pk__in=customer_ids)
+
+    for customer in customers:
+        acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
+        payments_customer = Payment.objects.filter(deal__customer=customer)
+
+        acts_income = acts_customer.filter(date__year=year) \
+                                   .aggregate(Sum('value'))['value__sum'] or 0
+        if acts_income > 0:
+            acts_data.append({"name": customer.name,
+                              "y": float(acts_income)})
+
+        work_done_income = Task.objects.filter(deal__customer=customer,
+                                               actual_finish__year=year) \
+                                       .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
+        if work_done_income > 0:
+            work_done_data.append({"name": customer.name,
+                                   "y": float(work_done_income)})
+
+        payments_income = payments_customer.filter(date__year=year) \
+                                   .aggregate(Sum('value'))['value__sum'] or 0
+        if payments_income > 0:
+            payments_data.append({"name": customer.name,
+                                  "y": float(payments_income)})
+
+        acts_sum = ActOfAcceptance.objects.filter(deal__customer=customer,
+                                                    date__year__lte=year) \
+                                            .aggregate(Sum('value'))['value__sum'] or 0
+
+        payments_sum = Payment.objects.filter(deal__customer=customer,
+                                                date__year__lte=year) \
+                                        .aggregate(Sum('value'))['value__sum'] or 0
+        receivables = acts_sum - payments_sum
+        if receivables > 0:
+            receivables_data.append({"name": customer.name,
+                                     "y": float(receivables)})
+        stocks = work_done_income-acts_income
+        if stocks > 0:
+            stock_data.append({"name": customer.name,
+                               "y": float(stocks)})
+
+    # creating context
+    context = {
+        'customers': customers,
+        'acts_data': acts_data,
+        'work_done_data': work_done_data,
+        'payments_data': payments_data,
+        'receivables_data': receivables_data,
+        'stock_data': stock_data,
     }
     return context
