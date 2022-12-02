@@ -5,6 +5,10 @@
 {% load ita_template_tags %}
 {% load fontawesome_5 %}
 
+{% block global_meta %}
+    <title>Ітел-Сервіс | Головна</title>
+{% endblock %}
+
 {% block context %}
 {% now "m" as current_month %}
 {% now "Y" as current_year %}
