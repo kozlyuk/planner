@@ -184,7 +184,8 @@ def context_act_render(act):
                                 .values_list('object_code', flat=True)
             objects = ''
             for obj in object_codes:
-                objects += obj + ' '
+                objects += obj + ', '
+            objects = objects[:-2]
             count = object_codes.count()
             price = ptype['project_type__price'] / Decimal(1.2)
             price = price.quantize(Decimal("1.00"), ROUND_HALF_UP)
