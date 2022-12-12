@@ -1171,7 +1171,7 @@ class Execution(ModelDiffMixin, models.Model):
             # Automatic add execution first to employee queue with duration 1 hour
             timeplanner = TimePlanner(self.executor)
             if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
-                    and self.warning != "На коригуванні":
+                    and self.planned_start and self.warning != "На коригуванні":
                 self.warning = "На коригуванні"
                 self.planned_finish = timeplanner.calc_businesstimedelta(self.planned_start, timedelta(hours=1))
             if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
