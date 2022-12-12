@@ -1167,6 +1167,8 @@ class Execution(ModelDiffMixin, models.Model):
         if self.executor is None:
             self.planned_start = None
             self.planned_finish = None
+            self.prev_exec_status = self.ToDo
+            self.exec_status = self.ToDo
         else:
             # Automatic add execution first to employee queue with duration 1 hour
             timeplanner = TimePlanner(self.executor)
