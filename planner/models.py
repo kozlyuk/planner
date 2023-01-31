@@ -827,9 +827,9 @@ class Task(ModelDiffMixin, models.Model):
         # Automatic changing of Task.exec_status when all sendings was sent
         if self.exec_status in [self.Done, self.Sent]:
             sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
-            if sendings >= self.project_type.copies_count:
+            if not self.sending_date and sendings > 0:
                 self.exec_status = self.Sent
-                self.sending_date = self.sending_set.aggregate(Max('receipt_date'))['receipt_date__max']
+                self.sending_date = self.sending_set.first().receipt_date
 
         super().save(*args, **kwargs)
 
