@@ -423,7 +423,7 @@ def fin_analysis_context(year, customers):
     turnover_data = []
 
     for month in range(12):
-        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+        xAxis.append(date_format(date.today().replace(day=1, month=month+1), 'M'))
 
     for customer in customers:
         acts_income_list = []
