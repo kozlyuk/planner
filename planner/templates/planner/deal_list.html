@@ -9,64 +9,68 @@
 {% endblock %}
 
 {% block context %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .select2-container--bootstrap {
+            display: inline-table
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
-        <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
-            xmlns="http://www.w3.org/1999/html">
-            <br><!-- BEGIN CONTENT -->
-            <div class="container-fluid">
-                <div class="portlet-body">
-                    <div id="dealList" class="table-scrollable">
-                        <table class="table table-striped table-advance table-hover">
-                            <thead>
-                                <tr>
-                                    <th><a href="?{% url_replace request 'o' 'number' %}"> НОМЕР ДОГОВОРУ </a></th>
-                                    <th><a href="?{% url_replace request 'o' 'customer__name' %}"> ЗАМОВНИК </a></th>
-                                    <th> ВАРТІСТЬ РОБІТ, ГРН. </th>
-                                    <th><a href="?{% url_replace request 'o' 'pay_status' %}"> СТАТУС ОПЛАТИ </a></th>
-                                    <th><a href="?{% url_replace request 'o' 'act_status' %}"> АКТ ВИКОНАНИХ РОБІТ </a></th>
-                                    <th> СТАТУС ВИКОНАННЯ </th>
-                                    <th> ПОПЕРЕДЖЕННЯ </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for deal in deals %}
-                                <tr>
-                                    {% if perms.planner.change_deal %}
-                                    <td><a href="{% url 'deal_update' deal.id %}"> {{ deal.number }} </a></td>
-                                    {% else %}
-                                    <td> {{ deal.number }} </td>
-                                    {% endif %}
-                                    <td>{{ deal.customer }}</td>
-                                    <td>{{ deal.value }}</td>
-                                    <td>{{ deal.get_pay_status_display }}</td>
-                                    <td>{{ deal.get_act_status_display }}</td>
-                                    <td>{{ deal.get_exec_status_display }}</td>
-                                    <td><span
-                                            class="badge badge-pill badge-{% deal_status_color deal.warning %} label-mini">
-                                            {{ deal.warning }} </span></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="text-center">
-                                {{ deals_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ deals_count }} всього)
-                                </a><br>
-                                {% include 'pagination.html' %}
-                            </div>
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+        xmlns="http://www.w3.org/1999/html">
+        <br><!-- BEGIN CONTENT -->
+        <div class="container-fluid">
+            <div class="portlet-body">
+                <div id="dealList" class="table-scrollable">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                            <tr>
+                                <th><a href="?{% url_replace request 'o' 'number' %}"> НОМЕР ДОГОВОРУ </a></th>
+                                <th><a href="?{% url_replace request 'o' 'customer__name' %}"> ЗАМОВНИК </a></th>
+                                <th> ВАРТІСТЬ РОБІТ, ГРН. </th>
+                                <th><a href="?{% url_replace request 'o' 'pay_status' %}"> СТАТУС ОПЛАТИ </a></th>
+                                <th><a href="?{% url_replace request 'o' 'act_status' %}"> АКТ ВИКОНАНИХ РОБІТ </a></th>
+                                <th> СТАТУС ВИКОНАННЯ </th>
+                                <th> ПОПЕРЕДЖЕННЯ </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deal in deals %}
+                            <tr>
+                                {% if perms.planner.change_deal %}
+                                <td><a href="{% url 'deal_update' deal.id %}"> {{ deal.number }} </a></td>
+                                {% else %}
+                                <td> {{ deal.number }} </td>
+                                {% endif %}
+                                <td>{{ deal.customer }}</td>
+                                <td>{{ deal.value }}</td>
+                                <td>{{ deal.get_pay_status_display }}</td>
+                                <td>{{ deal.get_act_status_display }}</td>
+                                <td>{{ deal.get_exec_status_display }}</td>
+                                <td><span class="badge badge-pill badge-{% deal_status_color deal.warning %} label-mini">
+                                    {{ deal.warning }}
+                                </span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            {{ deals_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ deals_count }} всього)
+                            </a><br>
+                            {% include 'pagination.html' %}
                         </div>
                     </div>
-
-                    <!-- END PAGE BASE CONTENT -->
                 </div>
+                <!-- END PAGE BASE CONTENT -->
             </div>
-            <!-- END CONTENT -->
         </div>
-        <!-- END CONTAINER -->
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
     <div class="add-btn-wrapper">
     {% if perms.planner.add_deal %}
         <a href="{% url 'deal_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
