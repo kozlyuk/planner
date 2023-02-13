@@ -50,7 +50,7 @@
     {% if perms.planner.add_task %}
         <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
     {% endif %}
-    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></i></a>
+    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></a>
     </div>
     {% include "widgets/filter_panel.html" %}
 {% endblock %}

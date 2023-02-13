@@ -1,0 +1,35 @@
+
+{% load ita_template_tags %}
+
+<table class="table table-striped table-advance table-hover">
+    <thead>
+        <tr>
+            <th><a href="?{% url_replace request 'o' 'number' %}"> НОМЕР ДОГОВОРУ </a></th>
+            <th><a href="?{% url_replace request 'o' 'customer__name' %}"> ЗАМОВНИК </a></th>
+            <th> ВАРТІСТЬ РОБІТ, ГРН. </th>
+            <th><a href="?{% url_replace request 'o' 'pay_status' %}"> СТАТУС ОПЛАТИ </a></th>
+            <th><a href="?{% url_replace request 'o' 'act_status' %}"> АКТ ВИКОНАНИХ РОБІТ </a></th>
+            <th> СТАТУС ВИКОНАННЯ </th>
+            <th> ПОПЕРЕДЖЕННЯ </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for deal in deals %}
+        <tr>
+            {% if perms.planner.change_deal %}
+            <td><a href="{% url 'deal_update' deal.id %}"> {{ deal.number }} </a></td>
+            {% else %}
+            <td> {{ deal.number }} </td>
+            {% endif %}
+            <td>{{ deal.customer }}</td>
+            <td>{{ deal.value }}</td>
+            <td>{{ deal.get_pay_status_display }}</td>
+            <td>{{ deal.get_act_status_display }}</td>
+            <td>{{ deal.get_exec_status_display }}</td>
+            <td><span class="badge badge-pill badge-{% deal_status_color deal.warning %} label-mini">
+                {{ deal.warning }}
+            </span></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
