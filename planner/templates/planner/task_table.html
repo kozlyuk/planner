@@ -5,13 +5,14 @@
         <tr>
             <th class="print-ignore"></th>
             <th><a href="?{% url_replace request 'o' 'object_code' %}"> ШИФР ОБ’ЄКТУ </a></th>
-            <th><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА </a></th>
+            <!-- <th><a href="?{% url_replace request 'o' 'object_address' %}"> АДРЕСА </a></th> -->
             <th><a href="?{% url_replace request 'o' '-project_type__price_code' %}"> ТИП ПРОЕКТУ
                 </a></th>
             <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
             <th><a href="?{% url_replace request 'o' 'period' %}"> ПОСЛІДОВНІСТЬ </a></th>
-            <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
             <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
+            <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
+            <th> СТАТУСИ ПІДЗАДАЧ </th>
             <th> ПОПЕРЕДЖЕННЯ </th>
             <th> ТЗ </th>
             <th> <i class="fas fa-file-pdf"></i> </th>
@@ -33,7 +34,6 @@
             {% else %}
                 <td data-toggle="tooltip" data-placement="right" title="{{ task.object_address }}">{{ task.object_code }}</td>
             {% endif %}
-            <td> {{ task.object_address }}</td>
             <td> {{ task.project_type }}</td>
             <td class="hidden-xs">
                 {% if perms.planner.change_deal %}
@@ -43,8 +43,9 @@
                 {% endif %}
             </td>
             <td>{% none_date_check task.period %}</td>
-            <td> {{ task.get_exec_status_display }} </td>
             <td> {{ task.owner.name }} </td>
+            <td> {{ task.get_exec_status_display }} </td>
+            <td> {{ task.executions|linebreaks }}</td>
             <td>
                 <span class="badge badge-pill badge-{% task_overdue_color task.warning %} label-mini">
                     {{ task.warning }}

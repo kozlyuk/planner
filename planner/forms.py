@@ -791,13 +791,14 @@ class SubTasksInlineForm(forms.ModelForm):
     class Meta:
         model = SubTask
         fields = ['name', 'part', 'duration', 'base', 'add_to_schedule',
-                  'simultaneous_execution', 'check_required']
+                  'simultaneous_execution', 'check_required', 'show_to_customer']
         widgets = {
             'part': forms.TextInput(attrs={'style' : 'height:34px'}),
             'base': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
             'add_to_schedule': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
             'simultaneous_execution': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
             'check_required': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
+            'show_to_customer': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
         }
 
 

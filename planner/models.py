@@ -971,6 +971,18 @@ class Task(ModelDiffMixin, models.Model):
         return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
 
+    # list of executions for task_list
+    def executions(self):
+        line = ""
+        execitions = self.execution_set.filter(subtask__show_to_customer=True)
+        for execution in execitions:
+            line += f'\n{execution.subtask.name} - {execution.get_exec_status_display()}'
+            if execution.exec_status == Execution.Done and execution.actual_finish:
+                line += f" - {execution.actual_finish.strftime(date_format)}"
+            elif execution.planned_finish:
+                line += f" - {execution.planned_finish.strftime(date_format)}"
+        return line[1:]
+
 
 @receiver(post_save, sender=Task, dispatch_uid="update_task_status")
 def update_task(sender, instance, **kwargs):
