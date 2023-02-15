@@ -375,7 +375,7 @@ input[type=text] {
     right: 0px;
 }
 
-.add_btn, .print_btn {
+.add_btn, .print_btn, .move_btn{
     display: inline-block;
     vertical-align: middle;
     *vertical-align: auto;
@@ -397,6 +397,13 @@ input[type=text] {
     top: 120px;
     color: #6c757d!important;
     border: 2px solid #6c757d;
+    border-right: white;
+}
+
+.move_btn {
+    top: 240px;
+    color: #e7505a!important;
+    border: 2px solid #e7505a;
     border-right: white;
 }
 

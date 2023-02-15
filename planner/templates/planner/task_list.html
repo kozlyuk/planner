@@ -35,10 +35,6 @@
                             </div>
                         </div>
                     </div>
-                    {% if perms.planner.change_deal %}
-                    <button type="submit" class="btn dark btn-sm btn-outline sbold uppercase" style="float: right;">Змінити
-                        договір</button>
-                    {% endif %}
                 </form>
                 <!-- END PAGE BASE CONTENT -->
             </div>
@@ -47,10 +43,13 @@
         <!-- END CONTAINER -->
     </div>
     <div class="add-btn-wrapper">
-    {% if perms.planner.add_task %}
-        <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
-    {% endif %}
-    <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></a>
+        {% if perms.planner.add_task %}
+            <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
+        {% endif %}
+        <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></a>
+        {% if perms.planner.change_deal %}
+            <a href="#" class="move_btn" onclick="document.forms['TaskExchange'].submit();" ><i class="fa fa-file-contract"></i></a>
+        {% endif %}
     </div>
     {% include "widgets/filter_panel.html" %}
 {% endblock %}

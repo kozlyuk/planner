@@ -181,6 +181,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 # File upload settings
 FILE_UPLOAD_PERMISSIONS = 0o644
 
+# Auto-created primary key
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 # REDIS and CELERY related settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
