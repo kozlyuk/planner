@@ -9,7 +9,7 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When, CharField
 from django.db.models.functions import Concat
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
@@ -634,7 +634,7 @@ class ReceiverList(ListView):
     paginate_by = 35
 
     def get_queryset(self):
-        receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
+        receivers = Receiver.objects.annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField())).\
             values_list('name', 'address', 'contact_person', 'phone', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
@@ -730,7 +730,7 @@ class ProjectList(ListView):
     paginate_by = 35
 
     def get_queryset(self):
-        project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+        project_types = Project.objects.annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField()))\
             .annotate(net_price=ExpressionWrapper(Round(F('price')*F('net_price_rate')/100),
                                                   output_field=DecimalField())).\
             values_list('project_type', 'customer__name', 'price_code',
@@ -853,7 +853,7 @@ class CustomerList(ListView):
     def get_queryset(self):
         debit_qry = Q(deal__act_status=Deal.Issued, deal__pay_status=Deal.NotPaid)
         customers = Customer.objects.annotate(
-            url=Concat(F('pk'), Value('/change/')),
+            url=Concat(F('pk'), Value('/change/'), output_field=CharField()),
             advance = Sum(Case(When(deal__pay_status=Deal.AdvancePaid, then=F('deal__value')),
                                     output_field=DecimalField(), default=0)),
             debit = Sum(Case(When(debit_qry, then=F('deal__value')),
@@ -950,7 +950,7 @@ class CompanyList(ListView):
     paginate_by = 35
 
     def get_queryset(self):
-        companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/')))\
+        companies = Company.objects.annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField()))\
             .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
@@ -1045,7 +1045,7 @@ class СolleagueList(ListView):
         employees = Employee.objects.filter(user__is_active=True)\
                                     .exclude(name__startswith='Аутсорсинг') \
                                     .order_by('name')\
-                                    .annotate(url=Concat(F('pk'), Value('/detail/')))\
+                                    .annotate(url=Concat(F('pk'), Value('/detail/'), output_field=CharField()))\
                                     .values_list('avatar', 'name', 'url', 'position')
         search_string = self.request.GET.get('filter', '').split()
         for word in search_string:
@@ -1081,7 +1081,7 @@ class EmployeeList(ListView):
     def get_queryset(self):
         employees = Employee.objects.filter(user__is_active=True) \
                                     .order_by('name')\
-                                    .annotate(url=Concat(F('pk'), Value('/change/')))\
+                                    .annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField()))\
                                     .values_list('name', 'url')
         search_string = self.request.GET.get('filter', '').split()
         for word in search_string:
@@ -1182,7 +1182,7 @@ class ContractorList(ListView):
     paginate_by = 35
 
     def get_queryset(self):  # todo args url
-        contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'))).\
+        contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField())).\
             values_list('name', 'active', 'url')
         search_string = self.request.GET.get('filter', '').split()
         order = self.request.GET.get('o', '0')
