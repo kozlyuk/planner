@@ -93,6 +93,7 @@ class CustomerAdmin(admin.ModelAdmin):
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
                            ('requisites'),
+                           ('legal_description'),
                            ('legal'),
                            ('plan_reserve'),
                            ('deal_template'),
@@ -119,6 +120,7 @@ class CompanyAdmin(admin.ModelAdmin):
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
                            ('requisites'),
+                           ('legal_description'),
                            ('legal'),
                            ('active'),
                            ]})

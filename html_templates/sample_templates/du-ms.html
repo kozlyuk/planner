@@ -7,7 +7,7 @@
 	<TITLE>{{ deal.number }}</TITLE>
 </HEAD>
 <BODY STYLE="margin-left:50px;" DIR="A4">
-<FONT SIZE=3>
+<FONT SIZE=2>
 	<P ALIGN=CENTER STYLE="line-height: 150%">
 	<B>
 		Додаткова угода № {{ deal.number }}<BR>
@@ -15,22 +15,20 @@
 		на проведення проектних та вишукувальних робіт від {{ deal.parent_deal_date }}
 	</B></P>
 	<P>
-			<B>{{ deal.customer.city }}</B>
+			<B>м. {{ deal.customer.city }}</B>
 			<SPAN STYLE="float:right;"><B>{{ deal.date }}</B>
 	</P>
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.customer.full_name }}</B>,
-		що є юридичною особою, належним чином створеною,
-		зареєстрованою та діючою згідно чинного законодавства України,
-		{{ deal.customer.legal }}, що діє на підставі {{ deal.customer.regulations }},
+		{{ deal.customer.legal_description }} {{ deal.company.legal }},
+		що діє на підставі {{ deal.company.regulations }},
 		надалі за текстом цієї Додаткової угоди <B>«Генпідрядник»</B>, з однієї сторони,
 	</P>
 	та
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.company.full_name }}</B>,
-		що є юридичною особою, належним чином створеною, зареєстрованою
-		та діючою згідно з чинним законодавством України,
-		{{ deal.company.legal }}, що діє на підставі {{ deal.company.regulations }},
+		{{ deal.company.legal_description }} {{ deal.company.legal }},
+		що діє на підставі {{ deal.company.regulations }},
 		надалі за текстом цієї Додаткової угоди <B>«Субпідрядник»</B>,
 		з іншої сторони, уклали дану Додаткову угоду про наступне:
 	</P>
@@ -47,7 +45,7 @@
 				зобов'язується своїми силами та засобами, за завданням Генпідрядника
 				виконати проектні та вишукувальні роботи на базові станції мобільного зв’язку (далі – БС):
 			</P>
-			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
+			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
 					<TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
 					<TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
@@ -64,7 +62,7 @@
 			Вартість усього комплексу робіт передбаченого цією Угодою, визначена Сторонами згідно
 			умов договору та прейскуранту цін до нього і становить:
 		</P>
-		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
+		<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 			<TR VALIGN=TOP>
 				<TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
 				<TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
@@ -117,15 +115,11 @@
 			<P>	- закінчення {{ deal.expire_date }}</P>
 		</LI>
 		<LI><P  ALIGN=JUSTIFY>
-			За виконання усього комплексу робіт, передбачених цією Угодою, Замовник здійснює оплату
-			у наступному порядку: 100% вартості	виконаних Підрядником Робіт, що становить
-			<B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
-			, у тому числі ПДВ
-			<B>{{ deal.value | VAT }}
-			{% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
-			та сплачується Підряднику Замовником упродовж
-			<B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
-			з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт - до {{ deal.pay_date_calc|date:"d E Y" }} року (включно). Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником.
+			За виконання усього комплексу робіт, передбачених цією Угодою, Генпідрядник здійснює оплату у наступному порядку: - у п'ятиденний термін, починаючи з дня підписання цієї Додатковї угоди, зобов'язується здійснити авансовий платіж Субпідряднику у сумі
+			<B>{{ advance }} ({% num_to_text advance 'hrn' %} {{ advance | exp_part }} коп.)</B>, без ПДВ.
+			Решта суми вартості виконаних Субідрядником Робіт, що становить
+			<B>{{ overpay }} ({% num_to_text overpay 'hrn' %} {{ overpay | exp_part }} коп.)</B>, без ПДВ
+			сплачується Субпідряднику Генпідрядником упродовж 45 (сорок п'ять календарних днів) з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт. Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником
 		</P></LI>
 		<LI><P ALIGN=JUSTIFY>
 				Дана Додаткова Угода складена українською мовою в двох оригінальних примірниках
@@ -135,9 +129,9 @@
 		</LI>
 		<LI><P>
 			Юридичні адреси і банківські реквізити Сторін:</P>
-			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0>
+			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
-					<TD WIDTH=40%>
+					<TD WIDTH=45%>
 						<P ALIGN=CENTER>
 						<B>СУБПІДРЯДНИК:</B></P>
 						<P ALIGN=CENTER>
@@ -150,11 +144,11 @@
 						<P ALIGN=JUSTIFY><BR>
 						</P>
 						<P ALIGN=JUSTIFY>
-                        <B>______________________ {{ deal.company.signatory_person }}</B></P>
+                        <B>__________________ {{ deal.company.signatory_person }}</B></P>
 						<P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
 					</TD>
 					<TD></TD>
-					<TD WIDTH=40%>
+					<TD WIDTH=45%>
 						<P ALIGN=CENTER>
 						<B>ГЕНПІДРЯДНИК:</B></P>
 						<P ALIGN=CENTER>
@@ -165,7 +159,7 @@
 						<P ALIGN=JUSTIFY><BR>
 						</P>
 						<P ALIGN=JUSTIFY>
-                        <B>______________________ {{ deal.customer.signatory_person }}</B></P>
+                        <B>__________________ {{ deal.customer.signatory_person }}</B></P>
 						<P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
 					</TD>
 				</TR>

@@ -731,7 +731,7 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = ['name', 'full_name', 'contact_person', 'phone', 'email',
                   'debtor_term', 'user',
-                  'city', 'legal', 'regulations',
+                  'city', 'legal_description', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites', 'plan_reserve',
                   'deal_template', 'act_template', 'invoice_template', 'report_template', 'active',
                   ]
@@ -754,7 +754,7 @@ class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = ['name', 'full_name', 'chief', 'taxation',
-                  'city', 'legal', 'regulations',
+                  'city', 'legal_description', 'legal', 'regulations',
                   'signatory_person', 'signatory_position',
                   'requisites', 'active',
                   ]

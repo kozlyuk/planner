@@ -174,6 +174,7 @@ class Requisites(models.Model):
     full_name = models.CharField('Повна назва', max_length=100, blank=True)
     city = models.CharField('Місто', max_length=30, blank=True)
     legal = models.CharField('Опис контрагента', max_length=255, blank=True)
+    legal_description = models.CharField('Організаційно-правова форма', max_length=255, blank=True)
     regulations = models.CharField('Діє на підставі', max_length=100, blank=True)
     signatory_person = models.CharField('Підписант', max_length=50, blank=True)
     signatory_position = models.CharField('Посада підписанта', max_length=255, blank=True)

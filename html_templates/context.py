@@ -2,7 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
 from django.conf import settings
 
-from planner.models import Task, Execution, IntTask
+from planner.models import Task, Execution, IntTask, Deal
 
 def context_bonus_per_month(employee, period):
 
@@ -108,6 +108,12 @@ def context_deal_render(deal):
                                  'project_type__project_type',
                                  'project_type__price') \
                          .order_by('project_type__price_code').distinct()
+    advance = 0
+    if deal.pay_status == Deal.AdvancePaid:
+        acts_total = deal.acts_total()
+        paid_total = deal.paid_total()
+        advance = paid_total - acts_total
+
     # prepare table data
     index = 0
     svalue = Decimal(0)
@@ -140,7 +146,9 @@ def context_deal_render(deal):
         'objects': objects,
         'taxation': deal.company.taxation,
         'object_lists': object_lists,
-        'svalue': svalue
+        'svalue': svalue,
+        'advance': advance,
+        'overpay': deal.value - advance,
     }
     return context
 
