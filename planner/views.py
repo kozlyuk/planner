@@ -1270,7 +1270,7 @@ class ContractorDelete(DeleteView):
         return context
 
 
-class ExecutionkUpdateView(BSModalUpdateView):
+class ExecutionUpdateModal(BSModalUpdateView):
     model = Execution
     template_name = 'planner/execution_update.html'
     form_class = forms.ExecutionModelForm

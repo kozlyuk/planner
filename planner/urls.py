@@ -37,7 +37,7 @@ urlpatterns = [
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
     path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
-    path('execution/update/<int:pk>', views.ExecutionkUpdateView.as_view(), name='execution_update'),
+    path('execution/update/<int:pk>', views.ExecutionUpdateModal.as_view(), name='execution_update'),
 
     path('receiver/', views.ReceiverList.as_view(), name='receiver_list'),
     path('receiver/add', views.ReceiverCreate.as_view(), name='receiver_add'),

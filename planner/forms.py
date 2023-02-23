@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-from decimal import Decimal
 from django import forms
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet

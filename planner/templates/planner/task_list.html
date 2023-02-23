@@ -19,7 +19,7 @@
     <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
     <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
         xmlns="http://www.w3.org/1999/html">
-        <br><!-- BEGIN CONTENT -->
+        <!-- BEGIN CONTENT -->
         <div class="container-fluid">
             <div class="portlet-body">
                 <form id="TaskExchange" action="{% url 'task_exchange' %}" method="get">
@@ -36,11 +36,9 @@
                         </div>
                     </div>
                 </form>
-                <!-- END PAGE BASE CONTENT -->
             </div>
-            <!-- END CONTENT -->
+        <!-- END CONTENT -->
         </div>
-        <!-- END CONTAINER -->
     </div>
     <div class="add-btn-wrapper">
         {% if perms.planner.add_task %}
