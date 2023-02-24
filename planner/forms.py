@@ -816,3 +816,15 @@ class ExecutionModelForm(BSModalModelForm):
             'planned_finish': SplitDateTimeWidget(),
             'fixed_date': forms.CheckboxInput(attrs={'style' : 'height:15px'}),
         }
+
+
+class TaskModelForm(BSModalModelForm):
+
+    class Meta:
+        model = Task
+        fields = ['period', 'manual_warning']
+        today = date.today().year
+
+        widgets = {
+            'period': forms.SelectDateWidget(years=range(today - 2, today + 8))
+        }

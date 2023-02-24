@@ -40,6 +40,11 @@
         <!-- END CONTENT -->
         </div>
     </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
     <div class="add-btn-wrapper">
         {% if perms.planner.add_task %}
             <a href="{% url 'task_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
@@ -59,6 +64,7 @@
 {% block extrahead %}
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script src="{% static 'assets/apps/scripts/filter_panel.js' %}"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
     <script>
     const makePDFButton = document.querySelector('#makePDF');
     makePDFButton.addEventListener('click', () => {
@@ -70,5 +76,16 @@
             css: 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'
         })
     })
+
+    function updateTaskModalForm() {
+            $(".update-task").each(function () {
+                $(this).modalForm({
+                    formURL: $(this).data("form-url"),
+                });
+            });
+            }
+
+    updateTaskModalForm();
+
     </script>
 {% endblock extrahead %}

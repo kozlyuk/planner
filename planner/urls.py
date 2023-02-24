@@ -32,6 +32,7 @@ urlpatterns = [
     path('project/<int:pk>/delete/', views.TaskDelete.as_view(), name='task_delete'),
     path('project/<int:pk>/', views.TaskDetail.as_view(), name='task_detail'),
     path('project/exchange/', views.TaskExchange.as_view(), name='task_exchange'),
+    path('task/update/<int:pk>', views.TaskUpdateModal.as_view(), name='task_update_modal'),
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),

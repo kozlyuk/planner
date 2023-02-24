@@ -1276,3 +1276,11 @@ class ExecutionUpdateModal(BSModalUpdateView):
     form_class = forms.ExecutionModelForm
     success_message = 'Success: Execution was updated.'
     success_url = reverse_lazy('sprint_list')
+
+
+class TaskUpdateModal(BSModalUpdateView):
+    model = Task
+    template_name = 'planner/execution_update.html'
+    form_class = forms.TaskModelForm
+    success_message = 'Success: Execution was updated.'
+    success_url = reverse_lazy('task_list')

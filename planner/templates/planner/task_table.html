@@ -10,6 +10,9 @@
                 </a></th>
             <th class="hidden-xs"><a href="?{% url_replace request 'o' '-deal__creation_date' %}"> ДОГОВІР </a></th>
             <th><a href="?{% url_replace request 'o' 'period' %}"> ПОСЛІДОВНІСТЬ </a></th>
+            {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
+                <th></th>
+            {% endif %}
             <th><a href="?{% url_replace request 'o' 'owner' %}"> КЕРІВНИК ПРОЕКТУ </a></th>
             <th><a href="?{% url_replace request 'o' '-exec_status' %}"> СТАТУС </a></th>
             <th> СТАТУСИ ПІДЗАДАЧ </th>
@@ -43,6 +46,13 @@
                 {% endif %}
             </td>
             <td>{% none_date_check task.period %}</td>
+            {% if request.user.is_superuser or request.user|has_group:"ГІПи" %}
+                <td>
+                    <button type="button" class="update-task btn btn-link" data-form-url="{% url 'task_update_modal' task.pk %}">
+                        <span class="fa fa-refresh"></span>
+                    </button>
+                </td>
+            {% endif %}
             <td> {{ task.owner.name }} </td>
             <td> {{ task.get_exec_status_display }} </td>
             <td> {{ task.executions|linebreaks }}</td>
