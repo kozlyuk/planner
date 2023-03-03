@@ -54,7 +54,7 @@ class ModelDiffMixin(object):
             changed = True
             field = self._meta.get_field(key)
             if field.choices is not None:
-                value_str = ' -> '.join(map(lambda x: dict(field.choices)[x], value))
+                value_str = ' -> '.join(map(lambda x: None if x is None else dict(field.choices)[x], value))
             else:
                 value_str = ' -> '.join(map(str, value))
             diff_str += f'{field.verbose_name}: {value_str}, '
