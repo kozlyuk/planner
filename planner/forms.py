@@ -475,13 +475,15 @@ class ExecutorInlineForm(forms.ModelForm):
             executor = cleaned_data.get("executor")
             exec_status = cleaned_data.get("exec_status")
             if executor and exec_status==Execution.InProgress:
-                inprogress_exists = Execution.objects.filter(executor=self.instance.executor,
+                inprogress_exists = Execution.objects.filter(executor=executor,
                                                              exec_status=Execution.InProgress,
                                                              task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
                                                      .exclude(pk=self.instance.pk) \
                                                      .exists()
-                if not self.instance.subtask.simultaneous_execution and inprogress_exists:
-                    self.add_error('exec_status', "Виконавець виконує іншу задачу")
+                if not self.instance.subtask.simultaneous_execution and \
+                    executor.position != "аутсорсинг" and \
+                    inprogress_exists:
+                        self.add_error('exec_status', "Виконавець виконує іншу задачу")
 
             if 'exec_status' in self.changed_data:
                 cleaned_data['prev_exec_status'] = self.instance.exec_status
