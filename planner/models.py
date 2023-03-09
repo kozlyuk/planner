@@ -627,6 +627,9 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
+        # update tasks with this act
+        self.task_set.update(act_of_acceptance = None)
+        # logging
         title = f'{self.number} - {self.date}'
         log(user=get_current_user(),
             action='Видалений акт',
