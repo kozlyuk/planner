@@ -409,6 +409,8 @@ def context_chart_render(chart, year, customers=None):
 
     return globals()[chart.context](year, customers)
 
+def range_for_year(year):
+    return date.today().month if int(year) == date.today().year else 12
 
 def fin_analysis_context(year, customers):
 
@@ -422,7 +424,7 @@ def fin_analysis_context(year, customers):
     turnover_closed_data = []
     turnover_data = []
 
-    for month in range(12):
+    for month in range(range_for_year(year)):
         xAxis.append(date_format(date.today().replace(day=1, month=month+1), 'M'))
 
     for customer in customers:
@@ -432,7 +434,7 @@ def fin_analysis_context(year, customers):
         receivables_list = []
         stock_list = []
 
-        for month in range(12):
+        for month in range(range_for_year(year)):
             acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
             payments_customer = Payment.objects.filter(deal__customer=customer)
             acts_income = acts_customer.filter(date__year=year,
@@ -492,7 +494,7 @@ def customer_fin_analysis_context(year, customers):
     xAxis = []
     series = []
 
-    for month in range(12):
+    for month in range(range_for_year(year)):
         xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
 
     acts_income_list = []
@@ -501,7 +503,7 @@ def customer_fin_analysis_context(year, customers):
     receivables_list = []
     stock_list = []
 
-    for month in range(12):
+    for month in range(range_for_year(year)):
         acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
         payments_customer = Payment.objects.filter(deal__customer=customer)
 
@@ -553,7 +555,7 @@ def income_structure_context(year, customers):
     receivables_data = []
     stock_data = []
 
-    for month in range(12):
+    for month in range(range_for_year(year)):
         xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
 
     if not customers:
