@@ -833,7 +833,7 @@ class Task(ModelDiffMixin, models.Model):
             sendings = self.sending_set.aggregate(Sum('copies_count'))['copies_count__sum'] or 0
             if not self.sending_date and sendings > 0:
                 self.exec_status = self.Sent
-                self.sending_date = self.sending_set.first().receipt_date
+                self.sending_date = self.sending_set.filter(copies_count__gt=0).first().receipt_date
 
         super().save(*args, **kwargs)
 
