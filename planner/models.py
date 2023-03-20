@@ -424,6 +424,7 @@ class Deal(ModelDiffMixin, models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Замовник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
+    advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
     value_correction = models.DecimalField('Коригування вартості робіт, грн.',
                                            max_digits=8, decimal_places=2, default=0)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)

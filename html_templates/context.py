@@ -108,11 +108,6 @@ def context_deal_render(deal):
                                  'project_type__project_type',
                                  'project_type__price') \
                          .order_by('project_type__price_code').distinct()
-    advance = 0
-    if deal.pay_status == Deal.AdvancePaid:
-        acts_total = deal.acts_total()
-        paid_total = deal.paid_total()
-        advance = paid_total - acts_total
 
     # prepare table data
     index = 0
@@ -147,8 +142,8 @@ def context_deal_render(deal):
         'taxation': deal.company.taxation,
         'object_lists': object_lists,
         'svalue': svalue,
-        'advance': advance,
-        'overpay': deal.value - advance,
+        'advance': deal.advance,
+        'overpay': deal.value - deal.advance,
     }
     return context
 

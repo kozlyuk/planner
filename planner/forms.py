@@ -137,8 +137,8 @@ class DealFilterForm(forms.Form):
 class DealForm(forms.ModelForm):
     class Meta:
         model = Deal
-        fields = ['number', 'date', 'customer', 'company', 'value', 'expire_date',
-                  'pdf_copy', 'value_correction', 'manual_warning',
+        fields = ['number', 'date', 'customer', 'company', 'value', 'advance',
+                  'expire_date', 'pdf_copy', 'value_correction', 'manual_warning',
                   'parent_deal_number', 'parent_deal_date']
         widgets = {
             'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
