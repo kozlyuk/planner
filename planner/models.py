@@ -19,7 +19,7 @@ from html_templates.models import HTMLTemplate
 
 from .mixins import ModelDiffMixin
 from .formatChecker import ContentTypeRestrictedFileField
-from .managers import DealQuerySet
+from .managers import DealQuerySet, ActQuerySet, PaymentQuerySet
 from .timeplanning import TimePlanner
 
 
@@ -590,6 +590,9 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='act_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
 
+    # defining custom manager
+    objects = ActQuerySet.as_manager()
+
     class Meta:
         unique_together = ('number', 'deal')
         verbose_name = 'Акт виконаних робіт'
@@ -650,6 +653,9 @@ class Payment(ModelDiffMixin, models.Model):
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
+
+    # defining custom manager
+    objects = PaymentQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Оплата'

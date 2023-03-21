@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, date, timedelta
 from django.utils.formats import date_format
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
@@ -6,6 +6,14 @@ from django.conf import settings
 from django.db.models import Sum
 
 from planner.models import ActOfAcceptance, Deal, Payment, Task, Customer
+
+
+def last_day_of_month(any_day):
+    # The day 28 exists in every month. 4 days later, it's always next month
+    next_month = any_day.replace(day=28) + timedelta(days=4)
+    # subtracting the number of the current day brings us back one month
+    return next_month - timedelta(days=next_month.day)
+
 
 def receivables_context(company, customer, from_date, to_date):
 
@@ -31,10 +39,7 @@ def receivables_context(company, customer, from_date, to_date):
     deal_list = []
     for deal in deals:
         index += 1
-        acts_total = deal.acts_total()
-        paid_total = deal.paid_total()
-        if acts_total > paid_total:
-            svalue += acts_total - paid_total
+        svalue += deal.acts_total - deal.paid_total
 
         deal_list.append([index,
                           format_html('<a href="%s%s">%s</a>'
@@ -410,7 +415,7 @@ def context_chart_render(chart, year, customers=None):
     return globals()[chart.context](year, customers)
 
 def range_for_year(year):
-    return date.today().month if int(year) == date.today().year else 12
+    return date.today().month+1 if int(year) == date.today().year else 13
 
 def fin_analysis_context(year, customers):
 
@@ -424,8 +429,8 @@ def fin_analysis_context(year, customers):
     turnover_closed_data = []
     turnover_data = []
 
-    for month in range(range_for_year(year)):
-        xAxis.append(date_format(date.today().replace(day=1, month=month+1), 'M'))
+    for month in range(1, range_for_year(year)):
+        xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
 
     for customer in customers:
         acts_income_list = []
@@ -434,27 +439,29 @@ def fin_analysis_context(year, customers):
         receivables_list = []
         stock_list = []
 
-        for month in range(range_for_year(year)):
+        for month in range(1, range_for_year(year)):
+            period = last_day_of_month(datetime(year=int(year), month=month, day=1))
+
             acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
             payments_customer = Payment.objects.filter(deal__customer=customer)
             acts_income = acts_customer.filter(date__year=year,
-                                               date__month=month+1) \
+                                               date__month=month) \
                                        .aggregate(Sum('value'))['value__sum'] or 0
             acts_income_list.append(float(acts_income))
             payments_income = payments_customer.filter(date__year=year,
-                                                       date__month=month+1) \
+                                                       date__month=month) \
                                                .aggregate(Sum('value'))['value__sum'] or 0
             payments_income_list.append(float(payments_income))
             work_done_income = Task.objects.filter(deal__customer=customer,
                                                    actual_finish__year=year,
-                                                   actual_finish__month=month+1) \
+                                                   actual_finish__month=month) \
                                             .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
             work_done_list.append(float(work_done_income))
-            acts_sum = acts_customer.filter(date__year__lt=year) \
-                                    .aggregate(Sum('value'))['value__sum'] or 0
-            payments_sum = payments_customer.filter(date__year__lt=year) \
-                                            .aggregate(Sum('value'))['value__sum'] or 0
-            receivables_list.append(float(acts_sum - payments_sum + acts_income - payments_income))
+            acts_for_period = acts_customer.receivables().filter(date__lte=period) \
+                                                         .aggregate(Sum('value'))['value__sum'] or 0
+            payments_for_period = payments_customer.receivables().filter(date__lte=period) \
+                                                                 .aggregate(Sum('value'))['value__sum'] or 0
+            receivables_list.append(float(acts_for_period - payments_for_period))
             stock_list.append(float(work_done_income-acts_income))
 
         acts_data.append({"name": customer.name,
@@ -494,8 +501,8 @@ def customer_fin_analysis_context(year, customers):
     xAxis = []
     series = []
 
-    for month in range(range_for_year(year)):
-        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+    for month in range(1, range_for_year(year)):
+        xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
 
     acts_income_list = []
     payments_income_list = []
@@ -503,31 +510,33 @@ def customer_fin_analysis_context(year, customers):
     receivables_list = []
     stock_list = []
 
-    for month in range(range_for_year(year)):
+    for month in range(1, range_for_year(year)):
+        period = last_day_of_month(datetime(year=int(year), month=month, day=1))
+
         acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
         payments_customer = Payment.objects.filter(deal__customer=customer)
 
         acts_income = acts_customer.filter(date__year=year,
-                                            date__month=month+1) \
+                                            date__month=month) \
                                     .aggregate(Sum('value'))['value__sum'] or 0
         acts_income_list.append(float(acts_income))
 
         payments_income = payments_customer.filter(date__year=year,
-                                                    date__month=month+1) \
+                                                    date__month=month) \
                                             .aggregate(Sum('value'))['value__sum'] or 0
         payments_income_list.append(float(payments_income))
 
         work_done_income = Task.objects.filter(deal__customer=customer,
                                                 actual_finish__year=year,
-                                                actual_finish__month=month+1) \
+                                                actual_finish__month=month) \
                                         .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
         work_done_list.append(float(work_done_income))
 
-        acts_sum = acts_customer.filter(date__year__lt=year) \
-                                .aggregate(Sum('value'))['value__sum'] or 0
-        payments_sum = payments_customer.filter(date__year__lt=year) \
-                                        .aggregate(Sum('value'))['value__sum'] or 0
-        receivables_list.append(float(acts_sum - payments_sum + acts_income - payments_income))
+        acts_for_period = acts_customer.receivables().filter(date__lte=period) \
+                                                        .aggregate(Sum('value'))['value__sum'] or 0
+        payments_for_period = payments_customer.receivables().filter(date__lte=period) \
+                                                                .aggregate(Sum('value'))['value__sum'] or 0
+        receivables_list.append(float(acts_for_period - payments_for_period))
         stock_list.append(float(work_done_income-acts_income))
 
     series.append({"name": "Дохід по актам", "data": acts_income_list})
@@ -555,8 +564,8 @@ def income_structure_context(year, customers):
     receivables_data = []
     stock_data = []
 
-    for month in range(range_for_year(year)):
-        xAxis.append(date_format(date.today().replace(month=month+1), 'M'))
+    for month in range(1, range_for_year(year)):
+        xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
 
     if not customers:
         customer_ids = list(set(ActOfAcceptance.objects.filter(date__year=year).values_list('deal__customer', flat=True)))
@@ -585,12 +594,9 @@ def income_structure_context(year, customers):
             payments_data.append({"name": customer.name,
                                   "y": float(payments_income)})
 
-        acts_sum = ActOfAcceptance.objects.filter(deal__customer=customer,
-                                                    date__year__lte=year) \
-                                            .aggregate(Sum('value'))['value__sum'] or 0
-
-        payments_sum = Payment.objects.filter(deal__customer=customer,
-                                                date__year__lte=year) \
+        acts_sum = acts_customer.filter(date__year__lte=year) \
+                                .aggregate(Sum('value'))['value__sum'] or 0
+        payments_sum = payments_customer.filter(date__year__lte=year) \
                                         .aggregate(Sum('value'))['value__sum'] or 0
         receivables = acts_sum - payments_sum
         if receivables > 0:
