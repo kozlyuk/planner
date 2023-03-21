@@ -16,7 +16,8 @@ redis
 celery
 django-celery-beat
 django-object-actions
-businesstimedelta
+businesstimedelta == 1.0.1
+holidays == 0.15
 admin-totals
 django-bootstrap-modal-forms
 weasyprint
