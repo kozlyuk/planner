@@ -34,12 +34,11 @@ class DealQuerySet(QuerySet):
                     .order_by('pay_date')
 
     def receivables(self):
-        return  self.filter(act_status='IS') \
-                    .exclude(pay_status='PU') \
+        return  self.exclude(act_status='NI') \
+                    .exclude(pay_status__in=['PU', 'AP']) \
                     .exclude(exec_status='CL') \
                     .annotate(acts_total=Coalesce(Sum('actofacceptance__value'), 0, output_field=DecimalField()),
                               paid_total=Coalesce(Sum('payment__value'), 0, output_field=DecimalField())) \
-                    .filter(act_status='IS', acts_total__gt=F('paid_total')) \
                     .annotate(debt=F('acts_total')-F('paid_total')) \
                     .order_by('expire_date')
 
@@ -47,12 +46,13 @@ class DealQuerySet(QuerySet):
 class ActQuerySet(QuerySet):
 
     def receivables(self):
-        return  self.annotate(acts_total=Coalesce(Sum('deal__actofacceptance__value'), 0, output_field=DecimalField()))
+        return  self.exclude(deal__act_status='NI') \
+                    .exclude(deal__pay_status='AP') \
+                    .annotate(acts_total=Coalesce(Sum('deal__actofacceptance__value'), 0, output_field=DecimalField()))
 
 
 class PaymentQuerySet(QuerySet):
 
     def receivables(self):
-        return  self.annotate(paid_total=Coalesce(Sum('deal__payment__value'), 0, output_field=DecimalField()))
-                    #acts_total=Coalesce(Sum('deal__actofacceptance__value'), 0, output_field=DecimalField()),
-                    # .filter(acts_total__gte=F('paid_total'))
+        return  self.exclude(deal__pay_status__in=['NP', 'AP']) \
+                    .annotate(paid_total=Coalesce(Sum('deal__payment__value'), 0, output_field=DecimalField()))

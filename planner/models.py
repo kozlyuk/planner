@@ -382,10 +382,12 @@ class Contractor(models.Model):
 class Deal(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
     AdvancePaid = 'AP'
+    PartlyPaid = 'PP'
     PaidUp = 'PU'
     PAYMENT_STATUS_CHOICES = (
         (NotPaid, 'Не оплачений'),
         (AdvancePaid, 'Оплачений аванс'),
+        (PartlyPaid, 'Оплачений частково'),
         (PaidUp, 'Оплачений')
     )
     NotIssued = 'NI'
@@ -509,11 +511,14 @@ class Deal(ModelDiffMixin, models.Model):
     def get_pay_status(self):
         # Get actual pay_status
         if self.payment_set.count() > 0:
-            value_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
-            if value_sum >= self.value + self.value_correction:
-                return self.PaidUp
-            elif value_sum > 0:
+            act_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
+            payment_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
+            if payment_sum > act_sum:
                 return self.AdvancePaid
+            elif payment_sum > 0 and act_sum > payment_sum:
+                return self.PartlyPaid
+            elif act_sum == payment_sum == self.value + self.value_correction:
+                return self.PaidUp
         return self.NotPaid
 
     def svalue(self):
@@ -687,15 +692,6 @@ class Payment(ModelDiffMixin, models.Model):
             # Set creator
             self.creator = get_current_user()
         super().save(*args, **kwargs)
-
-        # Automatic changing of deal.act_status when act updated
-        value_sum = self.deal.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
-        if value_sum == self.deal.value and self.deal.pay_status != Deal.PaidUp:
-            self.deal.pay_status = Deal.PaidUp
-            self.deal.save(logging=False)
-        elif value_sum > 0 and self.deal.pay_status != Deal.AdvancePaid:
-            self.deal.pay_status = Deal.AdvancePaid
-            self.deal.save(logging=False)
 
     def delete(self, *args, **kwargs):
         title = f'{self.date} - {self.value}'
