@@ -648,16 +648,23 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
         super().delete(*args, **kwargs)
 
 
-class Payment(ModelDiffMixin, models.Model):
-    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+class PaymentBase(ModelDiffMixin, models.Model):
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
-    act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
-                                          blank=True, null=True, on_delete=models.SET_NULL)
     comment = models.TextField('Коментар', blank=True)
     # Creating information
-    creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class Payment(PaymentBase):
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
+                                          blank=True, null=True, on_delete=models.SET_NULL)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
 
     # defining custom manager
     objects = PaymentQuerySet.as_manager()
@@ -1022,28 +1029,46 @@ class SubTask(models.Model):
 
 class Order(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
+    Approved = 'AR'
     AdvancePaid = 'AP'
     PaidUp = 'PU'
     PAYMENT_STATUS_CHOICES = (
-        (NotPaid, 'Не оплачений'),
+        (NotPaid, 'Нове замовлення'),
+        (Approved, 'Погоджена оплата'),
         (AdvancePaid, 'Оплачений аванс'),
-        (PaidUp, 'Оплачений')
+        (PaidUp, 'Оплачене')
     )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
-    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE)
-    subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
-    deal_number = models.CharField('Номер договору', max_length=30)
+    task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE, blank=True, null=True)
+    subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', blank=True, null=True, on_delete=models.SET_NULL)
+    purpose = models.CharField('Призначення', max_length=50, blank=True, null=True)
+    deal_number = models.CharField('Договір/замовлення', max_length=50)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
-    pay_date = models.DateField('Дата оплати', blank=True, null=True)
+    pay_date = models.DateField('Планова дата оплати', blank=True, null=True)
+    approved_date = models.DateField('Дата погодження', blank=True, null=True)
+    approved_by = models.ForeignKey(User, verbose_name='Погоджено', related_name='order_peyment_approvers',
+                                    on_delete=models.PROTECT)
+    warning = models.CharField('Попередження', max_length=30, blank=True)
+    comment = models.CharField('Коментар', max_length=255, blank=True)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив', related_name='order_creators',
+                                on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Замовлення'
         verbose_name_plural = 'Замовлення'
+        ordering = ['-creation_date']
 
     def __str__(self):
-        return self.task.__str__() + ' --> ' + self.contractor.__str__()
+        if self.subtask:
+            return f'{self.contractor} - {self.subtask}'
+        elif self.purpose:
+            return f'{self.contractor} - {self.purpose}'
+        else:
+            return self.contractor
 
     def save(self, *args, logging=True, **kwargs):
         title = f'{self.task.object_code} {self.task.project_type.price_code}'
@@ -1074,6 +1099,59 @@ class Order(ModelDiffMixin, models.Model):
     def get_exec_status(self):
         return self.task.get_exec_status_display()
     get_exec_status.short_description = 'Статус виконання'
+
+    def get_actual_finish(self):
+        if self.task:
+            return self.task.actual_finish
+    get_actual_finish.short_description = 'Дата виконання'
+
+
+class OrderPayment(PaymentBase):
+    order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.PROTECT)
+    # Creating information
+    creator = models.ForeignKey(User, verbose_name='Створив',
+                                related_name='order_peyment_creators',
+                                on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = 'Оплата замовлення'
+        verbose_name_plural = 'Оплати замовлень'
+        ordering = ['-creation_date', 'order']
+
+    def __str__(self):
+        return f'{self.order} - {self.date}'
+
+    def save(self, *args, logging=True, **kwargs):
+
+        # Logging
+        if logging:
+            title = f'{self.date} - {self.value}'
+            if not self.pk:
+                log(user=get_current_user(),
+                    action='Додана оплата замовлення',
+                    extra={'title': title},
+                    obj=self.order,
+                    )
+            elif self.diff_str:
+                log(user=get_current_user(),
+                    action='Оновлена оплата замовлення',
+                    extra={'title': title, 'diff': self.diff_str},
+                    obj=self.order,
+                    )
+
+        if not self.pk:
+            # Set creator
+            self.creator = get_current_user()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        title = f'{self.date} - {self.value}'
+        log(user=get_current_user(),
+            action='Видалена оплата замовлення',
+            extra={'title': title},
+            obj=self.order,
+            )
+        super().delete(*args, **kwargs)
 
 
 class Sending(ModelDiffMixin, models.Model):
