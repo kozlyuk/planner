@@ -103,7 +103,7 @@ class EmployeeForm(forms.ModelForm):
 
 class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(DealFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         customer = list(Customer.objects.all().values_list('pk', 'name'))
         company = list(Company.objects.all().values_list('pk', 'name'))
         act_status = list(Deal.ACT_STATUS_CHOICES)
@@ -119,17 +119,17 @@ class DealFilterForm(forms.Form):
         self.fields['specific_status'].choices = specific_status
 
     customer = forms.MultipleChoiceField(label='Замовник', required=False,
-        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     company = forms.MultipleChoiceField(label='Компанія', required=False,
-        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     act_status = forms.MultipleChoiceField(label='Акт виконаних робіт', required=False,
-        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                           widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
-        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                           widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
-        widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                            widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     specific_status = forms.ChoiceField(label='Спеціальний статус', required=False,
-        widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                        widget=Select2Widget(attrs={"style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
         widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
@@ -274,20 +274,20 @@ class TaskFilterForm(forms.Form):
             self.fields['customer'].choices = customers
 
 
-    exec_status = forms.MultipleChoiceField(
-        label='Статус', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+    exec_status = forms.MultipleChoiceField(label='Статус', required=False,
+                                            widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
-                              widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
+                                      widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     customer = forms.MultipleChoiceField(label='Замовник', required=False, widget=Select2MultipleWidget(
-        attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    construction = forms.MultipleChoiceField(
-        label='Тип конструкції', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    work_type = forms.MultipleChoiceField(
-        label='Вид будівництва', required=False, widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    period = forms.DateField(label='Період проектування', required=False, widget=MonthYearWidget(attrs={"style": 'height: 27px'}))
-    filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False, widget=forms.TextInput(
-                                 attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+                                         attrs={"style": 'width: 100%'}))
+    construction = forms.MultipleChoiceField(label='Тип конструкції', required=False,
+                                             widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    work_type = forms.MultipleChoiceField(label='Вид будівництва', required=False,
+                                          widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    period = forms.DateField(label='Період проектування', required=False,
+                             widget=MonthYearWidget(attrs={"style": 'height: 27px'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
+        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class SprintFilterForm(forms.Form):
@@ -319,18 +319,13 @@ class SprintFilterForm(forms.Form):
         self.fields['actual_finish'].required = False
 
     exec_status = forms.MultipleChoiceField(label='Статус', required=False,
-                                            widget=Select2MultipleWidget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
-                                            )
+                                            widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     owner = forms.ChoiceField(label='Керівник', required=False,
-                              widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
-                             )
+                              widget=Select2Widget(attrs={"style": 'width: 100%'}))
     executor = forms.ChoiceField(label='Виконавець', required=False,
-                                 widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
-                                 )
+                                 widget=Select2Widget(attrs={"style": 'width: 100%'}))
     company = forms.ChoiceField(label='Компанія', required=False,
-                                widget=Select2Widget(attrs={"onChange": 'submit()', "style": 'width: 100%'})
-                                )
-
+                                widget=Select2Widget(attrs={"style": 'width: 100%'}))
     actual_start_value = date.today() - timedelta(days=date.today().weekday())
     actual_finish_value = actual_start_value + timedelta(days=14)
     actual_start = forms.DateField(label='Дата початку',
@@ -339,11 +334,10 @@ class SprintFilterForm(forms.Form):
     actual_finish = forms.DateField(label='Дата завершення',
                                     widget=forms.DateInput(format=('%d.%m.%Y'),
                                         attrs={'type': 'date', "value": actual_finish_value.strftime('%Y-%m-%d'), "style": 'width: 100%'}))
-    work_type = forms.MultipleChoiceField(label='Вид будівництва', required=False, widget=Select2MultipleWidget(
-                                              attrs={"onChange": 'submit()', "style": 'width: 100%'}))
-    filter = forms.CharField(label='Слово пошуку',
-                             max_length=255, required=False, widget=forms.TextInput(
-                                 attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+    work_type = forms.MultipleChoiceField(label='Вид будівництва', required=False,
+                                          widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
+        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 class TaskForm(forms.ModelForm):
@@ -659,6 +653,27 @@ class TaskExchangeForm(forms.Form):
                 if task.deal.act_status != Deal.NotIssued:
                     self.add_error(
                         'deal', "{} - договір закрито, зверніться до керівника".format(task))
+
+
+class OrderFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        contractor = list(Contractor.objects.filter(active=True).values_list('pk', 'name'))
+        pay_status = list(Order.PAYMENT_STATUS_CHOICES)
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
+
+        self.fields['contractor'].choices = contractor
+        self.fields['pay_status'].choices = pay_status
+        self.fields['exec_status'].choices = exec_status
+
+    contractor = forms.MultipleChoiceField(label='Підрядник', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
+        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
 
 # class TaskRegistryForm(forms.Form):

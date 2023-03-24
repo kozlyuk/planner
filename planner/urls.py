@@ -34,6 +34,8 @@ urlpatterns = [
     path('project/exchange/', views.TaskExchange.as_view(), name='task_exchange'),
     path('task/update/<int:pk>', views.TaskUpdateModal.as_view(), name='task_update_modal'),
 
+    path('order/', views.OrderList.as_view(), name='order_list'),
+
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
     path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
