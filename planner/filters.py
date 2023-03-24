@@ -1,11 +1,84 @@
 from datetime import datetime, date, timedelta
 from django.db.models import Q
 
-from .models import Employee, Task, Execution
+from .models import Deal, Employee, Task, Execution, Order
+
+
+def deal_queryset_filter(request_user, query_dict):
+    """
+    Filter for the Deal queryset
+    Filter queryset by search_string ('filter' get parameter)
+    Filter queryset by customers ('customer' get parameters list)
+    Filter queryset by companys ('company' get parameters list)
+    Filter queryset by act_statuses ('act_status' get parameters list)
+    Filter queryset by pay_statuses ('pay_status' get parameters list)
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by specific_status ('specific_status' get parameters list)
+    Order queryset by any given field ('o' get parameter)
+    """
+    search_string = query_dict.get('filter', '').split()
+    customers = query_dict.getlist('customer', '0')
+    companies = query_dict.getlist('company', '0')
+    act_statuses = query_dict.getlist('act_status', '0')
+    pay_statuses = query_dict.getlist('pay_status', '0')
+    exec_statuses = query_dict.getlist('exec_status', '0')
+    specific_status = query_dict.get('specific_status', '0')
+    order = query_dict.get('o', '0')
+
+    deals = Deal.objects.select_related('customer', 'company')
+    if specific_status == 'WA':
+        deals = deals.waiting_for_act()
+    if specific_status == 'PQ':
+        deals = deals.payment_queue()
+    if specific_status == 'OP':
+        deals = deals.overdue_payment()
+    if specific_status == 'OE':
+        deals = deals.overdue_execution()
+    if specific_status == 'RE':
+        deals = deals.receivables()
+
+    for word in search_string:
+        deals = deals.filter(Q(number__icontains=word) |
+                                Q(value__icontains=word))
+
+    if customers != '0':
+        deals_union = Deal.objects.none()
+        for customer in customers:
+            deals_part = deals.filter(customer=customer)
+            deals_union = deals_union | deals_part
+        deals = deals_union
+    if companies != '0':
+        deals_union = Deal.objects.none()
+        for company in companies:
+            deals_part = deals.filter(company=company)
+            deals_union = deals_union | deals_part
+        deals = deals_union
+    if act_statuses != '0':
+        deals_union = Deal.objects.none()
+        for act_status in act_statuses:
+            deals_part = deals.filter(act_status=act_status)
+            deals_union = deals_union | deals_part
+        deals = deals_union
+    if pay_statuses != '0':
+        deals_union = Deal.objects.none()
+        for pay_status in pay_statuses:
+            deals_part = deals.filter(pay_status=pay_status)
+            deals_union = deals_union | deals_part
+        deals = deals_union
+    if exec_statuses != '0':
+        deals_union = Deal.objects.none()
+        for exec_status in exec_statuses:
+            deals_part = deals.filter(exec_status=exec_status)
+            deals_union = deals_union | deals_part
+        deals = deals_union
+    if order != '0':
+        deals = deals.order_by(order)
+    return deals
 
 
 def task_queryset_filter(request_user, query_dict):
-    """Filter for the Task class
+    """
+    Filter for the Task class
     Filter queryset by search_string ('filter' get parameter)
     Filter queryset by exec_statuses ('exec_status' get parameters list)
     Filter queryset by owners ('owner' get parameters list)
@@ -77,7 +150,8 @@ def task_queryset_filter(request_user, query_dict):
 
 
 def execuition_queryset_filter(request_user, query_dict):
-    """Filter for the Execution class
+    """
+    Filter for the Execution class
     Filter queryset by exec_statuses ('exec_status' get parameters list)
     Filter queryset by work_types ('work_type' get parameters list)
     Filter queryset by owner ('owner' get parameter)
@@ -164,18 +238,62 @@ def execuition_queryset_filter(request_user, query_dict):
 
 def employee_queryset_filter(request_user, query_dict):
     """
-    Filter for the Execution class grouped by emplyees
-    Filter queryset by exec_statuses ('exec_status' get parameters list)
-    Filter queryset by work_types ('work_type' get parameters list)
-    Filter queryset by owner ('owner' get parameter)
-    Filter queryset by company ('company' get parameter)
-    Filter queryset by planned_start ('planned_start' get parameter)
-    Filter queryset by planned_finish ('planned_finish' get parameter)
-    Filter queryset by search_string ('filter' get parameter)
-    Order queryset by any given field ('o' get parameter)
+    Filter for the Employee queryset
     """
 
     # create qs employees
     employees = Employee.objects.filter(user__is_active=True)
 
     return employees
+
+
+def order_queryset_filter(request_user, query_dict):
+    """
+    Filter for the Order queryset
+    Filter queryset by search_string ('filter' get parameter)
+    Filter queryset by contractors ('contractor' get parameters list)
+    Filter queryset by pay_statuses ('pay_status' get parameters list)
+    Filter queryset by exec_statuses ('exec_status' get parameters list)
+    Filter queryset by constructions ('construction' get parameters list)
+    Filter queryset by work_types ('work_type' get parameters list)
+    Order queryset by any given field ('o' get parameter)
+    """
+
+    search_string = query_dict.get('filter', '').split()
+    contractors = list(filter(None, query_dict.getlist('contractor')))
+    pay_statuses = list(filter(None, query_dict.getlist('pay_status')))
+    exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
+    order = query_dict.get('o')
+
+    orders = Order.objects.all().select_related('task')
+    # filter only customer tasks
+    for word in search_string:
+        orders = orders.filter(Q(contractor__name__icontains=word) |
+                               Q(task__object_code__icontains=word) |
+                               Q(subtask__name__icontains=word) |
+                               Q(purpose__icontains=word) |
+                               Q(deal_number__icontains=word)
+                               )
+    if contractors:
+        orders_union = Order.objects.none()
+        for contractor in contractors:
+            orders_segment = orders.filter(contractor=contractor)
+            orders_union = orders_union | orders_segment
+        orders = orders_union
+    if pay_statuses:
+        orders_union = Order.objects.none()
+        for status in pay_statuses:
+            orders_segment = orders.filter(pay_status=status)
+            orders_union = orders_union | orders_segment
+        orders = orders_union
+    if exec_statuses:
+        orders_union = Order.objects.none()
+        for status in exec_statuses:
+            orders_segment = orders.filter(task__exec_status=status)
+            orders_union = orders_union | orders_segment
+        orders = orders_union
+    if order:
+        orders = orders.order_by(order)
+    else:
+        orders = orders.order_by('-creation_date', 'contractor')
+    return orders

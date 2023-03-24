@@ -73,13 +73,17 @@
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'task_list' %}">Проекти</a></li>
                         {% endif %}
+                        {% if perms.planner.view_execution %}
+                            <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
+                            href="{% url 'sprint_list' %}">Планування</a></li>
+                        {% endif %}
                         {% if perms.planner.view_deal %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'deal_list' %}">Договори</a></li>
                         {% endif %}
-                        {% if perms.planner.view_execution %}
+                        {% if perms.planner.view_order %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
-                            href="{% url 'sprint_list' %}">Планування</a></li>
+                            href="{% url 'order_list' %}">Замовлення</a></li>
                         {% endif %}
                         {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;" href="{% url 'admin:index' %}">Адміністрування</a></li>
@@ -94,11 +98,14 @@
                 {% if perms.planner.view_task %}
                     <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
                 {% endif %}
+                {% if perms.planner.view_execution %}
+                    <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування</a>
+                {% endif %}
                 {% if perms.planner.view_deal %}
                     <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
                 {% endif %}
-                {% if perms.planner.view_execution %}
-                    <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування</a>
+                {% if perms.planner.view_order %}
+                    <a class="link {% if request.resolver_match.url_name == 'order_list' %}active{% endif %} uppercase" href="{% url 'order_list' %}">Замовлення</a>
                 {% endif %}
                 {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
                 <div style="display: inline-block;">

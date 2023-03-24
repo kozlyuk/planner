@@ -23,7 +23,7 @@ from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
                     Contractor, SubTask, ActOfAcceptance, IntTask, Customer, Company
-from .filters import task_queryset_filter, execuition_queryset_filter
+from .filters import *
 from notice.models import Comment, create_comment
 from eventlog.models import Log
 
@@ -615,6 +615,42 @@ class SubtaskDetail(DetailView):
         execution = Execution.objects.get(pk=self.kwargs['pk'])
         context['executors'] = Execution.objects.filter(task=execution.task)
         context['sendings'] = Sending.objects.filter(task=execution.task)
+        return context
+
+
+class OrderList(ListView):
+    model = Order
+    context_object_name = 'orders'  # Default: object_list
+    paginate_by = 35
+    success_url = reverse_lazy('home_page')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET == {}:
+            request.GET = request.GET.copy()
+            request.GET = QueryDict(self.request.session.get('order_query_string', ''))
+            request.META['QUERY_STRING'] = self.request.session.get('order_query_string', '')
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+    def get_queryset(self):
+        # filtering queryset
+        queryset = order_queryset_filter(self.request.user, self.request.GET)
+        # return filtered queryset
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders_count'] = Order.objects.all().count()
+        context['orders_filtered'] = self.object_list.count()
+        context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
+        context['submit_button_text'] = 'Застосувати фільтр'
+        self.request.session['order_query_string'] = self.request.META['QUERY_STRING']
+        if self.request.POST:
+            context['filter_form'] = forms.OrderFilterForm(self.request.POST)
+        else:
+            context['filter_form'] = forms.OrderFilterForm(self.request.GET)
         return context
 
 

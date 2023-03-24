@@ -161,11 +161,6 @@ class OrderAdmin(ModelAdminTotals):
     ordering = ['-pay_date']
     list_totals = [('value', Sum)]
 
-    def get_actual_finish(self, obj):
-        return obj.task.actual_finish
-    get_actual_finish.short_description = 'Фактичне закінчення'
-    get_actual_finish.admin_order_field = 'task__actual_finish'
-
 
 class ContractorOrdersInline(admin.TabularInline):
     model = Order
