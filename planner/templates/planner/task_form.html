@@ -677,13 +677,12 @@
                                         <thead>
                                             <tr align="center">
                                                 <th width="25%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
+                                                <th scope="col">НАЗВА РОБІТ</th>
                                                 <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                <th width="10%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="2%">ДІЇ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ</th>
+                                                <th width="10%" scope="col">АВАНС</th>
+                                                <th width="10%" scope="col">ПЛАНОВА ДАТА ОПЛАТИ</th>
+                                                <th width="5%">ДІЇ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -740,7 +739,16 @@
                                                         {{form.pay_date.errors}}
                                                     </div>
                                                 </th>
-                                                <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                <th>
+                                                    {% if task.pk and form.instance.pk %}
+                                                        <a href="{% url 'order_update' form.instance.pk %}"
+                                                        class="btnLink"
+                                                        style="font-size: 20px; font-weight: 100;">
+                                                        <i data-toggle="tooltip" title="Відкрити замовлення" data-placement="right" class="fas fa-file-invoice"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                    {{ form.id }}{{ form.DELETE }}
+                                                </th>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -1100,7 +1108,7 @@
                 addText: 'Додати Підрядника',
                 deleteText: '<i class="far fa-trash-alt"></i>',
                 addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
                 'added': function (row) {
                     $(row).find('.django-select2').djangoSelect2();
                 }
@@ -1112,7 +1120,7 @@
                 addText: 'Додати Підрядника',
                 deleteText: '<i class="far fa-trash-alt"></i>',
                 addCssClass: 'add-row-costs_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
-                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
                 'added': function (row) {
                     $(row).find('.django-select2').djangoSelect2();
                 }

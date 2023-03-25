@@ -18,7 +18,7 @@
         {% for order in orders %}
         <tr>
             {% if perms.planner.change_order %}
-            <td><a href="{% url 'deal_update' order.id %}"> {{ order }} </a></td>
+            <td><a href="{% url 'order_update' order.id %}"> {{ order }} </a></td>
             {% else %}
             <td> {{ order }} </td>
             {% endif %}

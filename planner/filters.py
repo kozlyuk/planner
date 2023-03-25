@@ -265,7 +265,7 @@ def order_queryset_filter(request_user, query_dict):
     exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
     order = query_dict.get('o')
 
-    orders = Order.objects.all().select_related('task')
+    orders = Order.objects.all().select_related('contractor', 'task', 'subtask')
     # filter only customer tasks
     for word in search_string:
         orders = orders.filter(Q(contractor__name__icontains=word) |

@@ -1,0 +1,554 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block global_meta %}
+    <title>Ітел-Сервіс | Договори</title>
+{% endblock %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <!-- BEGIN CONTENT -->
+    <div class="container-fluid container-lf-space">
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="widget-row margin-top-20">
+            <!-- PERMISSION CHECK -->
+            {% if perms.planner.change_order %}
+            <form id="OrderForm" class="container-fluid" action="" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <!--alert: inline layout-->
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- BEGIN WIDGET TAB -->
+                        <div class="card main-widget-tab">
+                            <h6 class="task-header center-block text-center">
+                                {% if order.pk %}Редагувати замовлення
+                                {% else %}Додати замовлення
+                                {% endif %}
+                            </h6>
+                            <div class="card-body">
+                                <div class="tab-content" data-handle-color="#D7DCE2" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="tab_1_1" role="tabpanel"
+                                        aria-labelledby="pills-tab_1_1">
+                                        <div class="col-12">
+                                            <small style="margin-top: -15px;" class="text-danger mt-2 mb-2">
+                                                {{ form.non_field_errors }}
+                                            </small>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.contractor.name }}">
+                                                            {{ form.contractor.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.contractor|attr:"style: padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.contractor.errors}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.company.name }}">
+                                                            {{ form.company.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.company|attr:"style: padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.company.errors}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.task.name }}">
+                                                            {{ form.task.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.task|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.task.errors}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.subtask.name }}">
+                                                            {{ form.subtask.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.subtask|attr:"style:  padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.subtask.errors}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.deal_number.name }}">
+                                                            {{ form.deal_number.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.deal_number|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.deal_number.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.purpose.name }}">
+                                                            {{ form.purpose.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.purpose|attr:"style:  width:100%; padding-left: 5px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.purpose.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.value.name }}">
+                                                            {{ form.value.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.value|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.advance.name }}">
+                                                            {{ form.advance.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.advance|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.advance.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.pay_date.name }}">
+                                                            {{ form.pay_date.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.pay_date|attr:"style: width:100%; padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.pay_date.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.warning.name }}">
+                                                            {{ form.warning.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.warning|attr:"style: width:100%;  padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.warning.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <label for="id_{{ form.invoice.name }}">
+                                                            {{ form.invoice.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        {{ form.invoice|add_error_class:"is-invalid" }}
+                                                        <div class="invalid-feedback">
+                                                            {{form.invoice.errors}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            {% if order.pk %}<a href="{% url 'order_delete' order.pk %}"
+                                                class="btn order-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
+                                            {% else %}<button href="{% url 'order_list' %}"
+                                                class="btn order-cancel red btn-sm btn-outline sbold uppercase">Відмінити</button>
+                                            {% endif %}
+                                            <button type="submit"
+                                                class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Зберегти
+                                            </button>
+                                            <button type="submit" name="save_add" value="True"
+                                                class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                style="float: right;">Зберегти і продовжити редагування
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END WIDGET -->
+                    </div>
+
+                    {% if order.pk %}
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <!-- BEGIN WIDGET TAB -->
+                            <div class="card widget-bg-color-white main-widget-tab widget-tab">
+                                <ul class="nav nav-pills nav-tabs" id="pills-tab2" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-tab_2_1-tab" data-toggle="pill" href="#tab_2_1"
+                                            role="tab" aria-controls="pills-tab_2_1" aria-selected="true"> Коментарі </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-tab_2_2-tab" data-toggle="pill" href="#tab_2_2"
+                                        role="tab" aria-controls="pills-tab_2_2" aria-selected="true"> Інформація </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-tab_2_3-tab" data-toggle="pill" href="#tab_2_3"
+                                        role="tab" aria-controls="pills-tab_2_3" aria-selected="false"> Історія </a>
+                                    </li>
+                                </ul>
+                                <div style="height: 355px" class="tab-content scroller pt-1" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="tab_2_1" role="tabpane2" aria-labelledby="pills-tab_2_1">
+                                        <br>
+                                        {% if comments|length > 0 %}
+                                            {% for comment in comments %}
+                                                <div class="widget-media">
+                                                    <div class="widget-media-elements text-center">
+                                                        <img class="widget-media-avatar circle margin-bottom-15"
+                                                            src="{{ comment.user.employee.avatar.thumbnail.url }}" alt="">
+                                                    </div>
+                                                    <div class="widget-media-body">
+                                                        <div class="widget-media-body-title">
+                                                            {{ comment.user.employee.name }} - {{ comment.timestamp }}
+                                                        </div>
+                                                        <div class="pull-left">{{ comment.text }}</div>
+                                                        {% if request.user.is_superuser or request.user == comment.user %}
+                                                            <div class="pull-right">
+                                                                <!-- Update book buttons -->
+                                                                <button type="button"
+                                                                    class="update-comment bs-modal btn btn-link"
+                                                                    data-form-url="{% url 'comment_update' comment.pk %}">
+                                                                    <i class="fa fa-pen"></i>
+                                                                </button>
+                                                                <!-- Delete book buttons -->
+                                                                <button type="button"
+                                                                    class="delete-comment bs-modal btn btn-link"
+                                                                    data-form-url="{% url 'comment_delete' comment.pk %}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-body">
+                                                    <p class="widget-media-body-subtitle">Коментарі відсутні</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Create comment button -->
+                                        <div class="form-actions">
+                                            <button id="add-comment"
+                                                type="button"
+                                                class="btn dark btn-sm btn-outline sbold uppercase"
+                                                style="float: right;">Додати коментар
+                                            </button>
+                                            <br>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade show" id="tab_2_2" role="tabpane2"
+                                        aria-labelledby="pills-tab_2_2">
+                                        <div class="widget-news margin-bottom-20">
+                                            <div class="widget-news-right-body">
+                                                <br>
+                                                <p>Статус оплати: <strong>{{ order.get_pay_status_display}}</strong></p>
+                                                <p>Погоджено: <strong>{{ order.approved_by.employee|default:"" }}</strong></p>
+                                                <p>Дата погодження: <strong>{% none_date_check order.approved_date %}</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade show" id="tab_2_3" role="tabpane2" aria-labelledby="pills-tab_2_3">
+                                        <br>
+                                        {% if activities|length > 0 %}
+                                            {% for activity in activities %}
+                                                <div class="widget-media">
+                                                    <div class="widget-media-body">
+                                                        <div class="widget-media-body-title">
+                                                            {{ activity.timestamp }} - {{ activity.user.employee }}
+                                                        </div>
+                                                        <div>{{ activity.action }} - {{ activity.extra.title }}</div>
+                                                        <div>{{ activity.extra.diff }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="widget-media">
+                                                <div class="widget-media-body">
+                                                    <p class="widget-media-body-subtitle">Зміни відсутні</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END PORTLET-->
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card main-widget-tab">
+                                <h6 class="task-header center-block text-center">Оплати</h6>
+                                <div class="card-body pb-1">
+                                    {% if payment_formset|length %}
+                                        <div class="row">
+                                            <table class="table table-hover mb-0 table-responsive-xl"
+                                                id="payment_formset_not_empty">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">ДАТА ОПЛАТИ</th>
+                                                        <th scope="col">СУМА ОПЛАТИ</th>
+                                                        <th scope="col">КОМЕНТАР</th>
+                                                        <th width="2%" scope="col">Дії</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <small class="text-danger">
+                                                    {{ payment_formset.non_form_errors }}
+                                                    </small>
+                                                    {% for form in payment_formset %}
+                                                    <tr>
+                                                        <th class="pl-1 pr-1">
+                                                            {{form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.date.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{form.value|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{ form.comment|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.comment.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th>{{ form.id }}{{ form.DELETE }}</th>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            {{ payment_formset.management_form }}
+                                        </div>
+                                    {% else %}
+                                        <div class="row" style="display:none" id="payment_formset">
+                                            <table class="table table-hover mb-0 table-responsive-xl" id="payment_formset_empty">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">ДАТА ОПЛАТИ</th>
+                                                        <th scope="col">СУМА ОПЛАТИ</th>
+                                                        <th scope="col">КОМЕНТАР</th>
+                                                        <th width="2%" scope="col">Дії</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <small class="text-danger">
+                                                    {{ payment_formset.non_form_errors }}
+                                                    </small>
+
+                                                    <tr>
+                                                        <th class="pl-1 pr-1">
+                                                            {{payment_formset.empty_form.date|attr:"style: width:50%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.date.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{payment_formset.empty_form.value|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.value.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{ payment_formset.empty_form.comment|attr:"style: width:30%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.comment.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th>{{ payment_formset.empty_form.id }}{{ payment_formset.empty_form.DELETE }}</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            {{ payment_formset.management_form }}
+                                        </div>
+                                        <button style="width: 100%" type="button"
+                                            class="add-payment-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати оплату
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- END PORTLET-->
+            </form>
+            {% else %}
+            Ви не маєте доступу до редагування даного проекту<br><br>
+            {% endif %}
+        </div>
+        <!-- END PAGE BASE CONTENT -->
+    </div>
+    <!-- END CONTENT -->
+</div>
+<div style="position: fixed; bottom: 0; right: 3%; z-index: 100">
+{% if tasks_formset.non_form_errors %}
+        <div class="alert alert-danger">
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header alert-header">
+                    <strong class="mr-auto">Помилка в таблиці виконавці{{ field.label }}</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    {{ tasks_formset.non_form_errors|striptags }}
+                </div>
+            </div>
+        </div>
+
+{% endif %}
+{% include 'widgets/form_errors.html' %}
+</div>
+<!-- END CONTAINER -->
+{% endblock %}
+
+{% block extrahead %}
+{% if order.pk %}
+    <script type="text/javascript">
+        window.onerror = function (msg) {
+            $("body").attr("JSError", msg);
+        }
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script src="{% static 'dynamic_formsets/jquery.formset.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+
+    <script type="text/javascript">
+        const addBtnSend = document.querySelector('.add-payment-formset');
+
+        if (document.querySelector('#payment_formset')) {
+            addBtnSend.addEventListener('click', () => {
+                addInitialFormset('payment_formset', addBtnSend);
+                cliсk('payment_formset', 'dynamic-formset3');
+            })
+        };
+
+        function addInitialFormset(formsetId, btn) {
+            const formsetTemplate = document.querySelector('#' + formsetId);
+            formsetTemplate.setAttribute('style', '');
+            btn.setAttribute('style', 'display:none');
+        };
+
+        function cliсk(formsetId, dynamicFormset) {
+            const initialBtn = document.querySelector('.add-row-' + formsetId);
+            const formsetTemplate = document.querySelector('#' + formsetId);
+            initialBtn.click();
+            const dynamicFormsetFirst = document.querySelectorAll('.' + dynamicFormset)[0];
+            dynamicFormsetFirst.setAttribute('style', 'display:none');
+        };
+
+        $(function () {
+            setTimeout(function () {
+                $('span.select2-container.select2-container--bootstrap').width('auto');
+            }, 100);
+
+            $('#payment_formset_not_empty tbody tr').formset({
+                prefix: '{{ payment_formset.prefix }}',
+                formCssClass: 'dynamic-formset3',
+                addText: 'Додати оплату',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
+
+            $('#payment_formset_empty tbody tr').formset({
+                prefix: '{{ payment_formset.prefix }}',
+                formCssClass: 'dynamic-formset3',
+                addText: 'Додати оплату',
+                deleteText: '<i class="far fa-trash-alt"></i>',
+                addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
+
+            // Add comment buttons
+            $("#add-comment").modalForm({
+                formURL: "{% url 'comment_create' order.pk %}"
+            });
+
+            // Update comment buttons
+            $(".update-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url")});
+            });
+
+            // Delete comment buttons - formURL is retrieved from the data of the element
+            $(".delete-comment").each(function () {
+                $(this).modalForm({formURL: $(this).data("form-url"), isDeleteForm: true});
+            });
+        })
+
+    </script>
+
+{% endif %}
+{% endblock %}

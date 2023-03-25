@@ -590,7 +590,7 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
                                                              'wordprocessingml.document'],
                                               max_upload_size=26214400,
                                               blank=True, null=True)
-    comment = models.TextField('Коментар', blank=True)
+    comment = models.CharField('Коментар', blank=True, max_length=255)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='act_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
@@ -651,7 +651,7 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
 class PaymentBase(ModelDiffMixin, models.Model):
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
-    comment = models.TextField('Коментар', blank=True)
+    comment = models.CharField('Коментар', blank=True, max_length=255)
     # Creating information
     creation_date = models.DateField(auto_now_add=True)
 
@@ -1039,6 +1039,7 @@ class Order(ModelDiffMixin, models.Model):
         (PaidUp, 'Оплачене')
     )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
+    company = models.ForeignKey(Company, verbose_name='Компанія', blank=True, null=True, on_delete=models.SET_NULL)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE, blank=True, null=True)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', blank=True, null=True, on_delete=models.SET_NULL)
     purpose = models.CharField('Призначення', max_length=50, blank=True, null=True)
@@ -1049,9 +1050,19 @@ class Order(ModelDiffMixin, models.Model):
     pay_date = models.DateField('Планова дата оплати', blank=True, null=True)
     approved_date = models.DateField('Дата погодження', blank=True, null=True)
     approved_by = models.ForeignKey(User, verbose_name='Погоджено', related_name='order_peyment_approvers',
-                                    on_delete=models.PROTECT)
+                                    blank=True, null=True, on_delete=models.PROTECT)
     warning = models.CharField('Попередження', max_length=30, blank=True)
-    comment = models.CharField('Коментар', max_length=255, blank=True)
+    invoice = ContentTypeRestrictedFileField('Рахунок', upload_to=user_directory_path,
+                                             content_types=['application/pdf',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'spreadsheetml.sheet',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'wordprocessingml.document'
+                                                            ],
+                                             max_upload_size=26214400,
+                                             blank=True, null=True
+                                             )
+
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='order_creators',
                                 on_delete=models.PROTECT)
@@ -1068,36 +1079,49 @@ class Order(ModelDiffMixin, models.Model):
         elif self.purpose:
             return f'{self.contractor} - {self.purpose}'
         else:
-            return self.contractor
+            return str(self.contractor)
 
     def save(self, *args, logging=True, **kwargs):
-        title = f'{self.task.object_code} {self.task.project_type.price_code}'
+
+        # Set creator
+        if not self.pk:
+            self.creator = get_current_user()
+
+        # Automatic set Company
+        if self.task:
+            self.company = self.task.deal.company
+
+        # Automatic changing of pay status
+        self.pay_status = self.get_pay_status()
+
+        # logging
+        title = str(self)
         if logging:
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий підрядник по проекту',
                     extra={'title': title},
-                    obj=self.task,
+                    obj=self,
                     )
             elif self.diff_str:
                 log(user=get_current_user(),
                     action='Оновлений підрядник по проекту',
                     extra={'title': title, 'diff': self.diff_str},
-                    obj=self.task,
+                    obj=self,
                     )
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        title = f'{self.task.object_code} {self.task.project_type.price_code}'
+        title = str(self)
         log(user=get_current_user(),
             action='Видалений підрядник по проекту',
             extra={'title': title},
-            obj=self.task,
+            obj=self,
             )
         super().delete(*args, **kwargs)
 
     def get_exec_status(self):
-        return self.task.get_exec_status_display()
+        return self.task.get_exec_status_display() if self.task else ''
     get_exec_status.short_description = 'Статус виконання'
 
     def get_actual_finish(self):
@@ -1105,9 +1129,21 @@ class Order(ModelDiffMixin, models.Model):
             return self.task.actual_finish
     get_actual_finish.short_description = 'Дата виконання'
 
+    def get_pay_status(self):
+        # Get actual pay_status
+        if self.orderpayment_set.count() > 0:
+            payment_sum = self.orderpayment_set.aggregate(Sum('value'))['value__sum'] or 0
+            if payment_sum == self.value:
+                return self.PaidUp
+            elif payment_sum > 0 and self.value > payment_sum:
+                return self.AdvancePaid
+            elif self.approved_date:
+                return self.Approved
+        return self.NotPaid
+
 
 class OrderPayment(PaymentBase):
-    order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.CASCADE)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив',
                                 related_name='order_peyment_creators',
@@ -1119,7 +1155,7 @@ class OrderPayment(PaymentBase):
         ordering = ['-creation_date', 'order']
 
     def __str__(self):
-        return f'{self.order} - {self.date}'
+        return f'{self.date} - {self.value}'
 
     def save(self, *args, logging=True, **kwargs):
 

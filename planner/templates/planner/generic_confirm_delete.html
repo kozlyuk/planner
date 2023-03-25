@@ -29,10 +29,14 @@
                 <form action="" method="post">{% csrf_token %}
                     <div class="list-group mb-2">
                         <p href="#" class="list-group-item list-group-item-danger">
-                            {{header}}
+                            {% if objects %}
+                                {{header}}
+                            {% else %}
+                                {{ main_header }}
+                            {% endif %}
                         </p>
                         {% for object in objects %}
-                        <p href="#" class="list-group-item list-group-item-action">{{ object }}</p>
+                            <p href="#" class="list-group-item list-group-item-action">{{ object }}</p>
                         {% endfor %}
                     </div>
                     <a href="{{ go_back_url }}" class="btn dark btn-sm btn-outline sbold uppercase"
