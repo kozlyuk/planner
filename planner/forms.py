@@ -12,7 +12,7 @@ from crum import get_current_user
 from planner.DateTimeWidgets import MonthYearWidget
 
 from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
-                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType
+                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType, OrderPayment
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -541,7 +541,7 @@ class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['contractor', 'subtask', 'deal_number', 'value',
-                  'advance', 'pay_status', 'pay_date']
+                  'advance', 'pay_date']
         widgets = {
             'contractor': Select2Widget(),
             'subtask': Select2Widget(),
@@ -558,17 +558,101 @@ class OrderInlineForm(forms.ModelForm):
             self.fields['subtask'].queryset = subtasks
 
     def clean(self):
-        super(OrderInlineForm, self).clean()
-        pay_status = self.cleaned_data.get("pay_status")
-        pay_date = self.cleaned_data.get("pay_date")
+        super().clean()
         value = self.cleaned_data.get("value")
-        if pay_status and pay_status != Order.NotPaid:
-            if not pay_date:
-                self.add_error('pay_date', "Вкажіть будь ласка Дату оплати")
-            if not value or value == 0:
-                self.add_error('value', "Вкажіть будь ласка Вартість робіт")
-        if pay_date and pay_status == Order.NotPaid:
-            self.add_error('pay_status', "Відмітьте Статус оплати або видаліть Дату оплати")
+        if not value or value == 0:
+            self.add_error('value', "Вкажіть будь ласка Вартість робіт")
+
+
+class PaymentInlineForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['date', 'value', 'comment']
+        widgets = {
+            'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'DELETE': forms.HiddenInput(),
+        }
+
+
+class OrderPaymentInlineFormset(BaseInlineFormSet):
+    """used to pass in the constructor of inlineformset_factory"""
+
+    def clean(self):
+        super().clean()
+        value_sum = 0
+        for form in self.forms:
+            if form.is_valid() and not form.cleaned_data.get('DELETE', False):
+                value_sum += form.cleaned_data.get('value', 0)
+        if self.instance.pk and value_sum > self.data.__value__:
+            raise ValidationError(f'Сума оплат не повинна перевищувати суму замовлення. Наразі: {value_sum}')
+
+
+OrderPaymentFormSet = inlineformset_factory(Order, OrderPayment, form=PaymentInlineForm, extra=0, formset=OrderPaymentInlineFormset)
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['contractor', 'company', 'task', 'subtask',
+                  'purpose', 'deal_number', 'value', 'advance',
+                  'pay_date', 'warning', 'invoice']
+        widgets = {
+            'contractor': Select2Widget,
+            'task': Select2Widget,
+            'subtask': Select2Widget,
+            'purpose': forms.TextInput(attrs={'placeholder': "якщо замовлення не пов'язане проектом"}),
+            'pay_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'approved_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'invoice': NotClearableFileInput,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.task:
+            self.fields['task'].queryset = Task.objects.filter(pk=self.instance.task.pk)
+            self.fields['subtask'].queryset = SubTask.objects.filter(project_type=self.instance.task.project_type)
+        else:
+            self.fields['task'].queryset = Task.objects.none()
+            self.fields['subtask'].queryset = SubTask.objects.none()
+        self.fields['subtask'].widget.attrs['disabled'] = True
+        self.fields['subtask'].required = False
+        self.fields['task'].widget.attrs['disabled'] = True
+        self.fields['task'].required = False
+
+    def clean_task(self):
+        if self.cleaned_data['task']:
+            return self.cleaned_data['task']
+        else:
+            return self.instance.task
+
+    def clean_subtask(self):
+        if self.cleaned_data['subtask']:
+            return self.cleaned_data['subtask']
+        else:
+            return self.instance.subtask
+
+    def clean_company(self):
+        data = self.cleaned_data['company']
+        if not data:
+            raise ValidationError("Вкажіть будь ласка компанію")
+        return data
+
+    def clean_value(self):
+        data = self.cleaned_data['value']
+        if not data or data == 0:
+            raise ValidationError("Вкажіть будь ласка Вартість робіт")
+        return data
+
+    def clean_purpose(self):
+        data = self.cleaned_data['purpose']
+        if not self.instance.task and not data:
+            raise ValidationError("Вкажіть будь ласка призначення")
+        return data
+
+    def clean(self):
+        cleaned_data = super().clean()
+        self.data.__value__ = cleaned_data.get("value")
+        return cleaned_data
 
 
 class CostsInlineFormset(BaseInlineFormSet):
@@ -576,7 +660,7 @@ class CostsInlineFormset(BaseInlineFormSet):
 
     def clean(self):
         """forces each clean() method on the ChildCounts to be called"""
-        super(CostsInlineFormset, self).clean()
+        super().clean()
         outsourcing = 0
         for form in self.forms:
             if form.is_valid() and not form.cleaned_data.get('DELETE', False):

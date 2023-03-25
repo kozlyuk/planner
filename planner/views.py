@@ -655,6 +655,102 @@ class OrderList(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
+class OrderUpdate(UpdateView):
+    queryset = Order.objects.select_related('task', 'subtask') \
+                            .prefetch_related('orderpayment_set')
+    form_class = forms.OrderForm
+    context_object_name = 'order'
+    success_url = reverse_lazy('order_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['payment_formset'] = forms.OrderPaymentFormSet(self.request.POST, instance=self.object)
+        else:
+            context['comments'] = Comment.objects.filter(content_type__model='Order',
+                                                         object_id=self.object.pk
+                                                         )
+            context['activities'] = Log.objects.filter(content_type__model='Order',
+                                                       object_id=self.object.pk
+                                                       )
+            context['payment_formset'] = forms.OrderPaymentFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        # create comment if comment modal form was submitted
+        if self.request.POST.get('comment_add'):
+            comment_text = form.data.get('text')
+            create_comment(get_current_user(), self.object, comment_text)
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_update'):
+            comment_id = form.data.get('comment_update')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.text = form.data.get('text')
+            comment.save()
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        # update comment if comment modal form was submitted
+        if self.request.POST.get('comment_delete'):
+            comment_id = form.data.get('comment_delete')
+            comment = Comment.objects.get(pk=comment_id)
+            comment.delete()
+            return redirect(self.request.META['HTTP_REFERER'])
+
+        context = self.get_context_data()
+        payment_formset = context['payment_formset']
+        if payment_formset.is_valid():
+            with transaction.atomic():
+                payment_formset.instance = self.object
+                payment_formset.save()
+                form.save()
+            if self.request.POST.get('save_add'):
+                return redirect('order_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class OrderCreate(CreateView):
+    model = Order
+    form_class = forms.OrderForm
+    context_object_name = 'order'
+    success_url = reverse_lazy('order_list')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            with transaction.atomic():
+                self.object = form.save()
+            if self.request.POST.get('save_add'):
+                return redirect('order_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class OrderDelete(DeleteView):
+    model = Order
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('order_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order = context['order']
+        context['go_back_url'] = reverse('receiver_update', kwargs={'pk': order.pk})
+        context['main_header'] = 'Видалити замовлення?'
+        context['header'] = 'Видалення замовлення "' + \
+            str(order) + '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
+        if self.object.orderpayment_set.exists():
+            context['objects'] = self.object.orderpayment_set.all()
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
 class InttaskDetail(DetailView):
     model = IntTask
     success_url = reverse_lazy('home_page')

@@ -35,6 +35,9 @@ urlpatterns = [
     path('task/update/<int:pk>', views.TaskUpdateModal.as_view(), name='task_update_modal'),
 
     path('order/', views.OrderList.as_view(), name='order_list'),
+    path('order/<int:pk>/change/', views.OrderUpdate.as_view(), name='order_update'),
+    path('order/add/', views.OrderCreate.as_view(), name='order_add'),
+    path('order/<int:pk>/delete/', views.OrderDelete.as_view(), name='order_delete'),
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
