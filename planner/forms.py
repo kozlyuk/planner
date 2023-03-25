@@ -564,7 +564,7 @@ class OrderInlineForm(forms.ModelForm):
             self.add_error('value', "Вкажіть будь ласка Вартість робіт")
 
 
-class PaymentInlineForm(forms.ModelForm):
+class OrderPaymentInlineForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ['date', 'value', 'comment']
@@ -587,7 +587,7 @@ class OrderPaymentInlineFormset(BaseInlineFormSet):
             raise ValidationError(f'Сума оплат не повинна перевищувати суму замовлення. Наразі: {value_sum}')
 
 
-OrderPaymentFormSet = inlineformset_factory(Order, OrderPayment, form=PaymentInlineForm, extra=0, formset=OrderPaymentInlineFormset)
+OrderPaymentFormSet = inlineformset_factory(Order, OrderPayment, form=OrderPaymentInlineForm, extra=0, formset=OrderPaymentInlineFormset)
 
 class OrderForm(forms.ModelForm):
     class Meta:
