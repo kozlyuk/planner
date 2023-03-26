@@ -668,7 +668,7 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card main-widget-tab">
-                            <h6 class="task-header center-block text-center">Витрати</h6>
+                            <h6 class="task-header center-block text-center">Замовлення</h6>
                             <div class="card-body pb-1">
                                 {% if costs_formset|length %}
                                 <div class="row">
@@ -722,14 +722,6 @@
                                                     {{ form.advance|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.advance.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ form.pay_status|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{form.pay_status.errors}}
                                                         </div>
                                                     </div>
                                                 </th>
