@@ -1157,28 +1157,28 @@ class OrderPayment(PaymentBase):
     def __str__(self):
         return f'{self.date} - {self.value}'
 
-    def save(self, *args, logging=True, **kwargs):
+    # def save(self, *args, logging=True, **kwargs):
 
-        # Logging
-        if logging:
-            title = f'{self.date} - {self.value}'
-            if not self.pk:
-                log(user=get_current_user(),
-                    action='Додана оплата замовлення',
-                    extra={'title': title},
-                    obj=self.order,
-                    )
-            elif self.diff_str:
-                log(user=get_current_user(),
-                    action='Оновлена оплата замовлення',
-                    extra={'title': title, 'diff': self.diff_str},
-                    obj=self.order,
-                    )
+    #     # Logging
+    #     if logging:
+    #         title = f'{self.date} - {self.value}'
+    #         if not self.pk:
+    #             log(user=get_current_user(),
+    #                 action='Додана оплата замовлення',
+    #                 extra={'title': title},
+    #                 obj=self.order,
+    #                 )
+    #         elif self.diff_str:
+    #             log(user=get_current_user(),
+    #                 action='Оновлена оплата замовлення',
+    #                 extra={'title': title, 'diff': self.diff_str},
+    #                 obj=self.order,
+    #                 )
 
-        if not self.pk:
-            # Set creator
-            self.creator = get_current_user()
-        super().save(*args, **kwargs)
+    #     if not self.pk:
+    #         # Set creator
+    #         self.creator = get_current_user()
+    #     super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         title = f'{self.date} - {self.value}'
