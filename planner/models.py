@@ -1105,7 +1105,7 @@ class Order(ModelDiffMixin, models.Model):
             self.creator = get_current_user()
 
         # Automatic set Company
-        if self.task and not self.company:
+        if not self.pk and self.task:
             self.company = self.task.deal.company
 
         # Automatic changing of pay status

@@ -759,14 +759,14 @@
                                     <table class="table table-hover mb-0 table-responsive-xl" id="costs_formset_empty">
                                         <thead>
                                             <tr align="center">
-                                                <th width="25%" scope="col">ПІДРЯДНИК</th>
-                                                <th width="23%" scope="col">НАЗВА РОБІТ</th>
-                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
-                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ, ГРН.</th>
-                                                <th width="10%" scope="col">АВАНС, ГРН.</th>
-                                                <th width="10%" scope="col">СТАТУС ОПЛАТИ</th>
-                                                <th width="10%" scope="col">ДАТА ОПЛАТИ</th>
-                                                <th width="2%">ДІЇ</th>
+                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="20%" scope="col">НАЗВА РОБІТ</th>
+                                                <th width="10%" scope="col">ТИП ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДОГОВІР/ЗАМОВЛЕННЯ</th>
+                                                <th width="10%" scope="col">ВАРТІСТЬ РОБІТ</th>
+                                                <th width="10%" scope="col">РАХУНОК</th>
+                                                <th width="10%" scope="col">ПЛАНОВА ДАТА ОПЛАТИ</th>
+                                                <th width="5%">ДІЇ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -787,6 +787,12 @@
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ costs_formset.empty_form.pay_type|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{costs_formset.empty_form.pay_type.errors}}
+                                                    </div>
+                                                </th>
+                                                <th class="pl-1 pr-1">
                                                     {{ costs_formset.empty_form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{costs_formset.empty_form.deal_number.errors}}
@@ -802,17 +808,9 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{ costs_formset.empty_form.advance|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    {{ costs_formset.empty_form.invoice|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.advance.errors}}
-                                                        </div>
-                                                    </div>
-                                                </th>
-                                                <th class="pl-1 pr-1">
-                                                    <div class="form-group">
-                                                    {{ costs_formset.empty_form.pay_status|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                        <div class="invalid-feedback">
-                                                            {{costs_formset.empty_form.pay_status.errors}}
+                                                            {{costs_formset.empty_form.invoice.errors}}
                                                         </div>
                                                     </div>
                                                 </th>
