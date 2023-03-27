@@ -347,7 +347,7 @@ class TaskUpdate(UpdateView):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
             context['executors_formset'] = forms.ExecutorsFormSet(self.request.POST, instance=self.object)
-            context['costs_formset'] = forms.CostsFormSet(self.request.POST, instance=self.object)
+            context['costs_formset'] = forms.CostsFormSet(self.request.POST, self.request.FILES, instance=self.object)
             context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
         else:
             employees = Employee.objects.filter(user__is_active=True)

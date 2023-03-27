@@ -540,12 +540,12 @@ class ExecutorsFormSet(inlineformset_factory(Task, Execution, form=ExecutorInlin
 class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['contractor', 'subtask', 'deal_number', 'value',
-                  'advance', 'pay_date']
+        fields = ['contractor', 'subtask', 'pay_type', 'deal_number', 'value', 'pay_date', 'invoice']
         widgets = {
             'contractor': Select2Widget(),
             'subtask': Select2Widget(),
             'pay_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'invoice': NotClearableFileInput,
             'DELETION_FIELD_NAME': forms.HiddenInput()
         }
 
@@ -592,9 +592,13 @@ OrderPaymentFormSet = inlineformset_factory(Order, OrderPayment, form=OrderPayme
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['contractor', 'company', 'task', 'subtask',
-                  'purpose', 'deal_number', 'value', 'advance',
-                  'pay_date', 'warning', 'invoice']
+        fields = ['contractor', 'company',
+                  'task', 'subtask',
+                  'pay_type', 'purpose',
+                  'value', 'advance',
+                  'deal_number', 'warning',
+                  'pay_date',
+                  'deal', 'invoice']
         widgets = {
             'contractor': Select2Widget,
             'task': Select2Widget,
@@ -602,12 +606,13 @@ class OrderForm(forms.ModelForm):
             'purpose': forms.TextInput(attrs={'placeholder': "якщо замовлення не пов'язане проектом"}),
             'pay_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'approved_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'deal': NotClearableFileInput,
             'invoice': NotClearableFileInput,
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.fields['contractor'].queryset = Contractor.objects.filter(active=True)
         if self.instance.task:
             self.fields['task'].queryset = Task.objects.filter(pk=self.instance.task.pk)
             self.fields['subtask'].queryset = SubTask.objects.filter(project_type=self.instance.task.project_type)
@@ -743,19 +748,32 @@ class OrderFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         contractor = list(Contractor.objects.filter(active=True).values_list('pk', 'name'))
+        company = list(Company.objects.filter(active=True).values_list('pk', 'name'))
         pay_status = list(Order.PAYMENT_STATUS_CHOICES)
         exec_status = list(Task.EXEC_STATUS_CHOICES)
+        linked = [(1, 'Проектні витрати'), (0, 'Загальні витрати')]
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
 
         self.fields['contractor'].choices = contractor
+        self.fields['company'].choices = company
         self.fields['pay_status'].choices = pay_status
         self.fields['exec_status'].choices = exec_status
+        self.fields['owner'].choices = owners
+        self.fields['linked'].choices = linked
 
     contractor = forms.MultipleChoiceField(label='Підрядник', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    linked = forms.ChoiceField(label="Тип витрат", required=False,
+        widget=Select2Widget(attrs={"style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
         widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 

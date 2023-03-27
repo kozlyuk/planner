@@ -676,11 +676,12 @@
                                         id="costs_formset_not_empty">
                                         <thead>
                                             <tr align="center">
-                                                <th width="25%" scope="col">ПІДРЯДНИК</th>
-                                                <th scope="col">НАЗВА РОБІТ</th>
-                                                <th width="10%" scope="col">НОМЕР ДОГОВОРУ</th>
+                                                <th width="20%" scope="col">ПІДРЯДНИК</th>
+                                                <th width="20%" scope="col">НАЗВА РОБІТ</th>
+                                                <th width="10%" scope="col">ТИП ОПЛАТИ</th>
+                                                <th width="15%" scope="col">ДОГОВІР/ЗАМОВЛЕННЯ</th>
                                                 <th width="10%" scope="col">ВАРТІСТЬ РОБІТ</th>
-                                                <th width="10%" scope="col">АВАНС</th>
+                                                <th width="10%" scope="col">РАХУНОК</th>
                                                 <th width="10%" scope="col">ПЛАНОВА ДАТА ОПЛАТИ</th>
                                                 <th width="5%">ДІЇ</th>
                                             </tr>
@@ -704,6 +705,12 @@
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
+                                                    {{ form.pay_type|attr:"style: width:100%"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                    <div class="invalid-feedback">
+                                                        {{form.pay_type.errors}}
+                                                    </div>
+                                                </th>
+                                                <th class="pl-1 pr-1">
                                                     {{ form.deal_number|attr:"style: width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{form.deal_number.errors}}
@@ -719,9 +726,9 @@
                                                 </th>
                                                 <th class="pl-1 pr-1">
                                                     <div class="form-group">
-                                                    {{ form.advance|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{form.invoice|add_error_class:"is-invalid"}}
                                                         <div class="invalid-feedback">
-                                                            {{form.advance.errors}}
+                                                            {{form.invoice.errors}}
                                                         </div>
                                                     </div>
                                                 </th>

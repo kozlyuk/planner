@@ -1038,20 +1038,37 @@ class Order(ModelDiffMixin, models.Model):
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачене')
     )
+    BankPayment = 'BP'
+    CashPayment = 'CP'
+    PAYMENT_TYPE_CHOICES = (
+        (BankPayment, 'По перерахунку'),
+        (CashPayment, 'Готівка')
+    )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
-    company = models.ForeignKey(Company, verbose_name='Компанія', blank=True, null=True, on_delete=models.SET_NULL)
+    company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE, blank=True, null=True)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', blank=True, null=True, on_delete=models.SET_NULL)
     purpose = models.CharField('Призначення', max_length=50, blank=True, null=True)
-    deal_number = models.CharField('Договір/замовлення', max_length=50)
+    deal_number = models.CharField('Договір/замовлення', max_length=50, blank=True, null=True)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
+    pay_type = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_TYPE_CHOICES, default=BankPayment)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Планова дата оплати', blank=True, null=True)
     approved_date = models.DateField('Дата погодження', blank=True, null=True)
     approved_by = models.ForeignKey(User, verbose_name='Погоджено', related_name='order_peyment_approvers',
                                     blank=True, null=True, on_delete=models.PROTECT)
     warning = models.CharField('Попередження', max_length=30, blank=True)
+    deal = ContentTypeRestrictedFileField('Договір', upload_to=user_directory_path,
+                                          content_types=['application/pdf',
+                                                         'application/vnd.openxmlformats-officedocument.'
+                                                         'spreadsheetml.sheet',
+                                                         'application/vnd.openxmlformats-officedocument.'
+                                                         'wordprocessingml.document'
+                                                         ],
+                                          max_upload_size=26214400,
+                                          blank=True, null=True
+                                          )
     invoice = ContentTypeRestrictedFileField('Рахунок', upload_to=user_directory_path,
                                              content_types=['application/pdf',
                                                             'application/vnd.openxmlformats-officedocument.'
@@ -1088,7 +1105,7 @@ class Order(ModelDiffMixin, models.Model):
             self.creator = get_current_user()
 
         # Automatic set Company
-        if self.task:
+        if self.task and not self.company:
             self.company = self.task.deal.company
 
         # Automatic changing of pay status

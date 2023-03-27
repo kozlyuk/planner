@@ -90,3 +90,32 @@ for deal in Deal.objects.all():
     if deal.comment:
         user = User.objects.get(pk=2)
         create_comment(user, deal, deal.comment)
+
+
+from planner.models import Order, OrderPayment, User
+user = User.objects.get(pk=2)
+for order in Order.objects.filter(pay_status='PU'):
+    OrderPayment.objects.create(order = order,
+                                creator = user,
+                                date = order.pay_date,
+                                value = order.value,
+    )
+    order.creation_date = order.pay_date
+    order.approved_date = order.pay_date
+    order.approved_by = user
+    order.company = order.task.deal.company
+    order.save(logging=False)
+
+from planner.models import Order, OrderPayment, User
+user = User.objects.get(pk=2)
+for order in Order.objects.filter(pay_status='AP'):
+    OrderPayment.objects.create(order = order,
+                                creator = user,
+                                date = order.pay_date,
+                                value = order.advance,
+    )
+    order.creation_date = order.pay_date
+    order.approved_date = order.pay_date
+    order.approved_by = user
+    order.company = order.task.deal.company
+    order.save(logging=False)
