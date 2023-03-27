@@ -270,6 +270,9 @@ def order_queryset_filter(request_user, query_dict):
 
     orders = Order.objects.all().select_related('contractor', 'task', 'subtask')
     # filter only customer tasks
+    if request_user.groups.filter(name='ГІПи').exists():
+        orders = orders.filter(task__owner__user=request_user)
+
     for word in search_string:
         orders = orders.filter(Q(contractor__name__icontains=word) |
                                Q(task__object_code__icontains=word) |

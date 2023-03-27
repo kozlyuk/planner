@@ -21,13 +21,13 @@
         <br><!-- BEGIN CONTENT -->
         <div class="container-fluid">
             <div class="portlet-body">
-                <div id="dealList" class="table-scrollable">
+                <div id="OrderList" class="table-scrollable">
                     {% include 'planner/order_table.html' %}
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="text-center">
-                            {{ orders_filtered }} знайдено <a href="{% url 'deal_list' %}"> ({{ orders_count }} всього)
+                            {{ orders_filtered }} знайдено <a href="{% url 'order_list' %}"> ({{ orders_count }} всього)
                             </a><br>
                             {% include 'pagination.html' %}
                         </div>
@@ -40,7 +40,7 @@
     </div>
     <!-- END CONTAINER -->
     <div class="add-btn-wrapper">
-    {% if perms.planner.add_deal %}
+    {% if perms.planner.add_order %}
         <a href="{% url 'order_add' %}" class="add_btn"><i class="fas fa-plus add-task"></i></a>
     {% endif %}
     <a id="makePDF" class="print_btn"><i class="fas fa-print"></i></a>
@@ -59,7 +59,7 @@
     const makePDFButton = document.querySelector('#makePDF');
     makePDFButton.addEventListener('click', () => {
         printJS({
-            printable: 'dealList',
+            printable: 'OrderList',
             type: 'html',
             maxWidth: 'auto',
             style: '@page { size: A4 landscape; }; #sprintList {width: 120px!important;} th, tr > td {font-size: 10px!important;} .print-ignore {display:none} .uppercase { text-transform: uppercase !important; }',

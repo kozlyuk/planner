@@ -629,7 +629,7 @@ class OrderList(ListView):
             request.GET = request.GET.copy()
             request.GET = QueryDict(self.request.session.get('order_query_string', ''))
             request.META['QUERY_STRING'] = self.request.session.get('order_query_string', '')
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Бухгалтери', 'Секретарі']).exists():
+        if request.user.is_superuser or request.user.has_perm('planner.view_order'):
             return super().dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
