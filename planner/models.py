@@ -1148,14 +1148,13 @@ class Order(ModelDiffMixin, models.Model):
 
     def get_pay_status(self):
         # Get actual pay_status
-        if self.orderpayment_set.count() > 0:
-            payment_sum = self.orderpayment_set.aggregate(Sum('value'))['value__sum'] or 0
-            if payment_sum == self.value:
-                return self.PaidUp
-            elif payment_sum > 0 and self.value > payment_sum:
-                return self.AdvancePaid
-            elif self.approved_date:
-                return self.Approved
+        payment_sum = self.orderpayment_set.aggregate(Sum('value'))['value__sum'] or 0
+        if payment_sum == self.value:
+            return self.PaidUp
+        elif payment_sum > 0 and self.value > payment_sum:
+            return self.AdvancePaid
+        elif self.approved_date:
+            return self.Approved
         return self.NotPaid
 
 

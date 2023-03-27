@@ -258,8 +258,7 @@ class DealCreate(CreateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            with transaction.atomic():
-                self.object = form.save()
+            self.object = form.save()
             if self.request.POST.get('save_add'):
                 return redirect('deal_update', self.object.pk)
             else:
@@ -424,8 +423,7 @@ class TaskCreate(CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         if form.is_valid():
-            with transaction.atomic():
-                self.object = form.save()
+            self.object = form.save()
             if self.request.POST.get('save_add'):
                 return redirect('task_update', self.object.pk)
             else:
@@ -722,8 +720,7 @@ class OrderCreate(CreateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            with transaction.atomic():
-                self.object = form.save()
+            self.object = form.save()
             if self.request.POST.get('save_add'):
                 return redirect('order_update', self.object.pk)
             else:
