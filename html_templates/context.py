@@ -155,6 +155,7 @@ def context_act_render(act):
     # prepare object_list data
     index = 0
     svalue = Decimal(0)
+    svalue_w_vat = Decimal(0)
     count = 1
     object_list = []
     for task in tasks:
