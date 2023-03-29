@@ -1160,9 +1160,9 @@ class Order(ModelDiffMixin, models.Model):
         return self.NotPaid
 
     def approve(self):
-        # Approve order by supervisor
+        # Approve order
         user = get_current_user()
-        if user.is_superuser:
+        if self.pay_status == self.NotPaid:
             self.approved_by = user
             self.approved_date = date.today()
             self.save(logging=False)
@@ -1170,6 +1170,20 @@ class Order(ModelDiffMixin, models.Model):
             title = str(self)
             log(user=user,
                 action='Погоджене замовлення',
+                extra={'title': title},
+                obj=self,
+                )
+
+    def cancel_approval(self):
+        # Cancel approval of order
+        if self.pay_status == self.Approved:
+            self.approved_by = None
+            self.approved_date = None
+            self.save(logging=False)
+            # logging
+            title = str(self)
+            log(user=get_current_user(),
+                action='Відміна погодження замовлення',
                 extra={'title': title},
                 obj=self,
                 )

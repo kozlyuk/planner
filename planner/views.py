@@ -707,6 +707,8 @@ class OrderUpdate(UpdateView):
                 return redirect('order_update', self.object.pk)
             elif self.request.POST.get('approve'):
                 form.instance.approve()
+            elif self.request.POST.get('cancel_approval'):
+                form.instance.cancel_approval()
             return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
@@ -746,6 +748,26 @@ class OrderDelete(DeleteView):
         if self.object.orderpayment_set.exists():
             context['objects'] = self.object.orderpayment_set.all()
         return context
+
+
+class OrderApprove(View):
+    """ Approve order """
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Order.objects.get(pk=kwargs['pk'])
+        except:
+            raise Order.DoesNotExist
+
+        if request.user.is_superuser:
+                return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+
+    def get(self, request, *args, **kwargs):
+        order = Order.objects.get(pk=kwargs['pk'])
+        order.approve()
+        return redirect(reverse('order_list') + '?' + self.request.session.get('order_query_string', ''))
 
 
 @method_decorator(login_required, name='dispatch')

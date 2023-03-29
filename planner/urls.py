@@ -38,6 +38,7 @@ urlpatterns = [
     path('order/<int:pk>/change/', views.OrderUpdate.as_view(), name='order_update'),
     path('order/add/', views.OrderCreate.as_view(), name='order_add'),
     path('order/<int:pk>/delete/', views.OrderDelete.as_view(), name='order_delete'),
+    path('order/approve/<int:pk>', views.OrderApprove.as_view(), name='order_approve'),
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
