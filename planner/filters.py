@@ -264,6 +264,7 @@ def order_queryset_filter(request_user, query_dict):
     companies = list(filter(None, query_dict.getlist('company')))
     pay_statuses = list(filter(None, query_dict.getlist('pay_status')))
     exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
+    pay_types = list(filter(None, query_dict.getlist('pay_type')))
     owners = list(filter(None, query_dict.getlist('owner')))
     linked = query_dict.get('linked')
     order = query_dict.get('o')
@@ -302,6 +303,12 @@ def order_queryset_filter(request_user, query_dict):
         orders_union = Order.objects.none()
         for status in exec_statuses:
             orders_segment = orders.filter(task__exec_status=status)
+            orders_union = orders_union | orders_segment
+        orders = orders_union
+    if pay_types:
+        orders_union = Order.objects.none()
+        for pay_type in pay_types:
+            orders_segment = orders.filter(pay_type=pay_type)
             orders_union = orders_union | orders_segment
         orders = orders_union
     if owners:

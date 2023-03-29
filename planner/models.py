@@ -1038,10 +1038,12 @@ class Order(ModelDiffMixin, models.Model):
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачене')
     )
+    BankPaymentVAT = 'BV'
     BankPayment = 'BP'
     CashPayment = 'CP'
     PAYMENT_TYPE_CHOICES = (
-        (BankPayment, 'По перерахунку'),
+        (BankPaymentVAT, 'Платіж з ПДВ'),
+        (BankPayment, 'Платіж без ПДВ'),
         (CashPayment, 'Готівка')
     )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
@@ -1052,7 +1054,7 @@ class Order(ModelDiffMixin, models.Model):
     deal_number = models.CharField('Договір/замовлення', max_length=50, blank=True, null=True)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
-    pay_type = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_TYPE_CHOICES, default=BankPayment)
+    pay_type = models.CharField('Форма оплати', max_length=2, choices=PAYMENT_TYPE_CHOICES, default=BankPaymentVAT)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Планова дата оплати', blank=True, null=True)
     approved_date = models.DateField('Дата погодження', blank=True, null=True)
