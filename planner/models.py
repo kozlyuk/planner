@@ -510,7 +510,7 @@ class Deal(ModelDiffMixin, models.Model):
 
     def get_pay_status(self):
         # Get actual pay_status
-        if self.payment_set.count() > 0:
+        if self.payment_set.exists():
             act_sum = self.actofacceptance_set.aggregate(Sum('value'))['value__sum'] or 0
             payment_sum = self.payment_set.aggregate(Sum('value'))['value__sum'] or 0
             if payment_sum > act_sum:
