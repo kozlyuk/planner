@@ -163,6 +163,7 @@ def context_act_render(act):
             price_wo_vat = task.project_type.price / Decimal(1.2)
             price_wo_vat = price_wo_vat.quantize(Decimal("1.00"), ROUND_HALF_UP)
             svalue += price_wo_vat * count
+            svalue_w_vat += task.project_type.price * count
             price_code = task.project_type.price_code.split('.', 1)[1]
             object_list.append([index,
                                 task.object_code,
@@ -213,6 +214,7 @@ def context_act_render(act):
         'object_list': object_list,
         'grouped_list': grouped_list,
         'svalue': svalue,
+        'svalue_w_vat': svalue_w_vat,
         'taxation': act.deal.company.taxation,
     }
 
