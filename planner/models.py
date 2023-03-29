@@ -1118,13 +1118,13 @@ class Order(ModelDiffMixin, models.Model):
         if logging:
             if not self.pk:
                 log(user=get_current_user(),
-                    action='Доданий підрядник по проекту',
+                    action='Додане замовлення',
                     extra={'title': title},
                     obj=self,
                     )
             elif self.diff_str:
                 log(user=get_current_user(),
-                    action='Оновлений підрядник по проекту',
+                    action='Оновлене замовлення',
                     extra={'title': title, 'diff': self.diff_str},
                     obj=self,
                     )
@@ -1158,6 +1158,21 @@ class Order(ModelDiffMixin, models.Model):
         elif self.approved_date:
             return self.Approved
         return self.NotPaid
+
+    def approve(self):
+        # Approve order by supervisor
+        user = get_current_user()
+        if user.is_superuser:
+            self.approved_by = user
+            self.approved_date = date.today()
+            self.save(logging=False)
+            # logging
+            title = str(self)
+            log(user=user,
+                action='Погоджене замовлення',
+                extra={'title': title},
+                obj=self,
+                )
 
 
 class OrderPayment(PaymentBase):

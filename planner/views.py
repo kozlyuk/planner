@@ -705,8 +705,9 @@ class OrderUpdate(UpdateView):
                 form.save()
             if self.request.POST.get('save_add'):
                 return redirect('order_update', self.object.pk)
-            else:
-                return redirect(self.get_success_url())
+            elif self.request.POST.get('approve'):
+                form.instance.approve()
+            return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
 
