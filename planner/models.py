@@ -1116,6 +1116,9 @@ class Order(ModelDiffMixin, models.Model):
         else:
             return str(self.contractor)
 
+    def get_absolute_url(self):
+        return reverse('order_update', args=[self.pk])
+
     def save(self, *args, logging=True, **kwargs):
 
         # Set creator
@@ -1189,6 +1192,10 @@ class Order(ModelDiffMixin, models.Model):
                 extra={'title': title},
                 obj=self,
                 )
+            # send email for accountant
+            if self.pay_date == date.today():
+                from messaging.tasks import send_payment_notification
+                send_payment_notification.delay(self.pk)
 
     def cancel_approval(self):
         # Cancel approval of order

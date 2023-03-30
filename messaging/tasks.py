@@ -8,7 +8,7 @@ from django.core.mail import EmailMessage, get_connection
 from django.template.loader import render_to_string
 from django.apps import apps
 
-from planner.models import Employee, Deal, Task
+from planner.models import Employee, Deal, Task, Order
 from html_templates.context import context_bonus_per_month
 from planner.celery import app
 from .context_email import context_actneed_deals, context_debtors_deals, \
@@ -225,7 +225,6 @@ def send_monthly_report(period=None):
 def send_comment_notification(comment_pk) -> None:
     """Sending notifications about new comment"""
 
-    template_name = "email/comment_email.html"
     emails = []
     comment_model =apps.get_model('notice.Comment')
     comment = comment_model.objects.get(pk=comment_pk)
@@ -283,3 +282,37 @@ def send_comment_notification(comment_pk) -> None:
     # sending emails
     if emails:
         send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
+
+
+@app.task
+def send_payment_notification(order_pk) -> None:
+    """Sending notifications about new payment"""
+
+    template_name = "email/payment_comment_email.html"
+
+    try:
+        order = Order.objects.get(pk=order_pk)
+    except Order.DoesNotExist:
+        logger.info("Task with pk %s does not exists", order_pk)
+
+    accountant_email = order.company.accountant.user.email
+
+    # prepearing email
+    context = {
+        'order': order,
+        'order_url': format_html('<a href="%s%s">%s</a>' %
+                     (settings.SITE_URL, order.get_absolute_url(), order)),
+    }
+    subject = f'Погоджено платіж {order}'
+    message = render_to_string(template_name, context)
+
+    email = EmailMessage(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [accountant_email],
+    )
+
+    # sending emails
+    if email:
+        send_email_list(change_content_type_to_html([email]), ignore_holidays=True)
