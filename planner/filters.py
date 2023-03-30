@@ -266,7 +266,7 @@ def order_queryset_filter(request_user, query_dict):
     exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
     pay_types = list(filter(None, query_dict.getlist('pay_type')))
     owners = list(filter(None, query_dict.getlist('owner')))
-    linked = query_dict.get('linked')
+    cost_types = list(filter(None, query_dict.getlist('cost_type')))
     order = query_dict.get('o')
 
     orders = Order.objects.all().select_related('contractor', 'task', 'subtask')
@@ -317,8 +317,12 @@ def order_queryset_filter(request_user, query_dict):
             orders_segment = orders.filter(task__owner=owner)
             orders_union = orders_union | orders_segment
         orders = orders_union
-    if linked:
-        orders = orders.filter(task__isnull=bool(not int(linked)))
+    if cost_types:
+        orders_union = Order.objects.none()
+        for cost_type in cost_types:
+            orders_segment = orders.filter(cost_type=cost_type)
+            orders_union = orders_union | orders_segment
+        orders = orders_union
     if order:
         orders = orders.order_by(order)
     else:

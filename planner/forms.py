@@ -537,6 +537,45 @@ class ExecutorsFormSet(inlineformset_factory(Task, Execution, form=ExecutorInlin
         super().__init__(*args, **kwargs)
         self.queryset = self.queryset.order_by(F('planned_start').asc(nulls_last=True))
 
+
+class OrderFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        contractor = list(Contractor.objects.filter(active=True).values_list('pk', 'name'))
+        company = list(Company.objects.filter(active=True).values_list('pk', 'name'))
+        pay_status = list(Order.PAYMENT_STATUS_CHOICES)
+        exec_status = list(Task.EXEC_STATUS_CHOICES)
+        pay_type = list(Order.PAYMENT_TYPE_CHOICES)
+        cost_types = list(Order.COST_TYPE_CHOICES)
+        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+                                      .values_list('pk', 'name'))
+
+        self.fields['contractor'].choices = contractor
+        self.fields['company'].choices = company
+        self.fields['pay_status'].choices = pay_status
+        self.fields['exec_status'].choices = exec_status
+        self.fields['pay_type'].choices = pay_type
+        self.fields['owner'].choices = owners
+        self.fields['cost_type'].choices = cost_types
+
+    contractor = forms.MultipleChoiceField(label='Підрядник', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    company = forms.MultipleChoiceField(label='Компанія', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    pay_type = forms.MultipleChoiceField(label='Форма оплати', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    cost_type = forms.ChoiceField(label="Стаття затрат", required=False,
+        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
+        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
+
+
 class OrderInlineForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -594,10 +633,10 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['contractor', 'company',
                   'task', 'subtask',
-                  'pay_type', 'purpose',
+                  'pay_type', 'cost_type',
                   'value', 'advance',
-                  'deal_number', 'warning',
-                  'pay_date',
+                  'deal_number', 'pay_date',
+                  'purpose', 'warning',
                   'deal', 'invoice']
         widgets = {
             'contractor': Select2Widget,
@@ -744,44 +783,6 @@ class TaskExchangeForm(forms.Form):
                         'deal', "{} - договір закрито, зверніться до керівника".format(task))
 
 
-class OrderFilterForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        contractor = list(Contractor.objects.filter(active=True).values_list('pk', 'name'))
-        company = list(Company.objects.filter(active=True).values_list('pk', 'name'))
-        pay_status = list(Order.PAYMENT_STATUS_CHOICES)
-        exec_status = list(Task.EXEC_STATUS_CHOICES)
-        pay_type = list(Order.PAYMENT_TYPE_CHOICES)
-        linked = [(1, 'Проектні витрати'), (0, 'Загальні витрати')]
-        owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
-                                      .values_list('pk', 'name'))
-
-        self.fields['contractor'].choices = contractor
-        self.fields['company'].choices = company
-        self.fields['pay_status'].choices = pay_status
-        self.fields['exec_status'].choices = exec_status
-        self.fields['pay_type'].choices = pay_type
-        self.fields['owner'].choices = owners
-        self.fields['linked'].choices = linked
-
-    contractor = forms.MultipleChoiceField(label='Підрядник', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    company = forms.MultipleChoiceField(label='Компанія', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    pay_type = forms.MultipleChoiceField(label='Форма оплати', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    linked = forms.ChoiceField(label="Тип витрат", required=False,
-        widget=Select2Widget(attrs={"style": 'width: 100%'}))
-    filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
-        widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
-
-
 # class TaskRegistryForm(forms.Form):
 #     def __init__(self, *args, **kwargs):
 #         self.tasks_ids = kwargs.pop('tasks_ids')
@@ -851,7 +852,7 @@ class CustomerFilterForm(forms.Form):
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'full_name', 'contact_person', 'phone', 'email',
+        fields = ['name', 'full_name', 'edrpou', 'contact_person', 'phone', 'email',
                   'debtor_term', 'user',
                   'city', 'legal_description', 'legal', 'regulations',
                   'signatory_person', 'signatory_position', 'requisites', 'plan_reserve',
@@ -875,7 +876,7 @@ class CompanyFilterForm(forms.Form):
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'full_name', 'chief', 'taxation',
+        fields = ['name', 'full_name', 'edrpou', 'chief', 'accountant', 'taxation',
                   'city', 'legal_description', 'legal', 'regulations',
                   'signatory_person', 'signatory_position',
                   'requisites', 'active',
@@ -894,7 +895,7 @@ class ContractorFilterForm(forms.Form):
 class ContractorForm(forms.ModelForm):
     class Meta:
         model = Contractor
-        fields = ['name', 'contact_person', 'phone',
+        fields = ['name', 'edrpou', 'contact_person', 'phone',
                   'email', 'requisites', 'active']
 
     def __init__(self, *args, **kwargs):

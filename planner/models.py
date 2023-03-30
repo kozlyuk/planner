@@ -172,6 +172,7 @@ class Employee(models.Model):
 class Requisites(models.Model):
     name = models.CharField('Назва', max_length=50, unique=True)
     full_name = models.CharField('Повна назва', max_length=100, blank=True)
+    edrpou = models.CharField('ЄДРПОУ', max_length=10, blank=True)
     city = models.CharField('Місто', max_length=30, blank=True)
     legal = models.CharField('Опис контрагента', max_length=255, blank=True)
     legal_description = models.CharField('Організаційно-правова форма', max_length=255, blank=True)
@@ -288,7 +289,8 @@ class Company(Requisites):
         ('wvat', 'З ПДВ'),
         ('wovat', 'Без ПДВ'),
     )
-    chief = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
+    chief = models.ForeignKey(Employee, verbose_name='Керівник', related_name='company_chiefs', on_delete=models.PROTECT)
+    accountant = models.ForeignKey(Employee, verbose_name='Бухгалтер', related_name='company_accountant', on_delete=models.PROTECT)
     taxation = models.CharField('Система оподаткування', max_length=5, choices=TAXATION_CHOICES, default='wvat')
     active = models.BooleanField('Активний', default=True)
 
@@ -324,6 +326,7 @@ class Company(Requisites):
 
 class Contractor(models.Model):
     name = models.CharField('Назва', max_length=50, unique=True)
+    edrpou = models.CharField('ЄДРПОУ', max_length=10, blank=True)
     contact_person = models.CharField('Контактна особа', max_length=50)
     phone = models.CharField('Телефон', max_length=13)
     email = models.EmailField('Email')
@@ -651,6 +654,8 @@ class ActOfAcceptance(ModelDiffMixin, models.Model):
 class PaymentBase(ModelDiffMixin, models.Model):
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
+    purpose = models.CharField('Призначення платежу', max_length=255, blank=True)
+    doc_number = models.CharField('Документ', max_length=10, blank=True)
     comment = models.CharField('Коментар', blank=True, max_length=255)
     # Creating information
     creation_date = models.DateField(auto_now_add=True)
@@ -1046,12 +1051,23 @@ class Order(ModelDiffMixin, models.Model):
         (BankPayment, 'Платіж без ПДВ'),
         (CashPayment, 'Готівка')
     )
+    ProjectCost = 'PC'
+    TripCost = 'TC'
+    OfficeCost = 'OC'
+    FixedAssets = 'FA'
+    COST_TYPE_CHOICES = (
+        (ProjectCost, 'Проектні затрати'),
+        (TripCost, 'Відрядні затрати'),
+        (OfficeCost, 'Канселярські затрати'),
+        (FixedAssets, 'Основні засоби')
+    )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE, blank=True, null=True)
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', blank=True, null=True, on_delete=models.SET_NULL)
-    purpose = models.CharField('Призначення', max_length=50, blank=True, null=True)
-    deal_number = models.CharField('Договір/замовлення', max_length=50, blank=True, null=True)
+    purpose = models.CharField('Призначення', max_length=50, blank=True)
+    cost_type = models.CharField('Стаття затрат', max_length=2, choices=COST_TYPE_CHOICES, default=ProjectCost)
+    deal_number = models.CharField('Договір/замовлення', max_length=50, blank=True)
     value = models.DecimalField('Вартість робіт, грн.', max_digits=8, decimal_places=2, default=0)
     advance = models.DecimalField('Аванс, грн.', max_digits=8, decimal_places=2, default=0)
     pay_type = models.CharField('Форма оплати', max_length=2, choices=PAYMENT_TYPE_CHOICES, default=BankPaymentVAT)
