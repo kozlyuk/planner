@@ -327,15 +327,15 @@ class Company(Requisites):
 class Contractor(models.Model):
     name = models.CharField('Назва', max_length=50, unique=True)
     edrpou = models.CharField('ЄДРПОУ', max_length=10, blank=True)
-    contact_person = models.CharField('Контактна особа', max_length=50)
-    phone = models.CharField('Телефон', max_length=13)
-    email = models.EmailField('Email')
+    contact_person = models.CharField('Контактна особа', max_length=50, blank=True)
+    phone = models.CharField('Телефон', max_length=13, blank=True)
+    email = models.EmailField('Email', blank=True)
     requisites = models.TextField('Реквізити', blank=True)
     active = models.BooleanField('Активний', default=True)
 
     class Meta:
-        verbose_name = 'Підрярник'
-        verbose_name_plural = 'Підрядники'
+        verbose_name = 'Контрагент'
+        verbose_name_plural = 'Контрагенти'
 
     def __str__(self):
         return self.name
