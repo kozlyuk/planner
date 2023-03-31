@@ -1036,10 +1036,12 @@ class Order(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
     Approved = 'AR'
     AdvancePaid = 'AP'
+    AdvanceApproved = 'AP'
     PaidUp = 'PU'
     PAYMENT_STATUS_CHOICES = (
         (NotPaid, 'Нове замовлення'),
         (Approved, 'Погоджена оплата'),
+        (AdvanceApproved, 'Погоджений аванс'),
         (AdvancePaid, 'Оплачений аванс'),
         (PaidUp, 'Оплачене')
     )

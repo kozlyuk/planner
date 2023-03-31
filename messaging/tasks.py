@@ -12,7 +12,7 @@ from planner.models import Employee, Deal, Task, Order
 from html_templates.context import context_bonus_per_month
 from planner.celery import app
 from .context_email import context_actneed_deals, context_debtors_deals, \
-                           context_overdue_tasks
+                           context_overdue_tasks, context_payments
 
 
 logger = get_task_logger(__name__)
@@ -55,7 +55,7 @@ def change_content_type_to_html(emails: EmailMessage) -> EmailMessage:
 def send_actneed_report():
     """Sending notifications about closed contracts to accountants"""
 
-    template_name = "email/actneed_report.html"
+    template_name = "actneed_report.html"
     accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                           user__is_active=True,
                                           )
@@ -83,7 +83,7 @@ def send_actneed_report():
 def send_debtors_report():
     """Sending notifications about debtors to accountants"""
 
-    template_name = "email/debtors_report.html"
+    template_name = "debtors_report.html"
     accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                           user__is_active=True,
                                           )
@@ -110,7 +110,7 @@ def send_debtors_report():
 def send_overdue_deals_report():
     """Sending notifications about overdue deals to PMs"""
 
-    template_name = "email/overdue_deals_report.html"
+    template_name = "overdue_deals_report.html"
     project_managers = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
                                                user__is_active=True,
                                                )
@@ -137,7 +137,7 @@ def send_overdue_deals_report():
 def send_overdue_tasks_report():
     """Sending notifications about overdue tasks to owners and executors"""
 
-    template_name = "email/overdue_tasks_report.html"
+    template_name = "overdue_tasks_report.html"
     employees = Employee.objects.filter(user__is_active=True)
 
     # prepearing emails
@@ -164,7 +164,7 @@ def send_overdue_tasks_report():
 def send_unsent_tasks_report():
     """Sending notifications about unsent tasks to owners"""
 
-    template_name = "email/unsent_tasks_report.html"
+    template_name = "unsent_tasks_report.html"
     project_managers = Employee.objects.filter(user__groups__name__in=['ГІПи'],
                                                user__is_active=True,
                                                )
@@ -192,7 +192,7 @@ def send_unsent_tasks_report():
 def send_monthly_report(period=None):
     """ Sending monthly report to employee """
 
-    template_name = "email/bonuses_report.html"
+    template_name = "bonuses_report.html"
     employees = Employee.objects.exclude(user__username__startswith='outsourcing',
                                          user__is_active=True,
                                          )
@@ -230,7 +230,7 @@ def send_comment_notification(comment_pk) -> None:
     comment = comment_model.objects.get(pk=comment_pk)
 
     if comment.content_type.model == 'task':
-        template_name = "email/task_comment_email.html"
+        template_name = "task_comment_email.html"
         try:
             task = Task.objects.get(pk=comment.object_id)
             recepients_set = set(task.executors.exclude(user__email='').values_list('user__email', flat=True))
@@ -253,7 +253,7 @@ def send_comment_notification(comment_pk) -> None:
             logger.info("Task with pk %s does not exists", comment.object_id)
 
     if comment.content_type.model == 'deal':
-        template_name = "email/deal_comment_email.html"
+        template_name = "deal_comment_email.html"
         try:
             deal = Deal.objects.get(pk=comment.object_id)
             recepients = Employee.objects.filter(user__groups__name='Бухгалтери').values_list('user__email', flat=True)
@@ -288,14 +288,15 @@ def send_comment_notification(comment_pk) -> None:
 def send_payment_notification(order_pk) -> None:
     """Sending notifications about new payment"""
 
-    template_name = "email/payment_comment_email.html"
+    template_name = "payment_confirmed_email.html"
 
     try:
         order = Order.objects.get(pk=order_pk)
     except Order.DoesNotExist:
         logger.info("Task with pk %s does not exists", order_pk)
 
-    accountant_email = order.company.accountant.user.email
+    recepients = set([order.company.accountant.user.email])
+    recepients.update(Employee.objects.filter(user__is_superuser=True).values_list('user__email', flat=True))
 
     # prepearing email
     context = {
@@ -310,9 +311,49 @@ def send_payment_notification(order_pk) -> None:
         subject,
         message,
         settings.DEFAULT_FROM_EMAIL,
-        [accountant_email],
+        recepients,
     )
 
     # sending emails
     if email:
         send_email_list(change_content_type_to_html([email]), ignore_holidays=True)
+
+
+@app.task
+def send_payments_report() -> None:
+    """Sending notifications about payments to accountants"""
+
+    template_name = "payments_report.html"
+    emails = []
+
+    accountants = Employee.objects.filter(user__groups__name__in=['Бухгалтери'],
+                                          user__is_active=True,
+                                          )
+
+    for accountant in accountants:
+        orders = Order.objects.filter(company__accountant=accountant,
+                                      pay_status=Order.Approved,
+                                      pay_date__lte=date.today()
+                                      ) \
+                              .order_by('pay_date')
+        if orders:
+            recepients = set([accountant.user.email])
+            recepients.update(list(Employee.objects.filter(user__is_superuser=True).values_list('user__email', flat=True)))
+
+            # prepearing email
+            context = context_payments(orders, accountant)
+            subject = f'Платежі на {date.today()}'
+            message = render_to_string(template_name, context)
+
+            emails.append(EmailMessage(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                recepients
+            ))
+        else:
+            continue
+
+    # sending emails
+    if emails:
+        send_email_list(change_content_type_to_html(emails), ignore_holidays=True)

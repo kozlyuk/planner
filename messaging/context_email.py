@@ -2,7 +2,7 @@ from datetime import date
 from django.utils.html import format_html
 from django.conf import settings
 
-from planner.models import Task, Execution, Deal, IntTask
+from planner.models import Task, Execution, Deal, IntTask, Order
 
 
 TODAY = date.today()
@@ -227,5 +227,38 @@ def context_unsent_tasks(employee):
         'first_name': employee.user.first_name,
         'labels_task': labels_task,
         'tasks': task_list,
+    }
+    return context
+
+
+def context_payments(orders, accountant):
+
+    # get owner tasks
+    order_labels = ["№",
+                    Order._meta.get_field('contractor').verbose_name,
+                    Order._meta.get_field('pay_status').verbose_name,
+                    Order._meta.get_field('pay_date').verbose_name,
+                    Order._meta.get_field('value').verbose_name,
+                    Order._meta.get_field('advance').verbose_name,
+                    ]
+    index = 0
+    order_list = []
+    for order in orders:
+        index += 1
+        order_list.append([index,
+                           format_html('<a href="%s%s">%s</a>'
+                                       % (settings.SITE_URL,
+                                          order.get_absolute_url(),
+                                          order)),
+                           order.get_pay_status_display(),
+                           order.pay_date,
+                           order.value,
+                           order.advance,
+                           ])
+    # creating context
+    context = {
+        'first_name': accountant.user.first_name,
+        'labels': order_labels,
+        'orders': order_list,
     }
     return context
