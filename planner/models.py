@@ -1056,12 +1056,20 @@ class Order(ModelDiffMixin, models.Model):
     ProjectCost = 'PC'
     TripCost = 'TC'
     OfficeCost = 'OC'
+    СlericalCost = 'CC'
     FixedAssets = 'FA'
+    UtilityPayments = 'UP'
+    LaborCosts = 'LC'
+    Taxes = 'TA'
     COST_TYPE_CHOICES = (
-        (ProjectCost, 'Проектні затрати'),
-        (TripCost, 'Відрядні затрати'),
-        (OfficeCost, 'Канселярські затрати'),
-        (FixedAssets, 'Основні засоби')
+        (ProjectCost, 'Проектні витрати'),
+        (TripCost, 'Відрядні витрати'),
+        (OfficeCost, 'Офісні витрати'),
+        (СlericalCost, 'Канцелярські витрати'),
+        (FixedAssets, 'Основні засоби'),
+        (UtilityPayments, 'Комунальні платежі'),
+        (LaborCosts, 'Оплата праці'),
+        (Taxes, 'Податки'),
     )
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
