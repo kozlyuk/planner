@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from smtplib import SMTPException
 from celery.utils.log import get_task_logger
 from django.utils.html import format_html
@@ -333,7 +333,7 @@ def send_payments_report() -> None:
     for accountant in accountants:
         orders = Order.objects.filter(company__accountant=accountant,
                                       pay_status=Order.Approved,
-                                      pay_date__lte=date.today()
+                                      pay_date__lte=date.today()+timedelta(days=7)
                                       ) \
                               .order_by('pay_date')
         if orders:

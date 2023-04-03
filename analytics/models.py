@@ -14,9 +14,9 @@ class Kpi(models.Model):
     Tasks = 'TA'
     Productivity = 'PR'
     KPI_CHOICES = (
-        (BonusItel, 'Бонус Ітел-Ісервіс'),
+        (BonusItel, 'Бонус Ітел-Cервіс'),
         (BonusGKP, 'Бонус Галкомпроект'),
-        (BonusSIA, 'Бонус Семенович'),
+        (BonusSIA, 'Бонус ФОП'),
         (Tasks, 'Бонуси Загальні'),
         (Productivity, 'Продуктивність')
     )

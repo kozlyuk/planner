@@ -120,7 +120,7 @@
                     </div>
                 </div>
                 {% endif %}
-                {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" %}
+                {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" or request.user|has_group:"Секретарі"%}
                 <div style="display: inline-block;">
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Інше <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
