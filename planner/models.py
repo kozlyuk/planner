@@ -1036,7 +1036,7 @@ class Order(ModelDiffMixin, models.Model):
     NotPaid = 'NP'
     Approved = 'AR'
     AdvancePaid = 'AP'
-    AdvanceApproved = 'AP'
+    AdvanceApproved = 'AA'
     PaidUp = 'PU'
     PAYMENT_STATUS_CHOICES = (
         (NotPaid, 'Нове замовлення'),
@@ -1182,16 +1182,30 @@ class Order(ModelDiffMixin, models.Model):
         payment_sum = self.orderpayment_set.aggregate(Sum('value'))['value__sum'] or 0
         if payment_sum == self.value:
             return self.PaidUp
-        elif payment_sum > 0 and self.value > payment_sum:
+        if self.advance:
+            if self.approved_date and payment_sum < self.advance:
+                return self.AdvanceApproved
+            if self.approved_date and payment_sum >= self.advance:
+                return self.Approved
+        else:
+            if self.approved_date:
+                return self.Approved
+        if payment_sum >= self.advance:
             return self.AdvancePaid
-        elif self.approved_date:
-            return self.Approved
         return self.NotPaid
+
+    def can_approve(self):
+        if get_current_user().is_superuser and self.pay_status in [self.NotPaid, self.AdvancePaid] and self.pay_date:
+            return True
+
+    def can_cancell_approve(self):
+        if get_current_user().is_superuser and self.pay_status in [self.AdvanceApproved, self.Approved]:
+            return True
 
     def approve(self):
         # Approve order
         user = get_current_user()
-        if self.pay_status == self.NotPaid:
+        if self.can_approve():
             self.approved_by = user
             self.approved_date = date.today()
             self.save(logging=False)
@@ -1209,7 +1223,7 @@ class Order(ModelDiffMixin, models.Model):
 
     def cancel_approval(self):
         # Cancel approval of order
-        if self.pay_status == self.Approved:
+        if self.can_cancell_approve():
             self.approved_by = None
             self.approved_date = None
             self.save(logging=False)
@@ -1258,6 +1272,11 @@ class OrderPayment(PaymentBase):
         if not self.pk:
             # Set creator
             self.creator = get_current_user()
+            # reset approving when advance paid
+            if self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
+                self.order.approved_date = None
+                self.order.approved_by = None
+                self.order.save()
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

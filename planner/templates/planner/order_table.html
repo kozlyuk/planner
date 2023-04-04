@@ -27,7 +27,7 @@
             <td>{{ order.get_pay_status_display }}</td>
             <td>{% none_date_check order.pay_date %}</td>
             <td>
-                {% if request.user.is_superuser and order.pay_status == order.NotPaid and order.pay_date %}
+                {% if order.can_approve %}
                     <a href="{% url 'order_approve' order.id %}"> Погодити </a>
                 {% else %}
                     {% none_date_check order.approved_date %}

@@ -253,13 +253,13 @@
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Зберегти і продовжити редагування
                                             </button>
-                                            {% if request.user.is_superuser and order.pay_status == order.NotPaid and order.pay_date %}
+                                            {% if order.can_approve %}
                                                 <button type="submit" name="approve" value="True"
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                     style="float: right;">Погодити оплату
                                                 </button>
                                             {% endif %}
-                                            {% if request.user.is_superuser and order.pay_status == order.Approved %}
+                                            {% if order.can_cancell_approve %}
                                                 <button type="submit" name="cancel_approval" value="True"
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                     style="float: right;">Відмінити погодження оплати
