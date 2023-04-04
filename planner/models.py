@@ -1217,7 +1217,7 @@ class Order(ModelDiffMixin, models.Model):
                 obj=self,
                 )
             # send email for accountant
-            if self.pay_date == date.today():
+            if self.pay_date == date.today() and self.pay_type != self.CashPayment:
                 from messaging.tasks import send_payment_notification
                 send_payment_notification.delay(self.pk)
 
