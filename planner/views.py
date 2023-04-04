@@ -1334,14 +1334,25 @@ class ContractorList(ListView):
     paginate_by = 35
 
     def get_queryset(self):  # todo args url
-        contractors = Contractor.objects.annotate(url=Concat(F('pk'), Value('/change/'), output_field=CharField())).\
-            values_list('name', 'active', 'url')
-        search_string = self.request.GET.get('filter', '').split()
-        order = self.request.GET.get('o', '0')
-        for word in search_string:
-            contractors = contractors.filter(Q(name__icontains=word))
-        if order != '0':
+        advance_qry = Q(order__pay_status=Order.AdvancePaid, order__task__exec_status__in=[Task.ToDo,Task.InProgress])
+        credit_qry = Q(order__pay_status=Order.NotPaid, order__task__exec_status__in=[Task.Done,Task.Sent])
+        contractors = Contractor.objects.annotate(
+            url=Concat(F('pk'), Value('/change/'), output_field=CharField()),
+            advance = Sum(Case(When(advance_qry, then=F('order__advance')),
+                                    output_field=DecimalField(), default=0)),
+            debit = Sum(Case(When(credit_qry, then=F('order__value')),
+                                  output_field=DecimalField(), default=0)),
+            ).\
+            values_list('name', 'advance', 'debit', 'active', 'url')
+        search_string = self.request.GET.get('filter')
+        order = self.request.GET.get('o')
+        if search_string:
+            for word in search_string.split():
+                contractors = contractors.filter(Q(name__icontains=word))
+        if order:
             contractors = contractors.order_by(order)
+        else:
+            contractors = contractors.order_by('-active', 'name')
         return contractors
 
     def get_context_data(self, **kwargs):
@@ -1350,15 +1361,13 @@ class ContractorList(ListView):
         context['headers'] = [['name', 'Назва', 1],
                               ['advance_calc', 'Авансові платежі', 0],
                               ['credit_calc', 'Кредиторська заборгованість', 0],
-                              ['expect_calc', 'Не виконано та не оплачено', 0],
-                              ['completed_calc', 'Виконано та оплачено', 0],
                               ['active', 'Активний', 0]]
         context['search'] = True
         context['filter'] = []
         if request.user.has_perm('planner.add_contractor'):
             context['add_url'] = reverse('contractor_add')
-            context['add_help_text'] = 'Додати підрядника'
-        context['header_main'] = 'Підрядники'
+            context['add_help_text'] = 'Додати контрагента'
+        context['header_main'] = 'Контрагенти'
         context['objects_count'] = Contractor.objects.all().count()
         if self.request.POST:
             context['filter_form'] = forms.ContractorFilterForm(
@@ -1379,7 +1388,7 @@ class ContractorCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['header_main'] = 'Додати підрядника'
+        context['header_main'] = 'Додати контрагента'
         context['back_btn_url'] = reverse('contractor_list')
         context['back_btn_text'] = 'Відміна'
         return context
@@ -1414,7 +1423,7 @@ class ContractorDelete(DeleteView):
         context['go_back_url'] = reverse(
             'contractor_update', kwargs={'pk': contractor.pk})
         context['main_header'] = 'Видалити адресат?'
-        context['header'] = 'Видалення підрядника "' + \
+        context['header'] = 'Видалення контрагента "' + \
             str(contractor) + \
             '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
         if self.object.order_set.exists():
