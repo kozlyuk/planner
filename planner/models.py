@@ -1187,13 +1187,11 @@ class Order(ModelDiffMixin, models.Model):
                 return self.AdvanceApproved
             if self.approved_date and payment_sum >= self.advance:
                 return self.Approved
-            if payment_sum >= self.advance:
-                return self.AdvancePaid
         else:
             if self.approved_date:
                 return self.Approved
-            if payment_sum > 0:
-                return self.AdvancePaid
+        if payment_sum >= self.advance:
+            return self.AdvancePaid
         return self.NotPaid
 
     def can_approve(self):
