@@ -1002,8 +1002,8 @@ class Task(ModelDiffMixin, models.Model):
                 line += f" - {execution.planned_finish.strftime(date_format)}"
         return line[1:]
 
-    def money_earned(self, part):
-        return self.project_type.net_price() * part / 100
+    def money_earned(self, part=None):
+        return self.project_type.net_price() * part / 100 if part else self.project_type.net_price()
 
 
 @receiver(post_save, sender=Task, dispatch_uid="update_task_status")

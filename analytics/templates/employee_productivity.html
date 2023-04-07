@@ -10,6 +10,8 @@
 <div id="content">
     <div id="container_work_done" style="width: 50%; float: left;"></div>
     <div id="container_work_salary" style="width: 50%; float: left;"></div>
+    <div id="container_work_owner" style="width: 50%; float: left;"></div>
+    <div id="container_work_duration" style="width: 50%; float: left;"></div>
 </div>
 
 {% endblock %}
@@ -79,6 +81,62 @@
                 },
                 series: {{ work_salary_data|safe }}
             });
+
+            var container_work_owner = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_owner',
+                },
+                title: {
+                    text: "Керівник в проектах"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ work_owned_data|safe }}
+            });
+
+            var container_work_duration = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_duration',
+                },
+                title: {
+                    text: "Напрацьовано годин"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "год"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ work_duration_data|safe }}
+            });
+
+
         });
     });
 

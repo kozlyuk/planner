@@ -625,6 +625,8 @@ def employee_productivity_context(year, employees):
     xAxis = []
     work_done_data = []
     work_salary_data = []
+    work_owner_data = []
+    work_duration_data = []
 
     for month in range(1, range_for_year(year)):
         xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
@@ -632,9 +634,12 @@ def employee_productivity_context(year, employees):
     for employee in employees:
         work_done_list = []
         work_salary_list = []
+        work_owner_list = []
+        work_duration_list = []
 
         for month in range(1, range_for_year(year)):
             income = 0
+            income_owner = 0
             period = last_day_of_month(datetime(year=int(year), month=month, day=1))
 
             # calculate executor bonuses
@@ -647,13 +652,25 @@ def employee_productivity_context(year, employees):
                                                    actual_finish__year=period.year)\
                                            .aggregate(Sum('bonus'))['bonus__sum'] or 0
 
-            work_done_list.append(float(income))
-            work_salary_list.append(float(income/employee.salary))
+            # calculate owner bonuses
+            tasks = employee.tasks_for_period(period)
+            for query in tasks:
+                income_owner += query.money_earned()
+
+            #calculate duration
+            duration = executions.filter(subtask__simultaneous_execution=False) \
+                                 .aggregate(Sum('actual_duration'))['actual_duration__sum'] or timedelta()
+            duration_hr = duration.days * 24 + duration.seconds / 3600
+
+            work_done_list.append(int(income))
+            work_salary_list.append(int(income/employee.salary*10))
+            work_owner_list.append(int(income_owner))
+            work_duration_list.append(round(duration_hr, 2))
 
         work_done_data.append({"name": employee.name, "data": work_done_list})
         work_salary_data.append({"name": employee.name, "data": work_salary_list})
-        # series.append({"name": "Відпрацьовано годин", "data": []})
-        # series.append({"name": "Групова продуктивність", "data": []})
+        work_owner_data.append({"name": employee.name, "data": work_owner_list})
+        work_duration_data.append({"name": employee.name, "data": work_duration_list})
 
     # creating context
     context = {
@@ -661,6 +678,8 @@ def employee_productivity_context(year, employees):
         'xAxis': xAxis,
         'work_done_data': work_done_data,
         'work_salary_data': work_salary_data,
+        'work_owned_data': work_owner_data,
+        'work_duration_data': work_duration_data,
     }
 
     return context
