@@ -8,11 +8,11 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse
 
-from planner.models import Company, Customer
+from planner.models import Company, Customer, Employee
 
 from .tasks import recalc_kpi, generate_pdf
 from .models import Report, Chart
-from .forms import ReportForm, ChartForm
+from .forms import ReportForm, CustomerChartForm, EmployeeChartForm
 from .context import context_report_render, context_chart_render
 
 
@@ -93,12 +93,12 @@ class ReportRender(TemplateView):
             return HttpResponse('HTML template does not exist')
 
 @method_decorator(login_required, name='dispatch')
-class ChartView(FormView):
-    """ Form for choosing reports """
+class CustomerChartView(FormView):
+    """ Form for choosing customers reports """
     model = Chart
-    form_class = ChartForm
-    template_name = 'chart_form.html'
-    success_url = reverse_lazy('chart_render')
+    form_class = CustomerChartForm
+    template_name = 'customer_chart_form.html'
+    success_url = reverse_lazy('customer_chart_render')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
@@ -108,8 +108,8 @@ class ChartView(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ChartRender(TemplateView):
-    """ View for rendering a chart """
+class CustomerChartRender(TemplateView):
+    """ View for rendering a customers chart """
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
@@ -123,6 +123,47 @@ class ChartRender(TemplateView):
         context['customers'] = Customer.objects.filter(pk__in=customers)
         context['year'] = self.request.GET.get('year')
         context_report = context_chart_render(context['chart'], context['year'], context['customers'])
+        return {**context, **context_report}
+
+    def render_to_response(self, context):
+        template = context['chart'].template
+        if template:
+            return HttpResponse(template.render(context))
+        else:
+            return HttpResponse('HTML template does not exist')
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeChartView(FormView):
+    """ Form for choosing employees charts """
+    model = Chart
+    form_class = EmployeeChartForm
+    template_name = 'employee_chart_form.html'
+    success_url = reverse_lazy('employee_chart_render')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+
+@method_decorator(login_required, name='dispatch')
+class EmployeeChartRender(TemplateView):
+    """ View for rendering a employees chart """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        employees = self.request.GET.getlist('employee')
+        context['chart'] = Chart.objects.get(pk=self.request.GET.get('chart'))
+        context['employees'] = Employee.objects.filter(pk__in=employees)
+        context['year'] = self.request.GET.get('year')
+        context_report = context_chart_render(context['chart'], context['year'], context['employees'])
         return {**context, **context_report}
 
     def render_to_response(self, context):

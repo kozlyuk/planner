@@ -2,7 +2,7 @@ from datetime import date
 from django import forms
 from django_select2.forms import Select2Widget, Select2MultipleWidget
 
-from planner.models import Company, Customer
+from planner.models import Company, Customer, Employee
 from .models import Report, Chart
 from html_templates.models import HTMLTemplate
 
@@ -36,14 +36,33 @@ class ReportForm(forms.Form):
                               required=False
                               )
 
-class ChartForm(forms.Form):
+class CustomerChartForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        chart = [(chart.id, chart.name) for chart in Chart.objects.filter(template__document_type=HTMLTemplate.Chart)]
+        chart = [(chart.id, chart.name) for chart in Chart.objects.filter(
+            template__document_type=HTMLTemplate.Chart,
+            content_type__model='customer'
+            )]
         customer = [(customer.id, customer.name) for customer in Customer.objects.filter(active=True)]
         self.fields['chart'].choices = chart
         self.fields['customer'].choices = customer
 
     chart = forms.ChoiceField(label='Діаграма', widget=Select2Widget(), required=True)
     customer = forms.ChoiceField(label='Замовник', widget=Select2MultipleWidget(), required=False)
+    year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)
+
+
+class EmployeeChartForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        chart = [(chart.id, chart.name) for chart in Chart.objects.filter(
+            template__document_type=HTMLTemplate.Chart,
+            content_type__model='employee'
+            )]
+        employee = [(customer.id, customer.name) for customer in Employee.objects.filter(user__is_active=True)]
+        self.fields['chart'].choices = chart
+        self.fields['employee'].choices = employee
+
+    chart = forms.ChoiceField(label='Діаграма', widget=Select2Widget(), required=True)
+    employee = forms.ChoiceField(label='Працівник', widget=Select2MultipleWidget(), required=False)
     year = forms.TypedChoiceField(coerce=int, choices=year_choices, initial=current_year)

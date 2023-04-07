@@ -617,3 +617,50 @@ def income_structure_context(year, customers):
         'stock_data': stock_data,
     }
     return context
+
+
+def employee_productivity_context(year, employees):
+
+    # prepare chart data
+    xAxis = []
+    work_done_data = []
+    work_salary_data = []
+
+    for month in range(1, range_for_year(year)):
+        xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
+
+    for employee in employees:
+        work_done_list = []
+        work_salary_list = []
+
+        for month in range(1, range_for_year(year)):
+            income = 0
+            period = last_day_of_month(datetime(year=int(year), month=month, day=1))
+
+            # calculate executor bonuses
+            executions = employee.executions_for_period(period)
+            for query in executions:
+                income += query.task.money_earned(query.part)
+
+            # calculate inttask bonuses
+            income += employee.inttask_set.filter(actual_finish__month=period.month,
+                                                   actual_finish__year=period.year)\
+                                           .aggregate(Sum('bonus'))['bonus__sum'] or 0
+
+            work_done_list.append(float(income))
+            work_salary_list.append(float(income/employee.salary))
+
+        work_done_data.append({"name": employee.name, "data": work_done_list})
+        work_salary_data.append({"name": employee.name, "data": work_salary_list})
+        # series.append({"name": "Відпрацьовано годин", "data": []})
+        # series.append({"name": "Групова продуктивність", "data": []})
+
+    # creating context
+    context = {
+        'employees': employees,
+        'xAxis': xAxis,
+        'work_done_data': work_done_data,
+        'work_salary_data': work_salary_data,
+    }
+
+    return context
