@@ -1,6 +1,7 @@
 from datetime import date
 from enum import unique
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 
 from planner.models import Employee
 from html_templates.models import HTMLTemplate
@@ -65,12 +66,14 @@ class Chart(models.Model):
         ('fin_analysis_context', 'Фінансова аналітика'),
         ('customer_fin_analysis_context', 'Фінансова аналітика по замовнику'),
         ('income_structure_context', 'Структура доходів'),
+        ('employee_productivity_context', 'Продуктивність працівників'),
     )
 
     name = models.CharField('Назва', max_length=50, unique=True)
     yAxis = models.CharField('Вісь Y', max_length=50)
     template = models.ForeignKey(HTMLTemplate, verbose_name='Шаблон', on_delete=models.PROTECT)
     context = models.CharField('Метод контексту', max_length=50, choices=CONTEXT_CHOICES)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Діаграма'

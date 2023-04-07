@@ -8,6 +8,8 @@ urlpatterns = [
     path('report/', views.ReportView.as_view(), name='report_form'),
     path('report/render/', views.ReportRender.as_view(), name='report_render'),
 
-    path('chart/', views.ChartView.as_view(), name='chart_form'),
-    path('chart/render/', views.ChartRender.as_view(), name='chart_render'),
+    path('customer_chart/', views.CustomerChartView.as_view(), name='customer_chart_form'),
+    path('customer_chart/render/', views.CustomerChartRender.as_view(), name='customer_chart_render'),
+    path('employee_chart/', views.EmployeeChartView.as_view(), name='employee_chart_form'),
+    path('employee_chart/render/', views.EmployeeChartRender.as_view(), name='employee_chart_render'),
 ]

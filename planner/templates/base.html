@@ -113,9 +113,9 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         {% if perms.analytics.view_report %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'report_form' %}active{% endif %} uppercase" href="{% url 'report_form' %}">Звіти</a>
-                            <a class="dropdown-item {% if request.resolver_match.url_name == 'chart_form' %}active{% endif %} uppercase" href="{% url 'chart_form' %}">Фінаналітика</a>
-                            <!-- <a class="dropdown-item {% if request.resolver_match.url_name == 'chart_form' %}active{% endif %} uppercase" href="">Продуктивність</a>
-                            <a class="dropdown-item {% if request.resolver_match.url_name == 'chart_form' %}active{% endif %} uppercase" href="">Рентабельність</a> -->
+                            <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_chart_form' %}active{% endif %} uppercase" href="{% url 'customer_chart_form' %}">Фінаналітика</a>
+                            <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_chart_form' %}active{% endif %} uppercase" href="{% url 'employee_chart_form' %}">Продуктивність</a>
+                            <!-- <a class="dropdown-item {% if request.resolver_match.url_name == 'project_chart_form' %}active{% endif %} uppercase" href="">Рентабельність</a> -->
                         {% endif %}
                     </div>
                 </div>
@@ -141,9 +141,6 @@
                         {% endif %}
                         {% if perms.planner.view_employee %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
-                        {% endif %}
-                        {% if perms.analytics.view_report %}
-                            <a class="dropdown-item {% if request.resolver_match.url_name == 'report_form' %}active{% endif %} uppercase" href="{% url 'report_form' %}">Звіти</a>
                         {% endif %}
                     </div>
                 </div>

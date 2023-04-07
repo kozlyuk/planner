@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load static %}
+
+{% block global_meta %}
+    <title>Ітел-Сервіс | Діаграми</title>
+{% endblock %}
+
+{% block context %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css" />
+<div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+    xmlns="http://www.w3.org/1999/html">
+    <form id="ReportForm" action="render/" method="get">
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2>Оберіть діаграму, замовників та період</h2><br>
+                <div class="row">
+                    <div class="col-2">{{ form.chart.label }}:</div>
+                    <div class="col-3">{{ form.chart|attr:"style: padding-left: 8px;"|add_class:"form-control" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.employee.label }}:</div>
+                    <div class="col-3">{{ form.employee|attr:"style: padding-left: 8px;"|add_class:"form-control" }}</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-2">{{ form.year.label }}:</div>
+                    <div class="col-3">{{ form.year|attr:"style: height: 36px; width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control" }}</div>
+                </div><br>
+                <button type="submit"
+                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                    style="float: right;">Сформувати діаграму
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- END CONTAINER -->
+{% endblock %}

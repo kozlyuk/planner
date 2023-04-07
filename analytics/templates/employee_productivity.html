@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load fontawesome_5 %}
+
+{% block context %}
+
+<div id="content">
+    <div id="container_work_done" style="width: 50%; float: left;"></div>
+    <div id="container_work_salary" style="width: 50%; float: left;"></div>
+</div>
+
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        var chart;
+        $(document).ready(function() {
+
+            var container_work_done = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_done',
+                },
+                title: {
+                    text: "Виконано робіт"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ work_done_data|safe }}
+            });
+
+            var container_work_salary = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_salary',
+                },
+                title: {
+                    text: "Виконано робіт / ЗП"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: ""
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ work_salary_data|safe }}
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}
