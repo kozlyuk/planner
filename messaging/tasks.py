@@ -357,3 +357,39 @@ def send_payments_report() -> None:
     # sending emails
     if emails:
         send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
+
+
+@app.task
+def send_payments_approval_report() -> None:
+    """Sending notifications about payments to managers """
+
+    template_name = "approval_report.html"
+    emails = []
+
+    managers = Employee.objects.filter(user__is_superuser=True)
+
+    for manager in managers:
+        orders = Order.objects.filter(pay_status__in=[Order.NotPaid,Order.AdvancePaid],
+                                      pay_date__lte=date.today()+timedelta(days=7)
+                                      ) \
+                              .order_by('pay_date')
+        if orders:
+            recepients = [manager.user.email]
+
+            # prepearing email
+            context = context_payments(orders, manager)
+            subject = f'Погодження платежів на {date.today()}'
+            message = render_to_string(template_name, context)
+
+            emails.append(EmailMessage(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                recepients
+            ))
+        else:
+            continue
+
+    # sending emails
+    if emails:
+        send_email_list(change_content_type_to_html(emails), ignore_holidays=True)
