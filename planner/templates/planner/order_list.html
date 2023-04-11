@@ -27,7 +27,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="text-center">
-                            {{ orders_filtered }} знайдено <a href="{% url 'order_list' %}"> ({{ orders_count }} всього)
+                            {{ orders_filtered }} знайдено на суму {{ total_value }} грн. <a href="{% url 'order_list' %}"> ({{ orders_count }} всього)
                             </a><br>
                             {% include 'pagination.html' %}
                         </div>

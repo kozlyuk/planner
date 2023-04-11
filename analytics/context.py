@@ -518,24 +518,24 @@ def customer_fin_analysis_context(year, customers):
 
         acts_income = acts_customer.filter(date__year=year,
                                             date__month=month) \
-                                    .aggregate(Sum('value'))['value__sum'] or 0
+                                   .aggregate(Sum('value'))['value__sum'] or 0
         acts_income_list.append(float(acts_income))
 
         payments_income = payments_customer.filter(date__year=year,
                                                     date__month=month) \
-                                            .aggregate(Sum('value'))['value__sum'] or 0
+                                           .aggregate(Sum('value'))['value__sum'] or 0
         payments_income_list.append(float(payments_income))
 
         work_done_income = Task.objects.filter(deal__customer=customer,
                                                 actual_finish__year=year,
                                                 actual_finish__month=month) \
-                                        .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
+                                       .aggregate(Sum('project_type__price'))['project_type__price__sum'] or 0
         work_done_list.append(float(work_done_income))
 
         acts_for_period = acts_customer.receivables().filter(date__lte=period) \
-                                                        .aggregate(Sum('value'))['value__sum'] or 0
+                                                     .aggregate(Sum('value'))['value__sum'] or 0
         payments_for_period = payments_customer.receivables().filter(date__lte=period) \
-                                                                .aggregate(Sum('value'))['value__sum'] or 0
+                                                             .aggregate(Sum('value'))['value__sum'] or 0
         receivables_list.append(float(acts_for_period - payments_for_period))
         stock_list.append(float(work_done_income-acts_income))
 

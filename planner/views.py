@@ -588,6 +588,7 @@ class OrderList(ListView):
         context = super().get_context_data(**kwargs)
         context['orders_count'] = Order.objects.all().count()
         context['orders_filtered'] = self.object_list.count()
+        context['total_value'] = self.object_list.aggregate(Sum('value'))['value__sum'] or 0
         context['submit_icon'] = format_html('<i class="fa fa-filter"></i>')
         context['submit_button_text'] = 'Застосувати фільтр'
         self.request.session['order_query_string'] = self.request.META['QUERY_STRING']
