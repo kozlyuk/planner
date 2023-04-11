@@ -117,6 +117,8 @@ class DealFilterForm(forms.Form):
         self.fields['pay_status'].choices = pay_status
         self.fields['exec_status'].choices = exec_status
         self.fields['specific_status'].choices = specific_status
+        self.fields['start_date'].required = False
+        self.fields['end_date'].required = False
 
     customer = forms.MultipleChoiceField(label='Замовник', required=False,
                                          widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
@@ -130,6 +132,10 @@ class DealFilterForm(forms.Form):
                                             widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     specific_status = forms.ChoiceField(label='Спеціальний статус', required=False,
                                         widget=Select2Widget(attrs={"style": 'width: 100%'}))
+    start_date = forms.DateField(label='Дата з',
+                                 widget=forms.DateInput(format=('%d.%m.%Y'), attrs={'type': 'date', "style": 'width: 100%'}))
+    end_date = forms.DateField(label='Дата по',
+                               widget=forms.DateInput(format=('%d.%m.%Y'), attrs={'type': 'date', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
         widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 

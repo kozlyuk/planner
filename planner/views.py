@@ -99,64 +99,10 @@ class DealList(ListView):
             raise PermissionDenied
 
     def get_queryset(self):
-        search_string = self.request.GET.get('filter', '').split()
-        customers = self.request.GET.getlist('customer', '0')
-        companies = self.request.GET.getlist('company', '0')
-        act_statuses = self.request.GET.getlist('act_status', '0')
-        pay_statuses = self.request.GET.getlist('pay_status', '0')
-        exec_statuses = self.request.GET.getlist('exec_status', '0')
-        specific_status = self.request.GET.get('specific_status', '0')
-        order = self.request.GET.get('o', '0')
-
-        deals = Deal.objects.select_related('customer', 'company')
-        if specific_status == 'WA':
-            deals = deals.waiting_for_act()
-        if specific_status == 'PQ':
-            deals = deals.payment_queue()
-        if specific_status == 'OP':
-            deals = deals.overdue_payment()
-        if specific_status == 'OE':
-            deals = deals.overdue_execution()
-        if specific_status == 'RE':
-            deals = deals.receivables()
-
-        for word in search_string:
-            deals = deals.filter(Q(number__icontains=word) |
-                                 Q(value__icontains=word))
-
-        if customers != '0':
-            deals_union = Deal.objects.none()
-            for customer in customers:
-                deals_part = deals.filter(customer=customer)
-                deals_union = deals_union | deals_part
-            deals = deals_union
-        if companies != '0':
-            deals_union = Deal.objects.none()
-            for company in companies:
-                deals_part = deals.filter(company=company)
-                deals_union = deals_union | deals_part
-            deals = deals_union
-        if act_statuses != '0':
-            deals_union = Deal.objects.none()
-            for act_status in act_statuses:
-                deals_part = deals.filter(act_status=act_status)
-                deals_union = deals_union | deals_part
-            deals = deals_union
-        if pay_statuses != '0':
-            deals_union = Deal.objects.none()
-            for pay_status in pay_statuses:
-                deals_part = deals.filter(pay_status=pay_status)
-                deals_union = deals_union | deals_part
-            deals = deals_union
-        if exec_statuses != '0':
-            deals_union = Deal.objects.none()
-            for exec_status in exec_statuses:
-                deals_part = deals.filter(exec_status=exec_status)
-                deals_union = deals_union | deals_part
-            deals = deals_union
-        if order != '0':
-            deals = deals.order_by(order)
-        return deals
+        # filtering queryset
+        queryset = deal_queryset_filter(self.request.user, self.request.GET)
+        # return filtered queryset
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(DealList, self).get_context_data(**kwargs)
