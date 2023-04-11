@@ -34,9 +34,11 @@
                 {% endif %}
             </td>
             <td>{{ order.get_exec_status }}</td>
-            <td><span class="badge badge-pill badge-{% deal_status_color order.warning %} label-mini">
-                {{ order.warning }}
-            </span></td>
+            <td>
+                <span class="badge badge-pill badge-{% deal_status_color order.get_warning %} label-mini">
+                {{ order.get_warning }}
+                </span>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

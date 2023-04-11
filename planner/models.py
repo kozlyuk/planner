@@ -1240,6 +1240,18 @@ class Order(ModelDiffMixin, models.Model):
                 obj=self,
                 )
 
+    def get_warning(self):
+        # Get actual warning
+        if self.warning:
+            return self.warning
+        if self.pay_status == self.Approved and self.pay_date < date.today():
+            return 'Протерміновано платіж'
+        if self.pay_status == self.Approved and self.pay_date <= date.today() + timedelta(days=7):
+            return 'Закінчується термін оплати'
+        if self.pay_status in [self.NotPaid, self.AdvancePaid] and self.pay_date and not self.approved_date:
+            return 'Очікує на погодження'
+        return ''
+
 
 class OrderPayment(PaymentBase):
     order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.CASCADE)

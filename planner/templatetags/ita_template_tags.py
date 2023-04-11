@@ -94,7 +94,7 @@ def deal_status_color(status):
     elif status.startswith('Закінчується'):
         return 'info'
     elif status.startswith('Протерміновано'):
-        return 'danger'
+        return '-color__urgent'
     if re.match(r'^\w', status):
         return 'secondary'
     return

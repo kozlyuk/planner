@@ -16,16 +16,16 @@ def deal_queryset_filter(request_user, query_dict):
     Filter queryset by specific_status ('specific_status' get parameters list)
     Order queryset by any given field ('o' get parameter)
     """
-    search_string = query_dict.get('filter', '').split()
-    customers = query_dict.getlist('customer', '0')
-    companies = query_dict.getlist('company', '0')
-    act_statuses = query_dict.getlist('act_status', '0')
-    pay_statuses = query_dict.getlist('pay_status', '0')
-    exec_statuses = query_dict.getlist('exec_status', '0')
-    specific_status = query_dict.get('specific_status', '0')
+    search_string = query_dict.get('filter')
+    customers = query_dict.getlist('customer')
+    companies = query_dict.getlist('company')
+    act_statuses = query_dict.getlist('act_status')
+    pay_statuses = query_dict.getlist('pay_status')
+    exec_statuses = query_dict.getlist('exec_status')
+    specific_status = query_dict.get('specific_status')
     start_date = query_dict.get('start_date')
     end_date = query_dict.get('end_date')
-    order = query_dict.get('o', '0')
+    order = query_dict.get('o')
 
     deals = Deal.objects.select_related('customer', 'company')
     if specific_status == 'WA':
@@ -39,35 +39,36 @@ def deal_queryset_filter(request_user, query_dict):
     if specific_status == 'RE':
         deals = deals.receivables()
 
-    for word in search_string:
-        deals = deals.filter(Q(number__icontains=word) |
-                                Q(value__icontains=word))
+    if search_string:
+        for word in search_string.split():
+            deals = deals.filter(Q(number__icontains=word) |
+                                 Q(value__icontains=word))
 
-    if customers != '0':
+    if customers:
         deals_union = Deal.objects.none()
         for customer in customers:
             deals_part = deals.filter(customer=customer)
             deals_union = deals_union | deals_part
         deals = deals_union
-    if companies != '0':
+    if companies:
         deals_union = Deal.objects.none()
         for company in companies:
             deals_part = deals.filter(company=company)
             deals_union = deals_union | deals_part
         deals = deals_union
-    if act_statuses != '0':
+    if act_statuses:
         deals_union = Deal.objects.none()
         for act_status in act_statuses:
             deals_part = deals.filter(act_status=act_status)
             deals_union = deals_union | deals_part
         deals = deals_union
-    if pay_statuses != '0':
+    if pay_statuses:
         deals_union = Deal.objects.none()
         for pay_status in pay_statuses:
             deals_part = deals.filter(pay_status=pay_status)
             deals_union = deals_union | deals_part
         deals = deals_union
-    if exec_statuses != '0':
+    if exec_statuses:
         deals_union = Deal.objects.none()
         for exec_status in exec_statuses:
             deals_part = deals.filter(exec_status=exec_status)
@@ -79,7 +80,7 @@ def deal_queryset_filter(request_user, query_dict):
     if end_date:
         finish_value = datetime.strptime(end_date, '%Y-%m-%d')
         deals = deals.filter(date__lte=finish_value)
-    if order != '0':
+    if order:
         deals = deals.order_by(order)
     return deals
 
