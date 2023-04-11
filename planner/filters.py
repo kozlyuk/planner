@@ -23,8 +23,8 @@ def deal_queryset_filter(request_user, query_dict):
     pay_statuses = query_dict.getlist('pay_status', '0')
     exec_statuses = query_dict.getlist('exec_status', '0')
     specific_status = query_dict.get('specific_status', '0')
-    start_date = query_dict.get('start_date', '0')
-    end_date = query_dict.get('end_date', '0')
+    start_date = query_dict.get('start_date')
+    end_date = query_dict.get('end_date')
     order = query_dict.get('o', '0')
 
     deals = Deal.objects.select_related('customer', 'company')
