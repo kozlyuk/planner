@@ -1,0 +1,416 @@
+{% load filters %}
+
+<!DOCTYPE HTML PUBLIC "HTML">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>{{ deal.number }}</TITLE>
+</HEAD>
+<BODY STYLE="margin-left:50px;" DIR="A4">
+<FONT SIZE=2>
+	<P ALIGN=CENTER STYLE="line-height: 150%">
+	<B>
+		Договір № {{ deal.number }}<BR>
+        на виконання проектних робіт та послуг
+	</B></P>
+	<P>
+        <B>м. {{ deal.customer.city }}</B>
+        <SPAN STYLE="float:right;"><B>{{ deal.date }}</B>
+	</P>
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.customer.full_name }}</B>,
+		{{ deal.customer.legal_description }} {{ deal.customer.legal }},
+		що діє на підставі {{ deal.customer.regulations }},
+		надалі за текстом цього Договору <B>Замовник</B>, з однієї сторони,
+	</P>
+	та
+	<P ALIGN=JUSTIFY>
+		<B>{{ deal.company.full_name }}</B>,
+		{{ deal.company.legal_description }} {{ deal.company.legal }},
+		що діє на підставі {{ deal.company.regulations }},
+		надалі за текстом цього Договору <B>Підрядник</B>, з іншої сторони,
+		надалі за текстом даного Договору Замовник та Підрядник коли вживається окремо - «<B>Сторона</B>»,
+		а спільно – «<B>Сторони</B>», уклали цей Договір про нижченаведене:
+	</P>
+    <P ALIGN=CENTER>
+		<B>1. Предмет Договору</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        1.1. Замовник доручає, а Підрядник зобов’язується виконати роботи з розробки проектної документації для нового будівництва або модернізації об’єктів операторів телекомунікацій (далі – Роботи), місце розташування яких наведено у Додатку №1 та Додатку №2, що є невід'ємною частиною цього Договору.
+    </P>
+    <P ALIGN=JUSTIFY>
+        1.2. Результатом Робіт за цим Договором є розроблена і погоджена у встановленому порядку проектна документація.
+    </P>
+    <P ALIGN=JUSTIFY>
+        1.3. Замовник зобов’язується прийняти та оплатити зазначені Роботи на умовах, передбачених цим Договором.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>2. Вартість Робіт</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        2.1. Загальна вартість Робіт за цим Договором становить
+        {% if taxation == 'wvat' %}
+            <B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>,
+            у тому числі ПДВ <B>{{ deal.value | VAT }} {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+        {% else %}
+            <B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B> без ПДВ,
+        {% endif %}
+        , згідно Калькуляції вартості робіт (Додаток № 2), який є невід'ємною частиною цього Договору.</P>
+    <P ALIGN=JUSTIFY>
+        2.2. Вищезазначена договірна вартість Робіт не може змінюватися Підрядником в односторонньому порядку. У виключних випадках вартість Робіт може бути скоригована лише за погодженням Сторін шляхом підписання додаткових угод.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>3. Порядок розрахунків</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        3.1. За виконання усього комплексу робіт, передбачених цим Договором, Замовник здійснює оплату у наступному порядку:
+        {% if advance %}
+            {% if taxation == 'wovat' %}
+                - у п'ятиденний термін, починаючи з дня підписання цього Договору, зобов'язується здійснити авансовий платіж Підряднику у сумі
+                <B>{{ advance }} ({% num_to_text advance 'hrn' %} {{ advance | exp_part }} коп.)</B> без ПДВ.
+                Решта суми вартості виконаних Підрядником Робіт, що становить
+                <B>{{ overpay }} ({% num_to_text overpay 'hrn' %} {{ overpay | exp_part }} коп.)</B> без ПДВ
+                сплачується Підряднику Замовником упродовж 45 (сорок п'ять календарних днів) з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт. Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником
+            {% else %}
+                - у п'ятиденний термін, починаючи з дня підписання цього Договору, зобов'язується здійснити авансовий платіж Підряднику у сумі
+                <B>{{ advance }} ({% num_to_text advance 'hrn' %} {{ advance | exp_part }} коп.)</B>,
+                у тому числі ПДВ <B>{{ advance | VAT }} {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>.
+                Решта суми вартості виконаних Підрядником Робіт, що становить
+                <B>{{ overpay }} ({% num_to_text overpay 'hrn' %} {{ overpay | exp_part }} коп.)</B>,
+                у тому числі ПДВ <B>{{ overpay | VAT }} {% with vat=overpay|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+                сплачується Підряднику Замовником упродовж
+                <B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
+                з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт. Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником
+            {% endif %}
+        {% else %}
+            {% if taxation == 'wovat' %}
+                100% вартості	виконаних Підрядником Робіт, що становить
+                <B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B> без ПДВ,
+                та сплачується Підряднику Замовником упродовж
+                <B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
+                з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт - до {{ deal.pay_date_calc|date:"d E Y" }} року (включно). Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником.
+            {% else %}
+                100% вартості	виконаних Підрядником Робіт, що становить
+                <B>{{ deal.value }} ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>,
+                , у тому числі ПДВ <B>{{ deal.value | VAT }} {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+                та сплачується Підряднику Замовником упродовж
+                <B>{{ deal.customer.debtor_term }} ({% num_to_text deal.customer.debtor_term 'calendar_days' %})</B>
+                з дати підписання уповноваженими представниками обох Сторін відповідного Акту виконаних робіт - до {{ deal.pay_date_calc|date:"d E Y" }} року (включно). Замовник має право достроково прийняти роботи у разі їх дострокового виконання Підрядником.
+            {% endif %}
+        {% endif %}
+    </P>
+    <P ALIGN=JUSTIFY>
+        3.2. Розрахунки між Сторонами проводяться у безготівковому вигляді (платіжним дорученням) на підставі цього договору та актів приймання-передачі виконаних робіт.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>4. Строки виконання Робіт</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        4.1. Роботи в повному обсязі виконуються протягом
+        <B>{{ deal_term }} ({% num_to_text deal_term 'calendar_days' %})</B>
+        робочих днів після виконання п 3.1 Договору.
+    </P>
+    <P ALIGN=JUSTIFY>
+        4.2. Строки виконання робіт можуть коригуватися лише за взаємною згодою Сторін.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>5. Умови виконання та порядок приймання Робіт</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        5.1. Початком виконання робіт вважається перший робочий день після дня надходження замовлення від Замовника.
+    </P>
+    <P ALIGN=JUSTIFY>
+        5.2. У разі потреби для виконання Робіт Підрядник за згодою Замовника залучає субпідрядні організації, але Підрядник залишається відповідальним за якість та строки виконання Робіт субпідрядними організаціями.
+    </P>
+    <P ALIGN=JUSTIFY>
+        5.3. Замовник має право вносити зміни і доповнення до проектної документації щодо складу, обсягу і вартості робіт та погоджує свої рішення з Підрядником та іншими зацікавленими сторонами у межах ДБН.
+    </P>
+    <P ALIGN=JUSTIFY>
+        5.4. Приймання виконаних робіт після закінчення проектних робіт здійснюється за актом по формі, яку визначено Сторонами.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>6. Зобов’язання Сторін</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        6.1. Підрядник бере на себе зобов’язання:
+    </P>
+    <P ALIGN=JUSTIFY>
+        6.1.1. Виконати усі Роботи, що визначені в Договорі та Додатках до нього, у повному обсязі та в установлені строки, і передати Замовнику.
+    </P>
+    <P ALIGN=JUSTIFY>
+        6.1.2 Виконати за додаткову оплату роботи, необхідність у яких виникла при виконанні основних Робіт, на підставі додаткової угоди до цього Договору.
+    </P>
+    <P ALIGN=JUSTIFY>
+        6.2. Замовник бере на себе зобов’язання:
+    </P>
+    <P ALIGN=JUSTIFY>
+        6.2.1. Здійснювати оплату Робіт Підряднику на умовах Договору.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>7. Відповідальність Сторін</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        7.1. У разі затримки виконання Робіт з вини Підрядника у строки, передбачені цим Договором, Підрядник сплачує пеню у розмірі подвійної облікової ставки Національного банку України, що діяла у період, за який нараховується пеня, від вартості невиконаних Робіт за кожний день прострочення. Якщо затримка у виконанні Робіт з вини Підрядника перевищує розумні терміни, Замовник має право розірвати Договір в односторонньому порядку та вимагати від Підрядника компенсації збитків.
+    </P>
+    <P ALIGN=JUSTIFY>
+        7.2. У разі несвоєчасної оплати виконаних Робіт згідно з п.п. 3.1 цього Договору Замовник сплачує пеню у розмірі подвійної облікової ставки Національного банку України, що діяла у період, за який нараховується пеня, від вартості заборгованості за кожний день прострочення.
+    </P>
+    <P ALIGN=JUSTIFY>
+        7.3. Сплата пені не звільняє Сторони від виконання  зобов’язань за цим Договором.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>8. Форс-мажорні обставини</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        8.1. Сторони звільняються від відповідальності за часткове або повне невиконання зобов’язань за цим Договором, якщо це сталося внаслідок дії обставин непереборної сили (форс-мажорних обставин).
+    </P>
+    <P ALIGN=JUSTIFY>
+        8.2. До обставин непереборної сили відносяться надзвичайні обставини та події (стихійні лиха, військові події, стихійні народні заворушення, дії державних органів влади, інші надзвичайні події), які впливають на виконання зобов’язань і не можуть бути передбачені Сторонами в період укладання цього Договору або у разі виникнення яких неможливо вжити відповідних заходів.
+    </P>
+    <P ALIGN=JUSTIFY>
+        8.3. Якщо будь-яка із таких обставин безпосередньо вплинула на виконання Сторонами своїх зобов’язань у встановлені цим Договором строки, то вони продовжуються  на час дії форс-мажорних обставин.
+    </P>
+    <P ALIGN=JUSTIFY>
+        8.4. Сторона, яка не може виконувати свої зобов’язання за цим Договором через форс-мажорні обставини, повинна протягом 10 (десяти) календарних днів повідомити про це  іншу Сторону письмово з метою з’ясування термінів виконання зобов’язань за цим Договором.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>9. Порядок вирішення спорів</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        9.1. Усі спори між Сторонами вирішуються шляхом переговорів.
+    </P>
+    <P ALIGN=JUSTIFY>
+        9.2. Спори між Сторонами з питань, щодо яких не було досягнуто згоди, розв’язуються відповідно до чинного законодавства України господарським судом.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>10. Інші умови</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        10.1. Якщо протягом строку дії цього Договору Сторони змінять свою назву, місцезнаходження, розрахункові реквізити або будуть реорганізовані, вони повинні негайно повідомити про це іншу Сторону.
+    </P>
+    <P ALIGN=JUSTIFY>
+        10.2. Умови цього Договору мають однакову юридичну силу для Сторін і можуть бути змінені за їх взаємною згодою з обов’язковим укладенням додаткової угоди.
+    </P>
+    <P ALIGN=JUSTIFY>
+        10.3. Цей Договір укладеному двох примірниках, по одному для кожної із Сторін
+    </P>
+    <P ALIGN=JUSTIFY>
+        10.4. Цей Договір набирає чинності  з моменту його підписання Сторонами і діє до виконання Сторонами своїх зобов’язань у повному обсязі та закінчення  гарантійного строку.
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>11. Додатки до цього Договору</B>
+	</P>
+    <P ALIGN=JUSTIFY>
+        11.1. До цього Договору додаються такі матеріали, які є його невід’ємною частиною:
+    </P>
+    <P ALIGN=JUSTIFY>
+        11.1.1. Перелік місць розташування Об’єктів (Додаток № 1).
+    </P>
+    <P ALIGN=JUSTIFY>
+        11.1.2. Калькуляція вартості робіт (Додаток № 2).
+    </P>
+
+    <P ALIGN=CENTER>
+		<B>12. Юридичні адреси і банківські реквізити Сторін:</B>
+	</P>
+    <P>
+        <TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+            <TR VALIGN=TOP>
+                <TD WIDTH=45%>
+                    <P ALIGN=CENTER>
+                    <B>ПІДРЯДНИК:</B></P>
+                    <P ALIGN=CENTER>
+                    <B>{{ deal.company.name }}</B></P>
+                        {{ deal.company.requisites|linebreaks }}
+                    <P><A NAME="OLE_LINK26"></A>
+                    <B>За Підрядника:</B></P>
+                    <P ALIGN=JUSTIFY>
+                    <B>{{ deal.company.signatory_position }}</B></P>
+                    <P ALIGN=JUSTIFY><BR>
+                    </P>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.company.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
+                </TD>
+                <TD></TD>
+                <TD WIDTH=45%>
+                    <P ALIGN=CENTER>
+                    <B>ЗАМОВНИК:</B></P>
+                    <P ALIGN=CENTER>
+                    <B>{{ deal.customer.name }}</B></P>
+                    {{ deal.customer.requisites|linebreaks }}
+                    <P><B>За Замовника:</B></P>
+                    <P><B>{{ deal.customer.signatory_position }}</B></P>
+                    <P ALIGN=JUSTIFY><BR>
+                    </P>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.customer.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
+                </TD>
+            </TR>
+        </TABLE>
+    </P>
+	<DIV TYPE=FOOTER>
+		<P ALIGN=RIGHT><B>{{ deal.number }}</B></P>
+	</DIV>
+    <div style="break-after:page"></div>
+
+
+	<P ALIGN=RIGHT>
+    <B>
+        Додаток № 1<BR>
+        до Договору на виконання<BR>
+        проектних робіт<BR>
+        № {{ deal.number }} від {{ deal.date }} р.<BR>
+    </B></P>
+    <P ALIGN=JUSTIFY>
+        <B>{{ deal.customer.full_name }}</B>,
+        {{ deal.customer.legal_description }} {{ deal.customer.legal }},
+        що діє на підставі {{ deal.customer.regulations }},
+        надалі за текстом цього Договору <B>Замовник</B>, з однієї сторони,
+    </P>
+    та
+    <P ALIGN=JUSTIFY>
+        <B>{{ deal.company.full_name }}</B>,
+        {{ deal.company.legal_description }} {{ deal.company.legal }},
+        що діє на підставі {{ deal.company.regulations }},
+        надалі за текстом цього Договору <B>Підрядник</B>, з іншої сторони,
+        надалі за текстом даного Договору Замовник та Підрядник коли вживається окремо - «<B>Сторона</B>»,
+        а спільно – «<B>Сторони</B>», уклали цей Додаток про нижченаведене:
+    </P>
+
+    <P ALIGN=CENTER>
+        <B>Перелік місць розташування Об’єктів<BR>(інженерних споруд зв’язку)</B>
+    </P>
+    <TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+        <TR VALIGN=TOP>
+            <TD ALIGN=CENTER><B>Шифр об’єкту</B></TD>
+            <TD ALIGN=CENTER><B>Адреса об’єкту</B></TD>
+        </TR>
+        {% for field in objects %}
+        <TR>
+            <TD ALIGN=CENTER>{{ field.object_code }}</TD>
+            <TD>{{ field.object_address }}</TD>
+        </TR>
+        {% endfor %}
+    </TABLE>
+    <BR>
+    <P>
+        <TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+            <TR VALIGN=TOP>
+                <TD WIDTH=45%>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.company.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
+                </TD>
+                <TD></TD>
+                <TD WIDTH=45%>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.customer.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
+                </TD>
+            </TR>
+        </TABLE>
+    </P>
+    <div style="break-after:page"></div>
+
+
+	<P ALIGN=RIGHT>
+    <B>
+        Додаток № 2<BR>
+        до Договору на виконання<BR>
+        проектних робіт<BR>
+        № {{ deal.number }} від {{ deal.date }} р.<BR>
+    </B></P>
+    <P ALIGN=JUSTIFY>
+        <B>{{ deal.customer.full_name }}</B>,
+        {{ deal.customer.legal_description }} {{ deal.customer.legal }},
+        що діє на підставі {{ deal.customer.regulations }},
+        надалі за текстом цього Договору <B>Замовник</B>, з однієї сторони,
+    </P>
+    та
+    <P ALIGN=JUSTIFY>
+        <B>{{ deal.company.full_name }}</B>,
+        {{ deal.company.legal_description }} {{ deal.company.legal }},
+        що діє на підставі {{ deal.company.regulations }},
+        надалі за текстом цього Договору <B>Підрядник</B>, з іншої сторони,
+        надалі за текстом даного Договору Замовник та Підрядник коли вживається окремо - «<B>Сторона</B>»,
+        а спільно – «<B>Сторони</B>», уклали цей Додаток про нижченаведене:
+    </P>
+
+    <P ALIGN=CENTER>
+        <B>Калькуляція вартості робіт</B>
+    </P>
+    <TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
+        <TR VALIGN=TOP>
+            <TD WIDTH=5% ALIGN=CENTER><B>№ з/п</B></TD>
+            <TD WIDTH=10% ALIGN=CENTER><B>Код робіт</B></TD>
+            <TD WIDTH=45% ALIGN=CENTER><B>Назва об’єкту та вид робіт</B></TD>
+            <TD WIDTH=10% ALIGN=CENTER><B>Одиниця виміру</B></TD>
+            <TD WIDTH=10% ALIGN=CENTER><B>Кількість</B></TD>
+            <TD WIDTH=10% ALIGN=CENTER><B>Ціна, без ПДВ грн.</B></TD>
+            <TD WIDTH=10% ALIGN=CENTER><B>Вартість, без ПДВ грн.</B></TD>
+        </TR>
+        {% for index, pcode, ptype, object_list, units, count, price, value in object_lists %}
+            <TR>
+                <TD WIDTH=5% ALIGN=CENTER>{{ index }}</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ pcode }}</TD>
+                <TD WIDTH=45%>{{ ptype }} {{ object_list }}</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ units }}</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ count }}</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ price }}</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ value }}</TD>
+                </TR>
+        {% endfor %}
+        {% if taxation == 'wvat' %}
+            <TR>
+                <TD ALIGN=CENTER VALIGN=BOTTOM colspan="3" rowspan="4">Загальна вартість</TD>
+                <TD ALIGN=CENTER colspan="4">без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+            </TR>
+        {% else %}
+            <TR>
+                <TD ALIGN=CENTER colspan="3">Загальна вартість</TD>
+                <TD ALIGN=CENTER colspan="4">Без ПДВ: {% calc_summary svalue 'with_currency' %} </TD>
+            </TR>
+        {% endif %}
+        {% if taxation == 'wvat' %}
+            <TR>
+                <TD ALIGN=CENTER colspan="4">ПДВ: {% calc_summary svalue 'vat_with_currency' %}</TD>
+            </TR>
+            <TR>
+                <TD ALIGN=CENTER colspan="4">з ПДВ: {% calc_vat svalue 'with_currency' %}</TD>
+            </TR>
+        {% endif %}
+
+    </TABLE>
+    <BR>
+    <P>
+        <TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+            <TR VALIGN=TOP>
+                <TD WIDTH=45%>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.company.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.company.regulations }}</B></P>
+                </TD>
+                <TD></TD>
+                <TD WIDTH=45%>
+                    <P ALIGN=JUSTIFY>
+                    <B>__________________ {{ deal.customer.signatory_person }}</B></P>
+                    <P CLASS="western"><B>Діє на підставі: {{ deal.customer.regulations }}</B></P>
+                </TD>
+            </TR>
+        </TABLE>
+    </P>
+</FONT>
+</BODY>
+</HTML>

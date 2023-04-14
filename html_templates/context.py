@@ -110,6 +110,7 @@ def context_deal_render(deal):
                          .order_by('project_type__price_code').distinct()
 
     # prepare table data
+    deal_term = deal.expire_date - deal.date
     index = 0
     svalue = Decimal(0)
     object_lists = []
@@ -144,6 +145,7 @@ def context_deal_render(deal):
         'svalue': svalue,
         'advance': deal.advance,
         'overpay': deal.value - deal.advance,
+        'deal_term': deal_term.days
     }
     return context
 

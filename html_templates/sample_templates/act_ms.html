@@ -28,8 +28,8 @@
 	<P ALIGN=CENTER STYLE="line-height: 150%"><B>
 		Акт приймання-передачі виконаних Робіт №{{ act.number }}<br>
 		до Додаткової угоди № {{ deal.number }} від {{ deal.date }}<br>
-		до Договору підряду № {{ deal.parent_deal_number }} надання інжинірингових послуг<br>
-        для будівництва та модернізації об’єктів телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }}
+		до Генерального договору № {{ deal.parent_deal_number }} субпідряду
+		на проведення проектних та вишукувальних робіт від {{ deal.parent_deal_date }}
 	</B></P>
 	<P>
 		Цей Акт приймання – передачі  виконаних Робіт (надалі «Акт») складений цього
@@ -38,26 +38,24 @@
 	</P>
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.customer.full_name }}</B>,
-		що є юридичною особою, належним чином створеною,
-		зареєстрованою та діючою згідно чинного законодавства України,
-		{{ deal.customer.legal }}, що діє на підставі {{ deal.customer.regulations }},
-		надалі за текстом цього Акту <B>«Генпідрядник»</B>, з однієї сторони,
+		{{ deal.customer.legal_description }} {{ deal.customer.legal }},
+		що діє на підставі {{ deal.customer.regulations }},
+		надалі за текстом цього акту <B>«Генпідрядник»</B>, з однієї сторони,
 	</P>
 	та
 	<P ALIGN=JUSTIFY>
 		<B>{{ deal.company.full_name }}</B>,
-		що є юридичною особою, належним чином створеною, зареєстрованою
-		та діючою згідно з чинним законодавством України,
-		{{ deal.company.legal }}, що діє на підставі {{ deal.company.regulations }},
-		надалі за текстом цього Акту <B>«Субпідрядник»</B>,
-		з іншої сторони,<br>
-        про наступне:
+		{{ deal.company.legal_description }} {{ deal.company.legal }},
+		що діє на підставі {{ deal.company.regulations }},
+		надалі за текстом цього акту <B>«Субпідрядник»</B>,
+		з іншої сторони, уклали цей акт про наступне:
 	</P>
 	<OL>
 		<LI>
             <P ALIGN=JUSTIFY>
                 На умовах, що викладені в Додатковій угоді № {{ deal.number }} від {{ deal.date }}
-                до Генерального договору № {{ deal.parent_deal_number }} з надання інжинірингових послуг для будівництва та модернізації об’єктів  телекомунікаційної мережі ПрАТ «Київстар» від {{ deal.parent_deal_date }} «Підрядник» виконав нижче вказані Роботи по об’єктам:
+                до Генерального договору № {{ deal.parent_deal_number }} субпідряду
+				на проведення проектних та вишукувальних робіт від {{ deal.parent_deal_date }} «Субпідрядник» виконав нижче вказані Роботи по об’єктам:
 			</P>
 			<TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1 STYLE='font-size:100%'>
 				<TR VALIGN=TOP>
@@ -122,14 +120,18 @@
             <P ALIGN=JUSTIFY>
                 Загальна вартість Робіт:
 				<B>{{ deal.value }} грн. ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
-                , у тому числі ПДВ
-                <B>{{ deal.value | VAT }} грн.
-                {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+				{% if taxation == 'wvat' %}
+	                , у тому числі ПДВ
+					<B>{{ deal.value | VAT }} грн.
+						{% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+				{% else %}
+					без ПДВ.
+				{% endif %}
 			</P>
 		</LI>
 		<LI>
             <P ALIGN=JUSTIFY>
-				Підписанням цього Акту Підрядник та Замовник підтверджують факт виконання Робіт Підрядником
+				Підписанням цього Акту Субпідрядник та Генпідрядник підтверджують факт виконання Робіт Субпідрядником
                 на суму, зазначену в цьому Акті.
 			</P>
 		</LI>
@@ -140,21 +142,21 @@
 			</P>
 		</LI>
 	</OL>
-			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
-				<TR VALIGN=TOP>
-					<TD WIDTH=45%>
-                        <P><B>За Генпідрядника:</B></P>
-                            <P><B>{{ deal.customer.signatory_position }} {{ deal.customer.name }}</B></P>
-                            <P><B>____________________ {{ deal.customer.signatory_person }}</B></P>
-					</TD>
-					<TD></TD>
-					<TD WIDTH=45%>
-                        <P><B>За Субпірядника:</B></P>
-                            <P><B>{{ deal.company.signatory_position }} {{ deal.company.name }}</B></P>
-                            <P><B>____________________ {{ deal.company.signatory_person }}</B></P>
-					</TD>
-				</TR>
-			</TABLE>
+		<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+			<TR VALIGN=TOP>
+				<TD WIDTH=45%>
+					<P><B>За Генпідрядника:</B></P>
+						<P><B>{{ deal.customer.signatory_position }} {{ deal.customer.name }}</B></P>
+						<P><B>____________________ {{ deal.customer.signatory_person }}</B></P>
+				</TD>
+				<TD></TD>
+				<TD WIDTH=45%>
+					<P><B>За Субпірядника:</B></P>
+						<P><B>{{ deal.company.signatory_position }} {{ deal.company.name }}</B></P>
+						<P><B>____________________ {{ deal.company.signatory_person }}</B></P>
+				</TD>
+			</TR>
+		</TABLE>
 </FONT>
 </BODY>
 </HTML>

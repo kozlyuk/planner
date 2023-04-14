@@ -11,18 +11,14 @@
     <TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
         <TR VALIGN=TOP>
             <TD WIDTH=45%>
-                <P ALIGN=CENTER>
-                <B>ПІДРЯДНИК:</B></P>
-                <P ALIGN=CENTER>
-                <B>{{ deal.company.name }}</B></P>
+                <P ALIGN=LEFT>
+                <B>ПІДРЯДНИК: {{ deal.company.name }}</B></P>
                 <P>{{ deal.company.requisites|linebreaks }}</P>
             </TD>
             <TD></TD>
             <TD WIDTH=45%>
-                <P ALIGN=CENTER>
-                <B>ЗАМОВНИК:</B></P>
-                <P ALIGN=CENTER>
-                <B>{{ deal.customer.name }}</B></P>
+                <P ALIGN=LEFT>
+                <B>ЗАМОВНИК: {{ deal.customer.name }}</B></P>
                 <P>{{ deal.customer.requisites|linebreaks }}</P>
             </TD>
         </TR>
@@ -124,9 +120,13 @@
             <P ALIGN=JUSTIFY>
                 Загальна вартість Робіт:
 				<B>{{ deal.value }} грн. ({% num_to_text deal.value 'hrn' %} {{ deal.value | exp_part }} коп.)</B>
-                , у тому числі ПДВ
-                <B>{{ deal.value | VAT }} грн.
-                {% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+				{% if taxation == 'wvat' %}
+	                , у тому числі ПДВ
+					<B>{{ deal.value | VAT }} грн.
+						{% with vat=deal.value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+				{% else %}
+					без ПДВ.
+				{% endif %}
 			</P>
 		</LI>
 		<LI>
@@ -142,26 +142,21 @@
 			</P>
 		</LI>
 	</OL>
-			<TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
-				<TR VALIGN=TOP>
-					<TD WIDTH=45%>
-                        <P><B>За Замовника:</B></P>
-						<P><B>
-                            {{ deal.customer.signatory_position }} {{ deal.customer.name }}<BR>
-                            ______________________ {{ deal.customer.signatory_person }}
-                        </B></P>
-					</TD>
-					<TD></TD>
-					<TD WIDTH=45%>
-                        <P><B>За Підрядника:</B></P>
-						<P><B>
-                            {{ deal.company.signatory_position }} {{ deal.company.name }}<BR>
-                            ______________________ {{ deal.company.signatory_person }}
-
-                        </B></P>
-					</TD>
-				</TR>
-			</TABLE>
+    <TABLE WIDTH=100% CELLPADDING=7 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+        <TR VALIGN=TOP>
+            <TD WIDTH=45%>
+                <P><B>За Замовника:</B></P>
+                <P><B>{{ deal.customer.signatory_position }} {{ deal.customer.name }}</B></P>
+                <P><B>____________________ {{ deal.customer.signatory_person }}</B></P>
+            </TD>
+            <TD></TD>
+            <TD WIDTH=45%>
+                <P><B>За Підрядника:</B></P>
+                <P><B>{{ deal.company.signatory_position }} {{ deal.company.name }}</B></P>
+                <P><B>____________________ {{ deal.company.signatory_person }}</B></P>
+            </TD>
+        </TR>
+    </TABLE>
 </FONT>
 </BODY>
 </HTML>
