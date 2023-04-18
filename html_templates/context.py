@@ -250,7 +250,10 @@ def context_invoice_render(payment):
                 objects += obj + ', '
             objects = objects[:-2]
             price = ptype['project_type__price'] / Decimal(1.2)
-            count = object_codes.count() * payment.value / payment.deal.value
+            if payment.act_of_acceptance:
+                count = object_codes.count() * payment.value / payment.act_of_acceptance.value
+            else:
+                count = object_codes.count() * payment.value / payment.deal.value
             value = price * count
 
             grouped_list.append([index,
