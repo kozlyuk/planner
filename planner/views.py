@@ -131,7 +131,7 @@ class DealUpdate(UpdateView):
         if self.request.POST:
             context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, self.request.FILES, instance=self.object)
-            context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
+            context['payment_formset'] = forms.PaymentFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
             owners = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
             project_types = Project.objects.filter(customer=self.object.customer, active=True)

@@ -2,7 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.utils.html import format_html
 from django.conf import settings
 
-from planner.models import Task, Execution, IntTask, Deal
+from planner.models import Task, Execution, IntTask
 
 def context_bonus_per_month(employee, period):
 
@@ -219,6 +219,57 @@ def context_act_render(act):
         'svalue': svalue,
         'svalue_w_vat': svalue_w_vat,
         'taxation': act.deal.company.taxation,
+    }
+
+    return context
+
+
+def context_invoice_render(payment):
+
+    # get tasks
+    if payment.act_of_acceptance:
+        tasks = Task.objects.filter(act_of_acceptance=payment.act_of_acceptance)
+    else:
+        tasks = Task.objects.filter(deal=payment.deal)
+
+    # prepare groped_list data
+    grouped_list = []
+    index = 0
+    total_value = payment.value / Decimal(1.2)
+    project_types = tasks.values('project_type__price_code',
+                                 'project_type__project_type',
+                                 'project_type__price') \
+                         .order_by('project_type__price_code').distinct()
+    for ptype in project_types:
+        if ptype['project_type__price'] != 0:
+            index += 1
+            object_codes = tasks.filter(project_type__price_code=ptype['project_type__price_code']) \
+                                .values_list('object_code', flat=True)
+            objects = ''
+            for obj in object_codes:
+                objects += obj + ', '
+            objects = objects[:-2]
+            price = ptype['project_type__price'] / Decimal(1.2)
+            count = object_codes.count() * payment.value / payment.deal.value
+            value = price * count
+
+            grouped_list.append([index,
+                                 ptype['project_type__project_type'],
+                                 objects,
+                                 count,
+                                 "об'єкт",
+                                 price,
+                                 value])
+
+    objects = tasks.values('object_code', 'object_address').order_by().distinct()
+
+    # creating context
+    context = {
+        'invoice': payment,
+        'objects': objects,
+        'grouped_list': grouped_list,
+        'total_value': total_value,
+        'taxation': payment.deal.company.taxation,
     }
 
     return context

@@ -1,4 +1,5 @@
 from django import template
+from decimal import Decimal, ROUND_HALF_UP
 
 from ..number_to_text import num2text, decimal2text
 
@@ -23,14 +24,6 @@ def get_exp_units(units):
     return ((u'', u'', u''), 'm')
 
 
-@register.filter
-def VAT(value):
-    return round(value/6, 2)
-
-@register.filter
-def without_VAT(value):
-    return round(value/6*5, 2)
-
 @register.simple_tag
 def num_to_text(value, units):
     return num2text(int(value), get_main_units(units))
@@ -44,6 +37,11 @@ def decimal_to_text(value, units):
 @register.filter
 def exp_part(value):
     return str((value - int(value)))[2:]
+
+
+@register.filter
+def quantize(value):
+    return value.quantize(Decimal("1.00"), ROUND_HALF_UP)
 
 
 @register.simple_tag
@@ -77,6 +75,21 @@ def calc_summary(summary_value, option='without_currency'):
         return summary_value[0] + ',' + summary_value[1]
 
 
+@register.filter
+def VAT(value):
+    return quantize(value / 6)
+
+
+@register.filter
+def without_VAT(value):
+    return quantize(value / Decimal(1.2))
+
+
+@register.filter
+def add_VAT(value):
+    return quantize(value * Decimal(1.2))
+
+
 @register.simple_tag
 def calc_vat(value, option='without_currency'):
     '''
@@ -84,20 +97,14 @@ def calc_vat(value, option='without_currency'):
     without_currency return *.**.
     where * is the value
     '''
-    if isinstance(value, str):
-        return value
-    if isinstance(value, int):
-        return value
     if option == 'with_currency':
         if value is None or value == 0:
             return '0 грн. 00 коп.'
-        vat = round(value + value / 5, 2)
+        vat = quantize(value * Decimal(1.2))
         vat = str(vat).split('.')
         return vat[0] + ' грн. ' + vat[1] + ' коп.'
     if option == 'without_currency':
         if value is None or value == 0:
             return '0.00'
-        vat = round(value + value / 5, 2)
-        vat = str(vat).split('.')
-        return vat[0] + ',' + vat[1]
+        return quantize(value * Decimal(1.2))
     return value

@@ -1,0 +1,105 @@
+{% load filters %}
+
+<!DOCTYPE HTML PUBLIC "HTML">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>{{ invoice.invoice_number }} від {{ invoice.invoice_date }}</TITLE>
+</HEAD>
+<BODY STYLE="margin-left:50px;" DIR="A4">
+<FONT SIZE=2>
+	<P ALIGN=CENTER>
+		<B>Рахунок на оплату № {{ invoice.invoice_number }} від {{ invoice.invoice_date }}</B>
+	</P>
+    <HR />
+
+    <TABLE WIDTH=100% CELLPADDING=5 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+        <TR VALIGN=TOP>
+            <TD WIDTH=10%>Постачальник:</TD>
+            <TD WIDTH=90%>
+                <B>{{ invoice.deal.company.full_name }}</B>
+                {{ invoice.deal.company.bank_requisites|linebreaks }}
+            </TD>
+        </TR>
+        <TR VALIGN=TOP>
+            <TD>Покупець:</TD>
+            <TD>
+                <B>{{ invoice.deal.customer.full_name }}</B>
+                {{ invoice.deal.customer.bank_requisites|linebreaks }}
+            </TD>
+        </TR>
+        <TR>
+            <TD>Договір:</TD>
+            <TD>{{ invoice.deal.number }}</TD>
+        </TR>
+    </TABLE>
+    <BR>
+
+        <TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=1>
+            <TR VALIGN=CENTER>
+                <TD WIDTH=5% ALIGN=CENTER><B>№</B></TD>
+                <TD WIDTH=55% ALIGN=CENTER><B>Товари (роботи, послуги)</B></TD>
+                <TD WIDTH=10% ALIGN=CENTER><B>Кількість</B></TD>
+                <TD WIDTH=10% ALIGN=CENTER><B>Одиниця</B></TD>
+                <TD WIDTH=10% ALIGN=CENTER><B>Ціна без ПДВ</B></TD>
+                <TD WIDTH=10% ALIGN=CENTER><B>Сума без ПДВ</B></TD>
+            </TR>
+            {% for index, project_type, objects, count, units, price, value in grouped_list %}
+                <TR>
+                    <TD ALIGN=CENTER>{{ index }}</TD>
+                    <TD> {{ project_type }} ({{ objects }})</TD>
+                    <TD ALIGN=CENTER>{{ count }}</TD>
+                    <TD ALIGN=CENTER>{{ units }}</TD>
+                    <TD ALIGN=CENTER>{{ price|quantize }}</TD>
+                    <TD ALIGN=CENTER>{{ value|quantize }}</TD>
+                </TR>
+            {% endfor %}
+        </TABLE>
+
+    <TABLE WIDTH=100% CELLPADDING=1 CELLSPACING=0 BORDER=0>
+        {% if taxation == 'wvat' %}
+            <TR>
+                <TD WIDTH=90% ALIGN=RIGHT>Всього, без ПДВ:</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ total_value|quantize }} </TD>
+            </TR>
+            <TR>
+                <TD ALIGN=RIGHT>ПДВ:</TD>
+                <TD ALIGN=CENTER>{{ total_value|VAT }} </TD>
+            </TR>
+            <TR>
+                <TD WIDTH=90% ALIGN=RIGHT>Всього, з ПДВ:</TD>
+                <TD WIDTH=10% ALIGN=CENTER>{{ total_value|add_VAT }} </TD>
+            </TR>
+        {% else %}
+            <TR>
+                <TD ALIGN=RIGHT colspan="5">Всього, без ПДВ:</TD>
+                <TD ALIGN=CENTER>{{ total_value|quantize }} </TD>
+            </TR>
+        {% endif %}
+    </TABLE>
+
+    <P>
+        Всього на суму <B>{{ total_value|add_VAT }} грн. ({% num_to_text total_value|add_VAT 'hrn' %} {{ total_value|add_VAT|exp_part }} коп.)</B><BR>
+        {% if taxation == 'wvat' %}
+            у тому числі ПДВ <B>{{ total_value|VAT }} грн.
+            {% with vat=total_value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+        {% else %}
+            без ПДВ.
+        {% endif %}
+    </P>
+    <HR /><BR>
+
+    <TABLE WIDTH=100% CELLPADDING=5 CELLSPACING=0 BORDER=0 STYLE='font-size:100%'>
+        <TR>
+            <TD ALIGN=RIGHT WIDTH=70%>Виписав(ла):</TD>
+            <TD WIDTH=30%>
+                <B>______________________________</B><BR>
+                {{ invoice.deal.company.chief.name }}
+                <BR>
+            </TD>
+        </TR>
+    </TABLE>
+
+</FONT>
+</BODY>
+</HTML>

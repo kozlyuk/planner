@@ -231,9 +231,11 @@ ActOfAcceptanceFormSet = inlineformset_factory(Deal, ActOfAcceptance, form=ActOf
 class PaymentInlineForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['date', 'value', 'act_of_acceptance']
+        fields = ['date', 'value', 'act_of_acceptance', 'invoice_number', 'invoice_date', 'pdf_copy']
         widgets = {
             'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'invoice_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'pdf_copy': NotClearableFileInput,
             'DELETE': forms.HiddenInput(),
         }
 
@@ -861,7 +863,8 @@ class CustomerForm(forms.ModelForm):
         fields = ['name', 'full_name', 'edrpou', 'contact_person', 'phone', 'email',
                   'debtor_term', 'user',
                   'city', 'legal_description', 'legal', 'regulations',
-                  'signatory_person', 'signatory_position', 'requisites', 'plan_reserve',
+                  'signatory_person', 'signatory_position',
+                  'requisites', 'bank_requisites', 'plan_reserve',
                   'deal_template', 'act_template', 'invoice_template', 'report_template', 'active',
                   ]
 
@@ -885,7 +888,7 @@ class CompanyForm(forms.ModelForm):
         fields = ['name', 'full_name', 'edrpou', 'chief', 'accountant', 'taxation',
                   'city', 'legal_description', 'legal', 'regulations',
                   'signatory_person', 'signatory_position',
-                  'requisites', 'active',
+                  'requisites', 'bank_requisites', 'active',
                   ]
 
     def __init__(self, *args, **kwargs):

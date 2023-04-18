@@ -11,6 +11,7 @@
             <th><a href="?{% url_replace request 'o' 'pay_date' %}"> ПЛАНОВА ДАТА ОПЛАТИ </a></th>
             <th><a href="?{% url_replace request 'o' 'approved_date' %}"></a> ДАТА ПОГОДЖЕННЯ </th>
             <th> СТАТУС ВИКОНАННЯ </th>
+            <th> ОПЛАТА ЗАМОВНИКОМ </th>
             <th> ПОПЕРЕДЖЕННЯ </th>
         </tr>
     </thead>
@@ -34,6 +35,7 @@
                 {% endif %}
             </td>
             <td>{{ order.get_exec_status }}</td>
+            <td>{{ order.get_deal_pay_status }}</td>
             <td>
                 <span class="badge badge-pill badge-{% deal_status_color order.get_warning %} label-mini">
                 {{ order.get_warning }}

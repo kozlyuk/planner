@@ -7,10 +7,10 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from planner.models import ActOfAcceptance, Deal, Employee
+from planner.models import ActOfAcceptance, Deal, Employee, Payment
 from .context import context_deal_render, context_bonus_per_month
 from .tasks import generate_pdf
-from .context import context_deal_render, context_act_render
+from .context import context_deal_render, context_act_render, context_invoice_render
 
 
 @method_decorator(login_required, name='dispatch')
@@ -122,5 +122,51 @@ class ActGeneratePDF(View):
                          act.pk
                          )
             return redirect(reverse('deal_update', args=[act.deal.pk]))
+        except ActOfAcceptance.DoesNotExist:
+            return HttpResponse('Act object does not exist')
+
+
+@method_decorator(login_required, name='dispatch')
+class InvoiceRender(TemplateView):
+    """ View for rendering a Invoice """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        payment = Payment.objects.get(id=self.kwargs['payment_id'])
+        context_act = context_invoice_render(payment)
+        return {**context, **context_act}
+
+    def render_to_response(self, context):
+        template = context['invoice'].deal.customer.invoice_template
+
+        if template:
+            return HttpResponse(template.render(context))
+        else:
+            return HttpResponse('HTML template does not exist for this customer')
+
+
+@method_decorator(login_required, name='dispatch')
+class InvoiceGeneratePDF(View):
+    """ Generating PDF copy for Invoice """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser or request.user.groups.filter(name='Бухгалтери').exists():
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get(self, request, *args, **kwargs):
+        try:
+            payment = Payment.objects.get(pk=kwargs['payment_id'])
+            generate_pdf(payment.deal.customer.invoice_template,
+                         context_invoice_render(payment),
+                         Payment,
+                         payment.pk
+                         )
+            return redirect(reverse('deal_update', args=[payment.deal.pk]))
         except ActOfAcceptance.DoesNotExist:
             return HttpResponse('Act object does not exist')

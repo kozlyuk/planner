@@ -180,6 +180,7 @@ class Requisites(models.Model):
     signatory_person = models.CharField('Підписант', max_length=50, blank=True)
     signatory_position = models.CharField('Посада підписанта', max_length=255, blank=True)
     requisites = models.TextField('Реквізити', blank=True)
+    bank_requisites = models.TextField('Банківські реквізити', blank=True)
 
     class Meta:
         abstract = True
@@ -668,6 +669,16 @@ class Payment(PaymentBase):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
                                           blank=True, null=True, on_delete=models.SET_NULL)
+    invoice_number = models.CharField('Номер рахунку', max_length=30, blank=True, null=True)
+    invoice_date = models.DateField('Дата рахунку', blank=True, null=True)
+    pdf_copy = ContentTypeRestrictedFileField('Рахунок', upload_to=user_directory_path,
+                                             content_types=['application/pdf',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'spreadsheetml.sheet',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'wordprocessingml.document'],
+                                             max_upload_size=26214400,
+                                             blank=True, null=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
 
@@ -1174,6 +1185,10 @@ class Order(ModelDiffMixin, models.Model):
     def get_exec_status(self):
         return self.task.get_exec_status_display() if self.task else ''
     get_exec_status.short_description = 'Статус виконання'
+
+    def get_deal_pay_status(self):
+        return self.task.deal.get_pay_status_display() if self.task else ''
+    get_deal_pay_status.short_description = 'Оплата замовником'
 
     def get_actual_finish(self):
         if self.task:
