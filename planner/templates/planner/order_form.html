@@ -73,9 +73,14 @@
                                                         <label for="id_{{ form.task.name }}">
                                                             {{ form.task.label }}:
                                                         </label>
+                                                        {% if order.task.pk %}
+                                                        <a class="btnLink" href="{% url 'task_detail' order.task.pk %}" target="_blank">
+                                                            <i style="font-size: 16px;" data-toggle="tooltip" title="Відкрити проект" data-placement="right" class="far fa-sticky-note"></i>
+                                                        </a>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="col-4">
-                                                        {{ form.task|attr:"style: width:100%; display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                        {{ form.task|attr:"display: inline-block; padding-left: 8px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
                                                             {{form.task.errors}}
                                                         </div>
