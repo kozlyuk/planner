@@ -332,7 +332,7 @@ def send_payments_report() -> None:
 
     for accountant in accountants:
         orders = Order.objects.filter(company__accountant=accountant,
-                                      pay_status=Order.Approved,
+                                      pay_status__in=[Order.Approved, Order.AdvanceApproved],
                                       pay_date__lte=date.today()+timedelta(days=7)
                                       ) \
                               .order_by('pay_date')
