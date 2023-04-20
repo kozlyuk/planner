@@ -1259,12 +1259,13 @@ class Order(ModelDiffMixin, models.Model):
         # Get actual warning
         if self.warning:
             return self.warning
-        if self.pay_status == self.Approved and self.pay_date < date.today():
-            return 'Протерміновано платіж'
-        if self.pay_status == self.Approved and self.pay_date <= date.today() + timedelta(days=7):
-            return 'Закінчується термін оплати'
-        if self.pay_status in [self.NotPaid, self.AdvancePaid] and self.pay_date and not self.approved_date:
-            return 'Очікує на погодження'
+        if self.pay_date:
+            if self.pay_status == self.Approved and self.pay_date < date.today():
+                return 'Протерміновано платіж'
+            if self.pay_status == self.Approved and self.pay_date <= date.today() + timedelta(days=7):
+                return 'Закінчується термін оплати'
+            if self.pay_status in [self.NotPaid, self.AdvancePaid] and not self.approved_date:
+                return 'Очікує на погодження'
         return ''
 
 
@@ -1308,6 +1309,7 @@ class OrderPayment(PaymentBase):
             if self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
                 self.order.approved_date = None
                 self.order.approved_by = None
+                self.order.pay_date = None
                 self.order.save()
         super().save(*args, **kwargs)
 
