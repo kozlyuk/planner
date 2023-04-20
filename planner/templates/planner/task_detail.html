@@ -102,7 +102,11 @@
                                 </div>
                             {% endif %}
                             <a href="{{request.META.HTTP_REFERER}}"
-                                class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;"> Повернутись </a>
+                                class="btn dark task-return btn-sm btn-outline sbold uppercase mr-2" style="float: right;"> Повернутись </a>
+                            {% if perms.planner.change_task %}
+                            <a href="{% url 'task_update' task.pk %}"
+                                class="btn dark task-return btn-sm btn-outline sbold uppercase mr-2" style="float: right;"> Редагувати </a>
+                        {% endif %}
                         </div>
                     </div>
                     <!-- END WIDGET -->
