@@ -59,7 +59,8 @@ class EmployeeChartForm(forms.Form):
             template__document_type=HTMLTemplate.Chart,
             content_type__model='employee'
             )]
-        employee = [(customer.id, customer.name) for customer in Employee.objects.filter(user__is_active=True)]
+        employee = [(customer.id, customer.name) for customer in Employee.objects.filter(
+            user__is_active=True, user__groups__name='Проектувальники')]
         self.fields['chart'].choices = chart
         self.fields['employee'].choices = employee
 
