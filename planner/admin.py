@@ -731,6 +731,15 @@ class SubTaskAdmin(admin.ModelAdmin):
     search_fields = ['name', 'project_type__project_type', 'project_type__price_code']
 
 
+class ExecutionAdmin(ModelAdminTotals):
+    list_display = ['executor', 'task', 'subtask', 'part', 'exec_status',
+                    'actual_start', 'actual_finish', 'actual_duration']
+    readonly_fields = ["task", "subtask"]
+    search_fields = ['executor__name', 'task__object_code']
+    list_filter = ['exec_status', ('executor', RelatedDropdownFilter)]
+    date_hierarchy = 'actual_finish'
+    ordering = ['-actual_finish']
+
 
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
@@ -750,3 +759,4 @@ admin.site.register(IntTask, IntTaskAdmin)
 admin.site.register(Construction)
 admin.site.register(WorkType)
 admin.site.register(SubTask, SubTaskAdmin)
+admin.site.register(Execution, ExecutionAdmin)

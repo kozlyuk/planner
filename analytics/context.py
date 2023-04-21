@@ -716,7 +716,7 @@ def manager_productivity_context(year, pms):
                 costs += task_costs
                 earnings += task_income - task_costs
             income_list.append(round(float(income), 2))
-            costs_list.append(round(float(costs), 2))
+            costs_list.append(round(float(costs + pm.salary), 2))
             earnings_list.append(round(float(earnings), 2))
 
         income_data.append({"name": pm.name, "data": income_list})
