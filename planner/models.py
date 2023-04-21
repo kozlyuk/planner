@@ -1004,8 +1004,8 @@ class Task(ModelDiffMixin, models.Model):
     # list of executions for task_list
     def executions(self):
         line = ""
-        execitions = self.execution_set.filter(subtask__show_to_customer=True)
-        for execution in execitions:
+        executions = self.execution_set.filter(subtask__show_to_customer=True)
+        for execution in executions:
             line += f'\n{execution.subtask.name} - {execution.get_exec_status_display()}'
             if execution.exec_status == Execution.Done and execution.actual_finish:
                 line += f" - {execution.actual_finish.strftime(date_format)}"
@@ -1015,6 +1015,14 @@ class Task(ModelDiffMixin, models.Model):
 
     def money_earned(self, part=None):
         return self.project_type.net_price() * part / 100 if part else self.project_type.net_price()
+
+    def costs_with_salary(self):
+        total_spent = self.costs_total()
+        for execution in self.execution_set.filter(subtask__simultaneous_execution=False) \
+                                           .exclude(executor__user__username__startswith='outsourcing'):
+            total_spent += Decimal(execution.actual_duration.total_seconds()) * execution.executor.salary / 600000
+            # 3600 * 166.6 (average month hours) = 600000
+        return total_spent
 
 
 @receiver(post_save, sender=Task, dispatch_uid="update_task_status")

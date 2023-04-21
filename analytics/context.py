@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.conf import settings
 from django.db.models import Sum
 
-from planner.models import ActOfAcceptance, Deal, Payment, Task, Customer
+from planner.models import ActOfAcceptance, Deal, Payment, Task, Customer, Employee, Execution
 
 
 def last_day_of_month(any_day):
@@ -660,7 +660,7 @@ def employee_productivity_context(year, employees):
             #calculate duration
             duration = executions.filter(subtask__simultaneous_execution=False) \
                                  .aggregate(Sum('actual_duration'))['actual_duration__sum'] or timedelta()
-            duration_hr = duration.days * 24 + duration.seconds / 3600
+            duration_hr = duration.total_seconds() / 3600
 
             work_done_list.append(int(income))
             work_salary_list.append(int(income/employee.salary*10))
@@ -680,6 +680,56 @@ def employee_productivity_context(year, employees):
         'work_salary_data': work_salary_data,
         'work_owned_data': work_owner_data,
         'work_duration_data': work_duration_data,
+    }
+
+    return context
+
+
+def manager_productivity_context(year, pms):
+
+    # prepare chart data
+    xAxis = []
+    income_data = []
+    costs_data = []
+    earnings_data = []
+
+    for month in range(1, range_for_year(year)):
+        xAxis.append(date_format(date.today().replace(day=1, month=month), 'M'))
+
+    for pm in pms:
+        income_list = []
+        costs_list = []
+        earnings_list = []
+
+        for month in range(1, range_for_year(year)):
+            period = datetime(year=int(year), month=month, day=1)
+            income = 0
+            costs = 0
+            earnings = 0
+
+            # calculate work efficiency
+            tasks = pm.tasks_for_period(period)
+            for task in tasks:
+                task_income = task.money_earned()
+                income += task_income
+                task_costs = task.costs_with_salary()
+                costs += task_costs
+                earnings += task_income - task_costs
+            income_list.append(round(float(income), 2))
+            costs_list.append(round(float(costs), 2))
+            earnings_list.append(round(float(earnings), 2))
+
+        income_data.append({"name": pm.name, "data": income_list})
+        costs_data.append({"name": pm.name, "data": costs_list})
+        earnings_data.append({"name": pm.name, "data": earnings_list})
+
+    # creating context
+    context = {
+        'pms': pms,
+        'xAxis': xAxis,
+        'income_data': income_data,
+        'costs_data': costs_data,
+        'earnings_data': earnings_data,
     }
 
     return context

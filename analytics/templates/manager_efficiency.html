@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+{% load fontawesome_5 %}
+
+{% block global_meta %}
+    <title>Ітел-Сервіс | Ефективність менеджерів</title>
+{% endblock %}
+
+{% block context %}
+
+<div id="content">
+    <div id="container_income" style="width: 50%; float: left;"></div>
+    <div id="container_costs" style="width: 50%; float: left;"></div>
+    <div id="container_earnings" style="width: 50%; float: left;"></div>
+</div>
+
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        var chart;
+        $(document).ready(function() {
+
+            var container_income = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_income',
+                },
+                title: {
+                    text: "Дохід по проектам"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ income_data|safe }}
+            });
+
+            var container_costs = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_costs',
+                },
+                title: {
+                    text: "Витрати по проектам"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ costs_data|safe }}
+            });
+
+            var container_earnings = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_earnings',
+                },
+                title: {
+                    text: "Прибуток по проектам"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: {{ earnings_data|safe }}
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}

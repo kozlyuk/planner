@@ -67,6 +67,7 @@ class Chart(models.Model):
         ('customer_fin_analysis_context', 'Фінансова аналітика по замовнику'),
         ('income_structure_context', 'Структура доходів'),
         ('employee_productivity_context', 'Продуктивність працівників'),
+        ('manager_productivity_context', 'Ефективність менеджерів'),
     )
 
     name = models.CharField('Назва', max_length=50, unique=True)
