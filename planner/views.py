@@ -131,7 +131,8 @@ class DealUpdate(UpdateView):
         if self.request.POST:
             context['tasks_formset'] = forms.TasksFormSet(self.request.POST, instance=self.object)
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(self.request.POST, self.request.FILES, instance=self.object)
-            context['payment_formset'] = forms.PaymentFormSet(self.request.POST, self.request.FILES, instance=self.object)
+            context['payment_formset'] = forms.PaymentFormSet(self.request.POST, instance=self.object)
+            context['invoice_formset'] = forms.InvoiceFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
             owners = Employee.objects.filter(user__groups__name__contains="ГІПи", user__is_active=True)
             project_types = Project.objects.filter(customer=self.object.customer, active=True)
@@ -150,6 +151,7 @@ class DealUpdate(UpdateView):
                                                    )
             context['actofacceptance_formset'] = forms.ActOfAcceptanceFormSet(instance=self.object)
             context['payment_formset'] = forms.PaymentFormSet(instance=self.object, form_kwargs={'acts': acts})
+            context['invoice_formset'] = forms.InvoiceFormSet(instance=self.object, form_kwargs={'acts': acts})
         return context
 
     def form_valid(self, form):
@@ -178,12 +180,16 @@ class DealUpdate(UpdateView):
         tasks_formset = context['tasks_formset']
         actofacceptance_formset = context['actofacceptance_formset']
         payment_formset = context['payment_formset']
-        if tasks_formset.is_valid() and actofacceptance_formset.is_valid() and payment_formset.is_valid():
+        invoice_formset = context['invoice_formset']
+        if tasks_formset.is_valid() and actofacceptance_formset.is_valid() \
+            and payment_formset.is_valid() and invoice_formset.is_valid():
             with transaction.atomic():
                 actofacceptance_formset.instance = self.object
                 actofacceptance_formset.save()
                 payment_formset.instance = self.object
                 payment_formset.save()
+                invoice_formset.instance = self.object
+                invoice_formset.save()
                 form.save()
                 tasks_formset.instance = self.object
                 tasks_formset.save()

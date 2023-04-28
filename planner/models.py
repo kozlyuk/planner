@@ -669,16 +669,7 @@ class Payment(PaymentBase):
     deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
     act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
                                           blank=True, null=True, on_delete=models.SET_NULL)
-    invoice_number = models.CharField('Номер рахунку', max_length=30, blank=True, null=True)
-    invoice_date = models.DateField('Дата рахунку', blank=True, null=True)
-    pdf_copy = ContentTypeRestrictedFileField('Рахунок', upload_to=user_directory_path,
-                                             content_types=['application/pdf',
-                                                            'application/vnd.openxmlformats-officedocument.'
-                                                            'spreadsheetml.sheet',
-                                                            'application/vnd.openxmlformats-officedocument.'
-                                                            'wordprocessingml.document'],
-                                             max_upload_size=26214400,
-                                             blank=True, null=True)
+
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
 
@@ -724,6 +715,31 @@ class Payment(PaymentBase):
             obj=self.deal,
             )
         super().delete(*args, **kwargs)
+
+
+class Invoice(models.Model):
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
+                                          blank=True, null=True, on_delete=models.SET_NULL)
+    invoice_number = models.CharField('Номер рахунку', max_length=30, blank=True, null=True)
+    invoice_date = models.DateField('Дата рахунку', blank=True, null=True)
+    value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
+    pdf_copy = ContentTypeRestrictedFileField('Рахунок', upload_to=user_directory_path,
+                                             content_types=['application/pdf',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'spreadsheetml.sheet',
+                                                            'application/vnd.openxmlformats-officedocument.'
+                                                            'wordprocessingml.document'],
+                                             max_upload_size=26214400,
+                                             blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Рахунок'
+        verbose_name_plural = 'Рахунки'
+        ordering = ['-invoice_date', 'deal']
+
+    def __str__(self):
+        return f'{self.deal} - {self.invoice_date}'
 
 
 class Receiver(models.Model):

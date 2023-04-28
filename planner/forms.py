@@ -12,7 +12,7 @@ from crum import get_current_user
 from planner.DateTimeWidgets import MonthYearWidget
 
 from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
-                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType, OrderPayment
+                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType, OrderPayment, Invoice
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -231,11 +231,9 @@ ActOfAcceptanceFormSet = inlineformset_factory(Deal, ActOfAcceptance, form=ActOf
 class PaymentInlineForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['date', 'value', 'act_of_acceptance', 'invoice_number', 'invoice_date', 'pdf_copy']
+        fields = ['date', 'value', 'act_of_acceptance']
         widgets = {
             'date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
-            'invoice_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
-            'pdf_copy': NotClearableFileInput,
             'DELETE': forms.HiddenInput(),
         }
 
@@ -259,6 +257,25 @@ class PaymentInlineFormset(BaseInlineFormSet):
 
 
 PaymentFormSet = inlineformset_factory(Deal, Payment, form=PaymentInlineForm, extra=0, formset=PaymentInlineFormset)
+
+
+class InvoiceInlineForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['invoice_number', 'invoice_date', 'value', 'act_of_acceptance', 'pdf_copy']
+        widgets = {
+            'invoice_date': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'pdf_copy': NotClearableFileInput,
+            'DELETE': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, acts=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if acts:
+            self.fields['act_of_acceptance'].queryset = acts
+
+
+InvoiceFormSet = inlineformset_factory(Deal, Invoice, form=InvoiceInlineForm, extra=0)
 
 
 class TaskFilterForm(forms.Form):

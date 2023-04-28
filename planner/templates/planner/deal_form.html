@@ -502,10 +502,10 @@
                                                 id="actofacceptance_formset_not_empty">
                                                 <thead>
                                                     <tr>
-                                                        <th width="20%" scope="col">НОМЕР АКТУ</th>
-                                                        <th width="20%" scope="col">ДАТА АКТУ</th>
-                                                        <th width="20%" scope="col">СУМА АКТУ</th>
-                                                        <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
+                                                        <th scope="col">НОМЕР АКТУ</th>
+                                                        <th scope="col">ДАТА АКТУ</th>
+                                                        <th scope="col">СУМА АКТУ</th>
+                                                        <th width="50%" scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
                                                         <th width="5%" scope="col">Дії</th>
                                                     </tr>
                                                 </thead>
@@ -516,29 +516,26 @@
                                                     {% for form in actofacceptance_formset %}
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.number|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.number|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.number.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.date|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.date|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{form.value|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{form.value|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
                                                                     {{form.value.errors}}
                                                                 </div>
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            <!-- {% if form.instance.pdf_copy %}
-                                                                <a href="{% media_url form.instance.pdf_copy %}"> Скачати акт {{form.instance.number}} </a>
-                                                            {% endif %} -->
                                                             <div class="form-group">
                                                                 {{form.pdf_copy|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
@@ -572,10 +569,10 @@
                                             <table id="actofacceptance_formset_empty" class="table table-hover task-formset table-responsive-xl">
                                                 <thead>
                                                     <tr>
-                                                        <th width="20%" scope="col">НОМЕР АКТУ</th>
-                                                        <th width="20%" scope="col">ДАТА АКТУ</th>
-                                                        <th width="20%" scope="col">СУМА АКТУ</th>
-                                                        <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
+                                                        <th scope="col">НОМЕР АКТУ</th>
+                                                        <th scope="col">ДАТА АКТУ</th>
+                                                        <th scope="col">СУМА АКТУ</th>
+                                                        <th width="50%" scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
                                                         <th width="2%" scope="col">Дії</th>
                                                 </tr>
                                                 </thead>
@@ -586,7 +583,7 @@
 
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{actofacceptance_formset.empty_form.number|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{actofacceptance_formset.empty_form.number|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{actofacceptance_formset.empty_form.number.errors}}
                                                             </div>
@@ -599,7 +596,7 @@
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{actofacceptance_formset.empty_form.value|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{actofacceptance_formset.empty_form.value|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
                                                                     {{actofacceptance_formset.empty_form.value.errors}}
                                                                 </div>
@@ -607,9 +604,9 @@
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{actofacceptance_formset.empty_form.pdf_copy|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                                {{actofacceptance_formset.empty_form.pdf_copy|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
-                                                                    {{actofacceptance_formset.empty_form.errors}}
+                                                                    {{invoice_formset.empty_form.pdf_copy.errors}}
                                                                 </div>
                                                             </div>
                                                         </th>
@@ -640,10 +637,7 @@
                                                     <tr>
                                                         <th scope="col">ДАТА ОПЛАТИ</th>
                                                         <th scope="col">СУМА ОПЛАТИ</th>
-                                                        <th scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
-                                                        <th scope="col">НОМЕР РАХУНКУ</th>
-                                                        <th scope="col">ДАТА РАХУНКУ</th>
-                                                        <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
+                                                        <th width="60%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
                                                         <th width="5%" scope="col">Дії</th>
                                                     </tr>
                                                 </thead>
@@ -654,33 +648,128 @@
                                                     {% for form in payment_formset %}
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.date|attr:"style: width:60%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.date|attr:"style: width:100%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.value|attr:"style: width:60%;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{form.value|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.value.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{ form.act_of_acceptance|attr:"style: width:60%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {{ form.act_of_acceptance|attr:"style: width:50%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.act_of_acceptance.errors}}
                                                             </div>
                                                         </th>
+                                                        <th>
+                                                            {{ form.id }}{{ form.DELETE }}
+                                                        </th>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            {{ payment_formset.management_form }}
+                                        </div>
+                                    {% else %}
+                                        <div class="row" style="display:none" id="payment_formset">
+                                            <table class="table table-hover mb-0 table-responsive-xl" id="payment_formset_empty">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">ДАТА ОПЛАТИ</th>
+                                                        <th scope="col">СУМА ОПЛАТИ</th>
+                                                        <th width="60%" scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
+                                                        <th width="2%" scope="col">Дії</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <small class="text-danger">
+                                                    {{ payment_formset.non_form_errors }}
+                                                    </small>
+
+                                                    <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{form.invoice_number|attr:"style: width:60%;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{payment_formset.empty_form.date|attr:"style: width:100%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.date.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{payment_formset.empty_form.value|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.value.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{ payment_formset.empty_form.act_of_acceptance|attr:"style: width:50%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{payment_formset.empty_form.act_of_acceptance.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th>{{ payment_formset.empty_form.id }}{{ payment_formset.empty_form.DELETE }}</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            {{ payment_formset.management_form }}
+                                        </div>
+                                        <button style="width: 100%" type="button"
+                                            class="add-payment-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати оплату
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card main-widget-tab">
+                                <h6 class="task-header center-block text-center">Рахунки</h6>
+                                <div class="card-body pb-1">
+                                    {% if invoice_formset|length %}
+                                        <div class="row">
+                                            <table class="table table-hover mb-0 table-responsive-xl"
+                                                id="invoice_formset_not_empty">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">НОМЕР РАХУНКУ</th>
+                                                        <th scope="col">ДАТА РАХУНКУ</th>
+                                                        <th scope="col">СУМА РАХУНКУ</th>
+                                                        <th scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
+                                                        <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
+                                                        <th width="5%" scope="col">Дії</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <small class="text-danger">
+                                                    {{ invoice_formset.non_form_errors }}
+                                                    </small>
+                                                    {% for form in invoice_formset %}
+                                                    <tr>
+                                                        <th class="pl-1 pr-1">
+                                                            {{form.invoice_number|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
                                                                 {{form.invoice_number.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{ form.invoice_date|attr:"style: width:60%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {{ form.invoice_date|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.invoice_date.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{form.value|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.value.errors}}
+                                                            </div>
+                                                        </th>
+                                                        <th class="pl-1 pr-1">
+                                                            {{ form.act_of_acceptance|attr:"style: width:100%;"|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            <div class="invalid-feedback">
+                                                                {{form.act_of_acceptance.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
@@ -705,74 +794,67 @@
                                                     {% endfor %}
                                                 </tbody>
                                             </table>
-                                            {{ payment_formset.management_form }}
+                                            {{ invoice_formset.management_form }}
                                         </div>
                                     {% else %}
-                                        <div class="row" style="display:none" id="payment_formset">
-                                            <table class="table table-hover mb-0 table-responsive-xl" id="payment_formset_empty">
+                                        <div class="row" style="display:none" id="invoice_formset">
+                                            <table class="table table-hover mb-0 table-responsive-xl" id="invoice_formset_empty">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">ДАТА ОПЛАТИ</th>
-                                                        <th scope="col">СУМА ОПЛАТИ</th>
-                                                        <th scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
                                                         <th scope="col">НОМЕР РАХУНКУ</th>
                                                         <th scope="col">ДАТА РАХУНКУ</th>
+                                                        <th scope="col">СУМА РАХУНКУ</th>
+                                                        <th scope="col">АКТ ВИКОНАНИХ РОБІТ</th>
                                                         <th scope="col">ЕЛЕКТРОННИЙ ПРИМІРНИК</th>
                                                         <th width="2%" scope="col">Дії</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <small class="text-danger">
-                                                    {{ payment_formset.non_form_errors }}
+                                                    {{ invoice_formset.non_form_errors }}
                                                     </small>
 
                                                     <tr>
                                                         <th class="pl-1 pr-1">
-                                                            {{payment_formset.empty_form.date|attr:"style: width:60%; display: inline-block;"|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{invoice_formset.empty_form.invoice_number|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
-                                                                {{payment_formset.empty_form.date.errors}}
+                                                                {{invoice_formset.empty_form.invoice_number.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{payment_formset.empty_form.value|attr:"style: width:60%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{ invoice_formset.empty_form.invoice_date|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
-                                                                {{payment_formset.empty_form.value.errors}}
+                                                                {{invoice_formset.empty_form.invoice_date.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{ payment_formset.empty_form.act_of_acceptance|attr:"style: width:60%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
+                                                            {{invoice_formset.empty_form.value|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
                                                             <div class="invalid-feedback">
-                                                                {{payment_formset.empty_form.act_of_acceptance.errors}}
+                                                                {{invoice_formset.empty_form.value.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
-                                                            {{payment_formset.empty_form.invoice_number|attr:"style: width:60%; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            {{ invoice_formset.empty_form.act_of_acceptance|attr:"style: width:100%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
-                                                                {{payment_formset.empty_form.invoice_number.errors}}
-                                                            </div>
-                                                        </th>
-                                                        <th class="pl-1 pr-1">
-                                                            {{ payment_formset.empty_form.invoice_date|attr:"style: width:60%; "|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            <div class="invalid-feedback">
-                                                                {{payment_formset.empty_form.invoice_date.errors}}
+                                                                {{invoice_formset.empty_form.act_of_acceptance.errors}}
                                                             </div>
                                                         </th>
                                                         <th class="pl-1 pr-1">
                                                             <div class="form-group">
-                                                                {{form.pdf_copy|add_error_class:"is-invalid"}}
+                                                                {{invoice_formset.empty_form.pdf_copy|add_error_class:"is-invalid"}}
                                                                 <div class="invalid-feedback">
-                                                                    {{form.pdf_copy.errors}}
+                                                                    {{invoice_formset.empty_form.pdf_copy.errors}}
                                                                 </div>
                                                             </div>
                                                         </th>
-                                                        <th>{{ payment_formset.empty_form.id }}{{ payment_formset.empty_form.DELETE }}</th>
+                                                        <th>{{ invoice_formset.empty_form.id }}{{ invoice_formset.empty_form.DELETE }}</th>
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            {{ payment_formset.management_form }}
+                                            {{ invoice_formset.management_form }}
                                         </div>
                                         <button style="width: 100%" type="button"
-                                            class="add-payment-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати оплату
+                                            class="add-invoice-formset btn dark btn-sm btn-outline padding-bottom-20 mb-2">Додати рахунок
                                         </button>
                                     {% endif %}
                                 </div>
@@ -826,27 +908,35 @@
     <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
 
     <script type="text/javascript">
-        const addBtnExec = document.querySelector('.add-tasks-formset');
-        const addBtnCost = document.querySelector('.add-act-formset');
-        const addBtnSend = document.querySelector('.add-payment-formset');
+        const addBtnTask = document.querySelector('.add-tasks-formset');
+        const addBtnAct = document.querySelector('.add-act-formset');
+        const addBtnPayment = document.querySelector('.add-payment-formset');
+        const addBtnInvoice = document.querySelector('.add-invoice-formset');
         if (document.querySelector('#tasks_formset')) {
-            addBtnExec.addEventListener('click', () => {
-                addInitialFormset('tasks_formset', addBtnExec);
+            addBtnTask.addEventListener('click', () => {
+                addInitialFormset('tasks_formset', addBtnTask);
                 cliсk('tasks_formset', 'dynamic-formset1');
             })
         };
 
         if (document.querySelector('#actofacceptance_formset')) {
-            addBtnCost.addEventListener('click', () => {
-                addInitialFormset('actofacceptance_formset', addBtnCost);
+            addBtnAct.addEventListener('click', () => {
+                addInitialFormset('actofacceptance_formset', addBtnAct);
                 cliсk('actofacceptance_formset', 'dynamic-formset2');
             })
         };
 
         if (document.querySelector('#payment_formset')) {
-            addBtnSend.addEventListener('click', () => {
-                addInitialFormset('payment_formset', addBtnSend);
+            addBtnPayment.addEventListener('click', () => {
+                addInitialFormset('payment_formset', addBtnPayment);
                 cliсk('payment_formset', 'dynamic-formset3');
+            })
+        };
+
+        if (document.querySelector('#invoice_formset')) {
+            addBtnInvoice.addEventListener('click', () => {
+                addInitialFormset('invoice_formset', addBtnInvoice);
+                cliсk('invoice_formset', 'dynamic-formset4');
             })
         };
 
@@ -936,6 +1026,30 @@
                 addText: 'Додати оплату',
                 deleteText: '<i class="far fa-trash-alt" title="Видалити оплату"></i>',
                 addCssClass: 'add-row-payment_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
+
+            $('#invoice_formset_not_empty tbody tr').formset({
+                prefix: '{{ invoice_formset.prefix }}',
+                formCssClass: 'dynamic-formset4',
+                addText: 'Додати рахунок',
+                deleteText: '<i class="far fa-trash-alt" title="Видалити рахунок"></i>',
+                addCssClass: 'add-row btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
+                deleteCssClass: 'delete-row badge-pill badge-danger',
+                'added': function (row) {
+                    $(row).find('.django-select2').djangoSelect2();
+                }
+            });
+
+            $('#invoice_formset_empty tbody tr').formset({
+                prefix: '{{ invoice_formset.prefix }}',
+                formCssClass: 'dynamic-formset4',
+                addText: 'Додати рахунок',
+                deleteText: '<i class="far fa-trash-alt" title="Видалити рахунок"></i>',
+                addCssClass: 'add-row-invoice_formset btn dark btn-sm btn-outline mt-2 float-right btn-block width-0',
                 deleteCssClass: 'delete-row badge badge-pill badge-danger',
                 'added': function (row) {
                     $(row).find('.django-select2').djangoSelect2();

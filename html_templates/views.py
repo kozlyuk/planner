@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from planner.models import ActOfAcceptance, Deal, Employee, Payment
+from planner.models import ActOfAcceptance, Deal, Employee, Invoice
 from .context import context_deal_render, context_bonus_per_month
 from .tasks import generate_pdf
 from .context import context_deal_render, context_act_render, context_invoice_render
@@ -137,8 +137,8 @@ class InvoiceRender(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        payment = Payment.objects.get(id=self.kwargs['payment_id'])
-        context_act = context_invoice_render(payment)
+        invoice = Invoice.objects.get(id=self.kwargs['invoice_id'])
+        context_act = context_invoice_render(invoice)
         return {**context, **context_act}
 
     def render_to_response(self, context):
@@ -161,12 +161,12 @@ class InvoiceGeneratePDF(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            payment = Payment.objects.get(pk=kwargs['payment_id'])
-            generate_pdf(payment.deal.customer.invoice_template,
-                         context_invoice_render(payment),
-                         Payment,
-                         payment.pk
+            invoice = Invoice.objects.get(pk=kwargs['invoice_id'])
+            generate_pdf(invoice.deal.customer.invoice_template,
+                         context_invoice_render(invoice),
+                         Invoice,
+                         invoice.pk
                          )
-            return redirect(reverse('deal_update', args=[payment.deal.pk]))
+            return redirect(reverse('deal_update', args=[invoice.deal.pk]))
         except ActOfAcceptance.DoesNotExist:
             return HttpResponse('Act object does not exist')
