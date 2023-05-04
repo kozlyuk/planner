@@ -7,10 +7,14 @@ from analytics.models import Kpi
 from eventlog.models import Log
 
 
-def executors_rating():
+def executors_rating(user):
     """ Get list of executors ratings in descending ordering """
     period = date.today().replace(day=1)
-    return Kpi.objects.filter(name=Kpi.Productivity, period=period).order_by('-value')
+    ratings = Kpi.objects.filter(name=Kpi.Productivity, period=period)
+    if user.is_superuser:
+        return ratings.order_by('-value')
+    else:
+        return ratings.filter(employee__head=user.employee).order_by('-value')
 
 
 def context_general(user):
@@ -70,7 +74,6 @@ def context_general(user):
         'news': news,
         'events': events,
         'activities': activities,
-        'executors_rating': executors_rating(),
         }
 
     return context
@@ -112,6 +115,7 @@ def context_accounter(user):
         'payment_queue_count': payment_queue_count,
         'debtor_deals_div': debtor_deals_div,
         'payment_queue_div': payment_queue_div,
+        'executors_rating': executors_rating(user),
         }
 
     return {**context, **context_general(user)}
@@ -159,6 +163,7 @@ def context_pm(user):
         'tasks_div': tasks_div,
         'overdue_tasks_count': overdue_tasks_count,
         'overdue_tasks_div': overdue_tasks_div,
+        'executors_rating': executors_rating(user),
         }
 
     return {**context, **context_general(user)}

@@ -8,7 +8,7 @@
 </HEAD>
 <BODY STYLE="margin-left:50px;" DIR="A4">
 <FONT SIZE=2>
-	<P ALIGN=CENTER>
+	<P ALIGN=CENTER STYLE='font-size:150%'>
 		<B>Рахунок на оплату № {{ invoice.invoice_number }} від {{ invoice.invoice_date }}</B>
 	</P>
     <HR />
@@ -64,7 +64,7 @@
             </TR>
             <TR>
                 <TD ALIGN=RIGHT>ПДВ:</TD>
-                <TD ALIGN=CENTER>{{ total_value|VAT }} </TD>
+                <TD ALIGN=CENTER>{{ total_value|VAT5 }} </TD>
             </TR>
             <TR>
                 <TD WIDTH=90% ALIGN=RIGHT>Всього, з ПДВ:</TD>
@@ -81,8 +81,8 @@
     <P>
         Всього на суму <B>{{ total_value|add_VAT }} грн. ({% num_to_text total_value|add_VAT 'hrn' %} {{ total_value|add_VAT|exp_part }} коп.)</B><BR>
         {% if taxation == 'wvat' %}
-            у тому числі ПДВ <B>{{ total_value|VAT }} грн.
-            {% with vat=total_value|VAT %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
+            у тому числі ПДВ <B>{{ total_value|VAT5 }} грн.
+            {% with vat=total_value|VAT5 %}({% num_to_text vat 'hrn' %} {{ vat | exp_part }} коп.){% endwith %}</B>
         {% else %}
             без ПДВ.
         {% endif %}

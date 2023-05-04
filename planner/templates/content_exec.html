@@ -5,7 +5,7 @@
 <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
 <!-- BEGIN CONTAINER -->
 <div class="row">
-    <div class="col-xl-5 col-lg-6 col-md-6 margin-bottom-20">
+    <div class="col-xl-6 col-lg-6 col-md-12 margin-bottom-20">
         <!-- BEGIN WIDGET TAB -->
         <div class="widget-bg-color-white widget-tab main-widget-tab">
             <h6 class="task-header center-block text-center"><i class="fas fa-tasks"></i> Проекти</h6>
@@ -139,46 +139,7 @@
         <!-- END WIDGET TAB -->
     </div>
 
-    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 margin-bottom-20">
-        <h6 style="margin-top: -8px;" class="task-header center-block text-center"><i style="font-size: 12px;" class="far fa-star"></i> Рейтинг проектувальників</h6>
-        <!-- BEGIN WIDGET TAB -->
-        <div class="portlet light  widget-bg-color-white widget-tab main-widget-tab">
-            <div class="portlet-body">
-                <div class="scroller" style="height: 365px;" data-always-visible="1" data-rail-visible="0">
-                    <ul class="feeds">
-                        {% for rating in executors_rating %}
-                        <li style="width: 100%;">
-                            <div class="col1">
-                                <div class="cont">
-                                    <div class="cont-col1">
-                                        <div class="label label-sm label-success">
-                                            <i class="fa fa-user"></i>
-                                        </div>
-                                    </div>
-                                    <div class="cont-col2">
-                                        <div class="desc">
-                                            {{ rating.employee.name }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col2">
-                                {% if rating.value < 80 %}
-                                <div class="badge badge-pill badge-warning"> {{ rating.value }} </div>
-                                {% else %}
-                                <div class="badge badge-pill badge-success"> {{ rating.value }} </div>
-                                {% endif %}
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!-- END WIDGET TAB -->
-    </div>
-
-    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+    <div class="col-xl-3 col-lg-3 col-md-6 margin-bottom-20">
         <!-- BEGIN WIDGET THUMB -->
         <div class="col-12 pl-0 pr-0 mb-3">
             <!-- BEGIN WIDGET THUMB -->
@@ -230,7 +191,7 @@
             <!-- END WIDGET THUMB -->
         </div>
     </div>
-    <div class="col-xl-2 col-lg-6 col-sm-12 margin-bottom-20">
+    <div class="col-xl-3 col-lg-3 col-md-6 margin-bottom-20">
         <div class="col">
             <div class="widget-progress">
                 <div class="widget-progress-element widget-bg-color-blue margin-bottom-25">
