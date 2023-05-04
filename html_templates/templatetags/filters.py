@@ -79,6 +79,9 @@ def calc_summary(summary_value, option='without_currency'):
 def VAT(value):
     return quantize(value / 6)
 
+@register.filter
+def VAT5(value):
+    return quantize(value / 5)
 
 @register.filter
 def without_VAT(value):
