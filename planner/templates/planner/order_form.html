@@ -218,6 +218,22 @@
 
                                                 <div class="row">
                                                     <div class="col-2">
+                                                        <label for="id_{{ form.repeat.name }}">
+                                                            {{ form.repeat.label }}:
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                        {{ form.repeat|attr:"style: width:100%; padding-left: 8px; "|add_class:"form-control"|add_error_class:"is-invalid"}}
+                                                            <div class="invalid-feedback">
+                                                                {{form.repeat.errors}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-2">
                                                         <label for="id_{{ form.deal.name }}">
                                                             {{ form.deal.label }}:
                                                         </label>

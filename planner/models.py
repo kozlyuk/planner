@@ -1109,6 +1109,15 @@ class Order(ModelDiffMixin, models.Model):
         (LaborCosts, 'Оплата праці'),
         (Taxes, 'Податки'),
     )
+    OneTime = 'OT'
+    RepeatWeekly = 'RW'
+    RepeatMonthly = 'RM'
+    RepeatYearly = 'RY'
+    REPEAT_CHOICES = (
+        (OneTime, 'Одноразовий платіж'),
+        (RepeatMonthly, 'Щомісячний платіж'),
+    )
+
     contractor = models.ForeignKey(Contractor, verbose_name='Підрядник', on_delete=models.PROTECT)
     company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.PROTECT)
     task = models.ForeignKey(Task, verbose_name='Проект', on_delete=models.CASCADE, blank=True, null=True)
@@ -1121,6 +1130,7 @@ class Order(ModelDiffMixin, models.Model):
     pay_type = models.CharField('Форма оплати', max_length=2, choices=PAYMENT_TYPE_CHOICES, default=BankPaymentVAT)
     pay_status = models.CharField('Статус оплати', max_length=2, choices=PAYMENT_STATUS_CHOICES, default=NotPaid)
     pay_date = models.DateField('Планова дата оплати', blank=True, null=True)
+    repeat = models.CharField('Періодичність', max_length=2, choices=REPEAT_CHOICES, default=OneTime)
     approved_date = models.DateField('Дата погодження', blank=True, null=True)
     approved_by = models.ForeignKey(User, verbose_name='Погоджено', related_name='order_peyment_approvers',
                                     blank=True, null=True, on_delete=models.PROTECT)

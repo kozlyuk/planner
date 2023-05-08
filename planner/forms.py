@@ -662,6 +662,7 @@ class OrderForm(forms.ModelForm):
                   'value', 'advance',
                   'deal_number', 'pay_date',
                   'purpose', 'warning',
+                  'repeat',
                   'deal', 'invoice']
         widgets = {
             'contractor': Select2Widget,
