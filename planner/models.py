@@ -1110,9 +1110,7 @@ class Order(ModelDiffMixin, models.Model):
         (Taxes, 'Податки'),
     )
     OneTime = 'OT'
-    RepeatWeekly = 'RW'
     RepeatMonthly = 'RM'
-    RepeatYearly = 'RY'
     REPEAT_CHOICES = (
         (OneTime, 'Одноразовий платіж'),
         (RepeatMonthly, 'Щомісячний платіж'),

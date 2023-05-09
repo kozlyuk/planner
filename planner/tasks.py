@@ -3,7 +3,7 @@ from celery.utils.log import get_task_logger
 from django.db.models import F
 from django.conf.locale.uk import formats as uk_formats
 
-from planner.models import Deal, Task, Execution
+from planner.models import Deal, Task, Order
 from planner.celery import app
 
 date_format = uk_formats.DATE_INPUT_FORMATS[0]
@@ -118,3 +118,27 @@ def update_deal_statuses(deal_id=None):
 
     Deal.objects.bulk_update(deal_list, ['exec_status', 'warning'])
     logger.info("Deal statuses and warnings updated. %s", deal_id)
+
+
+@app.task
+def create_periodical_orders():
+    """ Creates periodical orders from previous month """
+
+    today = date.today()
+    month, year = (today.month-1, today.year) if today.month != 1 else (12, today.year-1)
+
+    orders = Order.objects.filter(pay_date__year=year,
+                                  pay_date__month=month,
+                                  repeat=Order.RepeatMonthly
+                                  )
+    order_list = []
+    for order in orders:
+        order.pk = None
+        order.pay_date = order.pay_date.replace(month=today.month)
+        order_list.append(order)
+
+    Order.objects.bulk_create(order_list)
+
+    print(order_list, month, year)
+
+    logger.info("New periodical orders created, %s", today)
