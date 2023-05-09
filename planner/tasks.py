@@ -135,10 +135,8 @@ def create_periodical_orders():
     for order in orders:
         order.pk = None
         order.pay_date = order.pay_date.replace(month=today.month)
+        order.pay_status = Order.NotPaid
         order_list.append(order)
 
     Order.objects.bulk_create(order_list)
-
-    print(order_list, month, year)
-
     logger.info("New periodical orders created, %s", today)

@@ -272,10 +272,11 @@ def order_queryset_filter(request_user, query_dict):
     contractors = list(filter(None, query_dict.getlist('contractor')))
     companies = list(filter(None, query_dict.getlist('company')))
     pay_statuses = list(filter(None, query_dict.getlist('pay_status')))
-    exec_statuses = list(filter(None, query_dict.getlist('exec_status')))
     pay_types = list(filter(None, query_dict.getlist('pay_type')))
     owners = list(filter(None, query_dict.getlist('owner')))
     cost_types = list(filter(None, query_dict.getlist('cost_type')))
+    start_date = query_dict.get('start_date')
+    end_date = query_dict.get('end_date')
     order = query_dict.get('o')
 
     orders = Order.objects.all().select_related('contractor', 'task', 'subtask')
@@ -310,12 +311,6 @@ def order_queryset_filter(request_user, query_dict):
             orders_segment = orders.filter(pay_status=status)
             orders_union = orders_union | orders_segment
         orders = orders_union
-    if exec_statuses:
-        orders_union = Order.objects.none()
-        for status in exec_statuses:
-            orders_segment = orders.filter(task__exec_status=status)
-            orders_union = orders_union | orders_segment
-        orders = orders_union
     if pay_types:
         orders_union = Order.objects.none()
         for pay_type in pay_types:
@@ -334,6 +329,12 @@ def order_queryset_filter(request_user, query_dict):
             orders_segment = orders.filter(cost_type=cost_type)
             orders_union = orders_union | orders_segment
         orders = orders_union
+    if start_date:
+        start_value = datetime.strptime(start_date, '%Y-%m-%d')
+        orders = orders.filter(pay_date__gte=start_value)
+    if end_date:
+        finish_value = datetime.strptime(end_date, '%Y-%m-%d')
+        orders = orders.filter(pay_date__lte=finish_value)
     if order:
         orders = orders.order_by(order)
     else:

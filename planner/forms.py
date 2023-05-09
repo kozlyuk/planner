@@ -569,7 +569,6 @@ class OrderFilterForm(forms.Form):
         contractor = list(Contractor.objects.filter(active=True).values_list('pk', 'name'))
         company = list(Company.objects.filter(active=True).values_list('pk', 'name'))
         pay_status = list(Order.PAYMENT_STATUS_CHOICES)
-        exec_status = list(Task.EXEC_STATUS_CHOICES)
         pay_type = list(Order.PAYMENT_TYPE_CHOICES)
         cost_types = list(Order.COST_TYPE_CHOICES)
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
@@ -578,10 +577,11 @@ class OrderFilterForm(forms.Form):
         self.fields['contractor'].choices = contractor
         self.fields['company'].choices = company
         self.fields['pay_status'].choices = pay_status
-        self.fields['exec_status'].choices = exec_status
         self.fields['pay_type'].choices = pay_type
         self.fields['owner'].choices = owners
         self.fields['cost_type'].choices = cost_types
+        self.fields['start_date'].required = False
+        self.fields['end_date'].required = False
 
     contractor = forms.MultipleChoiceField(label='Підрядник', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
@@ -589,14 +589,16 @@ class OrderFilterForm(forms.Form):
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     pay_status = forms.MultipleChoiceField(label='Статус оплати', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
-    exec_status = forms.MultipleChoiceField(label='Статус виконання', required=False,
-        widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     pay_type = forms.MultipleChoiceField(label='Форма оплати', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     owner = forms.MultipleChoiceField(label='Керівник проекту', required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
     cost_type = forms.ChoiceField(label="Стаття затрат", required=False,
         widget=Select2MultipleWidget(attrs={"style": 'width: 100%'}))
+    start_date = forms.DateField(label='Планова дата оплати з',
+                                 widget=forms.DateInput(format=('%d.%m.%Y'), attrs={'type': 'date', "style": 'width: 100%'}))
+    end_date = forms.DateField(label='Планова дата оплати по',
+                               widget=forms.DateInput(format=('%d.%m.%Y'), attrs={'type': 'date', "style": 'width: 100%'}))
     filter = forms.CharField(label='Слово пошуку', max_length=255, required=False,
         widget=forms.TextInput(attrs={"style": 'width: 100%', "class": 'select2-container--bootstrap select2-selection'}))
 
