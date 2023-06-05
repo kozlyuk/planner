@@ -136,6 +136,8 @@ def create_periodical_orders():
         order.pk = None
         order.pay_date = order.pay_date.replace(month=today.month)
         order.pay_status = Order.NotPaid
+        order.approved_date = None
+        order.approved_by = None
         order_list.append(order)
 
     Order.objects.bulk_create(order_list)

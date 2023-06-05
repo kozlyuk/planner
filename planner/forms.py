@@ -3,7 +3,6 @@ from django import forms
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
-from django.contrib.admin.widgets import AdminDateWidget
 from .DateTimeWidgets import SplitDateTimeWidget
 from django.contrib.auth.models import User, Group
 from django.db.models import Q, F
