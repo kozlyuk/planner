@@ -1,6 +1,7 @@
 from import_export.forms import ImportForm, ConfirmImportForm
 from import_export import resources
 from import_export.fields import Field
+from import_export.widgets import DateWidget
 from crum import get_current_user
 from django import forms
 
@@ -9,6 +10,9 @@ from .models import Task, Project, Employee, Deal, WorkType, Construction
 
 
 class TaskResource(resources.ModelResource):
+
+    period = Field(attribute='period', column_name='period',
+        widget=DateWidget(format='%d.%m.%Y'))
 
     class Meta:
         model = Task
