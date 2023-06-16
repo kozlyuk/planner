@@ -18,7 +18,7 @@ class TaskResource(resources.ModelResource):
         model = Task
         fields = ('object_code', 'object_address', 'project_type', 'owner',
                   'period', 'construction', 'deal', 'work_type')
-        use_bulk= True
+        # use_bulk= True
 
     def get_instance(self, instance_loader, row):
         return False
@@ -27,7 +27,7 @@ class TaskResource(resources.ModelResource):
         # override to set the value of the dropdown onto the row instance
         instance.deal = kwargs.get("deal")
         instance.work_type = kwargs.get("work_type")
-        instance.creator = get_current_user()
+        # instance.creator = get_current_user()
 
     def before_import_row(self, row, row_number=None, **kwargs):
         project_type = Project.objects.get(price_code=row["project_type"])
