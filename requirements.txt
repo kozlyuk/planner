@@ -21,6 +21,7 @@ holidays == 0.15
 admin-totals
 django-bootstrap-modal-forms
 weasyprint
+django-import-export
 
 # Rest API
 djangorestframework == 3.13.1

@@ -11,11 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from admin_totals.admin import ModelAdminTotals
+from import_export.admin import ImportMixin
 
-from .models import ActOfAcceptance, Payment, Project, Employee, Customer, \
+from .models import Project, Employee, Customer, \
                     Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
                     IntTask, Contractor, Order, Company, Construction, SubTask
-
+from .import_export import TaskResource, CustomImportForm, CustomConfirmImportForm
 
 class SubTasksInline(admin.TabularInline):
     model = SubTask
@@ -588,9 +589,12 @@ class OrdersInline(admin.TabularInline):
         return super(OrdersInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class TaskAdmin(admin.ModelAdmin):
+class TaskAdmin(ImportMixin, admin.ModelAdmin):
 
     form = TaskForm
+    resource_classes = [TaskResource]
+    import_form_class = CustomImportForm
+    confirm_form_class = CustomConfirmImportForm
 
     def warning_mark(self, obj):
         status = obj.warning
@@ -613,7 +617,7 @@ class TaskAdmin(admin.ModelAdmin):
                                                   'planned_finish'),
                                                  ('actual_start', 'actual_finish'),
                                                  ('pdf_copy', )]}),
-        ('Додаткова інформіція', {'fields': [
+        ('Додаткова інформація', {'fields': [
             'project_code', 'manual_warning',
             ('difficulty_owner', 'difficulty_executor')
             ],
@@ -680,6 +684,23 @@ class TaskAdmin(admin.ModelAdmin):
         else:
             self.inlines = [ExecutersInline, SendingsInline]
         return super(TaskAdmin, self).get_inline_instances(request, obj)
+
+    def get_import_data_kwargs(self, request, *args, **kwargs):
+        """
+        Return form data as kwargs for import_data.
+        """
+        form = kwargs.get('form')
+        if form:
+            return form.cleaned_data
+        return {}
+
+    def get_confirm_form_initial(self, request, import_form):
+        initial = super().get_confirm_form_initial(request, import_form)
+        # Pass on values from the import form to the confirm form (if provided)
+        if import_form:
+            initial['deal'] = import_form.cleaned_data['deal']
+            initial['work_type'] = import_form.cleaned_data['work_type']
+        return initial
 
 
 class IntTaskAdmin(admin.ModelAdmin):

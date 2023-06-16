@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'admin_totals',
     'bootstrap_modal_forms',
+    'import_export',
 ]
 
 MIDDLEWARE = [
