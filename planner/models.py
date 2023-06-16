@@ -41,6 +41,7 @@ def avatar_directory_path(instance, filename):
 class Construction(models.Model):
 
     name = models.CharField('Тип конструкції', max_length=100, unique=True)
+    name_eng = models.CharField('Construction', max_length=100, blank=True, null=True)
     description = models.CharField('Опис', max_length=255, blank=True, null=True)
 
     class Meta:
