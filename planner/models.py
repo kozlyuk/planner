@@ -1363,7 +1363,7 @@ class OrderPayment(PaymentBase):
             # Set creator
             self.creator = get_current_user()
             # reset approving when advance paid
-            if self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
+            if self.order and self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
                 self.order.approved_date = None
                 self.order.approved_by = None
                 self.order.pay_date = None

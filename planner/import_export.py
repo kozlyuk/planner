@@ -89,7 +89,7 @@ class PaymentResource(resources.ModelResource):
         except:
             pass
 
-        purpose_nums = list(set(re.findall('[0-9-/]{5,15}', row["purpose"])))
+        purpose_nums = list(set(re.findall('[0-9-/№]{5,15}', row["purpose"])))
         if row["Кредит"] and purpose_nums and company and customer:
             deals = Deal.objects.exclude(pay_status=Deal.PaidUp) \
                                 .filter(company=company, customer=customer) \
@@ -116,7 +116,7 @@ class OrderPaymentResource(resources.ModelResource):
     class Meta:
         model = OrderPayment
         import_id_fields = ['doc_number']
-        fields = ['date', 'value', 'purpose', 'doc_number', 'deal', 'payer', 'receiver']
+        fields = ['date', 'value', 'purpose', 'doc_number', 'order', 'payer', 'receiver']
         skip_unchanged = True
         # report_skipped = False
 
@@ -136,13 +136,13 @@ class OrderPaymentResource(resources.ModelResource):
         except:
             pass
 
-        purpose_nums = list(set(re.findall('[0-9-/]{5,15}', row["purpose"])))
+        purpose_nums = list(set(re.findall('[0-9-/№]{5,15}', row["purpose"])))
         if row["Дебет"] and purpose_nums and company and contractor:
-            orders = Order.objects.exclude(pay_status=Deal.PaidUp) \
+            orders = Order.objects.exclude(pay_status=Order.PaidUp) \
                                   .filter(company=company, contractor=contractor) \
-                                  .filter(reduce(operator.and_, (Q(number__contains=x) for x in purpose_nums)))
+                                  .filter(reduce(operator.and_, (Q(deal_number__contains=x) for x in purpose_nums)))
             if orders.count() == 1:
-                row["deal"] = orders.first().pk
+                row["order"] = orders.first().pk
 
     def skip_row(self, instance, original, row, import_validation_errors=None):
         """ skip some rows """
