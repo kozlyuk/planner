@@ -15,8 +15,9 @@ from import_export.admin import ImportMixin
 
 from .models import Project, Employee, Customer, \
                     Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
-                    IntTask, Contractor, Order, Company, Construction, SubTask
-from .import_export import TaskResource, CustomImportForm, CustomConfirmImportForm
+                    IntTask, Contractor, Order, Company, Construction, SubTask, \
+                    Payment, OrderPayment, IgnoreEDRPOU, ActOfAcceptance
+from .import_export import TaskResource, CustomImportForm, CustomConfirmImportForm, PaymentResource
 
 class SubTasksInline(admin.TabularInline):
     model = SubTask
@@ -94,7 +95,7 @@ class CustomerAdmin(admin.ModelAdmin):
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
                            ('requisites'),
-                           ('legal_description'),
+                           ('legal_description', 'edrpou'),
                            ('legal'),
                            ('plan_reserve'),
                            ('deal_template'),
@@ -109,6 +110,11 @@ class CustomerAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
+
+
+class IgnoreEDRPOUInline(admin.TabularInline):
+    model = IgnoreEDRPOU
+    extra = 0
 
 
 class CompanyAdmin(admin.ModelAdmin):
@@ -126,6 +132,7 @@ class CompanyAdmin(admin.ModelAdmin):
                            ('active'),
                            ]})
     ]
+    inlines = [IgnoreEDRPOUInline]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -752,7 +759,7 @@ class SubTaskAdmin(admin.ModelAdmin):
     search_fields = ['name', 'project_type__project_type', 'project_type__price_code']
 
 
-class ExecutionAdmin(ModelAdminTotals):
+class ExecutionAdmin(admin.ModelAdmin):
     list_display = ['executor', 'task', 'subtask', 'part', 'exec_status',
                     'actual_start', 'actual_finish', 'actual_duration']
     readonly_fields = ["task", "subtask"]
@@ -762,9 +769,53 @@ class ExecutionAdmin(ModelAdminTotals):
     ordering = ['-actual_finish']
 
 
+class PaymentAdmin(ImportMixin, ModelAdminTotals):
+    resource_classes = [PaymentResource]
+    from_encoding = 'windows-1251'
+
+    list_display = ['date', 'value', 'deal', 'purpose', 'linked', 'doc_number']
+    search_fields = ['deal__number', 'act_of_acceptance__number', 'doc_number', 'purpose']
+    readonly_fields = ["creator"]
+    list_filter = ['linked', ('deal__customer', RelatedDropdownFilter)]
+    date_hierarchy = 'date'
+    list_totals = [('value', Sum)]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        deals = Deal.objects.all()
+        if obj is None or obj.deal and obj.deal.pay_status != Deal.PaidUp:
+            deals = deals.exclude(pay_status=Deal.PaidUp)
+        if obj and obj.payer:
+            deals = deals.filter(customer=obj.payer)
+        if obj and obj.receiver:
+            deals = deals.filter(company=obj.receiver)
+        form.base_fields['deal'].queryset = deals.order_by('-creation_date')
+
+        if obj is None or obj.payer and obj.payer.active != False:
+            form.base_fields['payer'].queryset = Customer.objects.filter(active=True)
+
+        if obj is None or obj.receiver and obj.receiver.active != False:
+            form.base_fields['receiver'].queryset = Company.objects.filter(active=True)
+
+        if obj and obj.deal:
+            form.base_fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.filter(deal=obj.deal)
+        else:
+            form.base_fields['act_of_acceptance'].queryset = ActOfAcceptance.objects.none()
+
+        return form
+
+class OrderPaymentAdmin(ModelAdminTotals):
+    list_display = ['date', 'value', 'order', 'purpose', 'linked']
+    readonly_fields = ['order']
+    search_fields = ['order__number', 'order__contractor__name', 'order__contractor__edrpou']
+    list_filter = ['linked', ('order__contractor', RelatedDropdownFilter)]
+    date_hierarchy = 'date'
+    list_totals = [('value', Sum)]
+
+
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
-admin.site.disable_action('delete_selected')
+# admin.site.disable_action('delete_selected')
 
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Employee, EmployeeAdmin)
@@ -781,3 +832,5 @@ admin.site.register(Construction)
 admin.site.register(WorkType)
 admin.site.register(SubTask, SubTaskAdmin)
 admin.site.register(Execution, ExecutionAdmin)
+admin.site.register(Payment, PaymentAdmin)
+admin.site.register(OrderPayment, OrderPaymentAdmin)

@@ -659,6 +659,7 @@ class PaymentBase(ModelDiffMixin, models.Model):
     purpose = models.CharField('Призначення платежу', max_length=255, blank=True)
     doc_number = models.CharField('Документ', max_length=10, blank=True)
     comment = models.CharField('Коментар', blank=True, max_length=255)
+    linked = models.BooleanField('Розпізнаний', default=False)
     # Creating information
     creation_date = models.DateField(auto_now_add=True)
 
@@ -667,9 +668,11 @@ class PaymentBase(ModelDiffMixin, models.Model):
 
 
 class Payment(PaymentBase):
-    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT)
+    deal = models.ForeignKey(Deal, verbose_name='Договір', on_delete=models.PROTECT, blank=True, null=True)
     act_of_acceptance = models.ForeignKey(ActOfAcceptance, verbose_name='Акт виконаних робіт',
                                           blank=True, null=True, on_delete=models.SET_NULL)
+    payer = models.ForeignKey(Customer, verbose_name='Платник', on_delete=models.PROTECT, blank=True, null=True)
+    receiver = models.ForeignKey(Company, verbose_name='Отримувач', on_delete=models.PROTECT, blank=True, null=True)
 
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив', related_name='peyment_creators', on_delete=models.PROTECT)
@@ -706,6 +709,20 @@ class Payment(PaymentBase):
         if not self.pk:
             # Set creator
             self.creator = get_current_user()
+
+        # Autofill payer and receiver
+        if self.deal:
+            if not self.payer:
+                self.payer = self.deal.customer
+            if not self.receiver:
+                self.receiver = self.deal.company
+
+        # Check if linked
+        if self.deal:
+            self.linked = True
+        else:
+            self.linked = False
+
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -1303,7 +1320,9 @@ class Order(ModelDiffMixin, models.Model):
 
 
 class OrderPayment(PaymentBase):
-    order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, verbose_name='Замовлення', on_delete=models.PROTECT, blank=True, null=True)
+    payer = models.ForeignKey(Company, verbose_name='Платник', on_delete=models.PROTECT, blank=True, null=True)
+    receiver = models.ForeignKey(Contractor, verbose_name='Отримувач', on_delete=models.PROTECT, blank=True, null=True)
     # Creating information
     creator = models.ForeignKey(User, verbose_name='Створив',
                                 related_name='order_peyment_creators',
@@ -1344,6 +1363,20 @@ class OrderPayment(PaymentBase):
                 self.order.approved_by = None
                 self.order.pay_date = None
                 self.order.save()
+
+        # Autofill payer and receiver
+        if self.order:
+            if not self.receiver:
+                self.payer = self.order.contractor
+            if not self.payer:
+                self.payer = self.order.company
+
+        # Check if linked
+        if self.order:
+            self.linked = True
+        else:
+            self.linked = False
+
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -1675,6 +1708,21 @@ class Vacation(ModelDiffMixin, models.Model):
         timeplanner = TimePlanner(self.employee)
         timeplanner.recalc_queue()
 
+
+class IgnoreEDRPOU(models.Model):
+
+    company = models.ForeignKey(Company, verbose_name='Компанія', on_delete=models.CASCADE)
+    edrpou = models.CharField('ЄДРПОУ', max_length=10, blank=True)
+    description = models.CharField('Опис', max_length=255, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('company', 'edrpou')
+        verbose_name = 'Ігнорувати ЄДРПОУ'
+        verbose_name_plural = 'Ігнорувати ЄДРПОУ'
+        ordering = ['description']
+
+    def __str__(self):
+        return self.description
 
 # class Plan(models.Model):
 

@@ -1,12 +1,17 @@
+import re
+import operator
+from functools import reduce
+
+from django.db.models import Q
+from django import forms
+from crum import get_current_user
 from import_export.forms import ImportForm, ConfirmImportForm
 from import_export import resources
 from import_export.fields import Field
 from import_export.widgets import DateWidget
-from crum import get_current_user
-from django import forms
 
-from .models import Task, Project, Employee, Deal, WorkType, Construction
-
+from .models import Task, Project, Employee, Deal, WorkType, Construction, \
+                    Payment, Company, Customer
 
 
 class TaskResource(resources.ModelResource):
@@ -54,3 +59,48 @@ class CustomConfirmImportForm(ConfirmImportForm):
     work_type = forms.ModelChoiceField(
         queryset=WorkType.objects.all(),
         required=True)
+
+
+class PaymentResource(resources.ModelResource):
+
+    date = Field(attribute='date', column_name='date',
+        widget=DateWidget(format='%d.%m.%Y'))
+
+    class Meta:
+        model = Payment
+        import_id_fields = ['doc_number']
+        fields = ['date', 'value', 'purpose', 'doc_number', 'deal', 'payer', 'receiver']
+        skip_unchanged = True
+        # report_skipped = False
+
+    def before_import_row(self, row, row_number=None, **kwargs):
+        """ prepare rows for import """
+        row["date"] = row["Дата операції"].split()[0]
+        row["value"] = row["Кредит"] or row["Дебет"]
+        row["purpose"] = row["Призначення платежу"]
+        row["doc_number"] = row["Документ"]
+        try:
+            customer = Customer.objects.get(edrpou=row["ЄДРПОУ кореспондента"])
+            row["payer"] = customer.pk
+            company = Company.objects.get(edrpou=row["ЄДРПОУ"])
+            row["receiver"] = company.pk
+        except:
+            row["payer"] = row["Кореспондент"]
+
+        purpose_nums = list(set(re.findall('[0-9-/]{5,15}', row["purpose"])))
+        if row["Кредит"] and purpose_nums:
+            deals = Deal.objects.exclude(pay_status=Deal.PaidUp)
+            deals = deals.filter(company=company, customer=customer)
+            deals = deals.filter(reduce(operator.and_, (Q(number__contains=x) for x in purpose_nums)))
+            if deals.count() == 1:
+                row["deal"] = deals.first().pk
+
+    def skip_row(self, instance, original, row, import_validation_errors=None):
+        """ skip some rows """
+        if original.pk:
+            return True
+        if row["Кредит"] == '' or row["Документ"] == 'bn':
+            return True
+        if instance.receiver and instance.receiver.ignoreedrpou_set.filter(edrpou=row["ЄДРПОУ кореспондента"]).exists():
+            return True
+        return False
