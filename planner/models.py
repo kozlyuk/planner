@@ -1378,11 +1378,12 @@ class OrderPayment(PaymentBase):
         super().save(*args, **kwargs)
 
         # reset approving when advance paid and save for updating pay_status
-        if self.order and self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
-            self.order.approved_date = None
-            self.order.approved_by = None
-            self.order.pay_date = None
-        self.order.save(logging=False)
+        if self.order:
+            if self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
+                self.order.approved_date = None
+                self.order.approved_by = None
+                self.order.pay_date = None
+            self.order.save(logging=False)
 
     def delete(self, *args, **kwargs):
         title = f'{self.date} - {self.value}'
