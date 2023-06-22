@@ -727,7 +727,6 @@ class Payment(PaymentBase):
 
         # Automatic change Deal pay_status
         if self.deal:
-            self.deal.pay_status = self.deal.get_pay_status()
             self.deal.save(logging=False)
 
     def delete(self, *args, **kwargs):
@@ -1362,12 +1361,6 @@ class OrderPayment(PaymentBase):
         if not self.pk:
             # Set creator
             self.creator = get_current_user()
-            # reset approving when advance paid
-            if self.order and self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
-                self.order.approved_date = None
-                self.order.approved_by = None
-                self.order.pay_date = None
-                self.order.save()
 
         # Autofill payer and receiver
         if self.order:
@@ -1383,6 +1376,13 @@ class OrderPayment(PaymentBase):
             self.linked = False
 
         super().save(*args, **kwargs)
+
+        # reset approving when advance paid and save for updating pay_status
+        if self.order and self.order.pay_status == Order.AdvanceApproved and self.order.advance <= self.value < self.order.value:
+            self.order.approved_date = None
+            self.order.approved_by = None
+            self.order.pay_date = None
+        self.order.save(logging=False)
 
     def delete(self, *args, **kwargs):
         title = f'{self.date} - {self.value}'
