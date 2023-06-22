@@ -1365,7 +1365,7 @@ class OrderPayment(PaymentBase):
         # Autofill payer and receiver
         if self.order:
             if not self.receiver:
-                self.payer = self.order.contractor
+                self.receiver = self.order.contractor
             if not self.payer:
                 self.payer = self.order.company
 

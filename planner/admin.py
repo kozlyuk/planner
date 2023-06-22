@@ -820,18 +820,18 @@ class OrderPaymentAdmin(ImportMixin, ModelAdminTotals):
         form = super().get_form(request, obj, **kwargs)
         orders = Order.objects.all().exclude(pay_status=Order.PaidUp)
         if obj and obj.payer:
-            orders = orders.filter(customer=obj.payer)
+            orders = orders.filter(company=obj.payer)
         if obj and obj.receiver:
-            orders = orders.filter(company=obj.receiver)
+            orders = orders.filter(contractor=obj.receiver)
         if obj and obj.order and obj.order.pay_status == Order.PaidUp:
             orders = Order.objects.filter(pk=obj.order.pk)
         form.base_fields['order'].queryset = orders.order_by('-creation_date')
 
         if obj is None or obj.payer and obj.payer.active != False:
-            form.base_fields['payer'].queryset = Customer.objects.filter(active=True)
+            form.base_fields['payer'].queryset = Company.objects.filter(active=True)
 
         if obj is None or obj.receiver and obj.receiver.active != False:
-            form.base_fields['receiver'].queryset = Company.objects.filter(active=True)
+            form.base_fields['receiver'].queryset = Contractor.objects.filter(active=True)
 
         return form
 
