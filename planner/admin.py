@@ -17,7 +17,8 @@ from .models import Project, Employee, Customer, \
                     Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
                     IntTask, Contractor, Order, Company, Construction, SubTask, \
                     Payment, OrderPayment, IgnoreEDRPOU, ActOfAcceptance
-from .import_export import TaskResource, CustomImportForm, CustomConfirmImportForm, PaymentResource
+from .import_export import CustomImportForm, CustomConfirmImportForm, \
+                    TaskResource, PaymentResource, OrderPaymentResource
 
 class SubTasksInline(admin.TabularInline):
     model = SubTask
@@ -804,13 +805,35 @@ class PaymentAdmin(ImportMixin, ModelAdminTotals):
 
         return form
 
-class OrderPaymentAdmin(ModelAdminTotals):
-    list_display = ['date', 'value', 'order', 'purpose', 'linked']
-    readonly_fields = ['order']
-    search_fields = ['order__number', 'order__contractor__name', 'order__contractor__edrpou']
+class OrderPaymentAdmin(ImportMixin, ModelAdminTotals):
+    resource_classes = [OrderPaymentResource]
+    from_encoding = 'windows-1251'
+
+    list_display = ['date', 'value', 'order', 'purpose', 'linked', 'doc_number']
+    search_fields = ['order__deal_number', 'doc_number', 'purpose']
+    readonly_fields = ["creator"]
     list_filter = ['linked', ('order__contractor', RelatedDropdownFilter)]
     date_hierarchy = 'date'
     list_totals = [('value', Sum)]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        orders = Order.objects.all().exclude(pay_status=Order.PaidUp)
+        if obj and obj.payer:
+            orders = orders.filter(customer=obj.payer)
+        if obj and obj.receiver:
+            orders = orders.filter(company=obj.receiver)
+        if obj and obj.order and obj.order.pay_status == Order.PaidUp:
+            orders = Order.objects.filter(pk=obj.order.pk)
+        form.base_fields['order'].queryset = orders.order_by('-creation_date')
+
+        if obj is None or obj.payer and obj.payer.active != False:
+            form.base_fields['payer'].queryset = Customer.objects.filter(active=True)
+
+        if obj is None or obj.receiver and obj.receiver.active != False:
+            form.base_fields['receiver'].queryset = Company.objects.filter(active=True)
+
+        return form
 
 
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'

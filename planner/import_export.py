@@ -11,7 +11,7 @@ from import_export.fields import Field
 from import_export.widgets import DateWidget
 
 from .models import Task, Project, Employee, Deal, WorkType, Construction, \
-                    Payment, Company, Customer
+                    Company, Customer, Contractor, Payment, OrderPayment, Order
 
 
 class TaskResource(resources.ModelResource):
@@ -79,19 +79,21 @@ class PaymentResource(resources.ModelResource):
         row["value"] = row["Кредит"] or row["Дебет"]
         row["purpose"] = row["Призначення платежу"]
         row["doc_number"] = row["Документ"]
+        company = None
+        customer = None
         try:
             customer = Customer.objects.get(edrpou=row["ЄДРПОУ кореспондента"])
             row["payer"] = customer.pk
             company = Company.objects.get(edrpou=row["ЄДРПОУ"])
             row["receiver"] = company.pk
         except:
-            row["payer"] = row["Кореспондент"]
+            pass
 
         purpose_nums = list(set(re.findall('[0-9-/]{5,15}', row["purpose"])))
-        if row["Кредит"] and purpose_nums:
-            deals = Deal.objects.exclude(pay_status=Deal.PaidUp)
-            deals = deals.filter(company=company, customer=customer)
-            deals = deals.filter(reduce(operator.and_, (Q(number__contains=x) for x in purpose_nums)))
+        if row["Кредит"] and purpose_nums and company and customer:
+            deals = Deal.objects.exclude(pay_status=Deal.PaidUp) \
+                                .filter(company=company, customer=customer) \
+                                .filter(reduce(operator.and_, (Q(number__contains=x) for x in purpose_nums)))
             if deals.count() == 1:
                 row["deal"] = deals.first().pk
 
@@ -102,5 +104,52 @@ class PaymentResource(resources.ModelResource):
         if row["Кредит"] == '' or row["Документ"] == 'bn':
             return True
         if instance.receiver and instance.receiver.ignoreedrpou_set.filter(edrpou=row["ЄДРПОУ кореспондента"]).exists():
+            return True
+        return False
+
+
+class OrderPaymentResource(resources.ModelResource):
+
+    date = Field(attribute='date', column_name='date',
+        widget=DateWidget(format='%d.%m.%Y'))
+
+    class Meta:
+        model = OrderPayment
+        import_id_fields = ['doc_number']
+        fields = ['date', 'value', 'purpose', 'doc_number', 'deal', 'payer', 'receiver']
+        skip_unchanged = True
+        # report_skipped = False
+
+    def before_import_row(self, row, row_number=None, **kwargs):
+        """ prepare rows for import """
+        row["date"] = row["Дата операції"].split()[0]
+        row["value"] = row["Кредит"] or row["Дебет"]
+        row["purpose"] = row["Призначення платежу"]
+        row["doc_number"] = row["Документ"]
+        company = None
+        contractor = None
+        try:
+            company = Company.objects.get(edrpou=row["ЄДРПОУ"])
+            row["payer"] = company.pk
+            contractor = Contractor.objects.get(edrpou=row["ЄДРПОУ кореспондента"])
+            row["receiver"] = contractor.pk
+        except:
+            pass
+
+        purpose_nums = list(set(re.findall('[0-9-/]{5,15}', row["purpose"])))
+        if row["Дебет"] and purpose_nums and company and contractor:
+            orders = Order.objects.exclude(pay_status=Deal.PaidUp) \
+                                  .filter(company=company, contractor=contractor) \
+                                  .filter(reduce(operator.and_, (Q(number__contains=x) for x in purpose_nums)))
+            if orders.count() == 1:
+                row["deal"] = orders.first().pk
+
+    def skip_row(self, instance, original, row, import_validation_errors=None):
+        """ skip some rows """
+        if original.pk:
+            return True
+        if row["Дебет"] == '' or row["Документ"] == 'bn':
+            return True
+        if instance.payer and instance.payer.ignoreedrpou_set.filter(edrpou=row["ЄДРПОУ кореспондента"]).exists():
             return True
         return False
