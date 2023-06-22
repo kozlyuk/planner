@@ -782,13 +782,13 @@ class PaymentAdmin(ImportMixin, ModelAdminTotals):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        deals = Deal.objects.all()
-        if obj is None or obj.deal and obj.deal.pay_status != Deal.PaidUp:
-            deals = deals.exclude(pay_status=Deal.PaidUp)
+        deals = Deal.objects.all().exclude(pay_status=Deal.PaidUp)
         if obj and obj.payer:
             deals = deals.filter(customer=obj.payer)
         if obj and obj.receiver:
             deals = deals.filter(company=obj.receiver)
+        if obj and obj.deal and obj.deal.pay_status == Deal.PaidUp:
+            deals = Deal.objects.filter(pk=obj.deal.pk)
         form.base_fields['deal'].queryset = deals.order_by('-creation_date')
 
         if obj is None or obj.payer and obj.payer.active != False:

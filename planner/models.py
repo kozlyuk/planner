@@ -725,6 +725,11 @@ class Payment(PaymentBase):
 
         super().save(*args, **kwargs)
 
+        # Automatic change Deal pay_status
+        if self.deal:
+            self.deal.pay_status = self.deal.get_pay_status()
+            self.deal.save(logging=False)
+
     def delete(self, *args, **kwargs):
         title = f'{self.date} - {self.value}'
         log(user=get_current_user(),
