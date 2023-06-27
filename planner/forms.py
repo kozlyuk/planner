@@ -103,8 +103,8 @@ class EmployeeForm(forms.ModelForm):
 class DealFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        customer = list(Customer.objects.all().values_list('pk', 'name'))
-        company = list(Company.objects.all().values_list('pk', 'name'))
+        customer = list(Customer.objects.filter(active=True).values_list('pk', 'name'))
+        company = list(Company.objects.filter(active=True).values_list('pk', 'name'))
         act_status = list(Deal.ACT_STATUS_CHOICES)
         pay_status = list(Deal.PAYMENT_STATUS_CHOICES)
         exec_status = list(Deal.EXEC_STATUS_CHOICES)
@@ -283,7 +283,7 @@ class TaskFilterForm(forms.Form):
         exec_status = list(Task.EXEC_STATUS_CHOICES)
         owners = list(Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
                                       .values_list('pk', 'name'))
-        customers = list(Customer.objects.all().values_list('pk', 'name'))
+        customers = list(Customer.objects.filter(active=True).values_list('pk', 'name'))
         constructions = list(Construction.objects.all().values_list('pk', 'name'))
         work_types = list(WorkType.objects.all().values_list('pk', 'name'))
 
