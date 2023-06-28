@@ -165,6 +165,8 @@ class EmployeeChartRender(TemplateView):
         context['chart'] = Chart.objects.get(pk=self.request.GET.get('chart'))
         context['employees'] = Employee.objects.filter(pk__in=employees)
         context['year'] = self.request.GET.get('year')
+        context['request'] = self.request
+        context['perms'] = self.request.user.get_all_permissions()
         context_report = context_chart_render(context['chart'], context['year'], context['employees'])
         return {**context, **context_report}
 
