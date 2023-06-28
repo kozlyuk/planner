@@ -44,8 +44,10 @@
     <!-- MEDIA CSS -->
     {{ form.media.css }}
     <link href="{% static '/django_select2/select2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="{% static 'assets/global/css/custom.css' %}" rel="stylesheet" type="text/css"/>
-    <!-- snow enable -->
+    <!-- New Year enable -->
     <!-- <link href="{% static 'assets/apps/new_year/main.css' %}" rel="stylesheet" type="text/css"/> -->
     <!-- MEDIA CSS -->
     {% block css %}{% endblock css %}
@@ -69,19 +71,19 @@
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'home_page' %}">Головна</a></li>
                         {% endif %}
-                        {% if perms.planner.view_task %}
+                        {% if 'planner.view_task' in perms %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'task_list' %}">Проекти</a></li>
                         {% endif %}
-                        {% if perms.planner.view_execution %}
+                        {% if 'planner.view_execution' in perms %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'sprint_list' %}">Планування</a></li>
                         {% endif %}
-                        {% if perms.planner.view_deal %}
+                        {% if 'planner.view_deal' in perms %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'deal_list' %}">Договори</a></li>
                         {% endif %}
-                        {% if perms.planner.view_order %}
+                        {% if 'planner.view_order' in perms %}
                             <li><a style="color: #f1f3fa!important; font-size: calc(24px - 0.5vw)!important;"
                             href="{% url 'order_list' %}">Замовлення</a></li>
                         {% endif %}
@@ -95,23 +97,23 @@
                 {% if request.user.is_staff %}
                     <a class="link {% if request.resolver_match.url_name == 'home_page' %}active{% endif %} uppercase" href="{% url 'home_page' %}">Головна</a>
                 {% endif %}
-                {% if perms.planner.view_task %}
+                {% if 'planner.view_task' in perms %}
                     <a class="link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %} uppercase" href="{% url 'task_list' %}">Проекти</a>
                 {% endif %}
-                {% if perms.planner.view_execution %}
+                {% if 'planner.view_execution' in perms %}
                     <a class="link {% if request.resolver_match.url_name == 'sprint_list' %}active{% endif %} uppercase" href="{% url 'sprint_list' %}">Планування</a>
                 {% endif %}
-                {% if perms.planner.view_deal %}
+                {% if 'planner.view_deal' in perms %}
                     <a class="link {% if request.resolver_match.url_name == 'deal_list' %}active{% endif %} uppercase" href="{% url 'deal_list' %}">Договори</a>
                 {% endif %}
-                {% if perms.planner.view_order %}
+                {% if 'planner.view_order' in perms %}
                     <a class="link {% if request.resolver_match.url_name == 'order_list' %}active{% endif %} uppercase" href="{% url 'order_list' %}">Замовлення</a>
                 {% endif %}
                 {% if request.user.is_superuser or request.user|has_group:"Бухгалтери" %}
                 <div style="display: inline-block;">
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Аналітика<i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        {% if perms.analytics.view_report %}
+                        {% if 'analytics.view_report' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'report_form' %}active{% endif %} uppercase" href="{% url 'report_form' %}">Звіти</a>
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_chart_form' %}active{% endif %} uppercase" href="{% url 'customer_chart_form' %}">Фінаналітика</a>
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_chart_form' %}active{% endif %} uppercase" href="{% url 'employee_chart_form' %}">Продуктивність</a>
@@ -124,22 +126,22 @@
                 <div style="display: inline-block;">
                     <a class="link uppercase dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Інше <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        {% if perms.planner.view_receiver %}
+                        {% if 'planner.view_receiver' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'receiver_list' %}active{% endif %} uppercase" href="{% url 'receiver_list' %}">Адресати</a>
                         {% endif %}
-                        {% if perms.planner.view_project %}
+                        {% if 'planner.view_project' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'project_type_list' %}active{% endif %} uppercase" href="{% url 'project_type_list' %}">Види робіт</a>
                         {% endif %}
-                        {% if perms.planner.view_customer %}
+                        {% if 'planner.view_customer' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %} uppercase" href="{% url 'customer_list' %}">Замовники</a>
                         {% endif %}
-                        {% if perms.planner.view_company %}
+                        {% if 'planner.view_company' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'company_list' %}active{% endif %} uppercase" href="{% url 'company_list' %}">Компанії</a>
                         {% endif %}
-                        {% if perms.planner.view_contractor %}
+                        {% if 'planner.view_contractor' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'contractor_list' %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Контрагенти</a>
                         {% endif %}
-                        {% if perms.planner.view_employee %}
+                        {% if 'planner.view_employee' in perms %}
                             <a class="dropdown-item {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
                         {% endif %}
                     </div>
