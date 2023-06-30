@@ -100,11 +100,6 @@ def deal_status_color(status):
     return
 
 
-@register.simple_tag
-def exec_bonus(task, part):
-    return round(task.exec_bonus(part), 2)
-
-
 @register.simple_tag()
 def month_url(request_url, direction='next_month'):
     '''

@@ -43,7 +43,7 @@ def context_bonus_per_month(employee, period):
                         Task._meta.get_field('project_type').verbose_name,
                         Execution._meta.get_field('subtask').verbose_name,
                         Execution._meta.get_field('part').verbose_name,
-                        Task.exec_bonus.short_description,
+                        Execution.bonus.short_description,
                         Execution._meta.get_field('actual_finish').verbose_name,
                         ]
     executions = employee.executions_for_period(period)
@@ -51,7 +51,7 @@ def context_bonus_per_month(employee, period):
     executions_list = []
     for ex in executions:
         index += 1
-        exec_bonus = ex.task.exec_bonus(ex.part)
+        bonus = ex.bonus()
         executions_list.append([index,
                                 format_html('<a href="%s%s">%s</a>'
                                             % (settings.SITE_URL,
@@ -61,10 +61,10 @@ def context_bonus_per_month(employee, period):
                                 ex.task.project_type,
                                 ex.subtask.name,
                                 ex.part,
-                                exec_bonus,
+                                bonus,
                                 ex.actual_finish
                                 ])
-        bonuses += exec_bonus
+        bonuses += bonus
     # get inttasks
     labels_inttask = ["№",
                       IntTask._meta.get_field('task_name').verbose_name,

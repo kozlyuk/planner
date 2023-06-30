@@ -454,7 +454,7 @@ class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
         fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date', 'prev_exec_status',
-                  'actual_finish', 'planned_start', 'planned_finish', 'warning']
+                  'actual_finish', 'planned_start', 'planned_finish', 'warning', 'difficulty']
         widgets = {
             'executor': Select2Widget(),
             'subtask': Select2Widget(),
@@ -517,7 +517,11 @@ class ExecutorInlineForm(forms.ModelForm):
             if fixed_date and not planned_finish:
                 self.add_error('planned_finish', "Для того щоб зафіксувати дату - вкажіть її")
 
-            return cleaned_data
+    # def clean_difficulty(self):
+    #     data = self.cleaned_data['difficulty']
+    #     if not data:
+    #         raise ValidationError("Вкажіть будь ласка компанію")
+    #     return data
 
 
 class ExecutorsInlineFormset(BaseInlineFormSet):

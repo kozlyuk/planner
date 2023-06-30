@@ -991,23 +991,24 @@ class Task(ModelDiffMixin, models.Model):
         else:
             return False
 
+    # total task's costs
     def costs_total(self):
         costs = self.costs.all().aggregate(Sum('order__value')).get('order__value__sum')
         return costs if costs is not None else 0
-    # total task's costs
 
+    # executors part
     def exec_part(self):
         part = self.executors.all().aggregate(
             Sum('execution__part')).get('execution__part__sum')
         return part if part is not None else 0
-    # executors part
 
+    # outsourcing part
     def outsourcing_part(self):
         part = self.executors.filter(user__username__startswith='outsourcing').aggregate(Sum('execution__part'))\
             .get('execution__part__sum')
         return part if part is not None else 0
-    # outsourcing part
 
+    # owner part
     def owner_part(self):
         if self.project_type.owner_bonus > 0:
             if self.exec_part() > 100:
@@ -1016,28 +1017,24 @@ class Task(ModelDiffMixin, models.Model):
             return 100
         return 0
     owner_part.short_description = "Частка"
-    # owner part
 
+    # owner's bonus
     def owner_bonus(self):
         bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
             * self.project_type.owner_bonus / 10000 * self.difficulty_owner
         return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP) if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
-    # owner's bonus
 
-    def exec_bonus(self, part):
-        bonus = self.project_type.net_price() * part * self.project_type.executors_bonus / 10000  * self.difficulty_executor
-        return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP)
-    exec_bonus.short_description = "Бонус"
-    # executor's bonus
-
-    def executors_bonus(self):
-        return self.exec_bonus(self.exec_part())
     # executors bonuses
+    def executors_bonus(self):
+        bonuses = 0
+        for execution in self.executors.exclude(user__username__startswith='outsourcing'):
+            bonuses += execution.bonus()
+        return bonuses
 
-    def total_bonus(self):
-        return self.exec_bonus(self.exec_part() - self.outsourcing_part()) + self.owner_bonus()
     # total bonus
+    def total_bonus(self):
+        return self.executors_bonus() + self.owner_bonus()
 
     # list of executions for task_list
     def executions(self):
@@ -1477,6 +1474,7 @@ class Execution(ModelDiffMixin, models.Model):
     fixed_date = models.BooleanField('Зафіксувати дату', default=False)
     interruption = models.DurationField('Тривалість переривання', default=timedelta(0))
     actual_duration = models.DurationField('Тривалість виконання', default=timedelta(0))
+    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
@@ -1487,6 +1485,15 @@ class Execution(ModelDiffMixin, models.Model):
 
     def __str__(self):
         return self.task.__str__() + ' --> ' + self.executor.__str__()
+
+    # executor's bonus
+    def bonus(self):
+
+        bonus = self.task.project_type.net_price() * self.task.project_type.executors_bonus * self.part / 10000 \
+            * self.task.difficulty_executor * self.difficulty
+        return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP)
+    bonus.short_description = 'Бонус'
+
 
     @property
     def planned_duration(self):
