@@ -1028,7 +1028,7 @@ class Task(ModelDiffMixin, models.Model):
     # executors bonuses
     def executors_bonus(self):
         bonuses = 0
-        for execution in self.executors.exclude(user__username__startswith='outsourcing'):
+        for execution in self.execution_set.exclude(executor__user__username__startswith='outsourcing'):
             bonuses += execution.bonus()
         return bonuses
 
