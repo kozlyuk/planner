@@ -657,7 +657,7 @@ class PaymentBase(ModelDiffMixin, models.Model):
     date = models.DateField('Дата оплати')
     value = models.DecimalField('Сума, грн.', max_digits=8, decimal_places=2, default=0)
     purpose = models.CharField('Призначення платежу', max_length=255, blank=True)
-    doc_number = models.CharField('Документ', max_length=10, blank=True)
+    doc_number = models.CharField('Документ', max_length=20, blank=True)
     comment = models.CharField('Коментар', blank=True, max_length=255)
     linked = models.BooleanField('Розпізнаний', default=False)
     # Creating information
