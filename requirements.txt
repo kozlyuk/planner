@@ -11,7 +11,7 @@ django-stdimage == 5.3.0
 django-widget-tweaks
 django-dotenv
 mysqlclient == 2.1.1
-Pillow
+Pillow == 9.5.0
 redis
 celery
 django-celery-beat
