@@ -128,7 +128,7 @@ class CompanyAdmin(admin.ModelAdmin):
                            ('signatory_person', 'signatory_position'),
                            ('regulations', 'city'),
                            ('requisites'),
-                           ('legal_description'),
+                           ('legal_description', 'edrpou'),
                            ('legal'),
                            ('active'),
                            ]})
@@ -200,7 +200,8 @@ class ContractorAdmin(admin.ModelAdmin):
     list_filter = ['active']
     ordering = ['-active', 'name']
     fieldsets = [
-        (None, {'fields': [('name', 'contact_person'),
+        (None, {'fields': [('name', 'edrpou'),
+                           'contact_person',
                            ('phone', 'email'),
                            'requisites',
                            'active'

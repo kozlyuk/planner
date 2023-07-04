@@ -1375,7 +1375,7 @@ class ContractorDelete(DeleteView):
         contractor = context['contractor']
         context['go_back_url'] = reverse(
             'contractor_update', kwargs={'pk': contractor.pk})
-        context['main_header'] = 'Видалити адресат?'
+        context['main_header'] = 'Видалити контрагента?'
         context['header'] = 'Видалення контрагента "' + \
             str(contractor) + \
             '" вимагатиме видалення наступних пов\'язаних об\'єктів:'
