@@ -517,11 +517,12 @@ class ExecutorInlineForm(forms.ModelForm):
             if fixed_date and not planned_finish:
                 self.add_error('planned_finish', "Для того щоб зафіксувати дату - вкажіть її")
 
-    # def clean_difficulty(self):
-    #     data = self.cleaned_data['difficulty']
-    #     if not data:
-    #         raise ValidationError("Вкажіть будь ласка компанію")
-    #     return data
+
+    def clean_difficulty(self):
+        data = self.cleaned_data['difficulty']
+        if not data:
+            data = 1
+        return data
 
 
 class ExecutorsInlineFormset(BaseInlineFormSet):

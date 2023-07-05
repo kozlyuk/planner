@@ -1474,7 +1474,7 @@ class Execution(ModelDiffMixin, models.Model):
     fixed_date = models.BooleanField('Зафіксувати дату', default=False)
     interruption = models.DurationField('Тривалість переривання', default=timedelta(0))
     actual_duration = models.DurationField('Тривалість виконання', default=timedelta(0))
-    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1)
+    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1, blank=True)
     warning = models.CharField('Попередження', max_length=30, blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
