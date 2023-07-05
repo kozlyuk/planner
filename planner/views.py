@@ -658,6 +658,8 @@ class OrderUpdate(UpdateView):
                 form.save()
             if self.request.POST.get('save_add'):
                 return redirect('order_update', self.object.pk)
+            elif self.request.POST.get('copy'):
+                return redirect('order_copy', self.object.pk)
             elif self.request.POST.get('approve'):
                 form.instance.approve()
             elif self.request.POST.get('cancel_approval'):
@@ -673,6 +675,29 @@ class OrderCreate(CreateView):
     form_class = forms.OrderForm
     context_object_name = 'order'
     success_url = reverse_lazy('order_list')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            self.object = form.save()
+            if self.request.POST.get('save_add'):
+                return redirect('order_update', self.object.pk)
+            else:
+                return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class OrderCopy(UpdateView):
+    model = Order
+    form_class = forms.OrderForm
+    context_object_name = 'order'
+    success_url = reverse_lazy('order_list')
+
+    def get_object(self):
+        order = Order.objects.get(pk=self.kwargs['pk'])
+        order.pk = None
+        return order
 
     def form_valid(self, form):
         if form.is_valid():

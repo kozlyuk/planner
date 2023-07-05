@@ -37,6 +37,7 @@ urlpatterns = [
     path('order/', views.OrderList.as_view(), name='order_list'),
     path('order/<int:pk>/change/', views.OrderUpdate.as_view(), name='order_update'),
     path('order/add/', views.OrderCreate.as_view(), name='order_add'),
+    path('order/<int:pk>/copy/', views.OrderCopy.as_view(), name='order_copy'),
     path('order/<int:pk>/delete/', views.OrderDelete.as_view(), name='order_delete'),
     path('order/approve/<int:pk>', views.OrderApprove.as_view(), name='order_approve'),
 

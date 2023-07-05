@@ -271,6 +271,12 @@
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Зберегти і продовжити редагування
                                             </button>
+                                            {% if order.pk %}
+                                                <button type="submit" name="copy" value="True"
+                                                    class="btn dark btn-sm btn-outline sbold uppercase mr-2"
+                                                    style="float: right;">Копіювати зпмовлення
+                                                </button>
+                                            {% endif %}
                                             {% if order.can_approve %}
                                                 <button type="submit" name="approve" value="True"
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
