@@ -151,7 +151,7 @@
                 {% if request.user.is_staff %}
                     <a class="link uppercase" href="{% url 'colleague_list' %}"><i class="fas fa-users"></i></a>
                 {% endif %}
-                {% if request.user.is_superuser %}
+                {% if request.user.is_superuser or request.user|has_group:"ГІПи" or request.user|has_group:"Бухгалтери" or request.user|has_group:"Секретарі" %}
                     <a class="link uppercase" href="{% url 'admin:index' %}"><i class="fas fa-tools"></i></a>
                 {% endif %}
             </nav>
