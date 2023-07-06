@@ -271,7 +271,7 @@
                                                 class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                 style="float: right;">Зберегти і продовжити редагування
                                             </button>
-                                            {% if order.pk %}
+                                            {% if order.pk and not order.task %}
                                                 <button type="submit" name="copy" value="True"
                                                     class="btn dark btn-sm btn-outline sbold uppercase mr-2"
                                                     style="float: right;">Копіювати зпмовлення

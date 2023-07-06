@@ -697,6 +697,11 @@ class OrderCopy(UpdateView):
     def get_object(self):
         order = Order.objects.get(pk=self.kwargs['pk'])
         order.pk = None
+        order.pay_status = Order.NotPaid
+        order.pay_date = None
+        order.approved_date = None
+        order.approved_by = None
+        order.invoice = None
         return order
 
     def form_valid(self, form):
