@@ -17,8 +17,9 @@ from .models import Project, Employee, Customer, \
                     Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
                     IntTask, Contractor, Order, Company, Construction, SubTask, \
                     Payment, OrderPayment, IgnoreEDRPOU, ActOfAcceptance
-from .import_export import CustomImportForm, CustomConfirmImportForm, \
+from .import_export import CSV, CustomImportForm, CustomConfirmImportForm, \
                     TaskResource, PaymentResource, OrderPaymentResource
+
 
 class SubTasksInline(admin.TabularInline):
     model = SubTask
@@ -781,6 +782,10 @@ class PaymentAdmin(ImportMixin, ModelAdminTotals):
     list_filter = ['linked', ('deal__customer', RelatedDropdownFilter)]
     date_hierarchy = 'date'
     list_totals = [('value', Sum)]
+
+    def get_import_formats(self):
+        self.formats[0] = CSV
+        return [f for f in self.formats if f().can_import()]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

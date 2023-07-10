@@ -1,5 +1,6 @@
 import re
 import operator
+import tablib
 from functools import reduce
 
 from django.db.models import Q
@@ -9,9 +10,18 @@ from import_export.forms import ImportForm, ConfirmImportForm
 from import_export import resources
 from import_export.fields import Field
 from import_export.widgets import DateWidget
+from import_export.formats import base_formats
 
 from .models import Task, Project, Employee, Deal, WorkType, Construction, \
                     Company, Customer, Contractor, Payment, OrderPayment, Order
+
+
+class CSV(base_formats.CSV):
+
+    def create_dataset(self, in_stream, **kwargs):
+        kwargs['delimiter'] = ';'
+        kwargs['format'] = 'csv'
+        return tablib.import_set(in_stream, **kwargs)
 
 
 class TaskResource(resources.ModelResource):
