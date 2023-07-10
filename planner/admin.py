@@ -822,6 +822,10 @@ class OrderPaymentAdmin(ImportMixin, ModelAdminTotals):
     date_hierarchy = 'date'
     list_totals = [('value', Sum)]
 
+    def get_import_formats(self):
+        self.formats[0] = CSV
+        return [f for f in self.formats if f().can_import()]
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         orders = Order.objects.all().exclude(pay_status=Order.PaidUp)
