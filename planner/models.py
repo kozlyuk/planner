@@ -918,6 +918,7 @@ class Task(ModelDiffMixin, models.Model):
                 Execution.objects.create(task=self,
                                          subtask=subtask,
                                          part = subtask.part,
+                                         difficulty = subtask.difficulty,
                                          )
 
     def delete(self, *args, **kwargs):
@@ -1073,6 +1074,7 @@ class SubTask(models.Model):
     name = models.CharField('Назва робіт', max_length=100)
     part = models.PositiveSmallIntegerField('Частка від проекту', default=0, validators=[MaxValueValidator(100)])
     duration = models.DurationField('Тривалість виконання', default=timedelta(hours=8))
+    difficulty = models.DecimalField('Коефіцієнт складності', max_digits=3, decimal_places=2, default=1)
     base = models.BooleanField('Базова', default=False)
     add_to_schedule = models.BooleanField('Додавати в календар', default=True)
     simultaneous_execution = models.BooleanField('Одночасне виконання', default=False)

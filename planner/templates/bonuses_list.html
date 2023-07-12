@@ -25,14 +25,9 @@
                     <table id="exec_bonuses" class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">№</th>
-                                <th scope="col">Шифр об'єкту</th>
-                                <th scope="col">Адреса об'єкту</th>
-                                <th scope="col">Тип проекту</th>
-                                <th scope="col">Назва робіт</th>
-                                <th scope="col">%</th>
-                                <th scope="col">Бонус</th>
-                                <th scope="col">Дата виконання</th>
+                                {% for label in labels_execution %}
+                                    <th scope="col">{{ label }}</th>
+                                {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
@@ -53,14 +48,9 @@
                     <table style="overflow-x:scroll" id="owner_bonuses" class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">№</th>
-                                <th scope="col">Шифр об'єкту</th>
-                                <th scope="col">Адреса об'єкту</th>
-                                <th scope="col">Тип проекту</th>
-                                <th scope="col">%</th>
-                                <th scope="col">Бонус</th>
-                                <th scope="col">Дата виконання</th>
-                                <th scope="col">Дата відправки</th>
+                                {% for label in labels_task %}
+                                    <th scope="col">{{ label }}</th>
+                                {% endfor %}
                             </tr>
                         </thead>
                         <tbody>

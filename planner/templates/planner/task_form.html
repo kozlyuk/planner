@@ -190,11 +190,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            {% if request.user.is_superuser %}
-                                                                {{ form.difficulty_owner|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% else %}
-                                                                {{ form.difficulty_owner|attr:"readonly style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% endif %}
+                                                            {{ form.difficulty_owner|attr:"readonly style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.difficulty_owner.errors}}
                                                             </div>
@@ -207,11 +203,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            {% if request.user.is_superuser %}
-                                                                {{ form.difficulty_executor|attr:"style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% else %}
-                                                                {{ form.difficulty_executor|attr:"readonly style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                            {% endif %}
+                                                            {{ form.difficulty_executor|attr:"readonly style: width:100%; padding-left: 8px"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                             <div class="invalid-feedback">
                                                                 {{form.difficulty_executor.errors}}
                                                             </div>
@@ -557,11 +549,7 @@
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {% if request.user.is_superuser %}
-                                                        {{ form.difficulty|attr:"style: height:28px; text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% else %}
-                                                        {{ form.difficulty|attr:"readonly style: height:28px; text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% endif %}
+                                                    {{ form.difficulty|attr:"readonly style: height:28px; text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{form.difficulty.errors}}
                                                     </div>
@@ -662,11 +650,7 @@
                                                     </div>
                                                 </th>
                                                 <th class="pl-1 pr-1">
-                                                    {% if request.user.is_superuser %}
-                                                        {{ executors_formset.empty_form.difficulty|attr:"style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% else %}
-                                                        {{ executors_formset.empty_form.difficulty|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
-                                                    {% endif %}
+                                                    {{ executors_formset.empty_form.difficulty|attr:"readonly style: text-align: center; width:100%; padding-left: 5px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                     <div class="invalid-feedback">
                                                         {{executors_formset.empty_form.difficulty.errors}}
                                                     </div>

@@ -43,6 +43,7 @@ def context_bonus_per_month(employee, period):
                         Task._meta.get_field('project_type').verbose_name,
                         Execution._meta.get_field('subtask').verbose_name,
                         Execution._meta.get_field('part').verbose_name,
+                        Execution._meta.get_field('difficulty').verbose_name,
                         Execution.bonus.short_description,
                         Execution._meta.get_field('actual_finish').verbose_name,
                         ]
@@ -61,6 +62,7 @@ def context_bonus_per_month(employee, period):
                                 ex.task.project_type,
                                 ex.subtask.name,
                                 ex.part,
+                                ex.difficulty,
                                 bonus,
                                 ex.actual_finish
                                 ])

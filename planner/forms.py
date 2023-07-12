@@ -484,7 +484,6 @@ class ExecutorInlineForm(forms.ModelForm):
             elif self.instance.exec_status == Execution.Done:
                 self.fields['exec_status'].choices = [('HD', 'Виконано'), ('IW', 'В черзі')]
 
-
     def clean(self):
         if self.instance.pk and self.changed_data:
             if self.instance.is_active() == False and not get_current_user().is_superuser:
@@ -517,11 +516,10 @@ class ExecutorInlineForm(forms.ModelForm):
             if fixed_date and not planned_finish:
                 self.add_error('planned_finish', "Для того щоб зафіксувати дату - вкажіть її")
 
-
     def clean_difficulty(self):
         data = self.cleaned_data['difficulty']
-        if not data:
-            data = 1
+        if 'subtask' in self.changed_data:
+            data = self.cleaned_data['subtask'].difficulty
         return data
 
 
@@ -950,7 +948,7 @@ class EmployeeFilterForm(forms.Form):
 class SubTasksInlineForm(forms.ModelForm):
     class Meta:
         model = SubTask
-        fields = ['name', 'part', 'duration', 'base', 'add_to_schedule',
+        fields = ['name', 'part', 'duration', 'difficulty', 'base', 'add_to_schedule',
                   'simultaneous_execution', 'check_required', 'show_to_customer']
         widgets = {
             'part': forms.TextInput(attrs={'style' : 'height:34px'}),
