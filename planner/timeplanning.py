@@ -138,9 +138,9 @@ class TimePlanner():
                                                        task__exec_status__in=[self.InProgress, self.Done, self.Sent],
                                                        subtask__add_to_schedule=True
                                                        ) \
-                                               .order_by('planned_finish').last()
-        if last_task and last_task.planned_finish:
-            return self.planned_finish_with_interruption(last_task)
+                                               .order_by('actual_finish').last()
+        if last_task and last_task.actual_finish:
+            return last_task.actual_finish
         return datetime.now().replace(hour=9,minute=0,second=0,microsecond=0)
 
     def recalc_queue(self):

@@ -75,7 +75,7 @@
                     {% status_change request.user task.pk task.exec_status %}
                 </td>
             {% endif %}
-            <td>{% none_date_check task.actual_finish %}</td>
+            <td>{% none_datetime_check task.actual_finish %}</td>
             <td>
                 <span class="badge badge-pill badge-{% task_overdue_color task.warning_select %} label-mini">
                     {{task.warning_select}}

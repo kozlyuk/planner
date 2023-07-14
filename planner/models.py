@@ -128,7 +128,7 @@ class Employee(models.Model):
 
     def executions_for_period(self, period):
         """ return queryset with executions for given month """
-        return self.execution_set.filter(exec_status=Execution.Done,
+        return self.execution_set.filter(exec_status__in=[Execution.OnChecking, Execution.Done],
                                          actual_finish__month=period.month,
                                          actual_finish__year=period.year)
 
@@ -1538,9 +1538,9 @@ class Execution(ModelDiffMixin, models.Model):
                 self.work_started = None
 
             # Automatic set actual_finish when Execution has done
-            if self.exec_status == self.Done and not self.actual_finish:
+            if self.exec_status in [self.OnChecking, self.Done] and not self.actual_finish:
                 self.actual_finish = datetime.now()
-            elif self.exec_status != self.Done and self.actual_finish:
+            elif self.exec_status not in [self.OnChecking, self.Done] and self.actual_finish:
                 self.actual_finish = None
 
             # Automatic set planned_finish when execution was not planned and has done
@@ -1739,22 +1739,20 @@ class IgnoreEDRPOU(models.Model):
     def __str__(self):
         return self.description
 
+
 # class Plan(models.Model):
 
-#     name = models.CharField('Назва плану', max_length=100)
-#     executors = models.ManyToManyField(Employee, through='Execution', related_name='tasks',
-#                                        verbose_name='Виконавці', blank=True)
-#     part = models.PositiveSmallIntegerField('Відсоток виконання', default=0, validators=[MaxValueValidator(100)])
-#     planned_start = models.DateField('Плановий початок робіт', blank=True, null=True)
-#     planned_finish = models.DateField('Планове закінчення робіт', blank=True, null=True)
-#     bonus = models.DecimalField('Бонус, грн.', max_digits=8, decimal_places=2, default=0)
-#     comment = models.TextField('Коментар', blank=True)
+#     plan_start = models.DateField('Початкова дата')
+#     plan_finish = models.DateField('Кінцева дата')
+#     tasks = models.ManyToManyField(Execution, verbose_name='Задачі', blank=True)
 #     creator = models.ForeignKey(User, verbose_name='Створив',
-#                                 related_name='inttask_creators', on_delete=models.PROTECT)
+#                                 related_name='plan_creators', on_delete=models.PROTECT)
 #     creation_date = models.DateField(auto_now_add=True)
 
 #     class Meta:
-#         unique_together = ('task_name', 'executor')
-#         verbose_name = 'Завдання'
-#         verbose_name_plural = 'Завдання'
-#         ordering = ['-exec_status', '-actual_finish']
+#         verbose_name = 'План'
+#         verbose_name_plural = 'Плани'
+#         ordering = ['-creation_date']
+
+#     def __str__(self):
+#         return f'{self.plan_start} - {self.plan_finish}'
