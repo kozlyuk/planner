@@ -141,6 +141,9 @@
                         {% if 'planner.view_contractor' in perms %}
                             <a class="dropdown-item {% if 'contractor' in request.resolver_match.url_name %}active{% endif %} uppercase" href="{% url 'contractor_list' %}">Контрагенти</a>
                         {% endif %}
+                        {% if 'planner.view_plan' in perms %}
+                            <a class="dropdown-item {% if 'plan' in request.resolver_match.url_name %}active{% endif %} uppercase" href="{% url 'plan_list' %}">Плани</a>
+                        {% endif %}
                         {% if 'planner.view_employee' in perms %}
                             <a class="dropdown-item {% if 'employee_list' in request.resolver_match.url_name %}active{% endif %} uppercase" href="{% url 'employee_list' %}">Працівники</a>
                         {% endif %}

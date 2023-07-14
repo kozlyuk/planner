@@ -119,3 +119,11 @@ for order in Order.objects.filter(pay_status='AP'):
     order.approved_by = user
     order.company = order.task.deal.company
     order.save(logging=False)
+
+
+from planner.models import Execution
+
+for execution in Execution.objects.filter(exec_status=Execution.Done, executor__user__username__startswith='outsourcing'):
+    execution.planned_start = execution.actual_start
+    execution.planned_finish = execution.actual_finish
+    execution.save()

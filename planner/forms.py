@@ -11,7 +11,7 @@ from crum import get_current_user
 from planner.DateTimeWidgets import MonthYearWidget
 
 from .models import ActOfAcceptance, Construction, Payment, SubTask, Task, Customer, Execution, Order, Sending, \
-                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType, OrderPayment, Invoice
+                    Deal, Employee, Project, Company, Receiver, Contractor, WorkType, OrderPayment, Invoice, Plan
 from html_templates.models import HTMLTemplate
 from .formatChecker import NotClearableFileInput, AvatarInput
 from .btnWidget import BtnWidget
@@ -453,7 +453,7 @@ class TaskForm(forms.ModelForm):
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
         model = Execution
-        fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date', 'prev_exec_status',
+        fields = ['executor', 'subtask', 'part', 'exec_status', 'fixed_date',
                   'actual_finish', 'planned_start', 'planned_finish', 'warning', 'difficulty']
         widgets = {
             'executor': Select2Widget(),
@@ -461,7 +461,6 @@ class ExecutorInlineForm(forms.ModelForm):
             'planned_start': SplitDateTimeWidget(),
             'planned_finish': SplitDateTimeWidget(),
             'DELETION_FIELD_NAME': forms.HiddenInput(),
-            'prev_exec_status': forms.HiddenInput()
         }
 
     def __init__(self, *args, method=None, employees=None, subtasks=None, **kwargs):
@@ -471,6 +470,8 @@ class ExecutorInlineForm(forms.ModelForm):
             if not (self.instance.executor and self.instance.executor.user.is_active == False):
                 self.fields['executor'].queryset = employees
             self.fields['subtask'].queryset = subtasks
+
+        if method != 'POST':
             if self.instance.exec_status == Execution.ToDo:
                 self.fields['exec_status'].choices = [('IW', 'В черзі'), ('IP', 'Виконується')]
             elif self.instance.exec_status == Execution.InProgress and self.instance.subtask.check_required:
@@ -480,9 +481,13 @@ class ExecutorInlineForm(forms.ModelForm):
             elif self.instance.exec_status == Execution.OnHold:
                 self.fields['exec_status'].choices = [('OH', 'Призупинено'), ('IW', 'В черзі')]
             elif self.instance.exec_status == Execution.OnChecking:
-                self.fields['exec_status'].choices = [('OC', 'На перевірці'), ('HD', 'Виконано'), ('IW', 'Коригувати')]
+                self.fields['exec_status'].choices = [('OC', 'На перевірці'), ('HD', 'Виконано'), ('CR', 'Коригувати')]
+            elif self.instance.exec_status == Execution.OnCorrection and self.instance.subtask.check_required:
+                self.fields['exec_status'].choices = [('CR', 'На коригуванні'), ('OC', 'На перевірці')]
+            elif self.instance.exec_status == Execution.OnCorrection:
+                self.fields['exec_status'].choices = [('CR', 'На коригуванні'), ('HD', 'Виконано')]
             elif self.instance.exec_status == Execution.Done:
-                self.fields['exec_status'].choices = [('HD', 'Виконано'), ('IW', 'В черзі')]
+                self.fields['exec_status'].choices = [('HD', 'Виконано'), ('CR', 'Коригувати')]
 
     def clean(self):
         if self.instance.pk and self.changed_data:
@@ -494,16 +499,13 @@ class ExecutorInlineForm(forms.ModelForm):
             if executor and exec_status==Execution.InProgress:
                 inprogress_exists = Execution.objects.filter(executor=executor,
                                                              exec_status=Execution.InProgress,
-                                                             task__exec_status__in=[Execution.ToDo, Execution.InProgress]) \
+                                                             task__exec_status__in=[Task.ToDo, Task.InProgress]) \
                                                      .exclude(pk=self.instance.pk) \
                                                      .exists()
                 if not self.instance.subtask.simultaneous_execution and \
-                    executor.position != "аутсорсинг" and \
+                    executor.user.is_staff and \
                     inprogress_exists:
                         self.add_error('exec_status', "Виконавець виконує іншу задачу")
-
-            if 'exec_status' in self.changed_data:
-                cleaned_data['prev_exec_status'] = self.instance.exec_status
 
             # validate planned dates
             fixed_date = cleaned_data.get("fixed_date")
@@ -986,4 +988,15 @@ class TaskModelForm(BSModalModelForm):
 
         widgets = {
             'period': forms.SelectDateWidget(years=range(today - 2, today + 8))
+        }
+
+
+class PlanForm(forms.ModelForm):
+    class Meta:
+        model = Plan
+        fields = ['plan_start', 'plan_finish']
+
+        widgets = {
+            'plan_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'plan_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }

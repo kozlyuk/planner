@@ -16,7 +16,7 @@ from import_export.admin import ImportMixin
 from .models import Project, Employee, Customer, \
                     Receiver, Sending, Deal, Task, Execution, Vacation, WorkType, \
                     IntTask, Contractor, Order, Company, Construction, SubTask, \
-                    Payment, OrderPayment, IgnoreEDRPOU, ActOfAcceptance
+                    Payment, OrderPayment, IgnoreEDRPOU, ActOfAcceptance, Plan
 from .import_export import CSV, CustomImportForm, CustomConfirmImportForm, \
                     TaskResource, PaymentResource, OrderPaymentResource
 
@@ -846,6 +846,12 @@ class OrderPaymentAdmin(ImportMixin, ModelAdminTotals):
         return form
 
 
+class PlanAdmin(admin.ModelAdmin):
+    list_display = ['plan_start', 'plan_finish', 'creation_date', 'creator']
+    readonly_fields = ["creator", 'tasks']
+    date_hierarchy = 'plan_start'
+
+
 admin.AdminSite.site_header = 'Адміністратор проектів Ітел-Сервіс'
 admin.AdminSite.site_title = 'Itel-Service ERP'
 # admin.site.disable_action('delete_selected')
@@ -867,3 +873,4 @@ admin.site.register(SubTask, SubTaskAdmin)
 admin.site.register(Execution, ExecutionAdmin)
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(OrderPayment, OrderPaymentAdmin)
+admin.site.register(Plan, PlanAdmin)

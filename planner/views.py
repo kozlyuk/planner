@@ -22,7 +22,7 @@ from bootstrap_modal_forms.generic import BSModalUpdateView
 from .context import context_accounter, context_pm, context_projector
 from . import forms
 from .models import Task, Deal, Employee, Project, Execution, Receiver, Sending, Order,\
-                    Contractor, SubTask, ActOfAcceptance, IntTask, Customer, Company
+                    Contractor, SubTask, ActOfAcceptance, IntTask, Customer, Company, Plan
 from .filters import *
 from notice.models import Comment, create_comment
 from eventlog.models import Log
@@ -503,7 +503,6 @@ class ExecutionStatusChange(View):
     def get(self, request, *args, **kwargs):
         execution = Execution.objects.get(pk=kwargs['pk'])
         execution.exec_status = kwargs['status']
-        execution.prev_exec_status = kwargs['prev_status']
         execution.save()
         return redirect(reverse('sprint_list') + '?' + self.request.session.get('execution_query_string', ''))
 
@@ -816,6 +815,7 @@ class ReceiverCreate(CreateView):
         context['header_main'] = 'Додати адресат'
         context['back_btn_url'] = reverse('receiver_list')
         context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -833,6 +833,7 @@ class ReceiverUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'receiver_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -920,6 +921,7 @@ class ProjectCreate(CreateView):
         context['header_main'] = 'Додати вид робіт'
         context['back_btn_url'] = reverse('project_type_list')
         context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -936,6 +938,7 @@ class ProjectUpdate(UpdateView):
         context['header_main'] = 'Вид робіт'
         context['back_btn_url'] = reverse('project_type_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['confirm_btn_text'] = 'Зберегти'
         context['formset_name'] = 'Підзадачі'
 
         if self.request.POST:
@@ -1036,6 +1039,7 @@ class CustomerCreate(CreateView):
         context['header_main'] = 'Додати замовника'
         context['back_btn_url'] = reverse('customer_list')
         context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1053,6 +1057,7 @@ class CustomerUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'customer_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1128,6 +1133,7 @@ class CompanyCreate(CreateView):
         context['header_main'] = 'Додати команію'
         context['back_btn_url'] = reverse('company_list')
         context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1145,6 +1151,7 @@ class CompanyUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'company_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1273,6 +1280,7 @@ class EmployeeUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Користувач: ' + str(self.object.name)
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1374,6 +1382,7 @@ class ContractorCreate(CreateView):
         context['header_main'] = 'Додати контрагента'
         context['back_btn_url'] = reverse('contractor_list')
         context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1391,6 +1400,7 @@ class ContractorUpdate(UpdateView):
         context['back_btn_url'] = reverse(
             'contractor_delete', kwargs={'pk': name.pk})
         context['back_btn_text'] = 'Видалити'
+        context['confirm_btn_text'] = 'Зберегти'
         return context
 
 
@@ -1412,6 +1422,61 @@ class ContractorDelete(DeleteView):
         if self.object.order_set.exists():
             context['objects'] = self.object.order_set.all()
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class PlanList(ListView):
+    """ ListView for Plans.
+    Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
+    model = Plan
+    template_name = "planner/generic_list.html"
+    success_url = reverse_lazy('home_page')
+    paginate_by = 35
+
+    def get_queryset(self):  # todo args url
+        plans = Plan.objects.annotate(
+            url=Concat(F('pk'), Value('/change/'), output_field=CharField()),
+            ).values_list('plan_start', 'plan_finish', 'creation_date', 'creator', 'url')
+        return plans
+
+    def get_context_data(self, **kwargs):
+        request = self.request
+        context = super().get_context_data(**kwargs)
+        context['headers'] = [['plan_start', 'Початкова дата', 0],
+                              ['plan_finish', 'Кінцева дата', 0],
+                              ['creation_date', 'Дата створення', 0],
+                              ['creator', 'Створив', 0]]
+        context['search'] = False
+        context['filter'] = []
+        if request.user.has_perm('planner.add_contractor'):
+            context['add_url'] = reverse('plan_add')
+            context['add_help_text'] = 'Створити план'
+        context['header_main'] = 'Плани'
+        context['objects_count'] = Plan.objects.all().count()
+
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class PlanCreate(CreateView):
+    model = Plan
+    form_class = forms.PlanForm
+    template_name = "planner/generic_form.html"
+    success_url = reverse_lazy('plan_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['header_main'] = 'Створити план'
+        context['back_btn_url'] = reverse('plan_list')
+        context['back_btn_text'] = 'Відміна'
+        context['confirm_btn_text'] = 'Створити'
+        return context
+
+    # def form_valid(self, form):
+    #     self.object = form.save()
+    #     # do something with self.object
+    #     # remember the import: from django.http import HttpResponseRedirect
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class ExecutionUpdateModal(BSModalUpdateView):

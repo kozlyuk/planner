@@ -193,7 +193,7 @@ def send_monthly_report(period=None):
     """ Sending monthly report to employee """
 
     template_name = "bonuses_report.html"
-    employees = Employee.objects.exclude(user__username__startswith='outsourcing',
+    employees = Employee.objects.exclude(user__is_staff=True,
                                          user__is_active=True,
                                          )
 

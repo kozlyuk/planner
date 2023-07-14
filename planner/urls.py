@@ -43,7 +43,7 @@ urlpatterns = [
 
     #path('sprint/<int:year>/week/<int:week>/', views.SprintList.as_view(), name='sprint_list'),
     path('sprint/', views.SprintList.as_view(), name='sprint_list'),
-    path('execution/<int:pk>/status/<str:status>/<str:prev_status>/',
+    path('execution/<int:pk>/status/<str:status>/',
          views.ExecutionStatusChange.as_view(), name='execution_status_change'),
     path('execution/update/<int:pk>', views.ExecutionUpdateModal.as_view(), name='execution_update'),
 
@@ -83,6 +83,11 @@ urlpatterns = [
     path('employee/add', views.EmployeeCreate.as_view(), name='employee_add'),
     path('employee/<int:pk>/change/', views.EmployeeUpdate.as_view(), name='employee_update'),
     path('employee/change/', views.EmployeeSelfUpdate.as_view(), name='employee_self_update'),
+
+    path('plan/', views.PlanList.as_view(), name='plan_list'),
+    path('plan/add', views.PlanCreate.as_view(), name='plan_add'),
+    # path('company/<int:pk>/change/', views.CompanyUpdate.as_view(), name='company_update'),
+    # path('company/<int:pk>/delete/', views.CompanyDelete.as_view(), name='company_delete'),
 
     path('select2/', include('django_select2.urls')),
     path('api/gantt/', include('gantt.urls')),

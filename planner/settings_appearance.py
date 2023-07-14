@@ -3,6 +3,7 @@ EXECUTION_BADGE_COLORS = {
     'InProgress': '#6875b0',
     'Done': '#3c4b8c',
     'OnChecking': '#1a2b75',
+    'OnCorrection': '#8797de',
     'OnHold': '#525561'
 }
 

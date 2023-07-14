@@ -128,7 +128,7 @@ class Employee(models.Model):
 
     def executions_for_period(self, period):
         """ return queryset with executions for given month """
-        return self.execution_set.filter(exec_status__in=[Execution.OnChecking, Execution.Done],
+        return self.execution_set.filter(exec_status__in=[Execution.OnChecking, Execution.OnCorrection, Execution.Done],
                                          actual_finish__month=period.month,
                                          actual_finish__year=period.year)
 
@@ -882,7 +882,7 @@ class Task(ModelDiffMixin, models.Model):
                 self.project_code = Task.objects.aggregate(Max('project_code'))['project_code__max'] + 1
 
         # Automatic change Task.exec_status when Execution has changed
-        if self.execution_set.filter(exec_status__in=[Execution.InProgress, Execution.OnChecking, Execution.Done]).exists() \
+        if self.execution_set.filter(exec_status__in=[Execution.InProgress, Execution.OnChecking, Execution.OnCorrection, Execution.Done]).exists() \
                 and self.exec_status == self.ToDo:
             self.exec_status = self.InProgress
 
@@ -1454,12 +1454,14 @@ class Execution(ModelDiffMixin, models.Model):
     InProgress = 'IP'
     OnHold = 'OH'
     OnChecking = 'OC'
+    OnCorrection = 'CR'
     Done = 'HD'
     EXEC_STATUS_CHOICES = (
         (ToDo, 'В черзі'),
         (InProgress, 'Виконується'),
         (OnHold, 'Призупинено'),
         (OnChecking, 'На перевірці'),
+        (OnCorrection, 'На коригуванні'),
         (Done, 'Виконано')
     )
     executor = models.ForeignKey(Employee, verbose_name='Виконавець', blank=True, null=True, on_delete=models.PROTECT)
@@ -1467,7 +1469,6 @@ class Execution(ModelDiffMixin, models.Model):
     subtask = models.ForeignKey(SubTask, verbose_name='Підзадача', on_delete=models.PROTECT)
     part = models.PositiveSmallIntegerField('Частка', default=0, validators=[MaxValueValidator(150)])
     exec_status = models.CharField('Статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, default=ToDo)
-    prev_exec_status = models.CharField('Попередный статус виконання', max_length=2, choices=EXEC_STATUS_CHOICES, blank=True, null=True)
     planned_start = models.DateTimeField('Плановий початок', blank=True, null=True)
     planned_finish = models.DateTimeField('Планове закінчення', blank=True, null=True)
     actual_start = models.DateTimeField('Початок виконання', blank=True, null=True)
@@ -1514,17 +1515,12 @@ class Execution(ModelDiffMixin, models.Model):
         if self.executor is None:
             self.planned_start = None
             self.planned_finish = None
-            self.prev_exec_status = self.ToDo
             self.exec_status = self.ToDo
         else:
-            # Automatic add execution first to employee queue with duration 1 hour
             timeplanner = TimePlanner(self.executor)
-            if self.exec_status == self.ToDo and self.prev_exec_status in [self.OnChecking, self.Done] \
-                    and self.planned_start and self.warning != "На коригуванні":
-                self.warning = "На коригуванні"
+            # Automatic add OnCorrection execution first to employee queue with duration 1 hour
+            if self.exec_status == self.OnCorrection:
                 self.planned_finish = timeplanner.calc_businesstimedelta(self.planned_start, timedelta(hours=1))
-            if self.exec_status == self.OnChecking and self.warning == "На коригуванні":
-                self.warning = ""
 
             # Automatic set actual_start and work_started when exec_status has changed
             if self.exec_status == self.InProgress and not self.actual_start:
@@ -1533,14 +1529,14 @@ class Execution(ModelDiffMixin, models.Model):
                 self.work_started = datetime.now()
 
             # Automatic set actual_duration when exec_status has changed
-            if self.exec_status in [self.OnHold, self.OnChecking, self.Done] and self.work_started:
+            if self.exec_status in [self.OnHold, self.OnChecking, self.OnCorrection, self.Done] and self.work_started:
                 self.actual_duration += timeplanner.calc_businesshrsdiff(self.work_started, datetime.now())
                 self.work_started = None
 
             # Automatic set actual_finish when Execution has done
-            if self.exec_status in [self.OnChecking, self.Done] and not self.actual_finish:
+            if self.exec_status in [self.OnChecking, self.OnCorrection, self.Done] and not self.actual_finish:
                 self.actual_finish = datetime.now()
-            elif self.exec_status not in [self.OnChecking, self.Done] and self.actual_finish:
+            elif self.exec_status in [self.ToDo, self.OnHold, self.InProgress] and self.actual_finish:
                 self.actual_finish = None
 
             # Automatic set planned_finish when execution was not planned and has done
@@ -1740,19 +1736,19 @@ class IgnoreEDRPOU(models.Model):
         return self.description
 
 
-# class Plan(models.Model):
+class Plan(models.Model):
 
-#     plan_start = models.DateField('Початкова дата')
-#     plan_finish = models.DateField('Кінцева дата')
-#     tasks = models.ManyToManyField(Execution, verbose_name='Задачі', blank=True)
-#     creator = models.ForeignKey(User, verbose_name='Створив',
-#                                 related_name='plan_creators', on_delete=models.PROTECT)
-#     creation_date = models.DateField(auto_now_add=True)
+    plan_start = models.DateField('Початкова дата')
+    plan_finish = models.DateField('Кінцева дата')
+    tasks = models.ManyToManyField(Execution, verbose_name='Задачі', blank=True)
+    creator = models.ForeignKey(User, verbose_name='Створив',
+                                related_name='plan_creators', on_delete=models.PROTECT)
+    creation_date = models.DateField(auto_now_add=True)
 
-#     class Meta:
-#         verbose_name = 'План'
-#         verbose_name_plural = 'Плани'
-#         ordering = ['-creation_date']
+    class Meta:
+        verbose_name = 'План'
+        verbose_name_plural = 'Плани'
+        ordering = ['-creation_date']
 
-#     def __str__(self):
-#         return f'{self.plan_start} - {self.plan_finish}'
+    def __str__(self):
+        return f'{self.plan_start} - {self.plan_finish}'

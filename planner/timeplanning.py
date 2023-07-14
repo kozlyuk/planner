@@ -13,6 +13,7 @@ class TimePlanner():
     InProgress = 'IP'
     Done = 'HD'
     OnChecking = 'OC'
+    OnCorrection = 'CR'
     Sent = 'ST'
 
     def __init__(self, employee):
@@ -134,7 +135,7 @@ class TimePlanner():
 
     def __get_last_task_finish__(self):
         """ calculate last task finish time """
-        last_task = self.employee.execution_set.filter(exec_status__in=[self.Done, self.OnChecking],
+        last_task = self.employee.execution_set.filter(exec_status__in=[self.Done, self.OnCorrection, self.OnChecking],
                                                        task__exec_status__in=[self.InProgress, self.Done, self.Sent],
                                                        subtask__add_to_schedule=True
                                                        ) \
