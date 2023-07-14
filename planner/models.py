@@ -1565,7 +1565,7 @@ class Execution(ModelDiffMixin, models.Model):
         super().save(*args, **kwargs)
 
         # Recal employee execution queue
-        if self.executor:
+        if self.executor and self.executor.user.is_staff:
             timeplanner.recalc_queue()
 
     def delete(self, *args, **kwargs):
