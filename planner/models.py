@@ -1597,9 +1597,9 @@ class Execution(ModelDiffMixin, models.Model):
         # if date in current month return True
         if self.actual_finish.month == date.today().month and self.actual_finish.year == date.today().year:
             return True
-        # if date less than 10 days from today return True
+        # if date less than 25 days from today return True
         date_delta = datetime.now() - self.actual_finish
-        if date_delta.days < 20:
+        if date_delta.days < 25:
             return True
         return False
 

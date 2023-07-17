@@ -302,7 +302,7 @@ class TaskUpdate(UpdateView):
             context['sending_formset'] = forms.SendingFormSet(self.request.POST, instance=self.object)
         else:
             employees = Employee.objects.filter(user__is_active=True)
-            subtasks = SubTask.objects.filter(project_type=self.object.project_type)
+            subtasks = SubTask.objects.filter(project_type=self.object.project_type).order_by('name')
             contractors = Contractor.objects.filter(active=True)
             context['comments'] = Comment.objects.filter(content_type__model='Task',
                                                          object_id=self.object.pk

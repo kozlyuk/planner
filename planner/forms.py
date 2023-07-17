@@ -471,7 +471,7 @@ class ExecutorInlineForm(forms.ModelForm):
                 self.fields['executor'].queryset = employees
             self.fields['subtask'].queryset = subtasks
 
-        if method != 'POST':
+        if method != 'POST' and self.instance.executor.user.is_staff:
             if self.instance.exec_status == Execution.ToDo:
                 self.fields['exec_status'].choices = [('IW', 'В черзі'), ('IP', 'Виконується')]
             elif self.instance.exec_status == Execution.InProgress and self.instance.subtask.check_required:
@@ -492,7 +492,7 @@ class ExecutorInlineForm(forms.ModelForm):
     def clean(self):
         if self.instance.pk and self.changed_data:
             if self.instance.is_active() == False and not get_current_user().is_superuser:
-                self.add_error('executor', "Ця підзадача виконана більше 20 днів тому")
+                self.add_error('executor', "Ця підзадача виконана більше 25 днів тому")
             cleaned_data = super().clean()
             executor = cleaned_data.get("executor")
             exec_status = cleaned_data.get("exec_status")
