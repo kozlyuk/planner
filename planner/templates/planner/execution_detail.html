@@ -51,7 +51,7 @@
                                             <td> {{ execution.task.owner.name }} </td>
                                         </tr>
                                         <tr>
-                                            <td> Статус виконання: </td>
+                                            <td> Статус проекту: </td>
                                             <td> {{ execution.task.get_exec_status_display }} </td>
                                         </tr>
                                         {% if execution.task.tc_received %}
@@ -68,6 +68,22 @@
                                                 <td> <a href="/media/{{ execution.task.pdf_copy }}"> Переглянути </a> </td>
                                             </tr>
                                         {% endif %}
+                                        <tr>
+                                            <td> Підзадача: </td>
+                                            <td> {{ execution.subtask.name }} </td>
+                                        </tr>
+                                        <tr>
+                                            <td> Статус підзадачі: </td>
+                                            <td> {{ execution.get_exec_status_display }} </td>
+                                        </tr>
+                                        <tr>
+                                            <td> Частка: </td>
+                                            <td> {{ execution.part }} % </td>
+                                        </tr>
+                                        <tr>
+                                            <td> Бонус за виконання: </td>
+                                            <td> {{ execution.bonus }} грн. </td>
+                                        </tr>
                                     </table>
 
                                     <table class="table table-hover">
@@ -94,21 +110,6 @@
                                         </tbody>
                                     </table>
 
-                                    <table class="table table-hover">
-                                        <col width="25%">
-                                        <tr>
-                                            <td> Роботи: </td>
-                                            <td> {{ execution.subtask.name }} </td>
-                                        </tr>
-                                        <tr>
-                                            <td> Частка: </td>
-                                            <td> {{ execution.part }} % </td>
-                                        </tr>
-                                        <tr>
-                                            <td> Бонус за виконання: </td>
-                                            <td> {{ execution.bonus }} грн. </td>
-                                        </tr>
-                                    </table>
                                 </div>
                                 <a href="{{request.META.HTTP_REFERER}}"
                                     class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;"> Повернутись

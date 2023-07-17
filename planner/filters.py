@@ -227,9 +227,9 @@ def execuition_queryset_filter(request_user, query_dict):
     executions = executions.filter(Q(planned_start__gte=planned_start_value, planned_start__lte=planned_finish_value) |
                          Q(planned_finish__gte=planned_start_value, planned_finish__lte=planned_finish_value) |
                          Q(planned_start__lt=planned_start_value,
-                           exec_status=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold]) |
+                           exec_status=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnCorrection]) |
                          Q(planned_finish__lt=planned_start_value,
-                           exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnHold])
+                           exec_status__in=[Execution.ToDo, Execution.InProgress, Execution.OnChecking, Execution.OnCorrection])
                          ) \
                  .exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
     for word in search_string:

@@ -173,7 +173,7 @@ def context_projector(user):
 
     # Tasks tab section
     user_executions = Execution.objects.filter(executor__user=user)
-    td_executions = user_executions.filter(exec_status=Execution.ToDo)
+    td_executions = user_executions.filter(exec_status__in=[Execution.ToDo, Execution.OnCorrection])
     ip_executions = user_executions.filter(exec_status=Execution.InProgress)
     oc_executions = user_executions.filter(exec_status=Execution.OnChecking)
     hd_executions = user_executions.filter(exec_status=Execution.Done,
