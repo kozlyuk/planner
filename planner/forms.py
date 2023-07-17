@@ -471,7 +471,7 @@ class ExecutorInlineForm(forms.ModelForm):
                 self.fields['executor'].queryset = employees
             self.fields['subtask'].queryset = subtasks
 
-        if method != 'POST' and self.instance.executor.user.is_staff:
+        if method != 'POST' and self.instance.executor and self.instance.executor.user.is_staff:
             if self.instance.exec_status == Execution.ToDo:
                 self.fields['exec_status'].choices = [('IW', 'В черзі'), ('IP', 'Виконується')]
             elif self.instance.exec_status == Execution.InProgress and self.instance.subtask.check_required:
