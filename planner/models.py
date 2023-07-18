@@ -1525,11 +1525,11 @@ class Execution(ModelDiffMixin, models.Model):
             # Automatic set actual_start and work_started when exec_status has changed
             if self.exec_status == self.InProgress and not self.actual_start:
                 self.actual_start = datetime.now()
-            if self.exec_status == self.InProgress and not self.work_started:
+            if self.exec_status in [self.InProgress, self.OnCorrection] and not self.work_started:
                 self.work_started = datetime.now()
 
             # Automatic set actual_duration when exec_status has changed
-            if self.exec_status in [self.OnHold, self.OnChecking, self.OnCorrection, self.Done] and self.work_started:
+            if self.exec_status in [self.ToDo, self.OnHold, self.OnChecking, self.Done] and self.work_started:
                 self.actual_duration += timeplanner.calc_businesshrsdiff(self.work_started, datetime.now())
                 self.work_started = None
 
