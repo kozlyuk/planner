@@ -29,7 +29,7 @@ drf-dynamic-fields == 0.4.0
 django-cors-headers == 3.11.0
 
 # Deployment
-gunicorn
+gunicorn == 20.1.0
 
 # Debuging tools
 django-silk == 4.1.0        # https://github.com/jazzband/django-silk
