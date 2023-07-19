@@ -520,7 +520,7 @@ class ExecutorInlineForm(forms.ModelForm):
 
     def clean_difficulty(self):
         data = self.cleaned_data['difficulty']
-        if 'subtask' in self.changed_data:
+        if 'subtask' in self.changed_data and self.cleaned_data.get('subtask'):
             data = self.cleaned_data['subtask'].difficulty
         return data
 
