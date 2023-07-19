@@ -425,6 +425,7 @@ def fin_analysis_context(year, customers):
     payments_data = []
     work_done_data = []
     receivables_data = []
+    overdue_receivables_data = []
     stock_data = []
     turnover_closed_data = []
     turnover_data = []
@@ -437,10 +438,15 @@ def fin_analysis_context(year, customers):
         payments_income_list = []
         work_done_list = []
         receivables_list = []
+        overdue_receivables_list = []
         stock_list = []
 
         for month in range(1, range_for_year(year)):
             period = last_day_of_month(datetime(year=int(year), month=month, day=1))
+            if month == date.today().month:
+                postpaid = date.today() - timedelta(days=customer.debtor_term)
+            else:
+                postpaid = period - timedelta(days=customer.debtor_term)
 
             acts_customer = ActOfAcceptance.objects.filter(deal__customer=customer)
             payments_customer = Payment.objects.filter(deal__customer=customer)
@@ -459,9 +465,12 @@ def fin_analysis_context(year, customers):
             work_done_list.append(float(work_done_income))
             acts_for_period = acts_customer.receivables().filter(date__lte=period) \
                                                          .aggregate(Sum('value'))['value__sum'] or 0
+            overdue_acts_for_period = acts_customer.receivables().filter(date__lte=postpaid) \
+                                                         .aggregate(Sum('value'))['value__sum'] or 0
             payments_for_period = payments_customer.receivables().filter(date__lte=period) \
                                                                  .aggregate(Sum('value'))['value__sum'] or 0
             receivables_list.append(float(acts_for_period - payments_for_period))
+            overdue_receivables_list.append(float(overdue_acts_for_period - payments_for_period))
             stock_list.append(float(work_done_income-acts_income))
 
         acts_data.append({"name": customer.name,
@@ -472,6 +481,8 @@ def fin_analysis_context(year, customers):
                                "data": work_done_list})
         receivables_data.append({"name": customer.name,
                                  "data": receivables_list})
+        overdue_receivables_data.append({"name": customer.name,
+                                 "data": overdue_receivables_list})
         stock_data.append({"name": customer.name,
                            "data": stock_list})
         turnover_closed_data.append({"name": customer.name,
@@ -487,6 +498,7 @@ def fin_analysis_context(year, customers):
         'payments_data': payments_data,
         'work_done_data': work_done_data,
         'receivables_data': receivables_data,
+        'overdue_receivables_data': overdue_receivables_data,
         'stock_data': stock_data,
         'turnover_closed_data': turnover_closed_data,
         'turnover_data': turnover_data

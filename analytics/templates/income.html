@@ -9,12 +9,13 @@
 
 <div id="content">
     <div id="container_acts_income" style="width: 50%; float: left;"></div>
-    <div id="container_work_done" style="width: 50%; float: left;"></div>
     <div id="container_payments_income" style="width: 50%; float: left;"></div>
     <div id="container_receivables" style="width: 50%; float: left;"></div>
+    <div id="container_overdue_receivables" style="width: 50%; float: left;"></div>
+    <div id="container_work_done" style="width: 50%; float: left;"></div>
     <div id="container_stock" style="width: 50%; float: left;"></div>
-    <div id="container_turnover_closed" style="width: 25%; float: left;"></div>
-    <div id="container_turnover" style="width: 25%; float: left;"></div>
+    <div id="container_turnover_closed" style="width: 50%; float: left;"></div>
+    <div id="container_turnover" style="width: 50%; float: left;"></div>
 </div>
 
 {% endblock %}
@@ -59,36 +60,6 @@
                     }
                 },
                 series: {{ acts_data|safe }}
-            });
-
-            var container_work_done = new Highcharts.Chart({
-                chart: {
-                        renderTo: 'container_work_done',
-                },
-                title: {
-                    text: "Виконано робіт"
-                },
-                xAxis: {
-                    categories: {{ xAxis|safe }},
-                    crosshair: true
-                },
-                yAxis: {
-                    title: {
-                        useHTML: true,
-                        text: "{{ chart.yAxis }}"
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        label: {
-                            connectorAllowed: false
-                        },
-                        dataLabels: {
-                            enabled: true,
-                        }
-                    }
-                },
-                series: {{ work_done_data|safe }}
             });
 
             var container_payments_income = new Highcharts.Chart({
@@ -149,6 +120,66 @@
                     }
                 },
                 series: {{ receivables_data|safe }}
+            });
+
+            var container_overdue_receivables = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_overdue_receivables',
+                },
+                title: {
+                    text: "Протермінована дебіторська заборгованість"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        dataLabels: {
+                            enabled: true,
+                        }
+                    }
+                },
+                series: {{ overdue_receivables_data|safe }}
+            });
+
+            var container_work_done = new Highcharts.Chart({
+                chart: {
+                        renderTo: 'container_work_done',
+                },
+                title: {
+                    text: "Виконано робіт"
+                },
+                xAxis: {
+                    categories: {{ xAxis|safe }},
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        useHTML: true,
+                        text: "{{ chart.yAxis }}"
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        dataLabels: {
+                            enabled: true,
+                        }
+                    }
+                },
+                series: {{ work_done_data|safe }}
             });
 
             var container_stock = new Highcharts.Chart({
