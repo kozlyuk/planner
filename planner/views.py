@@ -394,6 +394,12 @@ class TaskDelete(DeleteView):
             return reverse_lazy('sprint_list')
         return reverse_lazy('task_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object.execution_set.exists():
+            context['executions'] = self.object.execution_set.all()
+        return context
+
 
 @method_decorator(login_required, name='dispatch')
 class TaskExchange(FormView):
@@ -1472,11 +1478,14 @@ class PlanCreate(CreateView):
         context['confirm_btn_text'] = 'Створити'
         return context
 
-    # def form_valid(self, form):
-    #     self.object = form.save()
-    #     # do something with self.object
-    #     # remember the import: from django.http import HttpResponseRedirect
-    #     return HttpResponseRedirect(self.get_success_url())
+    def form_valid(self, form):
+        if form.is_valid():
+
+
+            self.object = form.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
 
 
 class ExecutionUpdateModal(BSModalUpdateView):

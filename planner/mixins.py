@@ -9,7 +9,7 @@ class ModelDiffMixin(object):
     """
 
     def __init__(self, *args, **kwargs):
-        super(ModelDiffMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__initial = self._dict
 
     @property
@@ -37,7 +37,7 @@ class ModelDiffMixin(object):
         """
         Saves model and set initial state.
         """
-        super(ModelDiffMixin, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.__initial = self._dict
 
     @property

@@ -25,10 +25,17 @@
             {% if user.is_superuser or user == event.creator %}
             <div class="row widget-row">
                 <div class="col">
-                <form action="" method="post">{% csrf_token %}
-                    <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
-                    <button class="btn dark btn-sm btn-outline sbold uppercase mb-4" type="submit">Так, я впевнений</button>
-                </form>
+                {% if executions %}
+                    <p>Для видалення Проекту "{{ task }}" спочатку видаліть усіх виконавців.</p>
+                    <a href="{% url 'task_update' object.id %}"
+                        class="btn red btn-sm btn-outline sbold uppercase"
+                        style="float: right;">Повернутись</a>
+                {% else %}
+                    <form action="" method="post">{% csrf_token %}
+                        <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
+                        <button class="btn dark btn-sm btn-outline sbold uppercase mb-4" type="submit">Так, я впевнений</button>
+                    </form>
+                {% endif %}
                 </div>
             </div>
             {% else %}
