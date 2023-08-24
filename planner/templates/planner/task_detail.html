@@ -201,14 +201,16 @@
                                             </div>
                                             {% endif %}
                                             <div class="widget-media-body">
-                                                {% if executor.executor %}
-                                                    <h4 class="widget-media-body-title">
-                                                        {{ executor.executor.name }}
-                                                    </h4>
-                                                {% else %}
-                                                    <h4 class="widget-media-body-title">
-                                                        Виконавець не призначений
-                                                    </h4>
+                                                {% if request.user.is_staff %}
+                                                    {% if executor.executor %}
+                                                        <h4 class="widget-media-body-title">
+                                                            {{ executor.executor.name }}
+                                                        </h4>
+                                                    {% else %}
+                                                        <h4 class="widget-media-body-title">
+                                                            Виконавець не призначений
+                                                        </h4>
+                                                    {% endif %}
                                                 {% endif %}
                                                 Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
                                                 Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>

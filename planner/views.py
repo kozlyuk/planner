@@ -1,4 +1,5 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
@@ -27,6 +28,8 @@ from .filters import *
 from notice.models import Comment, create_comment
 from eventlog.models import Log
 
+
+is_staff = user_passes_test(lambda u: u.is_staff)
 
 class Round(Func):
     function = 'ROUND'
@@ -81,7 +84,7 @@ class Dashboard(TemplateView):
         return {**context, **context_projector(self.request.user)}
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class DealList(ListView):
     model = Deal
     context_object_name = 'deals'  # Default: object_list
@@ -118,7 +121,7 @@ class DealList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class DealUpdate(UpdateView):
     queryset = Deal.objects.select_related('company', 'customer') \
                            .prefetch_related('task_set', 'task_set__project_type', 'task_set__owner')
@@ -201,7 +204,7 @@ class DealUpdate(UpdateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class DealCreate(CreateView):
     model = Deal
     form_class = forms.DealForm
@@ -219,7 +222,7 @@ class DealCreate(CreateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class DealDelete(DeleteView):
     model = Deal
     success_url = reverse_lazy('deal_list')
@@ -283,7 +286,7 @@ class TaskDetail(DetailView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class TaskUpdate(UpdateView):
     model = Task
     form_class = forms.TaskForm
@@ -366,7 +369,7 @@ class TaskUpdate(UpdateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class TaskCreate(CreateView):
     model = Task
     form_class = forms.TaskForm
@@ -384,7 +387,7 @@ class TaskCreate(CreateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class TaskDelete(DeleteView):
     model = Task
 
@@ -401,7 +404,7 @@ class TaskDelete(DeleteView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class TaskExchange(FormView):
     template_name = 'planner/task_exchange.html'
     form_class = forms.TaskExchangeForm
@@ -489,6 +492,7 @@ class SprintList(ListView):
         return context
 
 
+@method_decorator(is_staff, name='dispatch')
 class ExecutionStatusChange(View):
     """ View change Execution exec_status to given in url """
 
@@ -560,7 +564,7 @@ class ExecutionStatusChange(View):
 #         return super(TaskExchange, self).form_valid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class SubtaskDetail(DetailView):
     model = Execution
     success_url = reverse_lazy('home_page')
@@ -573,6 +577,7 @@ class SubtaskDetail(DetailView):
         return context
 
 
+@method_decorator(is_staff, name='dispatch')
 class OrderList(ListView):
     model = Order
     context_object_name = 'orders'  # Default: object_list
@@ -610,7 +615,7 @@ class OrderList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class OrderUpdate(UpdateView):
     queryset = Order.objects.select_related('task', 'subtask') \
                             .prefetch_related('orderpayment_set')
@@ -674,7 +679,7 @@ class OrderUpdate(UpdateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class OrderCreate(CreateView):
     model = Order
     form_class = forms.OrderForm
@@ -692,7 +697,7 @@ class OrderCreate(CreateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class OrderCopy(UpdateView):
     model = Order
     form_class = forms.OrderForm
@@ -720,7 +725,7 @@ class OrderCopy(UpdateView):
             return self.form_invalid(form)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class OrderDelete(DeleteView):
     model = Order
     template_name = "planner/generic_confirm_delete.html"
@@ -738,6 +743,7 @@ class OrderDelete(DeleteView):
         return context
 
 
+@method_decorator(is_staff, name='dispatch')
 class OrderApprove(View):
     """ Approve order """
 
@@ -758,13 +764,13 @@ class OrderApprove(View):
         return redirect(reverse('order_list') + '?' + self.request.session.get('order_query_string', ''))
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class InttaskDetail(DetailView):
     model = IntTask
     success_url = reverse_lazy('home_page')
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ReceiverList(ListView):
     """ ListView for Receivers.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -809,7 +815,7 @@ class ReceiverList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ReceiverCreate(CreateView):
     model = Receiver
     form_class = forms.ReceiverForm
@@ -825,7 +831,7 @@ class ReceiverCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ReceiverUpdate(UpdateView):
     model = Receiver
     form_class = forms.ReceiverForm
@@ -843,7 +849,7 @@ class ReceiverUpdate(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ReceiverDelete(DeleteView):
     model = Receiver
     template_name = "planner/generic_confirm_delete.html"
@@ -915,7 +921,7 @@ class ProjectList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ProjectCreate(CreateView):
     model = Project
     form_class = forms.ProjectForm
@@ -931,7 +937,7 @@ class ProjectCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ProjectUpdate(UpdateView):
     model = Project
     form_class = forms.ProjectForm
@@ -966,7 +972,7 @@ class ProjectUpdate(UpdateView):
         else:
             return self.form_invalid(form)
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ProjectDelete(DeleteView):
     model = Project
     template_name = "planner/generic_confirm_delete.html"
@@ -985,7 +991,7 @@ class ProjectDelete(DeleteView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CustomerList(ListView):
     """ ListView for CustomerList.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1033,7 +1039,7 @@ class CustomerList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CustomerCreate(CreateView):
     model = Customer
     form_class = forms.CustomerForm
@@ -1049,7 +1055,7 @@ class CustomerCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CustomerUpdate(UpdateView):
     model = Customer
     form_class = forms.CustomerForm
@@ -1067,7 +1073,7 @@ class CustomerUpdate(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CustomerDelete(DeleteView):
     model = Customer
     template_name = "planner/generic_confirm_delete.html"
@@ -1086,7 +1092,7 @@ class CustomerDelete(DeleteView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CompanyList(ListView):
     """ ListView for CompanyList.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1127,7 +1133,7 @@ class CompanyList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CompanyCreate(CreateView):
     model = Company
     form_class = forms.CompanyForm
@@ -1143,7 +1149,7 @@ class CompanyCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CompanyUpdate(UpdateView):
     model = Company
     form_class = forms.CompanyForm
@@ -1161,7 +1167,7 @@ class CompanyUpdate(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class CompanyDelete(DeleteView):
     model = Company
     template_name = "planner/generic_confirm_delete.html"
@@ -1180,7 +1186,7 @@ class CompanyDelete(DeleteView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class СolleagueList(ListView):
     """ ListView for Сolleagues.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1218,7 +1224,7 @@ class СolleagueList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class EmployeeList(ListView):
     """ ListView for Employee.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1259,7 +1265,7 @@ class EmployeeList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class СolleagueDetail(DetailView):
     model = Employee
     context_object_name = 'employee'
@@ -1269,7 +1275,7 @@ class СolleagueDetail(DetailView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class EmployeeUpdate(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
@@ -1290,7 +1296,7 @@ class EmployeeUpdate(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class EmployeeSelfUpdate(UpdateView):
     model = Employee
     form_class = forms.EmployeeSelfUpdateForm
@@ -1300,7 +1306,7 @@ class EmployeeSelfUpdate(UpdateView):
         return Employee.objects.get(user=get_current_user())
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class EmployeeCreate(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
@@ -1321,7 +1327,7 @@ class EmployeeCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ContractorList(ListView):
     """ ListView for Contractor.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1376,7 +1382,7 @@ class ContractorList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ContractorCreate(CreateView):
     model = Contractor
     form_class = forms.ContractorForm
@@ -1392,7 +1398,7 @@ class ContractorCreate(CreateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ContractorUpdate(UpdateView):
     model = Contractor
     form_class = forms.ContractorForm
@@ -1410,7 +1416,7 @@ class ContractorUpdate(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class ContractorDelete(DeleteView):
     model = Contractor
     template_name = "planner/generic_confirm_delete.html"
@@ -1430,7 +1436,7 @@ class ContractorDelete(DeleteView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class PlanList(ListView):
     """ ListView for Plans.
     Return in headers - 1.FieldName 2.VerboseName 3.NeedOrdering """
@@ -1463,7 +1469,7 @@ class PlanList(ListView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(is_staff, name='dispatch')
 class PlanCreate(CreateView):
     model = Plan
     form_class = forms.PlanForm
@@ -1480,6 +1486,7 @@ class PlanCreate(CreateView):
 
     def form_valid(self, form):
         if form.is_valid():
+            # subtasks, _, _ = execuition_queryset_filter(self.request.user, self.request.GET)
 
 
             self.object = form.save()

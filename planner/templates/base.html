@@ -179,7 +179,7 @@
                                     <img class="userpic" alt="" src="{{ user.employee.avatar.thumbnail.url }}" /></div>
                                 {% endif %}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-default">
+                        <ul class="dropdown-menu dropdown-menu-right">
                             {% if request.user.is_staff %}
                                 <li>
                                     <a href="{% url 'employee_self_update' %}">
