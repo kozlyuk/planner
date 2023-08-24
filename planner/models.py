@@ -957,9 +957,7 @@ class Task(ModelDiffMixin, models.Model):
         # check if task edit period is not expired
         if not self.actual_finish:
             return True
-        if self.actual_finish.month == date.today().month and self.actual_finish.year == date.today().year:
-            return True
-        if (date.today() - self.actual_finish).days < 7:
+        if (date.today() - self.actual_finish).days < 90:
             return True
         return False
 
@@ -1741,6 +1739,7 @@ class Plan(models.Model):
     plan_start = models.DateField('Початкова дата')
     plan_finish = models.DateField('Кінцева дата')
     tasks = models.ManyToManyField(Execution, verbose_name='Задачі', blank=True)
+    # owner = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     creator = models.ForeignKey(User, verbose_name='Створив',
                                 related_name='plan_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
@@ -1752,3 +1751,6 @@ class Plan(models.Model):
 
     def __str__(self):
         return f'{self.plan_start} - {self.plan_finish}'
+
+    # def completion_percentage(self):
+    #     return
