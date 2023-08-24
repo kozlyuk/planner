@@ -194,7 +194,7 @@
                                 {% if executors|length > 0 %}
                                     {% for executor in executors %}
                                         <div class="widget-media">
-                                            {% if executor.executor %}
+                                            {% if executor.executor and request.user.is_staff %}
                                             <div class="widget-media-elements text-center">
                                                 <img class="widget-media-avatar circle margin-bottom-15"
                                                     src="{{ executor.executor.avatar.thumbnail.url }}" alt="">
@@ -213,7 +213,9 @@
                                                     {% endif %}
                                                 {% endif %}
                                                 Назва робіт: <strong>{{ executor.subtask.name }}</strong><br>
-                                                Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                                {% if request.user.is_staff %}
+                                                    Частка: <div class="widget-btn-blue circle">{{ executor.part }} %</div>
+                                                {% endif %}
                                                 Статус виконання: <strong>{{ executor.get_exec_status_display }}</strong><br>
                                                 {% if executor.actual_finish %}Дата виконання: <strong>{{ executor.actual_finish }}</strong><br>{% endif %}
                                                 {% if executor.warning %}Попередження: <strong>{{ executor.warning }}</strong><br>{% endif %}

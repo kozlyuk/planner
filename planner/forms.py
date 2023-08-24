@@ -288,14 +288,15 @@ class TaskFilterForm(forms.Form):
         work_types = list(WorkType.objects.all().values_list('pk', 'name'))
 
         self.fields['exec_status'].choices = exec_status
-        self.fields['owner'].choices = owners
         self.fields['construction'].choices = constructions
         self.fields['work_type'].choices = work_types
 
         if get_current_user().groups.filter(name='Замовники').exists():
             self.fields['customer'].widget = forms.HiddenInput()
+            self.fields['owner'].widget = forms.HiddenInput()
         else:
             self.fields['customer'].choices = customers
+            self.fields['owner'].choices = owners
 
 
     exec_status = forms.MultipleChoiceField(label='Статус', required=False,
@@ -334,9 +335,14 @@ class SprintFilterForm(forms.Form):
         else:
             self.fields['executor'].widget = forms.HiddenInput()
 
+        if get_current_user().groups.filter(name='Замовники').exists():
+            self.fields['company'].widget = forms.HiddenInput()
+            self.fields['owner'].widget = forms.HiddenInput()
+        else:
+            self.fields['company'].choices = companies
+            self.fields['owner'].choices = owners
+
         self.fields['exec_status'].choices = exec_status
-        self.fields['company'].choices = companies
-        self.fields['owner'].choices = owners
         self.fields['work_type'].choices = work_types
 
         self.fields['actual_start'].required = False
@@ -1000,3 +1006,7 @@ class PlanForm(forms.ModelForm):
             'plan_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'plan_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['owner'].queryset = Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
