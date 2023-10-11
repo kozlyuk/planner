@@ -1000,13 +1000,13 @@ class TaskModelForm(BSModalModelForm):
 class PlanForm(forms.ModelForm):
     class Meta:
         model = Plan
-        fields = ['plan_start', 'plan_finish']
+        fields = ['owner', 'plan_start', 'plan_finish']
 
         widgets = {
             'plan_start': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'plan_finish': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.fields['owner'].queryset = Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['owner'].queryset = Employee.objects.filter(user__is_active=True, user__groups__name='ГІПи')

@@ -1447,14 +1447,15 @@ class PlanList(ListView):
 
     def get_queryset(self):  # todo args url
         plans = Plan.objects.annotate(
-            url=Concat(F('pk'), Value('/change/'), output_field=CharField()),
-            ).values_list('plan_start', 'plan_finish', 'creation_date', 'creator', 'url')
+            url=Concat(F('pk'), Value('/'), output_field=CharField()),
+            ).values_list('owner__name', 'plan_start', 'plan_finish', 'creation_date', 'creator', 'url')
         return plans
 
     def get_context_data(self, **kwargs):
         request = self.request
         context = super().get_context_data(**kwargs)
-        context['headers'] = [['plan_start', 'Початкова дата', 0],
+        context['headers'] = [['owner', 'ГІП', 0],
+                              ['plan_start', 'Початкова дата', 0],
                               ['plan_finish', 'Кінцева дата', 0],
                               ['creation_date', 'Дата створення', 0],
                               ['creator', 'Створив', 0]]
@@ -1486,13 +1487,46 @@ class PlanCreate(CreateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            # subtasks, _, _ = execuition_queryset_filter(self.request.user, self.request.GET)
-
-
             self.object = form.save()
+
+            query_dict = QueryDict('').copy()
+            query_dict['owner'] = self.request.POST.get('owner')
+            query_dict['actual_start'] = self.request.POST.get('plan_start')
+            query_dict['actual_finish'] = self.request.POST.get('plan_finish')
+            subtasks, _, _ = execuition_queryset_filter(self.request.user, query_dict)
+            self.object.tasks.add(*subtasks)
+            self.object.save()
+
             return redirect(self.get_success_url())
         else:
             return self.form_invalid(form)
+
+
+@method_decorator(is_staff, name='dispatch')
+class PlanDetail(DetailView):
+    model = Plan
+    success_url = reverse_lazy('plan_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # execution = Execution.objects.get(pk=self.kwargs['pk'])
+        # context['executors'] = Execution.objects.filter(task=execution.task)
+        # context['sendings'] = Sending.objects.filter(task=execution.task)
+        return context
+
+
+@method_decorator(is_staff, name='dispatch')
+class PlanDelete(DeleteView):
+    model = Plan
+    template_name = "planner/generic_confirm_delete.html"
+    success_url = reverse_lazy('plan_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        plan = context['plan']
+        context['go_back_url'] = reverse('plan_list')
+        context['main_header'] = f'Видалити план {plan}?'
+        return context
 
 
 class ExecutionUpdateModal(BSModalUpdateView):

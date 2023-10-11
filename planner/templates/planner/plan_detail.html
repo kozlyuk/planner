@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+{% load ita_template_tags %}
+
+{% block global_meta %}
+    <title>Ітел-Сервіс | Завдання</title>
+{% endblock %}
+
+{% block context %}
+    <div class="page-container page-container-bg-solid" xmlns="http://www.w3.org/1999/html"
+         xmlns="http://www.w3.org/1999/html">
+        <!-- BEGIN BREADCRUMBS -->
+        <div class="breadcrumbs">
+            <div class="container-fluid">
+                <h2 class="breadcrumbs-title">План виконання</h2>
+            </div>
+        </div>
+        <!-- END BREADCRUMBS -->
+
+        <!-- BEGIN CONTENT -->
+        <div class="container-fluid container-lf-space">
+            <!-- BEGIN PAGE BASE CONTENT -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col margin-bottom-20">
+                        <!-- BEGIN WIDGET -->
+                        <div class="portlet light tasks-widget">
+                            <div class="portlet-title">
+                                <div class="caption caption-md font-red-sunglo">
+                                    <span class="caption-subject theme-font bold uppercase">{{ plan }}</span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="scroller" style="height: 450px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                    <div class="widget-news margin-bottom-20">
+                                        <div class="widget-news-right-body">
+                                            <table class="table table-hover">
+                                                {% for task in plan.tasks.all %}
+                                                    <tr>
+                                                        <td>{{ task.task }}</td>
+                                                        <td>{{ task.subtask }}</td>
+                                                        <td>{{ task.executor }}</td>
+                                                        <td>{{ task.get_exec_status_display }}</td>
+                                                        <td>{{ task.subtask.duration }}</td>
+                                                        <td>{{ task.actual_duration }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'plan_delete' plan.pk %}"
+                                    class="btn deal-delete red btn-sm btn-outline sbold uppercase">Видалити</a>
+                                <a href="{{request.META.HTTP_REFERER}}"
+                                    class="btn dark task-return btn-sm btn-outline sbold uppercase mb-3" style="float: right;">Повернутись
+                                </a>
+                            </div>
+                        </div>
+                        <!-- END WIDGET -->
+                    </div>
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END CONTAINER -->
+{% endblock %}

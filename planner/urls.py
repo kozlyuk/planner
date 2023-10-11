@@ -86,8 +86,8 @@ urlpatterns = [
 
     path('plan/', views.PlanList.as_view(), name='plan_list'),
     path('plan/add', views.PlanCreate.as_view(), name='plan_add'),
-    # path('company/<int:pk>/change/', views.CompanyUpdate.as_view(), name='company_update'),
-    # path('company/<int:pk>/delete/', views.CompanyDelete.as_view(), name='company_delete'),
+    path('plan/<int:pk>/', views.PlanDetail.as_view(), name='plan_detail'),
+    path('plan/<int:pk>/delete/', views.PlanDelete.as_view(), name='plan_delete'),
 
     path('select2/', include('django_select2.urls')),
     path('api/gantt/', include('gantt.urls')),

@@ -1739,7 +1739,7 @@ class Plan(models.Model):
     plan_start = models.DateField('Початкова дата')
     plan_finish = models.DateField('Кінцева дата')
     tasks = models.ManyToManyField(Execution, verbose_name='Задачі', blank=True)
-    # owner = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
+    owner = models.ForeignKey(Employee, verbose_name='Керівник', on_delete=models.PROTECT)
     creator = models.ForeignKey(User, verbose_name='Створив',
                                 related_name='plan_creators', on_delete=models.PROTECT)
     creation_date = models.DateField(auto_now_add=True)
@@ -1750,7 +1750,15 @@ class Plan(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-        return f'{self.plan_start} - {self.plan_finish}'
+        return f'{self.plan_start} - {self.plan_finish} - {self.owner}'
+
+    def save(self, *args, logging=True, **kwargs):
+
+        # Set creator
+        if not self.pk:
+            self.creator = get_current_user()
+
+        super().save(*args, **kwargs)
 
     # def completion_percentage(self):
     #     return
