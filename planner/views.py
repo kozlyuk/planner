@@ -10,8 +10,8 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When, CharField
-from django.db.models.functions import Concat
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When, CharField, DurationField
+from django.db.models.functions import Concat, Coalesce
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
 
@@ -1448,7 +1448,11 @@ class PlanList(ListView):
     def get_queryset(self):  # todo args url
         plans = Plan.objects.annotate(
             url=Concat(F('pk'), Value('/'), output_field=CharField()),
-            ).values_list('owner__name', 'plan_start', 'plan_finish', 'creation_date', 'creator', 'url')
+            total_duration=Coalesce(Sum('tasks__subtask__duration'), 0, output_field=DecimalField()),
+            tasks_done_duration = Sum(Case(When(tasks__exec_status=Execution.Done, then=F('tasks__subtask__duration')),
+                                  output_field=DecimalField(), default=0))) \
+            .annotate(completion_percentage=F('tasks_done_duration')/F('total_duration')*100) \
+            .values_list('owner__name', 'plan_start', 'plan_finish', 'completion_percentage', 'url')
         return plans
 
     def get_context_data(self, **kwargs):
@@ -1457,8 +1461,7 @@ class PlanList(ListView):
         context['headers'] = [['owner', 'ГІП', 0],
                               ['plan_start', 'Початкова дата', 0],
                               ['plan_finish', 'Кінцева дата', 0],
-                              ['creation_date', 'Дата створення', 0],
-                              ['creator', 'Створив', 0]]
+                              ['completion_percentage', 'Відсоток виконання', 0]]
         context['search'] = False
         context['filter'] = []
         if request.user.has_perm('planner.add_contractor'):
@@ -1506,13 +1509,6 @@ class PlanCreate(CreateView):
 class PlanDetail(DetailView):
     model = Plan
     success_url = reverse_lazy('plan_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # execution = Execution.objects.get(pk=self.kwargs['pk'])
-        # context['executors'] = Execution.objects.filter(task=execution.task)
-        # context['sendings'] = Sending.objects.filter(task=execution.task)
-        return context
 
 
 @method_decorator(is_staff, name='dispatch')

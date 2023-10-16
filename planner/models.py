@@ -1753,12 +1753,24 @@ class Plan(models.Model):
         return f'{self.plan_start} - {self.plan_finish} - {self.owner}'
 
     def save(self, *args, logging=True, **kwargs):
-
         # Set creator
         if not self.pk:
             self.creator = get_current_user()
+        # Logging
+        if logging:
+            if not self.pk:
+                log(user=get_current_user(),
+                    action='Доданий план',
+                    extra={'title': self},
+                    obj=self,
+                    )
 
         super().save(*args, **kwargs)
 
-    # def completion_percentage(self):
-    #     return
+    def delete(self, *args, **kwargs):
+        log(user=get_current_user(),
+            action='Видалений план',
+            extra={'title': self},
+            obj=self,
+            )
+        super().delete(*args, **kwargs)
