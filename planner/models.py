@@ -1761,7 +1761,7 @@ class Plan(models.Model):
             if not self.pk:
                 log(user=get_current_user(),
                     action='Доданий план',
-                    extra={'title': self},
+                    extra={'title': self.__str__()},
                     obj=self,
                     )
 
@@ -1770,7 +1770,7 @@ class Plan(models.Model):
     def delete(self, *args, **kwargs):
         log(user=get_current_user(),
             action='Видалений план',
-            extra={'title': self},
+            extra={'title': self.__str__()},
             obj=self,
             )
         super().delete(*args, **kwargs)
