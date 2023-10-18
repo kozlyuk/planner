@@ -1497,12 +1497,14 @@ class PlanCreate(CreateView):
         if form.is_valid():
             self.object = form.save()
 
-            query_dict = QueryDict('').copy()
-            query_dict['owner'] = self.request.POST.get('owner')
-            query_dict['actual_start'] = self.request.POST.get('plan_start')
-            query_dict['actual_finish'] = self.request.POST.get('plan_finish')
-            subtasks, _, _ = execuition_queryset_filter(self.request.user, query_dict)
-            subtasks = subtasks.exclude(subtask__simultaneous_execution=True)
+            owner = self.request.POST.get('owner')
+            plan_start = datetime.strptime(self.request.POST.get('plan_start'), '%Y-%m-%d')
+            plan_finish = datetime.strptime(self.request.POST.get('plan_finish'), '%Y-%m-%d')
+            subtasks = Execution.objects.filter(subtask__add_to_schedule=True,
+                                                task__owner=owner,
+                                                planned_finish__gte=plan_start,
+                                                planned_finish__lte=plan_finish) \
+                                        .exclude(task__exec_status__in=[Task.OnHold, Task.Canceled])
             self.object.tasks.add(*subtasks)
             self.object.save()
 
