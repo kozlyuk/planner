@@ -109,9 +109,13 @@
                                                     </div>
                                                     <!--deal-->
                                                     <div class="col-2">
-                                                        <label
-                                                            for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
-                                                    </div>
+                                                        <label for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
+                                                        {% if 'planner.view_deal' in perms %}
+                                                            <a class="btnLink" href="{% url 'deal_update' task.deal.pk %}" target="_blank">
+                                                                <i style="font-size: 16px;" data-toggle="tooltip" title="Відкрити договір" data-placement="right" class="far fa-sticky-note"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                        </div>
                                                     <div class="col-4">
                                                         {{ form.deal|attr:"style: width: 100%; padding-left: 0px;"|add_class:"form-control"|add_error_class:"is-invalid" }}
                                                         <div class="invalid-feedback">
@@ -428,6 +432,8 @@
                                             <p>Сумарні витрати: <strong>{{ task.costs_total }} грн.</strong></p>
                                             <p>Необхідно відправок: <strong>{{ task.project_type.copies_count }}</strong></p>
                                             <p>Зараховані відправки: <strong>{% none_date_check task.sending_date %}</strong></p>
+                                            <p>Акт виконаних робіт: <strong>{{ task.deal.get_act_status_display }}</strong></p>
+                                            <p>Оплата по договору: <strong>{{ task.deal.get_pay_status_display }}</strong></p>
                                         </div>
                                     </div>
                                 </div>

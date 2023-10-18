@@ -10,7 +10,7 @@ from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When, CharField, DurationField
+from django.db.models import Q, F, Value, ExpressionWrapper, DecimalField, Func, Sum, Case, When, CharField, Count, DurationField
 from django.db.models.functions import Concat, Coalesce
 from django.db import transaction
 from django.core.exceptions import PermissionDenied
@@ -1448,11 +1448,13 @@ class PlanList(ListView):
     def get_queryset(self):  # todo args url
         plans = Plan.objects.annotate(
             url=Concat(F('pk'), Value('/'), output_field=CharField()),
-            total_duration=Coalesce(Sum('tasks__subtask__duration'), 0, output_field=DecimalField()),
+            tasks_count=Count('tasks'),
+            total_duration=Coalesce(Sum('tasks__subtask__duration'), 0, output_field=DurationField()),
+            total_duration_decimal=Coalesce(Sum('tasks__subtask__duration'), 0, output_field=DecimalField()),
             tasks_done_duration = Sum(Case(When(tasks__exec_status=Execution.Done, then=F('tasks__subtask__duration')),
                                   output_field=DecimalField(), default=0))) \
-            .annotate(completion_percentage=F('tasks_done_duration')/F('total_duration')*100) \
-            .values_list('owner__name', 'plan_start', 'plan_finish', 'completion_percentage', 'url')
+            .annotate(completion_percentage=Round(F('tasks_done_duration')/F('total_duration_decimal')*100)) \
+            .values_list('owner__name', 'plan_start', 'plan_finish', 'completion_percentage', 'tasks_count', 'total_duration','url')
         return plans
 
     def get_context_data(self, **kwargs):
@@ -1461,7 +1463,10 @@ class PlanList(ListView):
         context['headers'] = [['owner', 'ГІП', 0],
                               ['plan_start', 'Початкова дата', 0],
                               ['plan_finish', 'Кінцева дата', 0],
-                              ['completion_percentage', 'Відсоток виконання', 0]]
+                              ['completion_percentage', 'Відсоток виконання', 0],
+                              ['tasks_count', 'Кількість підзадач', 0],
+                              ['total_duration', 'Загальний час виконання', 0],
+                              ]
         context['search'] = False
         context['filter'] = []
         if request.user.has_perm('planner.add_contractor'):
@@ -1497,6 +1502,7 @@ class PlanCreate(CreateView):
             query_dict['actual_start'] = self.request.POST.get('plan_start')
             query_dict['actual_finish'] = self.request.POST.get('plan_finish')
             subtasks, _, _ = execuition_queryset_filter(self.request.user, query_dict)
+            subtasks = subtasks.exclude(subtask__simultaneous_execution=True)
             self.object.tasks.add(*subtasks)
             self.object.save()
 
