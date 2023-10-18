@@ -110,7 +110,7 @@
                                                     <!--deal-->
                                                     <div class="col-2">
                                                         <label for="id_{{ form.deal.name }}">{{ form.deal.label }}:</label>
-                                                        {% if 'planner.view_deal' in perms %}
+                                                        {% if task.pk and 'planner.view_deal' in perms %}
                                                             <a class="btnLink" href="{% url 'deal_update' task.deal.pk %}" target="_blank">
                                                                 <i style="font-size: 16px;" data-toggle="tooltip" title="Відкрити договір" data-placement="right" class="far fa-sticky-note"></i>
                                                             </a>
