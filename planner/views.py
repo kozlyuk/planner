@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render
@@ -1485,6 +1485,11 @@ class PlanCreate(CreateView):
     template_name = "planner/generic_form.html"
     success_url = reverse_lazy('plan_list')
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['header_main'] = 'Створити план'
@@ -1524,6 +1529,11 @@ class PlanDelete(DeleteView):
     model = Plan
     template_name = "planner/generic_confirm_delete.html"
     success_url = reverse_lazy('plan_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
