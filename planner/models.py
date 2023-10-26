@@ -262,6 +262,7 @@ class Project(models.Model):
     copies_count = models.PositiveSmallIntegerField('Кількість примірників', default=0,
                                                     validators=[MaxValueValidator(10)])
     need_project_code = models.BooleanField('Потрібен шифр проекту', default=True)
+    exclude_costs = models.BooleanField('Виключати витрати', default=False)
     description = models.TextField('Опис', blank=True)
     active = models.BooleanField('Активний', default=True)
 
@@ -1019,8 +1020,9 @@ class Task(ModelDiffMixin, models.Model):
 
     # owner's bonus
     def owner_bonus(self):
-        bonus = (self.project_type.net_price() - self.costs_total()) * self.owner_part()\
-            * self.project_type.owner_bonus / 10000 * self.difficulty_owner
+        price = self.project_type.net_price() - self.costs_total() if self.project_type.exclude_costs \
+            else self.project_type.net_price()
+        bonus = price * self.owner_part() * self.project_type.owner_bonus / 10000 * self.difficulty_owner
         return bonus.quantize(Decimal("1.00"), ROUND_HALF_UP) if bonus > 0 else Decimal(0)
     owner_bonus.short_description = "Бонус"
 

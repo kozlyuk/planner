@@ -877,13 +877,14 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['project_type', 'price_code', 'customer', 'price', 'net_price_rate',
                   'owner_bonus', 'executors_bonus', 'copies_count', 'description',
-                  'need_project_code', 'active']
+                  'need_project_code', 'exclude_costs', 'active']
 
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
         self.fields['description'].widget.attrs.update({'style': 'height:100px;'})
         self.fields['active'].widget.attrs.update({'style': 'height:15px;'})
         self.fields['need_project_code'].widget.attrs.update({'style': 'height:15px;'})
+        self.fields['exclude_costs'].widget.attrs.update({'style': 'height:15px;'})
 
 
 class CustomerFilterForm(forms.Form):
