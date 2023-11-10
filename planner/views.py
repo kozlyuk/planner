@@ -1506,6 +1506,7 @@ class PlanCreate(CreateView):
             plan_start = datetime.strptime(self.request.POST.get('plan_start'), '%Y-%m-%d')
             plan_finish = datetime.strptime(self.request.POST.get('plan_finish'), '%Y-%m-%d')
             subtasks = Execution.objects.filter(subtask__add_to_schedule=True,
+                                                subtask__simultaneous_execution=False,
                                                 task__owner=owner,
                                                 planned_finish__gte=plan_start,
                                                 planned_finish__lte=plan_finish) \
