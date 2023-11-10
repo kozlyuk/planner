@@ -603,6 +603,7 @@ class TaskAdmin(ImportMixin, admin.ModelAdmin):
 
     form = TaskForm
     resource_classes = [TaskResource]
+    from_encoding = 'windows-1251'
     import_form_class = CustomImportForm
     confirm_form_class = CustomConfirmImportForm
 
@@ -694,6 +695,10 @@ class TaskAdmin(ImportMixin, admin.ModelAdmin):
         else:
             self.inlines = [ExecutersInline, SendingsInline]
         return super(TaskAdmin, self).get_inline_instances(request, obj)
+
+    def get_import_formats(self):
+        self.formats[0] = CSV
+        return [f for f in self.formats if f().can_import()]
 
     def get_import_data_kwargs(self, request, *args, **kwargs):
         """
