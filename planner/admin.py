@@ -603,7 +603,6 @@ class TaskAdmin(ImportMixin, admin.ModelAdmin):
 
     form = TaskForm
     resource_classes = [TaskResource]
-    from_encoding = 'windows-1251'
     import_form_class = CustomImportForm
     confirm_form_class = CustomConfirmImportForm
 
