@@ -752,6 +752,13 @@ class IntTaskAdmin(admin.ModelAdmin):
             return self.readonly_fields
         return [f.name for f in self.model._meta.fields]
 
+    def get_form(self, request, obj=None, **kwargs):
+        request._obj_ = obj
+        form = super().get_form(request, obj, **kwargs)
+        if not obj:
+            form.base_fields['executor'].queryset = Employee.objects.filter(user__is_active=True)
+        return form
+
 
 class SubTaskAdmin(admin.ModelAdmin):
 
