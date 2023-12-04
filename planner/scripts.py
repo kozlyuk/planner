@@ -127,3 +127,9 @@ for execution in Execution.objects.filter(exec_status=Execution.Done, executor__
     execution.planned_start = execution.actual_start
     execution.planned_finish = execution.actual_finish
     execution.save()
+
+
+from planner.models import Task
+ttt = Task.objects.filter(deal__pay_status='PU', exec_status='HD', sending_date__isnull=True)
+for task in ttt[:100]:
+    print(task)
