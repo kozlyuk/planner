@@ -453,8 +453,14 @@ class TaskForm(forms.ModelForm):
             self.add_error('construction', "Вкажіть тип конструкції")
         if not work_type:
             self.add_error('work_type', "Вкажіть вид будівництва")
-        return cleaned_data
 
+        # validate difficulty coefficients
+        if cleaned_data.get('difficulty_owner') > 1.3:
+            self.add_error('difficulty_owner', "Коефіцієнт не може бути вищим 1.3")
+        if cleaned_data.get('difficulty_executor') > 1.3:
+            self.add_error('difficulty_executor', "Коефіцієнт не може бути вищим 1.3")
+
+        return cleaned_data
 
 class ExecutorInlineForm(forms.ModelForm):
     class Meta:
